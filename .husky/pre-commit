@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+# Format and lint staged files
+npx lint-staged
+
+# Type-check all files
+npm run type-check
+
+# Run tests
+npm test
+
+# Build check
+npm run build

@@ -24,20 +24,20 @@ See [architecture.md](architecture.md) for full dev dependency list. Key additio
 
 ## Scripts
 
-| Command           | Description                    |
-| ----------------- | ------------------------------ |
-| `npm run dev`     | Start dev server               |
-| `npm run build`   | Production build               |
-| `npm run preview` | Preview production build       |
-| `npm run lint`    | ESLint (zero warnings)         |
-| `npm run lint:fix`| Fix ESLint issues              |
-| `npm run format`  | Format with Prettier           |
-| `npm run format:check` | Check formatting           |
-| `npm run type-check` | TypeScript check           |
-| `npm test`        | Run Vitest                     |
-| `npm run test:watch` | Vitest watch mode           |
-| `npm run validate` | Format + lint + test + build |
-| `npm run update-data` | Update JSON from nflverse |
+| Command                | Description                  |
+| ---------------------- | ---------------------------- |
+| `npm run dev`          | Start dev server             |
+| `npm run build`        | Production build             |
+| `npm run preview`      | Preview production build     |
+| `npm run lint`         | ESLint (zero warnings)       |
+| `npm run lint:fix`     | Fix ESLint issues            |
+| `npm run format`       | Format with Prettier         |
+| `npm run format:check` | Check formatting             |
+| `npm run type-check`   | TypeScript check             |
+| `npm test`             | Run Vitest                   |
+| `npm run test:watch`   | Vitest watch mode            |
+| `npm run validate`     | Format + lint + test + build |
+| `npm run update-data`  | Update JSON from nflverse    |
 
 ## Data Updates
 

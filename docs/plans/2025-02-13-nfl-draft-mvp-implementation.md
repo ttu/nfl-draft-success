@@ -17,6 +17,7 @@
 ### Task 1: Create Vite + React + TS project
 
 **Files:**
+
 - Create: `package.json`, `vite.config.ts`, `tsconfig.json`, `index.html`, `src/main.tsx`, `src/App.tsx`, `src/vite-env.d.ts`
 
 **Step 1:** Run `npm create vite@latest . -- --template react-ts`
@@ -32,6 +33,7 @@
 ### Task 2: Add ESLint, Prettier, configs
 
 **Files:**
+
 - Create: `eslint.config.js`, `.prettierrc.json`, `.prettierignore`
 - Modify: `package.json` (scripts, lint-staged, devDependencies)
 
@@ -52,6 +54,7 @@
 ### Task 3: Add Vitest + React Testing Library
 
 **Files:**
+
 - Modify: `vite.config.ts`, `package.json`
 - Create: `src/lib/example.test.ts` (smoke test)
 
@@ -68,6 +71,7 @@
 ### Task 4: Add Git hooks (Husky, lint-staged)
 
 **Files:**
+
 - Create: `.husky/pre-commit`, `.husky/pre-push`
 - Modify: `package.json` (prepare, lint-staged)
 
@@ -88,6 +92,7 @@
 ### Task 5: Add TypeScript types for DraftPick, Season, Team
 
 **Files:**
+
 - Create: `src/types.ts`
 - Create: `src/lib/types.test.ts`
 
@@ -106,6 +111,7 @@
 ### Task 6: Add 32-team metadata
 
 **Files:**
+
 - Create: `src/data/teams.ts` (TEAMS constant)
 - Create: `src/data/teams.test.ts`
 
@@ -120,6 +126,7 @@
 ### Task 7: Add mock JSON and data loader
 
 **Files:**
+
 - Create: `public/data/draft-2023.json` (minimal, 1–2 picks)
 - Create: `src/lib/loadData.ts` (fetch and parse)
 - Create: `src/lib/loadData.test.ts`
@@ -139,6 +146,7 @@
 ### Task 8: Implement classifyRole with tests
 
 **Files:**
+
 - Create: `src/lib/classifyRole.ts`
 - Create: `src/lib/classifyRole.test.ts`
 
@@ -155,6 +163,7 @@
 ### Task 9: Implement getPlayerRole (max across seasons)
 
 **Files:**
+
 - Create: `src/lib/getPlayerRole.ts`
 - Create: `src/lib/getPlayerRole.test.ts`
 
@@ -169,6 +178,7 @@
 ### Task 10: Implement getDraftClassMetrics
 
 **Files:**
+
 - Create: `src/lib/getDraftClassMetrics.ts`
 - Create: `src/lib/getDraftClassMetrics.test.ts`
 
@@ -183,6 +193,7 @@
 ### Task 11: Implement getFiveYearScore
 
 **Files:**
+
 - Create: `src/lib/getFiveYearScore.ts`
 - Create: `src/lib/getFiveYearScore.test.ts`
 
@@ -197,12 +208,13 @@
 ### Task 12: Implement update-data script
 
 **Files:**
+
 - Create: `scripts/update-data.ts`
 - Modify: `package.json` (update-data script, tsx dep)
 
 **Step 1:** Install: `npm install -D tsx`; add `csv-parse` or use built-in fetch + manual parse
 
-**Step 2:** Implement: fetch draft_picks.csv, snap_counts_{year}.csv, roster_{year}.csv from nflverse
+**Step 2:** Implement: fetch draft*picks.csv, snap_counts*{year}.csv, roster\_{year}.csv from nflverse
 
 **Step 3:** Transform: join, aggregate snap share, games played, retention
 
@@ -219,6 +231,7 @@
 ### Task 13: Team selector component
 
 **Files:**
+
 - Create: `src/components/TeamSelector.tsx`
 - Create: `src/components/TeamSelector.test.tsx`
 
@@ -233,6 +246,7 @@
 ### Task 14: Year range filter
 
 **Files:**
+
 - Create: `src/components/YearRangeFilter.tsx`
 - Create: `src/components/YearRangeFilter.test.tsx`
 
@@ -247,6 +261,7 @@
 ### Task 15: Draft class metrics card
 
 **Files:**
+
 - Create: `src/components/DraftClassCard.tsx`
 - Create: `src/components/DraftClassCard.test.tsx`
 
@@ -261,6 +276,7 @@
 ### Task 16: 5-year score card
 
 **Files:**
+
 - Create: `src/components/FiveYearScoreCard.tsx`
 - Create: `src/components/FiveYearScoreCard.test.tsx`
 
@@ -275,6 +291,7 @@
 ### Task 17: Player list with role badges
 
 **Files:**
+
 - Create: `src/components/PlayerList.tsx`
 - Create: `src/components/PlayerList.test.tsx`
 
@@ -289,6 +306,7 @@
 ### Task 18: Wire up App
 
 **Files:**
+
 - Modify: `src/App.tsx`
 
 **Step 1:** Integrate: TeamSelector, YearRangeFilter, load data, DraftClassCard(s), FiveYearScoreCard, PlayerList
@@ -306,6 +324,7 @@
 ### Task 19: GitHub Actions CI
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 **Step 1:** Add ci.yml from plan (lint, type-check, test, build)
@@ -317,6 +336,7 @@
 ### Task 20: GitHub Actions Deploy
 
 **Files:**
+
 - Create: `.github/workflows/deploy.yml`
 
 **Step 1:** Add deploy.yml (build, deploy-pages)
@@ -330,6 +350,7 @@
 ### Task 21: Ongoing season handling
 
 **Files:**
+
 - Modify: `src/lib/` (ensure partial teamGames handled)
 - Modify: `scripts/update-data.ts` (partial seasons)
 
@@ -344,6 +365,7 @@
 ### Task 22: README and acceptance check
 
 **Files:**
+
 - Create/Modify: `README.md`
 
 **Step 1:** Add: quick start, features, scripts, deploy

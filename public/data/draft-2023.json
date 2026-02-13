@@ -1,0 +1,39 @@
+{
+  "year": 2023,
+  "picks": [
+    {
+      "playerId": "p1",
+      "playerName": "Test Player",
+      "position": "WR",
+      "round": 1,
+      "overallPick": 5,
+      "teamId": "KC",
+      "seasons": [
+        {
+          "year": 2023,
+          "gamesPlayed": 15,
+          "teamGames": 17,
+          "snapShare": 0.72,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "p2",
+      "playerName": "Another Player",
+      "position": "QB",
+      "round": 2,
+      "overallPick": 38,
+      "teamId": "KC",
+      "seasons": [
+        {
+          "year": 2023,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0.95,
+          "retained": true
+        }
+      ]
+    }
+  ]
+}

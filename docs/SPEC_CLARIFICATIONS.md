@@ -61,21 +61,21 @@ Include with partial data. Metrics computed from available games. `teamGames` = 
 
 ## JSON Field Names
 
-| Field          | Type     |
-| -------------- | -------- |
-| playerId       | string   |
-| playerName     | string   |
-| position       | string   |
-| round          | number   |
-| overallPick    | number   |
-| teamId         | string   |
-| espnId         | string?  |
-| seasons        | Season[] |
+| Field       | Type     |
+| ----------- | -------- |
+| playerId    | string   |
+| playerName  | string   |
+| position    | string   |
+| round       | number   |
+| overallPick | number   |
+| teamId      | string   |
+| espnId      | string?  |
+| seasons     | Season[] |
 
-| Season field   | Type    |
-| -------------- | ------- |
-| year           | number  |
-| gamesPlayed    | number  |
-| teamGames      | number  |
-| snapShare      | number  |
-| retained       | boolean |
+| Season field | Type    |
+| ------------ | ------- |
+| year         | number  |
+| gamesPlayed  | number  |
+| teamGames    | number  |
+| snapShare    | number  |
+| retained     | boolean |
