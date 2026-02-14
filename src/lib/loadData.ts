@@ -2,9 +2,11 @@ import type { DraftClass } from '../types';
 
 /**
  * Load draft data for a given year from public/data/draft-{year}.json
+ * Uses import.meta.env.BASE_URL for GitHub Pages subpath deployment.
  */
 export async function loadData(year: string): Promise<DraftClass> {
-  const res = await fetch(`/data/draft-${year}.json`);
+  const base = import.meta.env.BASE_URL;
+  const res = await fetch(`${base}data/draft-${year}.json`);
   if (!res.ok) {
     throw new Error(`Failed to load draft data for ${year}: ${res.status}`);
   }
