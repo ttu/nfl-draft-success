@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { TeamSelector } from './components/TeamSelector';
 import { YearRangeFilter } from './components/YearRangeFilter';
 import { RoleFilter } from './components/RoleFilter';
+import { InfoView } from './components/InfoView';
 import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { DraftClassCard } from './components/DraftClassCard';
 import { FiveYearScoreCard } from './components/FiveYearScoreCard';
@@ -106,6 +107,7 @@ function App() {
     );
   }, [selectedTeam, yearRange, showRankingsView]);
   const [copyFeedback, setCopyFeedback] = useState(false);
+  const [showInfoView, setShowInfoView] = useState(false);
 
   const handleCopyLink = () => {
     const url = getShareableUrl(
@@ -311,8 +313,32 @@ function App() {
               </svg>
             )}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowInfoView(true)}
+            className="app-controls__copy-link"
+            aria-label="About"
+            title="About"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4M12 8h.01" />
+            </svg>
+          </button>
         </div>
       </header>
+
+      {showInfoView && <InfoView onClose={() => setShowInfoView(false)} />}
 
       {error && (
         <div role="alert" className="app-error">
