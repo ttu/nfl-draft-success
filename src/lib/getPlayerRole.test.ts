@@ -44,6 +44,27 @@ describe('getPlayerRole', () => {
     expect(getPlayerRole(pick)).toBe('non_contributor');
   });
 
+  it('handles ongoing season when teamGames < 17', () => {
+    const pick: DraftPick = {
+      playerId: 'p1',
+      playerName: 'Test',
+      position: 'WR',
+      round: 1,
+      overallPick: 5,
+      teamId: 'KC',
+      seasons: [
+        {
+          year: 2025,
+          gamesPlayed: 3,
+          teamGames: 5,
+          snapShare: 0.7,
+          retained: true,
+        },
+      ],
+    };
+    expect(getPlayerRole(pick)).toBe('core_starter');
+  });
+
   it('returns depth when best season is depth', () => {
     const pick: DraftPick = {
       playerId: 'p1',

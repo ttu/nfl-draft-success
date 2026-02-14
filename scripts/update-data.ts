@@ -219,6 +219,17 @@ async function main() {
   console.log('Fetching injuries (2009–' + MAX_SEASON + ')...');
   const injuryData = await loadInjuryData(injurySeasons);
 
+  /** Max games played by any player per season; for ongoing seasons < 17 */
+  const maxGamesBySeason = new Map<number, number>();
+  for (const [, seasonMap] of snapData) {
+    for (const [s, data] of seasonMap) {
+      maxGamesBySeason.set(
+        s,
+        Math.max(maxGamesBySeason.get(s) ?? 0, data.gamesPlayed),
+      );
+    }
+  }
+
   for (const year of YEARS) {
     console.log(`Processing ${year}...`);
 
@@ -266,7 +277,8 @@ async function main() {
         const data = playerSnaps?.get(s);
         const injData = playerInjuries?.get(s);
         const gamesPlayed = data?.gamesPlayed ?? 0;
-        const teamGames = 17;
+        const maxPlayed = maxGamesBySeason.get(s) ?? 17;
+        const teamGames = Math.max(1, Math.min(17, maxPlayed));
         const snapShare = data?.snapShare ?? 0;
         const injuryReportWeeks = injData?.injuryReportWeeks ?? 0;
         const primaryTeam = data?.primaryTeam ?? '';
