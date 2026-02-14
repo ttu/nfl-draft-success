@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run generate-og-image && tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "prepare": "husky",
     "update-data": "tsx scripts/update-data.ts",
+    "generate-og-image": "tsx scripts/generate-og-image.ts",
     "validate": "npm run format:check && npm run type-check && npm run lint && npm test && npm run build",
     "preview": "vite preview"
   },
@@ -41,6 +42,7 @@
     "jsdom": "^28.0.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
+    "sharp": "^0.33.5",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
