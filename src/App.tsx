@@ -1,34 +1,135 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import { useState, useEffect } from 'react';
+import { TeamSelector } from './components/TeamSelector';
+import { YearRangeFilter } from './components/YearRangeFilter';
+import { DraftClassCard } from './components/DraftClassCard';
+import { FiveYearScoreCard } from './components/FiveYearScoreCard';
+import { PlayerList } from './components/PlayerList';
+import { loadDataForYears } from './lib/loadData';
+import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
+import { getFiveYearScore } from './lib/getFiveYearScore';
+import type { DraftClass } from './types';
 import './App.css';
 
+const YEAR_MIN = 2018;
+const YEAR_MAX = 2025;
+const DEFAULT_TEAM = 'KC';
+
 function App() {
-  const [count, setCount] = useState(0);
+  const [selectedTeam, setSelectedTeam] = useState(DEFAULT_TEAM);
+  const [yearRange, setYearRange] = useState<[number, number]>([
+    YEAR_MIN,
+    YEAR_MAX,
+  ]);
+  const [draftClasses, setDraftClasses] = useState<DraftClass[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) {
+        setLoading(true);
+        setError(null);
+      }
+    });
+    const years = Array.from(
+      { length: yearRange[1] - yearRange[0] + 1 },
+      (_, i) => yearRange[0] + i,
+    );
+    loadDataForYears(years)
+      .then((data) => {
+        if (!cancelled) setDraftClasses(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : String(err));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [yearRange]);
+
+  const fiveYearScore =
+    draftClasses.length > 0
+      ? getFiveYearScore(draftClasses, selectedTeam)
+      : null;
+
+  const allTeamPicks = draftClasses.flatMap((dc) =>
+    dc.picks
+      .filter((p) => p.teamId === selectedTeam)
+      .map((p) => ({ pick: p, draftYear: dc.year })),
+  );
+  allTeamPicks.sort(
+    (a, b) =>
+      a.draftYear - b.draftYear || a.pick.overallPick - b.pick.overallPick,
+  );
+
+  const retainedPicks = allTeamPicks.filter(({ pick }) => {
+    const latestSeason = [...pick.seasons].sort((a, b) => b.year - a.year)[0];
+    return latestSeason?.retained === true;
+  });
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main className="app">
+      <header className="app-header">
+        <h1>NFL Draft Success</h1>
+        <div className="app-controls">
+          <TeamSelector value={selectedTeam} onChange={setSelectedTeam} />
+          <YearRangeFilter
+            min={YEAR_MIN}
+            max={YEAR_MAX}
+            value={yearRange}
+            onChange={setYearRange}
+          />
+        </div>
+      </header>
+
+      {error && (
+        <div role="alert" className="app-error">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <p>Loading draft data…</p>
+      ) : (
+        <>
+          {fiveYearScore && (
+            <section className="app-score">
+              <FiveYearScoreCard
+                score={fiveYearScore}
+                yearCount={yearRange[1] - yearRange[0] + 1}
+              />
+            </section>
+          )}
+
+          <section
+            className="app-draft-cards"
+            aria-label="Draft class metrics by year"
+          >
+            {draftClasses.map((dc) => {
+              const metrics = getDraftClassMetrics(dc, selectedTeam);
+              return (
+                <DraftClassCard
+                  key={dc.year}
+                  year={dc.year}
+                  metrics={metrics}
+                />
+              );
+            })}
+          </section>
+
+          <section className="app-players" aria-label="Draft picks">
+            <h2>Players</h2>
+            <PlayerList picks={retainedPicks} />
+          </section>
+        </>
+      )}
+    </main>
   );
 }
 

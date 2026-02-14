@@ -72,14 +72,14 @@
       "position": "DE",
       "round": 1,
       "overallPick": 2,
-      "teamId": "SFO",
+      "teamId": "SF",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.763157894736842,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -87,14 +87,14 @@
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.435,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 20,
           "teamGames": 17,
           "snapShare": 0.7609999999999999,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 10
         },
         {
@@ -102,7 +102,7 @@
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.7421052631578948,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 8
         },
         {
@@ -110,7 +110,7 @@
           "gamesPlayed": 20,
           "teamGames": 17,
           "snapShare": 0.779,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -118,7 +118,7 @@
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.7849999999999999,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 11
         },
         {
@@ -126,7 +126,7 @@
           "gamesPlayed": 3,
           "teamGames": 17,
           "snapShare": 0.64,
-          "retained": false
+          "retained": true
         }
       ]
     },
@@ -265,14 +265,14 @@
       "position": "LB",
       "round": 1,
       "overallPick": 5,
-      "teamId": "TAM",
+      "teamId": "TB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 13,
           "teamGames": 17,
           "snapShare": 0.9092307692307693,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -280,14 +280,14 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 1,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.9526315789473683,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -295,14 +295,14 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.9633333333333334,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2023,
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.8887499999999999,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 9
         },
         {
@@ -709,14 +709,14 @@
       "position": "LB",
       "round": 1,
       "overallPick": 12,
-      "teamId": "GNB",
+      "teamId": "GB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.22,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -724,7 +724,7 @@
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.5011764705882353,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 7
         },
         {
@@ -732,7 +732,7 @@
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.6788235294117646,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -740,7 +740,7 @@
           "gamesPlayed": 9,
           "teamGames": 17,
           "snapShare": 0.7144444444444445,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -748,7 +748,7 @@
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.5436842105263158,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 8
         },
         {
@@ -756,14 +756,14 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.5827777777777777,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2025,
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.6217647058823529,
-          "retained": false
+          "retained": true
         }
       ]
     },
@@ -1276,14 +1276,14 @@
       "position": "S",
       "round": 1,
       "overallPick": 21,
-      "teamId": "GNB",
+      "teamId": "GB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.9500000000000001,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -1291,7 +1291,7 @@
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.9217647058823528,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 7
         },
         {
@@ -1299,7 +1299,7 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.9422222222222221,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -1307,7 +1307,7 @@
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.83375,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -1315,7 +1315,7 @@
           "gamesPlayed": 12,
           "teamGames": 17,
           "snapShare": 0.8791666666666668,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 9
         },
         {
@@ -1963,14 +1963,14 @@
       "position": "WR",
       "round": 1,
       "overallPick": 32,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 8,
           "teamGames": 17,
           "snapShare": 0.48000000000000004,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -1978,7 +1978,7 @@
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.6628571428571429,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 8
         },
         {
@@ -1986,7 +1986,7 @@
           "gamesPlayed": 13,
           "teamGames": 17,
           "snapShare": 0.396923076923077,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 5
         },
         {
@@ -2213,14 +2213,14 @@
       "position": "WR",
       "round": 2,
       "overallPick": 36,
-      "teamId": "SFO",
+      "teamId": "SF",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.735,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -2228,7 +2228,7 @@
           "gamesPlayed": 7,
           "teamGames": 17,
           "snapShare": 0.6442857142857142,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 11
         },
         {
@@ -2236,7 +2236,7 @@
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.791578947368421,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 5
         },
         {
@@ -2244,7 +2244,7 @@
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.7843749999999999,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 10
         },
         {
@@ -2252,7 +2252,7 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.7072222222222222,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -2260,7 +2260,7 @@
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.7313333333333334,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -2396,14 +2396,14 @@
       "position": "CB",
       "round": 2,
       "overallPick": 39,
-      "teamId": "TAM",
+      "teamId": "TB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.662,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -2411,7 +2411,7 @@
           "gamesPlayed": 20,
           "teamGames": 17,
           "snapShare": 0.8440000000000001,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -2419,7 +2419,7 @@
           "gamesPlayed": 10,
           "teamGames": 17,
           "snapShare": 0.759,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -2427,7 +2427,7 @@
           "gamesPlayed": 10,
           "teamGames": 17,
           "snapShare": 0.7509999999999999,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 8
         },
         {
@@ -2708,56 +2708,56 @@
       "position": "C",
       "round": 2,
       "overallPick": 44,
-      "teamId": "GNB",
+      "teamId": "GB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.9558823529411765,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.9983333333333333,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 8,
           "teamGames": 17,
           "snapShare": 0.97875,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.9926666666666667,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2023,
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.9347058823529412,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2024,
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.9372222222222221,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2025,
           "gamesPlayed": 9,
           "teamGames": 17,
           "snapShare": 0.9333333333333333,
-          "retained": false
+          "retained": true
         }
       ]
     },
@@ -2767,14 +2767,14 @@
       "position": "CB",
       "round": 2,
       "overallPick": 45,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 7,
           "teamGames": 17,
           "snapShare": 0.20571428571428574,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -2782,21 +2782,21 @@
           "gamesPlayed": 11,
           "teamGames": 17,
           "snapShare": 0.24818181818181817,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 13,
           "teamGames": 17,
           "snapShare": 0.3738461538461539,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2023,
@@ -2951,56 +2951,56 @@
       "position": "C",
       "round": 2,
       "overallPick": 48,
-      "teamId": "NOR",
+      "teamId": "NO",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.9952941176470589,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.9972222222222222,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 12,
           "teamGames": 17,
           "snapShare": 0.9233333333333333,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
           "gamesPlayed": 13,
           "teamGames": 17,
           "snapShare": 0.95,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2023,
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.9941176470588234,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2024,
           "gamesPlayed": 7,
           "teamGames": 17,
           "snapShare": 0.6785714285714286,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2025,
           "gamesPlayed": 7,
           "teamGames": 17,
           "snapShare": 0.9642857142857143,
-          "retained": false
+          "retained": true
         }
       ]
     },
@@ -3451,14 +3451,14 @@
       "position": "WR",
       "round": 2,
       "overallPick": 56,
-      "teamId": "KAN",
+      "teamId": "KC",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.4189473684210527,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -3466,7 +3466,7 @@
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.45947368421052626,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -3474,7 +3474,7 @@
           "gamesPlayed": 20,
           "teamGames": 17,
           "snapShare": 0.5105000000000001,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -3482,7 +3482,7 @@
           "gamesPlayed": 9,
           "teamGames": 17,
           "snapShare": 0.4977777777777777,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 11
         },
         {
@@ -3490,7 +3490,7 @@
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.2514285714285714,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -3498,7 +3498,7 @@
           "gamesPlayed": 11,
           "teamGames": 17,
           "snapShare": 0.15,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 9
         },
         {
@@ -3890,21 +3890,21 @@
       "position": "S",
       "round": 2,
       "overallPick": 63,
-      "teamId": "KAN",
+      "teamId": "KC",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.9056250000000001,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.6636842105263158,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -3912,7 +3912,7 @@
           "gamesPlayed": 20,
           "teamGames": 17,
           "snapShare": 0.7980000000000002,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -3920,7 +3920,7 @@
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.9600000000000001,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -4149,14 +4149,14 @@
       "position": "WR",
       "round": 3,
       "overallPick": 67,
-      "teamId": "SFO",
+      "teamId": "SF",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -4164,14 +4164,14 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -4179,7 +4179,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2023,
@@ -4648,14 +4648,14 @@
       "position": "TE",
       "round": 3,
       "overallPick": 75,
-      "teamId": "GNB",
+      "teamId": "GB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 7,
           "teamGames": 17,
           "snapShare": 0.21857142857142858,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -4663,7 +4663,7 @@
           "gamesPlayed": 12,
           "teamGames": 17,
           "snapShare": 0.25333333333333335,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -4774,21 +4774,21 @@
       "position": "DE",
       "round": 3,
       "overallPick": 77,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.2741176470588235,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.58375,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -4796,7 +4796,7 @@
           "gamesPlayed": 9,
           "teamGames": 17,
           "snapShare": 0.20444444444444448,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -5206,14 +5206,14 @@
       "position": "DT",
       "round": 3,
       "overallPick": 84,
-      "teamId": "KAN",
+      "teamId": "KC",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.31466666666666676,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -5221,7 +5221,7 @@
           "gamesPlayed": 3,
           "teamGames": 17,
           "snapShare": 0.3466666666666667,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 5
         },
         {
@@ -5229,7 +5229,7 @@
           "gamesPlayed": 7,
           "teamGames": 17,
           "snapShare": 0.31,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 5
         },
         {
@@ -5237,7 +5237,7 @@
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.3994736842105263,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -5391,14 +5391,14 @@
       "position": "RB",
       "round": 3,
       "overallPick": 87,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 1,
           "teamGames": 17,
           "snapShare": 0.06,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -5406,7 +5406,7 @@
           "gamesPlayed": 10,
           "teamGames": 17,
           "snapShare": 0.40099999999999997,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 7
         },
         {
@@ -5414,7 +5414,7 @@
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.40749999999999986,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 10
         },
         {
@@ -5422,7 +5422,7 @@
           "gamesPlayed": 11,
           "teamGames": 17,
           "snapShare": 0.3409090909090909,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 8
         },
         {
@@ -5822,14 +5822,14 @@
       "position": "CB",
       "round": 3,
       "overallPick": 94,
-      "teamId": "TAM",
+      "teamId": "TB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 10,
           "teamGames": 17,
           "snapShare": 0.506,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 5
         },
         {
@@ -5837,7 +5837,7 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.7866666666666666,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -5845,7 +5845,7 @@
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.7158823529411764,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 10
         },
         {
@@ -5853,7 +5853,7 @@
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.908,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -5861,7 +5861,7 @@
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.8586666666666667,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 7
         },
         {
@@ -5869,7 +5869,7 @@
           "gamesPlayed": 13,
           "teamGames": 17,
           "snapShare": 0.8684615384615385,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 7
         },
         {
@@ -5877,7 +5877,7 @@
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.7414285714285713,
-          "retained": false
+          "retained": true
         }
       ]
     },
@@ -6140,14 +6140,14 @@
       "position": "S",
       "round": 3,
       "overallPick": 99,
-      "teamId": "TAM",
+      "teamId": "TB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.5633333333333334,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -6155,7 +6155,7 @@
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.29312499999999997,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -6163,7 +6163,7 @@
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.571875,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -6171,7 +6171,7 @@
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.9371428571428572,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 10
         },
         {
@@ -6187,7 +6187,7 @@
           "gamesPlayed": 8,
           "teamGames": 17,
           "snapShare": 0.50125,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -6265,7 +6265,7 @@
       "position": "T",
       "round": 3,
       "overallPick": 101,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
@@ -6279,28 +6279,28 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 3,
           "teamGames": 17,
           "snapShare": 0.4366666666666667,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
           "gamesPlayed": 7,
           "teamGames": 17,
           "snapShare": 0.46857142857142847,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2023,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2024,
@@ -6507,14 +6507,14 @@
       "position": "S",
       "round": 4,
       "overallPick": 105,
-      "teamId": "NOR",
+      "teamId": "NO",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.5352941176470589,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -6522,14 +6522,14 @@
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.8782352941176471,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 12,
           "teamGames": 17,
           "snapShare": 0.8099999999999999,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -6633,14 +6633,14 @@
       "position": "DE",
       "round": 4,
       "overallPick": 107,
-      "teamId": "TAM",
+      "teamId": "TB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 9,
           "teamGames": 17,
           "snapShare": 0.23444444444444448,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 8
         },
         {
@@ -6648,14 +6648,14 @@
           "gamesPlayed": 20,
           "teamGames": 17,
           "snapShare": 0.28150000000000003,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.31526315789473686,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -6663,7 +6663,7 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.581111111111111,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -6671,7 +6671,7 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.3761111111111111,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -6679,7 +6679,7 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.5338888888888889,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -6687,7 +6687,7 @@
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.41333333333333333,
-          "retained": false
+          "retained": true
         }
       ]
     },
@@ -6822,28 +6822,28 @@
       "position": "P",
       "round": 4,
       "overallPick": 110,
-      "teamId": "SFO",
+      "teamId": "SF",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 1,
           "teamGames": 17,
           "snapShare": 0.01,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 1,
           "teamGames": 17,
           "snapShare": 0.03,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -6851,7 +6851,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -6859,14 +6859,14 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2024,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -6874,7 +6874,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         }
       ]
     },
@@ -7313,28 +7313,28 @@
       "position": "G",
       "round": 4,
       "overallPick": 118,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.55,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
@@ -8224,28 +8224,28 @@
       "position": "QB",
       "round": 4,
       "overallPick": 133,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 3,
           "teamGames": 17,
           "snapShare": 0.06333333333333334,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 5,
           "teamGames": 17,
           "snapShare": 0.28400000000000003,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
@@ -8953,14 +8953,14 @@
       "position": "K",
       "round": 5,
       "overallPick": 145,
-      "teamId": "TAM",
+      "teamId": "TB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.015,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -9140,21 +9140,21 @@
       "position": "LB",
       "round": 5,
       "overallPick": 148,
-      "teamId": "SFO",
+      "teamId": "SF",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 19,
           "teamGames": 17,
           "snapShare": 0.6931578947368421,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 13,
           "teamGames": 17,
           "snapShare": 0.8215384615384616,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 5
         },
         {
@@ -9162,7 +9162,7 @@
           "gamesPlayed": 6,
           "teamGames": 17,
           "snapShare": 0.6083333333333333,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 10
         },
         {
@@ -9170,7 +9170,7 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.8894444444444444,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -9178,7 +9178,7 @@
           "gamesPlayed": 18,
           "teamGames": 17,
           "snapShare": 0.8638888888888888,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 9
         },
         {
@@ -9186,7 +9186,7 @@
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.26,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 5
         },
         {
@@ -9267,21 +9267,21 @@
       "position": "DT",
       "round": 5,
       "overallPick": 150,
-      "teamId": "GNB",
+      "teamId": "GB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.11857142857142859,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.4386666666666666,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -9289,7 +9289,7 @@
           "gamesPlayed": 12,
           "teamGames": 17,
           "snapShare": 0.5041666666666668,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -9297,7 +9297,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2023,
@@ -9822,14 +9822,14 @@
       "position": "DT",
       "round": 5,
       "overallPick": 159,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 4,
           "teamGames": 17,
           "snapShare": 0.16750000000000004,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -9837,7 +9837,7 @@
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.4842857142857144,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 6
         },
         {
@@ -9845,7 +9845,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
@@ -10066,28 +10066,28 @@
       "position": "P",
       "round": 5,
       "overallPick": 163,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 1,
           "teamGames": 17,
           "snapShare": 0.01,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -10095,7 +10095,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -10103,7 +10103,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2024,
@@ -10863,7 +10863,7 @@
       "position": "TE",
       "round": 6,
       "overallPick": 176,
-      "teamId": "SFO",
+      "teamId": "SF",
       "seasons": [
         {
           "year": 2019,
@@ -10924,21 +10924,21 @@
       "position": "S",
       "round": 6,
       "overallPick": 177,
-      "teamId": "NOR",
+      "teamId": "NO",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.28500000000000003,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
@@ -11291,28 +11291,28 @@
       "position": "T",
       "round": 6,
       "overallPick": 183,
-      "teamId": "SFO",
+      "teamId": "SF",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 12,
           "teamGames": 17,
           "snapShare": 0.6525,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 9,
           "teamGames": 17,
           "snapShare": 0.4211111111111111,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
@@ -11409,14 +11409,14 @@
       "position": "CB",
       "round": 6,
       "overallPick": 185,
-      "teamId": "GNB",
+      "teamId": "GB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 1,
           "teamGames": 17,
           "snapShare": 0.06,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -11424,7 +11424,7 @@
           "gamesPlayed": 8,
           "teamGames": 17,
           "snapShare": 0.21625000000000003,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -11432,7 +11432,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
@@ -11965,14 +11965,14 @@
       "position": "RB",
       "round": 6,
       "overallPick": 194,
-      "teamId": "GNB",
+      "teamId": "GB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.07500000000000001,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -11980,14 +11980,14 @@
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.055,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
@@ -12209,7 +12209,7 @@
       "position": "CB",
       "round": 6,
       "overallPick": 198,
-      "teamId": "SFO",
+      "teamId": "SF",
       "seasons": [
         {
           "year": 2019,
@@ -12387,14 +12387,14 @@
       "position": "CB",
       "round": 6,
       "overallPick": 201,
-      "teamId": "KAN",
+      "teamId": "KC",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 11,
           "teamGames": 17,
           "snapShare": 0.32,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -12402,7 +12402,7 @@
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.5346666666666667,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 5
         },
         {
@@ -12410,7 +12410,7 @@
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.6521428571428572,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 7
         },
         {
@@ -12418,7 +12418,7 @@
           "gamesPlayed": 6,
           "teamGames": 17,
           "snapShare": 0.935,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 2
         },
         {
@@ -12426,7 +12426,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2024,
@@ -12815,14 +12815,14 @@
       "position": "WR",
       "round": 6,
       "overallPick": 208,
-      "teamId": "TAM",
+      "teamId": "TB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 10,
           "teamGames": 17,
           "snapShare": 0.24700000000000003,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 4
         },
         {
@@ -12830,7 +12830,7 @@
           "gamesPlayed": 20,
           "teamGames": 17,
           "snapShare": 0.366,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 9
         },
         {
@@ -12838,14 +12838,14 @@
           "gamesPlayed": 10,
           "teamGames": 17,
           "snapShare": 0.29300000000000004,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.24799999999999994,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -13178,21 +13178,21 @@
       "position": "RB",
       "round": 6,
       "overallPick": 214,
-      "teamId": "KAN",
+      "teamId": "KC",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.13428571428571429,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 6,
           "teamGames": 17,
           "snapShare": 0.2316666666666667,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -13200,7 +13200,7 @@
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
@@ -13238,7 +13238,7 @@
       "position": "DT",
       "round": 7,
       "overallPick": 215,
-      "teamId": "TAM",
+      "teamId": "TB",
       "seasons": [
         {
           "year": 2019,
@@ -13297,42 +13297,42 @@
       "position": "G",
       "round": 7,
       "overallPick": 216,
-      "teamId": "KAN",
+      "teamId": "KC",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 4,
           "teamGames": 17,
           "snapShare": 0.03,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 15,
           "teamGames": 17,
           "snapShare": 0.8606666666666667,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 10,
           "teamGames": 17,
           "snapShare": 0.12500000000000003,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2022,
           "gamesPlayed": 14,
           "teamGames": 17,
           "snapShare": 0.30500000000000005,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2023,
           "gamesPlayed": 10,
           "teamGames": 17,
           "snapShare": 0.355,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2024,
@@ -13896,14 +13896,14 @@
       "position": "LB",
       "round": 7,
       "overallPick": 226,
-      "teamId": "GNB",
+      "teamId": "GB",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -13911,14 +13911,14 @@
           "gamesPlayed": 8,
           "teamGames": 17,
           "snapShare": 0.39625,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.21999999999999997,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -14200,7 +14200,7 @@
       "position": "TE",
       "round": 7,
       "overallPick": 231,
-      "teamId": "NOR",
+      "teamId": "NO",
       "seasons": [
         {
           "year": 2019,
@@ -14977,28 +14977,28 @@
       "position": "LB",
       "round": 7,
       "overallPick": 244,
-      "teamId": "NOR",
+      "teamId": "NO",
       "seasons": [
         {
           "year": 2019,
           "gamesPlayed": 0,
           "teamGames": 17,
           "snapShare": 0,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2020,
           "gamesPlayed": 3,
           "teamGames": 17,
           "snapShare": 0.06333333333333334,
-          "retained": false
+          "retained": true
         },
         {
           "year": 2021,
           "gamesPlayed": 13,
           "teamGames": 17,
           "snapShare": 0.22692307692307695,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 3
         },
         {
@@ -15006,7 +15006,7 @@
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.5405882352941176,
-          "retained": false,
+          "retained": true,
           "injuryReportWeeks": 1
         },
         {
@@ -15461,7 +15461,7 @@
       "position": "CB",
       "round": 7,
       "overallPick": 252,
-      "teamId": "NWE",
+      "teamId": "NE",
       "seasons": [
         {
           "year": 2019,

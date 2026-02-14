@@ -33,6 +33,13 @@ const FRANCHISE_MAP: Record<string, string> = {
   STL: 'LAR',
   SD: 'LAC',
   OAK: 'LV',
+  /** nflverse uses different abbrevs; normalize to match teams.ts */
+  KAN: 'KC',
+  GNB: 'GB',
+  NWE: 'NE',
+  NOR: 'NO',
+  SFO: 'SF',
+  TAM: 'TB',
 };
 
 function normalizeTeam(team: string): string {

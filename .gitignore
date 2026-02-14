@@ -1,30 +1,55 @@
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
 # Dependencies
 node_modules
-
-# Build
 dist
 dist-ssr
-build
+*.local
+
+# TypeScript
+*.tsbuildinfo
 
 # Testing
 coverage
-*.lcov
+.nyc_output
+test-results
+playwright-report
+playwright/.cache
+reports/mutation
+.stryker-tmp
 
-# Environment
-.env
-.env.*
-!.env.example
-
-# IDE
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
 .idea
-.vscode
-*.swp
-*.swo
-
-# OS
 .DS_Store
-Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Logs
-*.log
-npm-debug.log*
+# Git worktrees
+.worktrees
+
+# Personal AI agent workflows
+AGENTS.local.md
+.claude/settings.local.json
+.claude/*.local.json
+*storybook.log
+storybook-static
+
+# AI-generated context files (root only)
+/AI_CONTEXT.md
+/TEST_FAILURES.md
+/DECISIONS.md
+/HANDOFF.md
