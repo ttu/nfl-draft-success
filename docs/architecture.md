@@ -18,13 +18,15 @@ From [emergency-supply-tracker](https://github.com/ttu/emergency-supply-tracker)
 
 ```
 src/
+  types.ts        # TypeScript interfaces (DraftPick, Season, Role, etc.)
   components/     # React components
   lib/            # Calculation logic (role classification, metrics)
   data/           # Team metadata, data loading helpers
 public/
   data/           # JSON files (draft-2018.json, etc.)
 scripts/
-  update-data.ts  # Fetch nflverse, transform, write JSON
+  update-data.ts      # Fetch nflverse, transform, write JSON
+  generate-og-image.ts # Generate OG image for social sharing
 ```
 
 ## Build & Runtime

@@ -72,12 +72,14 @@ Include with partial data. Metrics computed from available games. `teamGames` = 
 | overallPick | number   |
 | teamId      | string   |
 | espnId      | string?  |
+| headshotUrl | string?  |
 | seasons     | Season[] |
 
-| Season field | Type    |
-| ------------ | ------- |
-| year         | number  |
-| gamesPlayed  | number  |
-| teamGames    | number  |
-| snapShare    | number  |
-| retained     | boolean |
+| Season field      | Type    |
+| ----------------- | ------- |
+| year              | number  |
+| gamesPlayed       | number  |
+| teamGames         | number  |
+| snapShare         | number  |
+| retained          | boolean |
+| injuryReportWeeks | number? |

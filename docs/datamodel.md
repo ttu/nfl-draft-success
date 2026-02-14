@@ -1,6 +1,6 @@
 # Data Model
 
-Data structures for `/data/*.json` and TypeScript types.
+Data structures for `public/data/draft-{year}.json` and TypeScript types in `src/types.ts`.
 
 ## Schema Overview
 
@@ -8,10 +8,8 @@ Data structures for `/data/*.json` and TypeScript types.
 erDiagram
     DraftClass ||--o{ DraftPick : contains
     DraftPick ||--o{ Season : has
-    Team ||--o{ DraftClass : drafts
 
     DraftClass {
-        string teamId
         int year
     }
 
@@ -21,6 +19,7 @@ erDiagram
         string position
         int round
         int overallPick
+        string teamId
     }
 
     Season {
@@ -29,13 +28,20 @@ erDiagram
         int teamGames
         float snapShare
         boolean retained
-        int injuryReportWeeks
+        int injuryReportWeeks_optional
     }
 ```
 
 ## TypeScript Types
 
 ```ts
+export type Role =
+  | 'core_starter'
+  | 'starter_when_healthy'
+  | 'significant_contributor'
+  | 'depth'
+  | 'non_contributor';
+
 export interface Season {
   year: number;
   gamesPlayed: number;
@@ -54,6 +60,8 @@ export interface DraftPick {
   overallPick: number;
   teamId: string;
   espnId?: string;
+  /** NFL headshot URL from nflverse players */
+  headshotUrl?: string;
   seasons: Season[];
 }
 
@@ -89,6 +97,7 @@ Team-centric view filters client-side.
       "overallPick": 10,
       "teamId": "KC",
       "espnId": "3139477",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/...",
       "seasons": [
         {
           "year": 2017,
@@ -102,7 +111,8 @@ Team-centric view filters client-side.
           "gamesPlayed": 16,
           "teamGames": 16,
           "snapShare": 0.98,
-          "retained": true
+          "retained": true,
+          "injuryReportWeeks": 2
         }
       ]
     }

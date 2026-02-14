@@ -14,7 +14,7 @@ draft success using:
 - Retention status
 
 The site must: - Support all 32 NFL teams - Show draft classes for a
-configurable year range (default: 2018--2024) - Classify player roles
+configurable year range (default: 2018--2025) - Classify player roles
 using snap share + availability - Calculate team-level draft success
 metrics - Load all data from version-controlled JSON files - Require no
 backend or database
@@ -72,14 +72,13 @@ For each draft class:
 
 Role weights:
 
-Role Weight
-
----
-
-Core Starter 3
-Significant Contributor 2
-Depth 1
-Non-Contributor 0
+| Role                    | Weight |
+| ----------------------- | ------ |
+| Core Starter            | 3      |
+| Starter when healthy    | 3      |
+| Significant Contributor | 2      |
+| Depth                   | 1      |
+| Non-Contributor         | 0      |
 
 Score per player = highest role weight.
 

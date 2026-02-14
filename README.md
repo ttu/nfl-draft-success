@@ -54,6 +54,10 @@ npm run build
 npm run preview
 ```
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, conventions, and PR workflow.
+
 ## Acceptance
 
 - [x] 32 teams supported
