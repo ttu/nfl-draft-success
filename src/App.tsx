@@ -7,19 +7,46 @@ import { PlayerList } from './components/PlayerList';
 import { loadDataForYears } from './lib/loadData';
 import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
 import { getFiveYearScore } from './lib/getFiveYearScore';
+import { loadPreferences, savePreferences } from './lib/storage';
+import { TEAMS } from './data/teams';
 import type { DraftClass } from './types';
 import './App.css';
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2025;
-const DEFAULT_TEAM = 'KC';
+const DEFAULT_TEAM = 'SEA';
+const DEFAULT_YEAR_MIN = 2021;
+
+const validTeamIds = new Set(TEAMS.map((t) => t.id));
+
+let cachedPrefs: ReturnType<typeof loadPreferences> | null = null;
+function getInitialPreferences() {
+  cachedPrefs ??= loadPreferences(
+    DEFAULT_TEAM,
+    DEFAULT_YEAR_MIN,
+    YEAR_MAX,
+    { min: YEAR_MIN, max: YEAR_MAX },
+    validTeamIds,
+  );
+  return cachedPrefs;
+}
 
 function App() {
-  const [selectedTeam, setSelectedTeam] = useState(DEFAULT_TEAM);
-  const [yearRange, setYearRange] = useState<[number, number]>([
-    YEAR_MIN,
-    YEAR_MAX,
-  ]);
+  const [selectedTeam, setSelectedTeam] = useState(
+    () => getInitialPreferences().team,
+  );
+  const [yearRange, setYearRange] = useState<[number, number]>(() => {
+    const p = getInitialPreferences();
+    return [p.yearMin, p.yearMax];
+  });
+
+  useEffect(() => {
+    savePreferences({
+      team: selectedTeam,
+      yearMin: yearRange[0],
+      yearMax: yearRange[1],
+    });
+  }, [selectedTeam, yearRange]);
   const [draftClasses, setDraftClasses] = useState<DraftClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
