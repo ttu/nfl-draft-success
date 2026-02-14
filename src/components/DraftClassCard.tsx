@@ -26,8 +26,12 @@ export function DraftClassCard({ year, metrics }: DraftClassCardProps) {
       <dl className="draft-class-card__breakdown">
         <dt>Core starters</dt>
         <dd>{coreStarterCount}</dd>
-        <dt>Starters when healthy</dt>
-        <dd>{starterWhenHealthyCount}</dd>
+        {starterWhenHealthyCount > 0 && (
+          <>
+            <dt>Starters when healthy</dt>
+            <dd>{starterWhenHealthyCount}</dd>
+          </>
+        )}
         <dt>Significant contributors</dt>
         <dd>{significantContributorCount}</dd>
         <dt>Depth</dt>

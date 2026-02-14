@@ -39,4 +39,18 @@ describe('DraftClassCard', () => {
     ]);
     expect(screen.getByText('6')).toBeInTheDocument();
   });
+
+  it('hides Starters when healthy when count is 0', () => {
+    render(
+      <DraftClassCard
+        year={2022}
+        metrics={{
+          ...mockMetrics,
+          starterWhenHealthyCount: 0,
+        }}
+      />,
+    );
+    expect(screen.getByText('Core starters')).toBeInTheDocument();
+    expect(screen.queryByText('Starters when healthy')).not.toBeInTheDocument();
+  });
 });
