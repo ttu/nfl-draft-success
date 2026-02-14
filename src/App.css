@@ -135,7 +135,7 @@
 .app-score dl {
   margin: 0;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr auto;
   gap: 0.5rem 1.25rem;
 }
 
@@ -148,13 +148,26 @@
 .app-score dd {
   margin: 0;
   font-weight: 500;
+  text-align: right;
+  min-width: 3.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.draft-score__value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.draft-score__number {
+  display: block;
 }
 
 .draft-score__rank {
   font-size: 0.9em;
   font-weight: 500;
   color: #888;
-  margin-left: 0.5em;
   padding: 0;
   background: none;
   border: none;
@@ -169,6 +182,16 @@
 
 .draft-score__rank:disabled {
   cursor: default;
+}
+
+.app-score__total-label,
+.app-score__total-value {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.app-score__total-value {
+  color: inherit;
 }
 
 /* Team rankings view */
@@ -288,14 +311,14 @@
 
 .draft-class-card__picks {
   margin-bottom: 0.875rem;
-  font-size: 0.875rem;
-  color: #888;
+  font-size: 1.125rem;
+  font-weight: 700;
 }
 
 .draft-class-card__breakdown {
   margin: 0;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr auto;
   gap: 0.4rem 1rem;
 }
 
@@ -308,6 +331,9 @@
 .draft-class-card__breakdown dd {
   margin: 0;
   font-weight: 500;
+  text-align: right;
+  min-width: 2rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .draft-class-card__retained {
@@ -325,6 +351,9 @@
 
 .draft-class-card__retained span:last-child {
   font-weight: 500;
+  min-width: 2rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .app-players__header {
@@ -772,6 +801,11 @@
     color: #6c757d;
   }
 
+  .app-score__total-label,
+  .app-score__total-value {
+    color: #212529;
+  }
+
   .draft-score__rank {
     color: #6c757d;
   }
@@ -852,7 +886,7 @@
   }
 
   .draft-class-card__picks {
-    color: #6c757d;
+    color: #212529;
   }
 
   .draft-class-card__breakdown dt {
