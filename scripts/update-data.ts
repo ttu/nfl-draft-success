@@ -197,6 +197,20 @@ async function loadInjuryData(
   return result;
 }
 
+/** Load pfr_id -> headshot URL from nflverse players */
+async function loadPlayerHeadshots(): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  const url = `${BASE}/players/players.csv`;
+  const csv = await fetchCsv(url);
+  const rows = parseCsv(csv);
+  for (const row of rows) {
+    const pfrId = (row.pfr_id ?? '').trim();
+    const headshot = (row.headshot ?? '').trim();
+    if (pfrId && headshot) result.set(pfrId, headshot);
+  }
+  return result;
+}
+
 async function main() {
   const outDir = path.join(process.cwd(), 'public', 'data');
   fs.mkdirSync(outDir, { recursive: true });
@@ -204,6 +218,9 @@ async function main() {
   console.log('Fetching draft_picks...');
   const draftCsv = await fetchCsv(`${BASE}/draft_picks/draft_picks.csv`);
   const draftRows = parseCsv(draftCsv);
+
+  console.log('Fetching player headshots...');
+  const headshots = await loadPlayerHeadshots();
 
   const snapSeasons = Array.from(
     { length: MAX_SEASON - 2012 + 1 },
@@ -245,6 +262,7 @@ async function main() {
       overallPick: number;
       teamId: string;
       espnId?: string;
+      headshotUrl?: string;
       seasons: Array<{
         year: number;
         gamesPlayed: number;
@@ -328,6 +346,7 @@ async function main() {
         });
       }
 
+      const headshotUrl = pfrId ? headshots.get(pfrId) : undefined;
       picks.push({
         playerId: pfrId || `unknown-${year}-${picks.length}`,
         playerName:
@@ -337,6 +356,7 @@ async function main() {
         overallPick: parseInt(row.pick ?? row.overall ?? '0', 10) || 1,
         teamId,
         ...(espnId ? { espnId } : {}),
+        ...(headshotUrl ? { headshotUrl } : {}),
         seasons,
       });
     }

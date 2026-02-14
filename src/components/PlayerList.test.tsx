@@ -48,10 +48,14 @@ const mockPicks = [
 
 describe('PlayerList', () => {
   it('renders players with role labels, draft year, and position', () => {
-    render(<PlayerList picks={mockPicks} />);
-    expect(screen.getByText(/Patrick Mahomes · 2017 · QB/)).toBeInTheDocument();
-    expect(screen.getByText(/Backup QB · 2018 · QB/)).toBeInTheDocument();
-    expect(screen.getByText('Core Starter')).toBeInTheDocument();
+    render(<PlayerList picks={mockPicks} teamId="KC" />);
+    expect(screen.getByText('Patrick Mahomes')).toBeInTheDocument();
+    expect(screen.getByText('Backup QB')).toBeInTheDocument();
+    expect(screen.getByText('2017 RD 1')).toBeInTheDocument();
+    expect(screen.getByText('2018 RD 7')).toBeInTheDocument();
+    expect(screen.getByText(/QB · Pick 10/)).toBeInTheDocument();
+    expect(screen.getByText(/QB · Pick 245/)).toBeInTheDocument();
     expect(screen.getByText('Non Contributor')).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
   });
 });

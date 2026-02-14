@@ -125,7 +125,7 @@ function App() {
 
           <section className="app-players" aria-label="Draft picks">
             <h2>Players</h2>
-            <PlayerList picks={retainedPicks} />
+            <PlayerList picks={retainedPicks} teamId={selectedTeam} />
           </section>
         </>
       )}

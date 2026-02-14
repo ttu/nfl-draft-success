@@ -23,6 +23,8 @@ export interface DraftPick {
   overallPick: number;
   teamId: string;
   espnId?: string;
+  /** NFL headshot URL from nflverse players */
+  headshotUrl?: string;
   seasons: Season[];
 }
 

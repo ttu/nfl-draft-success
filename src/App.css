@@ -121,30 +121,166 @@
 }
 
 .app-players h2 {
-  margin: 0 0 1rem;
-  font-size: 1.25rem;
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-.app-players ul {
+/* Player cards - modern card layout */
+.player-cards {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.app-players li {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #333;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0;
 }
 
-.app-players li span:last-child {
-  font-size: 0.875rem;
-  padding: 0.2rem 0.5rem;
-  background: #2a2a2a;
-  border-radius: 4px;
+.player-card {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr auto;
+  grid-template-areas: 'draft accent avatar info badge';
+  align-items: center;
+  gap: 0;
+  min-height: 88px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.15s ease;
+}
+
+.player-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.player-card__draft {
+  grid-area: draft;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  padding: 0 1.25rem 0 1rem;
+  min-width: 6rem;
+}
+
+.player-card__accent {
+  grid-area: accent;
+  width: 64px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+}
+
+.player-card__logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+
+.player-card__avatar {
+  grid-area: avatar;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -16px;
+  z-index: 1;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.player-card__headshot {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-card__info {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0 1rem;
+  min-width: 0;
+}
+
+.player-card__name {
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-card__meta {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.player-card__badge {
+  grid-area: badge;
+  padding: 0 1rem 0 0.5rem;
+}
+
+.player-card__check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+
+.player-card__role {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 540px) {
+  .player-card__draft {
+    font-size: 0.9rem;
+    min-width: 5rem;
+    padding-right: 0.75rem;
+  }
+
+  .player-card__accent {
+    width: 52px;
+  }
+
+  .player-card__avatar {
+    width: 52px;
+    height: 52px;
+    font-size: 0.85rem;
+    margin-left: -12px;
+  }
+
+  .player-card__name {
+    font-size: 0.95rem;
+  }
+
+  .player-card__meta {
+    font-size: 0.75rem;
+  }
 }
 
 @media (prefers-color-scheme: light) {
@@ -172,11 +308,25 @@
     color: #6c757d;
   }
 
-  .app-players li {
-    border-bottom-color: #dee2e6;
+  .player-card {
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom-color: rgba(0, 0, 0, 0.06);
   }
 
-  .app-players li span:last-child {
-    background: #e9ecef;
+  .player-card:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .player-card__avatar {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .player-card__meta {
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .player-card__role {
+    background: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.75);
   }
 }
