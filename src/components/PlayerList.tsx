@@ -26,6 +26,13 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
+function getPfrUrl(playerId: string, playerName: string): string | null {
+  if (!playerId || playerId.startsWith('unknown-')) return null;
+  const last = playerName.split(/\s+/).pop() || '';
+  const letter = (last[0] || 'X').toUpperCase();
+  return `https://www.pro-football-reference.com/players/${letter}/${playerId}.htm`;
+}
+
 export interface PlayerWithDraftYear {
   pick: DraftPick;
   draftYear: number;
@@ -50,6 +57,7 @@ export function PlayerList({
       {picks.map(({ pick, draftYear }) => {
         const role = getPlayerRole(pick, { draftingTeamOnly });
         const colors = ROLE_COLORS[role];
+        const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
         return (
           <li key={`${pick.playerId}-${draftYear}`} className="player-card">
             <div className="player-card__draft">
@@ -80,7 +88,19 @@ export function PlayerList({
               )}
             </div>
             <div className="player-card__info">
-              <span className="player-card__name">{pick.playerName}</span>
+              {pfrUrl ? (
+                <a
+                  href={pfrUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="player-card__name player-card__name--link"
+                  title="View on Pro-Football-Reference"
+                >
+                  {pick.playerName}
+                </a>
+              ) : (
+                <span className="player-card__name">{pick.playerName}</span>
+              )}
               <span className="player-card__meta">
                 {pick.position} · Pick {pick.overallPick}
               </span>
