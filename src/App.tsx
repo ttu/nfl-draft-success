@@ -10,7 +10,7 @@ import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
 import { getFiveYearScore } from './lib/getFiveYearScore';
 import { loadPreferences, savePreferences } from './lib/storage';
 import { TEAMS } from './data/teams';
-import { getTeamLogoUrl } from './data/teamColors';
+import { getTeamLogoUrl, getTeamDepthChartUrl } from './data/teamColors';
 import type { DraftClass } from './types';
 import './App.css';
 
@@ -140,6 +140,11 @@ function App() {
     return latestSeason?.retained === true;
   });
 
+  const selectedTeamData = TEAMS.find((t) => t.id === selectedTeam);
+  const depthChartUrl = selectedTeamData
+    ? getTeamDepthChartUrl(selectedTeam, selectedTeamData.name)
+    : null;
+
   return (
     <main className="app">
       <header className="app-header">
@@ -212,8 +217,23 @@ function App() {
             })}
           </section>
 
-          <section className="app-players" aria-label="Draft picks">
-            <h2>Players</h2>
+          <section
+            className="app-players"
+            aria-label="Current roster draft picks"
+          >
+            <div className="app-players__header">
+              <h2>Current roster</h2>
+              {depthChartUrl && (
+                <a
+                  href={depthChartUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="app-players__depth-link"
+                >
+                  Open external depth chart
+                </a>
+              )}
+            </div>
             <PlayerList
               picks={retainedPicks}
               teamId={selectedTeam}

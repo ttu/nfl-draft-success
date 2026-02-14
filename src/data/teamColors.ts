@@ -46,3 +46,9 @@ export function getTeamLogoUrl(teamId: string): string {
   const espnId = ESPN_TEAM_ID[teamId] ?? teamId.toLowerCase();
   return `https://a.espncdn.com/i/teamlogos/nfl/500/${espnId}.png`;
 }
+
+export function getTeamDepthChartUrl(teamId: string, teamName: string): string {
+  const espnId = ESPN_TEAM_ID[teamId] ?? teamId.toLowerCase();
+  const slug = teamName.toLowerCase().replace(/\s+/g, '-');
+  return `https://www.espn.com/nfl/team/depth/_/name/${espnId}/${slug}`;
+}
