@@ -72,6 +72,39 @@ describe('storage', () => {
     expect(p.view).toBe('rankings');
   });
 
+  it('loads and persists roleFilter', () => {
+    savePreferences({
+      yearMin: 2021,
+      yearMax: 2025,
+      roleFilter: ['core_starter', 'starter_when_healthy'],
+    });
+    const p = loadPreferences(
+      undefined,
+      2021,
+      2025,
+      { min: 2018, max: 2025 },
+      VALID_TEAMS,
+    );
+    expect(p.roleFilter).toEqual(['core_starter', 'starter_when_healthy']);
+  });
+
+  it('rejects invalid roleFilter and omits it', () => {
+    savePreferences({
+      yearMin: 2021,
+      yearMax: 2025,
+      roleFilter: ['core_starter', 'invalid_role'],
+    });
+    const p = loadPreferences(
+      undefined,
+      2021,
+      2025,
+      { min: 2018, max: 2025 },
+      VALID_TEAMS,
+    );
+    expect(p.roleFilter).toBeUndefined();
+    expect(p).toEqual({ yearMin: 2021, yearMax: 2025 });
+  });
+
   it('handles parse errors gracefully', () => {
     localStorage.setItem('nfl-draft-success-preferences', 'invalid json');
     const p = loadPreferences(

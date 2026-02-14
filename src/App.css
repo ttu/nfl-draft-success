@@ -329,9 +329,172 @@
 
 .app-players__header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.role-filter {
+  display: inline-block;
+}
+
+.role-filter__trigger {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #1a1a1a;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.role-filter__trigger:hover {
+  background: #252525;
+}
+
+.role-filter__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.role-filter__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+
+.role-filter__popup {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  max-height: 90vh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #1e1e1e;
+  border-radius: 12px;
+  border: 1px solid #333;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.role-filter__popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.role-filter__popup-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.role-filter__popup-close {
+  width: 44px;
+  height: 44px;
+  margin: -0.5rem -0.5rem -0.5rem 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  line-height: 1;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.role-filter__popup-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.role-filter__popup-body {
+  padding: 1.25rem;
+}
+
+.role-filter__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.role-filter__preset {
+  padding: 0.5rem 1rem;
+  min-height: 44px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #1a1a1a;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.role-filter__preset:hover {
+  background: #252525;
+}
+
+.role-filter__checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.role-filter__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.role-filter__checkbox input {
+  width: 20px;
+  height: 20px;
+  accent-color: #4a5568;
+  flex-shrink: 0;
+}
+
+.app-roster-by-year {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.roster-year-section {
+  background: #1e1e1e;
+  border-radius: 8px;
+  border: 1px solid #333;
+  overflow: hidden;
+}
+
+.roster-year-section__title {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .app-players h2 {
@@ -572,6 +735,47 @@
 
   .team-rankings-view__item:hover {
     background: rgba(0, 0, 0, 0.04);
+  }
+
+  .role-filter__trigger {
+    background: #fff;
+    border-color: #ccc;
+  }
+
+  .role-filter__trigger:hover {
+    background: #f0f0f0;
+  }
+
+  .role-filter__popup {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+  }
+
+  .role-filter__popup-header {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .role-filter__popup-close:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  .role-filter__preset {
+    background: #fff;
+    border-color: #ccc;
+  }
+
+  .role-filter__preset:hover {
+    background: #f0f0f0;
+  }
+
+  .roster-year-section {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+  }
+
+  .roster-year-section__title {
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom-color: rgba(0, 0, 0, 0.06);
   }
 
   .app-draft-cards article {

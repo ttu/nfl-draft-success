@@ -1,5 +1,13 @@
 const STORAGE_KEY = 'nfl-draft-success-preferences';
 
+const VALID_ROLES = new Set([
+  'core_starter',
+  'starter_when_healthy',
+  'significant_contributor',
+  'depth',
+  'non_contributor',
+]);
+
 export interface StoredPreferences {
   /** Present when view is 'team'; omitted when view is 'rankings'. */
   team?: string;
@@ -7,6 +15,8 @@ export interface StoredPreferences {
   yearMax: number;
   /** Last view: 'rankings' = team list, 'team' = team-specific. Omit = legacy, treat as 'team'. */
   view?: 'rankings' | 'team';
+  /** Selected role IDs for roster filter. Omit = all roles. */
+  roleFilter?: string[];
 }
 
 export function loadPreferences(
@@ -30,7 +40,8 @@ export function loadPreferences(
       'yearMin' in parsed &&
       'yearMax' in parsed
     ) {
-      const { team, yearMin, yearMax, view } = parsed as StoredPreferences;
+      const { team, yearMin, yearMax, view, roleFilter } =
+        parsed as StoredPreferences;
       const yearsValid =
         typeof yearMin === 'number' &&
         typeof yearMax === 'number' &&
@@ -40,10 +51,16 @@ export function loadPreferences(
       const teamValid =
         team === undefined ||
         (typeof team === 'string' && validTeamIds.has(team));
-      if (yearsValid && teamValid) {
+      const roleFilterValid =
+        roleFilter === undefined ||
+        (Array.isArray(roleFilter) &&
+          roleFilter.length > 0 &&
+          roleFilter.every((r) => typeof r === 'string' && VALID_ROLES.has(r)));
+      if (yearsValid && teamValid && roleFilterValid) {
         const result: StoredPreferences = { yearMin, yearMax };
         if (team !== undefined) result.team = team;
         if (view === 'rankings' || view === 'team') result.view = view;
+        if (roleFilter !== undefined) result.roleFilter = roleFilter;
         return result;
       }
     }

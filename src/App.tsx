@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { TeamSelector } from './components/TeamSelector';
 import { YearRangeFilter } from './components/YearRangeFilter';
+import { RoleFilter } from './components/RoleFilter';
+import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { DraftClassCard } from './components/DraftClassCard';
 import { FiveYearScoreCard } from './components/FiveYearScoreCard';
 import { TeamRankingsView } from './components/TeamRankingsView';
 import { PlayerList } from './components/PlayerList';
+import { getPlayerRole } from './lib/getPlayerRole';
 import { loadDataForYears } from './lib/loadData';
 import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
 import { getFiveYearScore } from './lib/getFiveYearScore';
@@ -16,7 +19,7 @@ import {
   getTeamDepthChartUrl,
   NFL_LOGO_URL,
 } from './data/teamColors';
-import type { DraftClass } from './types';
+import type { DraftClass, Role } from './types';
 import './App.css';
 
 const YEAR_MIN = 2018;
@@ -42,21 +45,28 @@ function getInitialState(): {
   team: string | null;
   yearRange: [number, number];
   showRankingsView: boolean;
+  roleFilter: Set<Role>;
 } {
   const urlState = getUrlState(validTeamIds, yearBounds);
+  const p = getInitialPreferences();
+  const roleFilter =
+    p.roleFilter && p.roleFilter.length > 0
+      ? (new Set(p.roleFilter) as Set<Role>)
+      : new Set(DEFAULT_ROLE_FILTER);
   if (urlState) {
     return {
       team: urlState.team,
       yearRange: [urlState.from, urlState.to],
       showRankingsView: urlState.team === null,
+      roleFilter,
     };
   }
-  const p = getInitialPreferences();
   const showRankingsView = p.view !== 'team'; // rankings if view is 'rankings' or undefined (new/legacy)
   return {
     team: p.team ?? null,
     yearRange: [p.yearMin, p.yearMax],
     showRankingsView,
+    roleFilter,
   };
 }
 
@@ -70,6 +80,9 @@ function App() {
   const [showRankingsView, setShowRankingsView] = useState(
     () => getInitialState().showRankingsView,
   );
+  const [roleFilter, setRoleFilter] = useState<Set<Role>>(
+    () => getInitialState().roleFilter,
+  );
   const [draftClasses, setDraftClasses] = useState<DraftClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,10 +92,11 @@ function App() {
       yearMin: yearRange[0],
       yearMax: yearRange[1],
       view: showRankingsView ? 'rankings' : 'team',
+      roleFilter: Array.from(roleFilter),
     };
     if (selectedTeam) prefs.team = selectedTeam;
     savePreferences(prefs);
-  }, [selectedTeam, yearRange, showRankingsView]);
+  }, [selectedTeam, yearRange, showRankingsView, roleFilter]);
 
   useEffect(() => {
     updateUrl(
@@ -191,6 +205,22 @@ function App() {
     const latestSeason = [...pick.seasons].sort((a, b) => b.year - a.year)[0];
     return latestSeason?.retained === true;
   });
+
+  const filteredRetainedPicks = retainedPicks.filter(({ pick }) =>
+    roleFilterAllows(roleFilter, getPlayerRole(pick, { draftingTeamOnly })),
+  );
+
+  const rosterByDraftYear = (() => {
+    const byYear = new Map<number, typeof filteredRetainedPicks>();
+    for (const item of filteredRetainedPicks) {
+      const list = byYear.get(item.draftYear) ?? [];
+      list.push(item);
+      byYear.set(item.draftYear, list);
+    }
+    return draftClasses
+      .map((dc) => ({ year: dc.year, picks: byYear.get(dc.year) ?? [] }))
+      .filter((g) => g.picks.length > 0);
+  })();
 
   const selectedTeamData = selectedTeam
     ? TEAMS.find((t) => t.id === selectedTeam)
@@ -339,6 +369,7 @@ function App() {
           >
             <div className="app-players__header">
               <h2>Current roster</h2>
+              <RoleFilter value={roleFilter} onChange={setRoleFilter} />
               {depthChartUrl && (
                 <a
                   href={depthChartUrl}
@@ -350,11 +381,27 @@ function App() {
                 </a>
               )}
             </div>
-            <PlayerList
-              picks={retainedPicks}
-              teamId={selectedTeam}
-              draftingTeamOnly={draftingTeamOnly}
-            />
+            <div className="app-roster-by-year">
+              {rosterByDraftYear.map(({ year, picks }) => (
+                <article
+                  key={year}
+                  aria-labelledby={`roster-${year}-title`}
+                  className="roster-year-section"
+                >
+                  <h3
+                    id={`roster-${year}-title`}
+                    className="roster-year-section__title"
+                  >
+                    Draft {year}
+                  </h3>
+                  <PlayerList
+                    picks={picks}
+                    teamId={selectedTeam}
+                    draftingTeamOnly={draftingTeamOnly}
+                  />
+                </article>
+              ))}
+            </div>
           </section>
         </>
       ) : (
