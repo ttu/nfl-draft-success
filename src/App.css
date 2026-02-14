@@ -50,6 +50,25 @@
   gap: 0.5rem;
 }
 
+.app-controls__copy-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #1a1a1a;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.app-controls__copy-link:hover {
+  background: #252525;
+}
+
 .year-range-filter {
   display: flex;
   flex-wrap: wrap;
@@ -459,9 +478,14 @@
 
 @media (prefers-color-scheme: light) {
   .app-controls select,
-  .app-controls input[type='number'] {
+  .app-controls input[type='number'],
+  .app-controls__copy-link {
     background: #fff;
     border-color: #ccc;
+  }
+
+  .app-controls__copy-link:hover {
+    background: #f0f0f0;
   }
 
   .app-score article {
