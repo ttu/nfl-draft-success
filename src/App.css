@@ -267,27 +267,13 @@
   padding: 0 1rem 0 0.5rem;
 }
 
-.player-card__check {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
-}
-
-.player-card__role {
+.player-card__role-badge {
   font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.25rem 0.5rem;
-  background: rgba(255, 255, 255, 0.08);
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  background: var(--role-bg);
+  color: var(--role-text);
   border-radius: 6px;
-  color: rgba(255, 255, 255, 0.8);
 }
 
 @media (max-width: 540px) {
@@ -369,10 +355,5 @@
 
   .player-card__meta {
     color: rgba(0, 0, 0, 0.55);
-  }
-
-  .player-card__role {
-    background: rgba(0, 0, 0, 0.06);
-    color: rgba(0, 0, 0, 0.75);
   }
 }

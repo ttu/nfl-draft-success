@@ -2,6 +2,14 @@ import type { DraftPick, Role } from '../types';
 import { getPlayerRole } from '../lib/getPlayerRole';
 import { TEAM_COLORS, getTeamLogoUrl } from '../data/teamColors';
 
+const ROLE_COLORS: Record<Role, { bg: string; text: string }> = {
+  core_starter: { bg: '#16a34a', text: '#fff' },
+  starter_when_healthy: { bg: '#15803d', text: '#fff' },
+  significant_contributor: { bg: '#0369a1', text: '#fff' },
+  depth: { bg: '#a16207', text: '#fff' },
+  non_contributor: { bg: '#6b7280', text: '#fff' },
+};
+
 function formatRole(role: Role): string {
   return role
     .split('_')
@@ -41,8 +49,7 @@ export function PlayerList({
     <ul role="list" aria-label="Draft picks" className="player-cards">
       {picks.map(({ pick, draftYear }) => {
         const role = getPlayerRole(pick, { draftingTeamOnly });
-        const isCore =
-          role === 'core_starter' || role === 'starter_when_healthy';
+        const colors = ROLE_COLORS[role];
         return (
           <li key={`${pick.playerId}-${draftYear}`} className="player-card">
             <div className="player-card__draft">
@@ -78,20 +85,24 @@ export function PlayerList({
                 {pick.position} · Pick {pick.overallPick}
               </span>
             </div>
-            <div className="player-card__badge" title={formatRole(role)}>
-              {isCore ? (
-                <span className="player-card__check" aria-label="Core player">
-                  ✓
-                </span>
-              ) : (
-                <span
-                  className="player-card__role"
-                  data-testid="role-badge"
-                  data-role={role}
-                >
-                  {formatRole(role)}
-                </span>
-              )}
+            <div
+              className="player-card__badge"
+              title={formatRole(role)}
+              style={
+                {
+                  '--role-bg': colors.bg,
+                  '--role-text': colors.text,
+                } as React.CSSProperties
+              }
+            >
+              <span
+                className="player-card__role-badge"
+                data-testid="role-badge"
+                data-role={role}
+                aria-label={formatRole(role)}
+              >
+                {formatRole(role)}
+              </span>
             </div>
           </li>
         );
