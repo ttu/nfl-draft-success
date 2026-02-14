@@ -5,6 +5,9 @@ export interface DraftClassMetrics {
   totalPicks: number;
   coreStarterCount: number;
   starterWhenHealthyCount: number;
+  significantContributorCount: number;
+  depthCount: number;
+  nonContributorCount: number;
   contributorCount: number;
   retentionCount: number;
   coreStarterRate: number;
@@ -24,6 +27,9 @@ export function getDraftClassMetrics(
 
   let coreStarterCount = 0;
   let starterWhenHealthyCount = 0;
+  let significantContributorCount = 0;
+  let depthCount = 0;
+  let nonContributorCount = 0;
   let contributorCount = 0;
   let retentionCount = 0;
 
@@ -31,6 +37,9 @@ export function getDraftClassMetrics(
     const role = getPlayerRole(pick);
     if (role === 'core_starter') coreStarterCount += 1;
     if (role === 'starter_when_healthy') starterWhenHealthyCount += 1;
+    if (role === 'significant_contributor') significantContributorCount += 1;
+    if (role === 'depth') depthCount += 1;
+    if (role === 'non_contributor') nonContributorCount += 1;
     if (
       role === 'core_starter' ||
       role === 'starter_when_healthy' ||
@@ -49,6 +58,9 @@ export function getDraftClassMetrics(
     totalPicks,
     coreStarterCount,
     starterWhenHealthyCount,
+    significantContributorCount,
+    depthCount,
+    nonContributorCount,
     contributorCount,
     retentionCount,
     coreStarterRate: totalPicks > 0 ? coreStarterCount / totalPicks : 0,

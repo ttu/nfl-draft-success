@@ -98,25 +98,48 @@
 }
 
 .app-draft-cards h3 {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.5rem;
   font-size: 1rem;
 }
 
-.app-draft-cards dl {
+.draft-class-card__picks {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+.draft-class-card__breakdown {
   margin: 0;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 0.25rem 1rem;
 }
 
-.app-draft-cards dt {
+.draft-class-card__breakdown dt {
   margin: 0;
   color: #888;
   font-size: 0.875rem;
 }
 
-.app-draft-cards dd {
+.draft-class-card__breakdown dd {
   margin: 0;
+  font-weight: 500;
+}
+
+.draft-class-card__retained {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.draft-class-card__retained span:first-child {
+  color: #888;
+}
+
+.draft-class-card__retained span:last-child {
   font-weight: 500;
 }
 
@@ -304,7 +327,19 @@
     border-color: #dee2e6;
   }
 
-  .app-draft-cards dt {
+  .draft-class-card__picks {
+    color: #6c757d;
+  }
+
+  .draft-class-card__breakdown dt {
+    color: #6c757d;
+  }
+
+  .draft-class-card__retained {
+    border-top-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .draft-class-card__retained span:first-child {
     color: #6c757d;
   }
 

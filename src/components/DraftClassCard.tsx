@@ -6,22 +6,39 @@ export interface DraftClassCardProps {
 }
 
 export function DraftClassCard({ year, metrics }: DraftClassCardProps) {
-  const { totalPicks, coreStarterCount, contributorCount, retentionCount } =
-    metrics;
+  const {
+    totalPicks,
+    coreStarterCount,
+    starterWhenHealthyCount,
+    significantContributorCount,
+    depthCount,
+    nonContributorCount,
+    retentionCount,
+  } = metrics;
 
   return (
-    <article aria-labelledby={`draft-${year}-title`}>
+    <article
+      aria-labelledby={`draft-${year}-title`}
+      className="draft-class-card"
+    >
       <h3 id={`draft-${year}-title`}>Draft {year}</h3>
-      <dl>
-        <dt>Picks</dt>
-        <dd>{totalPicks}</dd>
+      <div className="draft-class-card__picks">{totalPicks} picks</div>
+      <dl className="draft-class-card__breakdown">
         <dt>Core starters</dt>
         <dd>{coreStarterCount}</dd>
-        <dt>Contributors</dt>
-        <dd>{contributorCount}</dd>
-        <dt>Retained</dt>
-        <dd>{retentionCount}</dd>
+        <dt>Starters when healthy</dt>
+        <dd>{starterWhenHealthyCount}</dd>
+        <dt>Significant contributors</dt>
+        <dd>{significantContributorCount}</dd>
+        <dt>Depth</dt>
+        <dd>{depthCount}</dd>
+        <dt>Non contributors</dt>
+        <dd>{nonContributorCount}</dd>
       </dl>
+      <div className="draft-class-card__retained">
+        <span>Retained</span>
+        <span>{retentionCount}</span>
+      </div>
     </article>
   );
 }
