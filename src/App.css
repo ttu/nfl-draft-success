@@ -15,9 +15,13 @@
 }
 
 .app-header__logo {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
+  background: #fff;
+  border-radius: 50%;
+  padding: 5px;
+  box-sizing: border-box;
 }
 
 .app-header h1 {
@@ -243,10 +247,14 @@
 }
 
 .team-rankings-view__logo {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   flex-shrink: 0;
+  background: #fff;
+  border-radius: 50%;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .team-rankings-view__name {
@@ -392,9 +400,13 @@
 }
 
 .player-card__logo {
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
+  background: #fff;
+  border-radius: 50%;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .player-card__avatar {
@@ -512,6 +524,12 @@
 
   .app-header__rankings-link:hover {
     background: #f0f0f0;
+  }
+
+  .app-header__logo,
+  .team-rankings-view__logo,
+  .player-card__logo {
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .app-score article {
