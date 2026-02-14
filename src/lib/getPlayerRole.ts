@@ -33,6 +33,10 @@ export function getPlayerRole(
 
   if (seasons.length === 0) return 'non_contributor';
 
+  // Most recent season with 0 games = free agent, cut, holdout → not a starter
+  const sortedByYear = [...seasons].sort((a, b) => b.year - a.year);
+  if (sortedByYear[0].gamesPlayed === 0) return 'non_contributor';
+
   let best: Role = 'non_contributor';
   for (const s of seasons) {
     const gamesPlayedShare = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;

@@ -28,6 +28,8 @@ Classification order (first match wins):
 
 **Overall classification:** Player's highest achieved role across all seasons determines their overall classification.
 
+**Zero games in most recent season:** If the player's most recent season has 0 games played (e.g., free agent who left, cut, holdout), their overall classification is `non_contributor` regardless of prior roles. Avoids marking players as starters when they are no longer contributing.
+
 ## Retention
 
 **Definition:** Still on the drafting team (same franchise).

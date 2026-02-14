@@ -94,6 +94,41 @@ describe('getPlayerRole', () => {
     expect(getPlayerRole(pick, { draftingTeamOnly: true })).toBe('depth');
   });
 
+  it('returns non_contributor when most recent season has 0 games (e.g. free agent, team change)', () => {
+    const pick: DraftPick = {
+      playerId: 'p1',
+      playerName: 'Nicholas Petit-Frere',
+      position: 'T',
+      round: 3,
+      overallPick: 69,
+      teamId: 'TEN',
+      seasons: [
+        {
+          year: 2022,
+          gamesPlayed: 16,
+          teamGames: 17,
+          snapShare: 0.97,
+          retained: true,
+        },
+        {
+          year: 2024,
+          gamesPlayed: 15,
+          teamGames: 17,
+          snapShare: 0.68,
+          retained: true,
+        },
+        {
+          year: 2025,
+          gamesPlayed: 0,
+          teamGames: 17,
+          snapShare: 0,
+          retained: true,
+        },
+      ],
+    };
+    expect(getPlayerRole(pick)).toBe('non_contributor');
+  });
+
   it('returns depth when best season is depth', () => {
     const pick: DraftPick = {
       playerId: 'p1',
