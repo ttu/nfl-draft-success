@@ -11,6 +11,8 @@ export interface Season {
   teamGames: number;
   snapShare: number;
   retained: boolean;
+  /** Weeks on official injury report (from nflverse injuries data) */
+  injuryReportWeeks?: number;
 }
 
 export interface DraftPick {

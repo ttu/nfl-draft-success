@@ -10,3 +10,11 @@ export async function loadData(year: string): Promise<DraftClass> {
   }
   return res.json();
 }
+
+/**
+ * Load draft data for multiple years in parallel.
+ */
+export async function loadDataForYears(years: number[]): Promise<DraftClass[]> {
+  const results = await Promise.all(years.map((y) => loadData(String(y))));
+  return results.sort((a, b) => a.year - b.year);
+}

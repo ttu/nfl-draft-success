@@ -29,6 +29,7 @@ erDiagram
         int teamGames
         float snapShare
         boolean retained
+        int injuryReportWeeks
     }
 ```
 
@@ -41,6 +42,8 @@ export interface Season {
   teamGames: number;
   snapShare: number;
   retained: boolean;
+  /** Weeks on official injury report (nflverse injuries data). Optional. */
+  injuryReportWeeks?: number;
 }
 
 export interface DraftPick {
