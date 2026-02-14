@@ -63,6 +63,46 @@ describe('getFiveYearScore', () => {
     expect(result.retentionRate).toBe(1);
   });
 
+  it('uses drafting-team-only when option is true', () => {
+    const draft: DraftClass = {
+      year: 2022,
+      picks: [
+        {
+          playerId: 'p1',
+          playerName: 'Late bloomer',
+          position: 'WR',
+          round: 5,
+          overallPick: 150,
+          teamId: 'KC',
+          seasons: [
+            {
+              year: 2022,
+              gamesPlayed: 1,
+              teamGames: 17,
+              snapShare: 0.02,
+              retained: true,
+            },
+            {
+              year: 2024,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.8,
+              retained: false,
+            },
+          ],
+        },
+      ],
+    };
+
+    const career = getFiveYearScore([draft], 'KC');
+    const draftingOnly = getFiveYearScore([draft], 'KC', {
+      draftingTeamOnly: true,
+    });
+
+    expect(career.score).toBeGreaterThan(draftingOnly.score);
+    expect(draftingOnly.score).toBe(0);
+  });
+
   it('aggregates across multiple draft years', () => {
     const drafts: DraftClass[] = [
       coreStarterPick(2020),

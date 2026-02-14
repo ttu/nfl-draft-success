@@ -26,16 +26,21 @@ export interface PlayerWithDraftYear {
 export interface PlayerListProps {
   picks: PlayerWithDraftYear[];
   teamId: string;
+  draftingTeamOnly?: boolean;
 }
 
-export function PlayerList({ picks, teamId }: PlayerListProps) {
+export function PlayerList({
+  picks,
+  teamId,
+  draftingTeamOnly = false,
+}: PlayerListProps) {
   const accentColor = TEAM_COLORS[teamId] ?? '#4a5568';
   const logoUrl = getTeamLogoUrl(teamId);
 
   return (
     <ul role="list" aria-label="Draft picks" className="player-cards">
       {picks.map(({ pick, draftYear }) => {
-        const role = getPlayerRole(pick);
+        const role = getPlayerRole(pick, { draftingTeamOnly });
         const isCore =
           role === 'core_starter' || role === 'starter_when_healthy';
         return (

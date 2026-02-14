@@ -15,12 +15,18 @@ export interface DraftClassMetrics {
   retentionRate: number;
 }
 
+export interface GetDraftClassMetricsOptions {
+  /** When true, roles based only on seasons with drafting team */
+  draftingTeamOnly?: boolean;
+}
+
 /**
  * Compute draft class metrics for a team's picks in a given draft year.
  */
 export function getDraftClassMetrics(
   draft: DraftClass,
   teamId: string,
+  options?: GetDraftClassMetricsOptions,
 ): DraftClassMetrics {
   const picks = draft.picks.filter((p) => p.teamId === teamId);
   const totalPicks = picks.length;
@@ -33,8 +39,9 @@ export function getDraftClassMetrics(
   let contributorCount = 0;
   let retentionCount = 0;
 
+  const draftingTeamOnly = options?.draftingTeamOnly === true;
   for (const pick of picks) {
-    const role = getPlayerRole(pick);
+    const role = getPlayerRole(pick, { draftingTeamOnly });
     if (role === 'core_starter') coreStarterCount += 1;
     if (role === 'starter_when_healthy') starterWhenHealthyCount += 1;
     if (role === 'significant_contributor') significantContributorCount += 1;

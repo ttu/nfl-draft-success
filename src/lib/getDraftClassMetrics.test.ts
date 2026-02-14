@@ -102,6 +102,47 @@ describe('getDraftClassMetrics', () => {
     expect(getDraftClassMetrics(draft, 'BUF').totalPicks).toBe(1);
   });
 
+  it('uses drafting-team-only seasons when draftingTeamOnly is true', () => {
+    const draft: DraftClass = {
+      year: 2022,
+      picks: [
+        {
+          playerId: 'p1',
+          playerName: 'Blossomed elsewhere',
+          position: 'WR',
+          round: 3,
+          overallPick: 80,
+          teamId: 'KC',
+          seasons: [
+            {
+              year: 2022,
+              gamesPlayed: 2,
+              teamGames: 17,
+              snapShare: 0.05,
+              retained: true,
+            },
+            {
+              year: 2024,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.85,
+              retained: false,
+            },
+          ],
+        },
+      ],
+    };
+
+    const career = getDraftClassMetrics(draft, 'KC');
+    const draftingOnly = getDraftClassMetrics(draft, 'KC', {
+      draftingTeamOnly: true,
+    });
+
+    expect(career.coreStarterCount).toBe(1);
+    expect(draftingOnly.coreStarterCount).toBe(0);
+    expect(draftingOnly.nonContributorCount).toBe(1);
+  });
+
   it('handles zero picks', () => {
     const draft: DraftClass = { year: 2023, picks: [] };
     const metrics = getDraftClassMetrics(draft, 'KC');

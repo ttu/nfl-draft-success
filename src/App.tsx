@@ -39,7 +39,6 @@ function App() {
     const p = getInitialPreferences();
     return [p.yearMin, p.yearMax];
   });
-
   useEffect(() => {
     savePreferences({
       team: selectedTeam,
@@ -80,9 +79,10 @@ function App() {
     };
   }, [yearRange]);
 
+  const draftingTeamOnly = true;
   const fiveYearScore =
     draftClasses.length > 0
-      ? getFiveYearScore(draftClasses, selectedTeam)
+      ? getFiveYearScore(draftClasses, selectedTeam, { draftingTeamOnly })
       : null;
 
   const allTeamPicks = draftClasses.flatMap((dc) =>
@@ -139,7 +139,9 @@ function App() {
             aria-label="Draft class metrics by year"
           >
             {draftClasses.map((dc) => {
-              const metrics = getDraftClassMetrics(dc, selectedTeam);
+              const metrics = getDraftClassMetrics(dc, selectedTeam, {
+                draftingTeamOnly,
+              });
               return (
                 <DraftClassCard
                   key={dc.year}
@@ -152,7 +154,11 @@ function App() {
 
           <section className="app-players" aria-label="Draft picks">
             <h2>Players</h2>
-            <PlayerList picks={retainedPicks} teamId={selectedTeam} />
+            <PlayerList
+              picks={retainedPicks}
+              teamId={selectedTeam}
+              draftingTeamOnly={draftingTeamOnly}
+            />
           </section>
         </>
       )}

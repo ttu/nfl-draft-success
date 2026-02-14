@@ -16,6 +16,11 @@ export interface FiveYearScore {
   retentionRate: number;
 }
 
+export interface GetFiveYearScoreOptions {
+  /** When true, roles based only on seasons with drafting team */
+  draftingTeamOnly?: boolean;
+}
+
 /**
  * Compute 5-year rolling draft score for a team.
  * Score = sum(role weights) / total picks.
@@ -23,17 +28,19 @@ export interface FiveYearScore {
 export function getFiveYearScore(
   draftClasses: DraftClass[],
   teamId: string,
+  options?: GetFiveYearScoreOptions,
 ): FiveYearScore {
   let totalPicks = 0;
   let weightSum = 0;
   let coreStarterCount = 0;
   let retentionCount = 0;
 
+  const draftingTeamOnly = options?.draftingTeamOnly === true;
   for (const draft of draftClasses) {
     const picks = draft.picks.filter((p) => p.teamId === teamId);
     for (const pick of picks) {
       totalPicks += 1;
-      const role = getPlayerRole(pick);
+      const role = getPlayerRole(pick, { draftingTeamOnly });
       weightSum += ROLE_WEIGHTS[role] ?? 0;
       if (role === 'core_starter') coreStarterCount += 1;
 

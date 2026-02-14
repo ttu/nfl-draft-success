@@ -65,6 +65,35 @@ describe('getPlayerRole', () => {
     expect(getPlayerRole(pick)).toBe('core_starter');
   });
 
+  it('uses only drafting-team seasons when draftingTeamOnly is true', () => {
+    const pick: DraftPick = {
+      playerId: 'p1',
+      playerName: 'Test',
+      position: 'WR',
+      round: 1,
+      overallPick: 5,
+      teamId: 'KC',
+      seasons: [
+        {
+          year: 2021,
+          gamesPlayed: 15,
+          teamGames: 17,
+          snapShare: 0.72,
+          retained: false,
+        },
+        {
+          year: 2023,
+          gamesPlayed: 3,
+          teamGames: 17,
+          snapShare: 0.15,
+          retained: true,
+        },
+      ],
+    };
+    expect(getPlayerRole(pick)).toBe('core_starter');
+    expect(getPlayerRole(pick, { draftingTeamOnly: true })).toBe('depth');
+  });
+
   it('returns depth when best season is depth', () => {
     const pick: DraftPick = {
       playerId: 'p1',

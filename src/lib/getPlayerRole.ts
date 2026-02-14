@@ -13,14 +13,28 @@ function roleWeight(r: Role): number {
   return ROLE_ORDER.indexOf(r);
 }
 
+export interface GetPlayerRoleOptions {
+  /** When true, only consider seasons when player was with drafting team */
+  draftingTeamOnly?: boolean;
+}
+
 /**
- * Get player's highest achieved role across all seasons.
+ * Get player's highest achieved role across seasons.
+ * @param draftingTeamOnly - When true, only seasons where retained (primary team = drafting team) are used
  */
-export function getPlayerRole(pick: DraftPick): Role {
-  if (pick.seasons.length === 0) return 'non_contributor';
+export function getPlayerRole(
+  pick: DraftPick,
+  options?: GetPlayerRoleOptions,
+): Role {
+  const seasons =
+    options?.draftingTeamOnly === true
+      ? pick.seasons.filter((s) => s.retained)
+      : pick.seasons;
+
+  if (seasons.length === 0) return 'non_contributor';
 
   let best: Role = 'non_contributor';
-  for (const s of pick.seasons) {
+  for (const s of seasons) {
     const gamesPlayedShare = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
     const role = classifyRole(s.snapShare, gamesPlayedShare);
     if (roleWeight(role) > roleWeight(best)) best = role;
