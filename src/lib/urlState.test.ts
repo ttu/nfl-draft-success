@@ -1,5 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
-import { getUrlState, updateUrl, getShareableUrl } from './urlState';
+import {
+  getUrlState,
+  updateUrl,
+  getShareableUrl,
+  clearUrlParams,
+} from './urlState';
 
 const validTeamIds = new Set(['SEA', 'KC', 'BUF']);
 const yearBounds = { min: 2018, max: 2025 };
@@ -62,6 +67,32 @@ describe('getShareableUrl', () => {
     expect(url).not.toContain('team=');
     expect(url).toContain('from=2020');
     expect(url).toContain('to=2024');
+  });
+});
+
+describe('clearUrlParams', () => {
+  it('replaces URL with pathname and hash only', () => {
+    const replaceState = vi.fn();
+    const original = window.history.replaceState;
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/nfl-draft-success/',
+        search: '?team=SEA&from=2021',
+        hash: '#section',
+      },
+      writable: true,
+    });
+    window.history.replaceState = replaceState;
+    try {
+      clearUrlParams();
+      expect(replaceState).toHaveBeenCalledWith(
+        null,
+        '',
+        '/nfl-draft-success/#section',
+      );
+    } finally {
+      window.history.replaceState = original;
+    }
   });
 });
 

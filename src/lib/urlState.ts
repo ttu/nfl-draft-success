@@ -40,6 +40,15 @@ export function getUrlState(
   return { team, from, to };
 }
 
+/**
+ * Remove query parameters from the URL, keeping pathname and hash.
+ */
+export function clearUrlParams(): void {
+  if (typeof window === 'undefined') return;
+  const url = window.location.pathname + window.location.hash;
+  window.history.replaceState(null, '', url);
+}
+
 export function updateUrl(team: string | null, from: number, to: number): void {
   const params = new URLSearchParams();
   params.set('from', String(from));

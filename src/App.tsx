@@ -13,7 +13,7 @@ import { loadDataForYears } from './lib/loadData';
 import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
 import { getFiveYearScore } from './lib/getFiveYearScore';
 import { loadPreferences, savePreferences } from './lib/storage';
-import { getUrlState, updateUrl, getShareableUrl } from './lib/urlState';
+import { getUrlState, getShareableUrl, clearUrlParams } from './lib/urlState';
 import { TEAMS } from './data/teams';
 import {
   getTeamLogoUrl,
@@ -100,12 +100,8 @@ function App() {
   }, [selectedTeam, yearRange, showRankingsView, roleFilter]);
 
   useEffect(() => {
-    updateUrl(
-      showRankingsView ? null : selectedTeam,
-      yearRange[0],
-      yearRange[1],
-    );
-  }, [selectedTeam, yearRange, showRankingsView]);
+    clearUrlParams();
+  }, []);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [showInfoView, setShowInfoView] = useState(false);
 
