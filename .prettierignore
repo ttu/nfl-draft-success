@@ -2,3 +2,4 @@ node_modules
 dist
 coverage
 *.min.js
+public/data/*.json

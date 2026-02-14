@@ -1,3 +1,10 @@
+export type Role =
+  | 'core_starter'
+  | 'starter_when_healthy'
+  | 'significant_contributor'
+  | 'depth'
+  | 'non_contributor';
+
 export interface Season {
   year: number;
   gamesPlayed: number;
