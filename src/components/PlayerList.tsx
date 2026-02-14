@@ -59,10 +59,12 @@ export function PlayerList({
         const colors = ROLE_COLORS[role];
         const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
         return (
-          <li key={`${pick.playerId}-${draftYear}`} className="player-card">
-            <div className="player-card__draft">
-              {draftYear} RD {pick.round}
-            </div>
+          <li
+            key={`${pick.playerId}-${draftYear}`}
+            className="player-card"
+            style={{ '--card-accent': accentColor } as React.CSSProperties}
+          >
+            <div className="player-card__draft">RD {pick.round}</div>
             <div
               className="player-card__accent"
               style={{ backgroundColor: accentColor }}
@@ -121,7 +123,9 @@ export function PlayerList({
                 data-role={role}
                 aria-label={formatRole(role)}
               >
-                {formatRole(role)}
+                <span className="player-card__role-badge-text">
+                  {formatRole(role)}
+                </span>
               </span>
             </div>
           </li>

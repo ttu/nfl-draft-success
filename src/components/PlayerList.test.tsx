@@ -51,8 +51,8 @@ describe('PlayerList', () => {
     render(<PlayerList picks={mockPicks} teamId="KC" />);
     expect(screen.getByText('Patrick Mahomes')).toBeInTheDocument();
     expect(screen.getByText('Backup QB')).toBeInTheDocument();
-    expect(screen.getByText('2017 RD 1')).toBeInTheDocument();
-    expect(screen.getByText('2018 RD 7')).toBeInTheDocument();
+    expect(screen.getByText('RD 1')).toBeInTheDocument();
+    expect(screen.getByText('RD 7')).toBeInTheDocument();
     expect(screen.getByText(/QB · Pick 10/)).toBeInTheDocument();
     expect(screen.getByText(/QB · Pick 245/)).toBeInTheDocument();
     expect(screen.getByText('Non Contributor')).toBeInTheDocument();

@@ -335,6 +335,32 @@
   margin-bottom: 1.5rem;
 }
 
+@media (max-width: 540px) {
+  .app-players__header {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .app-players h2 {
+    font-size: 1.25rem;
+    width: 100%;
+    margin-bottom: 0.25rem;
+  }
+
+  .app-players__depth-link {
+    font-size: 0.85rem;
+  }
+
+  .roster-year-section {
+    border-radius: 6px;
+  }
+
+  .roster-year-section__title {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
 .role-filter {
   display: inline-block;
 }
@@ -549,7 +575,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   padding: 0 1.25rem 0 1rem;
-  min-width: 6rem;
+  min-width: 4rem;
 }
 
 .player-card__accent {
@@ -630,41 +656,83 @@
 .player-card__badge {
   grid-area: badge;
   padding: 0 1.25rem 0 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .player-card__role-badge {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  padding: 0.35rem 0.65rem;
+  padding: 0.5rem 0.7rem;
   background: var(--role-bg);
   color: var(--role-text);
-  border-radius: 6px;
+  border-radius: 5px;
+  white-space: normal;
+  width: 7em;
+  height: 3em;
+  min-height: 3em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.player-card__role-badge-text {
+  text-align: center;
+  line-height: 1.2;
 }
 
 @media (max-width: 540px) {
+  .player-card {
+    grid-template-columns: auto auto 1fr auto;
+    grid-template-areas: 'draft avatar info badge';
+    min-height: 64px;
+    padding-left: 0;
+    border-left: 4px solid var(--card-accent, #4a5568);
+  }
+
   .player-card__draft {
-    font-size: 0.9rem;
-    min-width: 5rem;
-    padding-right: 0.75rem;
+    font-size: 0.8rem;
+    min-width: 2.75rem;
+    padding: 0 0.5rem 0 0.75rem;
   }
 
   .player-card__accent {
-    width: 52px;
+    display: none;
   }
 
   .player-card__avatar {
-    width: 52px;
-    height: 52px;
-    font-size: 0.85rem;
-    margin-left: -12px;
+    width: 44px;
+    height: 44px;
+    font-size: 0.75rem;
+    margin-left: 0;
+  }
+
+  .player-card__info {
+    padding: 0 0.5rem;
+    min-width: 0;
   }
 
   .player-card__name {
-    font-size: 0.95rem;
+    font-size: 0.875rem;
   }
 
   .player-card__meta {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+  }
+
+  .player-card__badge {
+    padding: 0 0.75rem 0 0.5rem;
+  }
+
+  .player-card__role-badge {
+    font-size: 0.65rem;
+    padding: 0.4rem 0.5rem;
+    width: 6.5em;
+    height: 2.75em;
+    min-height: 2.75em;
   }
 }
 
