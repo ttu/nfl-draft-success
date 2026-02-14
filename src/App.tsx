@@ -9,6 +9,7 @@ import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
 import { getFiveYearScore } from './lib/getFiveYearScore';
 import { loadPreferences, savePreferences } from './lib/storage';
 import { TEAMS } from './data/teams';
+import { getTeamLogoUrl } from './data/teamColors';
 import type { DraftClass } from './types';
 import './App.css';
 
@@ -103,7 +104,15 @@ function App() {
   return (
     <main className="app">
       <header className="app-header">
-        <h1>NFL Draft Success</h1>
+        <div className="app-header__brand">
+          <img
+            src={getTeamLogoUrl(selectedTeam)}
+            alt=""
+            className="app-header__logo"
+            aria-hidden
+          />
+          <h1>NFL Draft Success</h1>
+        </div>
         <div className="app-controls">
           <TeamSelector value={selectedTeam} onChange={setSelectedTeam} />
           <YearRangeFilter
