@@ -112,9 +112,115 @@
 
 .draft-score__rank {
   font-size: 0.9em;
-  font-weight: 400;
+  font-weight: 500;
   color: #888;
   margin-left: 0.5em;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.draft-score__rank:hover:not(:disabled) {
+  color: #aaa;
+  text-decoration: underline;
+}
+
+.draft-score__rank:disabled {
+  cursor: default;
+}
+
+/* Team rankings view */
+.team-rankings-view {
+  margin-top: 1rem;
+}
+
+.team-rankings-view__header {
+  margin-bottom: 1.5rem;
+}
+
+.team-rankings-view__back {
+  padding: 0.5rem 0;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.team-rankings-view__back:hover {
+  color: #aaa;
+}
+
+.team-rankings-view__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.team-rankings-view__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #1e1e1e;
+  border-radius: 8px;
+  border: 1px solid #333;
+  overflow: hidden;
+}
+
+.team-rankings-view__item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font-family: inherit;
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.team-rankings-view__item:last-child {
+  border-bottom: none;
+}
+
+.team-rankings-view__item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.team-rankings-view__rank {
+  font-weight: 700;
+  min-width: 2rem;
+  color: #888;
+  font-size: 1rem;
+}
+
+.team-rankings-view__logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.team-rankings-view__name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.team-rankings-view__score {
+  font-weight: 600;
+  color: #aaa;
 }
 
 .app-draft-cards {
@@ -351,6 +457,27 @@
 
   .draft-score__rank {
     color: #6c757d;
+  }
+
+  .team-rankings-view__back {
+    color: #6c757d;
+  }
+
+  .team-rankings-view__back:hover {
+    color: #495057;
+  }
+
+  .team-rankings-view__list {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+  }
+
+  .team-rankings-view__item {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .team-rankings-view__item:hover {
+    background: rgba(0, 0, 0, 0.04);
   }
 
   .app-draft-cards article {

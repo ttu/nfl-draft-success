@@ -28,7 +28,7 @@ describe('FiveYearScoreCard', () => {
       <FiveYearScoreCard
         score={mockScore}
         yearCount={5}
-        rank={{ rank: 12, total: 32 }}
+        rank={{ rank: 12, total: 32, rankings: [] }}
       />,
     );
     expect(screen.getByText(/Rank 12 of 32/)).toBeInTheDocument();

@@ -3,6 +3,7 @@ import { TeamSelector } from './components/TeamSelector';
 import { YearRangeFilter } from './components/YearRangeFilter';
 import { DraftClassCard } from './components/DraftClassCard';
 import { FiveYearScoreCard } from './components/FiveYearScoreCard';
+import { TeamRankingsView } from './components/TeamRankingsView';
 import { PlayerList } from './components/PlayerList';
 import { loadDataForYears } from './lib/loadData';
 import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
@@ -50,6 +51,7 @@ function App() {
   const [draftClasses, setDraftClasses] = useState<DraftClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showRankingsView, setShowRankingsView] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,25 +91,37 @@ function App() {
   const teamRank =
     draftClasses.length > 0 && fiveYearScore
       ? (() => {
-          const scores = TEAMS.map((t) => ({
+          const teamScores = TEAMS.map((t) => ({
             teamId: t.id,
+            teamName: t.name,
             score: getFiveYearScore(draftClasses, t.id, {
               draftingTeamOnly,
             }).score,
           }));
-          scores.sort((a, b) => b.score - a.score);
+          teamScores.sort((a, b) => b.score - a.score);
+          const rankings: Array<{
+            teamId: string;
+            teamName: string;
+            score: number;
+            rank: number;
+          }> = [];
           let rank = 1;
           let prevScore = Infinity;
-          let found = 0;
-          for (let i = 0; i < scores.length; i++) {
-            if (scores[i].score < prevScore) rank = i + 1;
-            prevScore = scores[i].score;
-            if (scores[i].teamId === selectedTeam) {
-              found = rank;
-              break;
-            }
+          let selectedRank = 0;
+          for (let i = 0; i < teamScores.length; i++) {
+            if (teamScores[i].score < prevScore) rank = i + 1;
+            prevScore = teamScores[i].score;
+            rankings.push({
+              ...teamScores[i],
+              rank,
+            });
+            if (teamScores[i].teamId === selectedTeam) selectedRank = rank;
           }
-          return { rank: found, total: TEAMS.length };
+          return {
+            rank: selectedRank,
+            total: TEAMS.length,
+            rankings,
+          };
         })()
       : null;
 
@@ -157,6 +171,16 @@ function App() {
 
       {loading ? (
         <p>Loading draft data…</p>
+      ) : showRankingsView && teamRank?.rankings ? (
+        <TeamRankingsView
+          rankings={teamRank.rankings}
+          yearCount={yearRange[1] - yearRange[0] + 1}
+          onTeamSelect={(teamId) => {
+            setSelectedTeam(teamId);
+            setShowRankingsView(false);
+          }}
+          onBack={() => setShowRankingsView(false)}
+        />
       ) : (
         <>
           {fiveYearScore && (
@@ -165,6 +189,7 @@ function App() {
                 score={fiveYearScore}
                 yearCount={yearRange[1] - yearRange[0] + 1}
                 rank={teamRank}
+                onShowRankings={() => setShowRankingsView(true)}
               />
             </section>
           )}
