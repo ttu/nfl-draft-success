@@ -112,6 +112,35 @@
   color: inherit;
 }
 
+.app-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 1.5rem;
+  min-height: 120px;
+}
+
+.app-loading__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: app-loading-spin 0.7s linear infinite;
+}
+
+.app-loading__text {
+  font-size: 1rem;
+  color: #888;
+}
+
+@keyframes app-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .app-error {
   padding: 1rem;
   margin-bottom: 1rem;
@@ -910,6 +939,15 @@
 }
 
 @media (prefers-color-scheme: light) {
+  .app-loading__spinner {
+    border-color: rgba(0, 0, 0, 0.15);
+    border-top-color: currentColor;
+  }
+
+  .app-loading__text {
+    color: #6c757d;
+  }
+
   .app-controls select,
   .app-controls input[type='number'],
   .app-controls__copy-link {

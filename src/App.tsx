@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TeamSelector } from './components/TeamSelector';
 import { YearRangeFilter } from './components/YearRangeFilter';
 import { RoleFilter } from './components/RoleFilter';
@@ -87,6 +87,7 @@ function App() {
   const [draftClasses, setDraftClasses] = useState<DraftClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const loadIdRef = useRef(0);
 
   useEffect(() => {
     const prefs: Parameters<typeof savePreferences>[0] = {
@@ -119,12 +120,15 @@ function App() {
 
   useEffect(() => {
     let cancelled = false;
-    queueMicrotask(() => {
-      if (!cancelled) {
+    let showLoadingId: ReturnType<typeof setTimeout> | null = null;
+    const loadId = (loadIdRef.current += 1);
+    const delayBeforeShowMs = 50;
+    queueMicrotask(() => setError(null));
+    showLoadingId = setTimeout(() => {
+      if (!cancelled && loadIdRef.current === loadId) {
         setLoading(true);
-        setError(null);
       }
-    });
+    }, delayBeforeShowMs);
     const years = Array.from(
       { length: yearRange[1] - yearRange[0] + 1 },
       (_, i) => yearRange[0] + i,
@@ -139,10 +143,17 @@ function App() {
         }
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (showLoadingId) {
+          clearTimeout(showLoadingId);
+          showLoadingId = null;
+        }
+        if (!cancelled && loadIdRef.current === loadId) {
+          setLoading(false);
+        }
       });
     return () => {
       cancelled = true;
+      if (showLoadingId) clearTimeout(showLoadingId);
     };
   }, [yearRange]);
 
@@ -343,7 +354,10 @@ function App() {
       )}
 
       {loading ? (
-        <p>Loading draft data…</p>
+        <div className="app-loading" role="status" aria-live="polite">
+          <span className="app-loading__spinner" aria-hidden />
+          <span className="app-loading__text">Loading draft data…</span>
+        </div>
       ) : (showRankingsView || !selectedTeam) && teamRank?.rankings ? (
         <TeamRankingsView
           rankings={teamRank.rankings}
@@ -427,7 +441,10 @@ function App() {
           </section>
         </>
       ) : (
-        <p>Loading draft data…</p>
+        <div className="app-loading" role="status" aria-live="polite">
+          <span className="app-loading__spinner" aria-hidden />
+          <span className="app-loading__text">Loading draft data…</span>
+        </div>
       )}
     </main>
   );
