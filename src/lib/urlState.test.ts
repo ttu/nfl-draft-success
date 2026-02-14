@@ -10,10 +10,20 @@ describe('getUrlState', () => {
     expect(getUrlState(validTeamIds, yearBounds, '?foo=bar')).toBeNull();
   });
 
-  it('returns null for invalid team', () => {
+  it('returns state with team null for invalid team (rankings URL)', () => {
     expect(
       getUrlState(validTeamIds, yearBounds, '?team=XXX&from=2021&to=2025'),
-    ).toBeNull();
+    ).toEqual({ team: null, from: 2021, to: 2025 });
+  });
+
+  it('returns state with team null when no team param (rankings URL)', () => {
+    expect(getUrlState(validTeamIds, yearBounds, '?from=2021&to=2025')).toEqual(
+      {
+        team: null,
+        from: 2021,
+        to: 2025,
+      },
+    );
   });
 
   it('returns null for out-of-range years', () => {
@@ -40,16 +50,23 @@ describe('getUrlState', () => {
 });
 
 describe('getShareableUrl', () => {
-  it('returns url with query params', () => {
+  it('returns url with team when team provided', () => {
     const url = getShareableUrl('KC', 2020, 2024);
     expect(url).toContain('team=KC');
+    expect(url).toContain('from=2020');
+    expect(url).toContain('to=2024');
+  });
+
+  it('returns url without team when team is null (rankings)', () => {
+    const url = getShareableUrl(null, 2020, 2024);
+    expect(url).not.toContain('team=');
     expect(url).toContain('from=2020');
     expect(url).toContain('to=2024');
   });
 });
 
 describe('updateUrl', () => {
-  it('updates history with replaceState', () => {
+  it('updates history with team in URL when team provided', () => {
     const replaceState = vi.fn();
     const original = window.history.replaceState;
     window.history.replaceState = replaceState;
@@ -58,8 +75,28 @@ describe('updateUrl', () => {
       expect(replaceState).toHaveBeenCalledWith(
         null,
         '',
-        expect.stringContaining('team=SEA&from=2021&to=2024'),
+        expect.stringContaining('team=SEA'),
       );
+      expect(replaceState).toHaveBeenCalledWith(
+        null,
+        '',
+        expect.stringContaining('from=2021'),
+      );
+    } finally {
+      window.history.replaceState = original;
+    }
+  });
+
+  it('updates history without team in URL when team is null', () => {
+    const replaceState = vi.fn();
+    const original = window.history.replaceState;
+    window.history.replaceState = replaceState;
+    try {
+      updateUrl(null, 2021, 2024);
+      const url = replaceState.mock.calls[0][2];
+      expect(url).toContain('from=2021');
+      expect(url).toContain('to=2024');
+      expect(url).not.toContain('team=');
     } finally {
       window.history.replaceState = original;
     }

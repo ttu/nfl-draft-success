@@ -42,6 +42,10 @@ const ESPN_TEAM_ID: Record<string, string> = {
   LAR: 'lar',
 };
 
+/** NFL league logo (ESPN CDN) - use on rankings/list view when no team selected */
+export const NFL_LOGO_URL =
+  'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png';
+
 export function getTeamLogoUrl(teamId: string): string {
   const espnId = ESPN_TEAM_ID[teamId] ?? teamId.toLowerCase();
   return `https://a.espncdn.com/i/teamlogos/nfl/500/${espnId}.png`;

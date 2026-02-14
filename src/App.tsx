@@ -11,13 +11,16 @@ import { getFiveYearScore } from './lib/getFiveYearScore';
 import { loadPreferences, savePreferences } from './lib/storage';
 import { getUrlState, updateUrl, getShareableUrl } from './lib/urlState';
 import { TEAMS } from './data/teams';
-import { getTeamLogoUrl, getTeamDepthChartUrl } from './data/teamColors';
+import {
+  getTeamLogoUrl,
+  getTeamDepthChartUrl,
+  NFL_LOGO_URL,
+} from './data/teamColors';
 import type { DraftClass } from './types';
 import './App.css';
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2025;
-const DEFAULT_TEAM = 'SEA';
 const DEFAULT_YEAR_MIN = 2021;
 
 const validTeamIds = new Set(TEAMS.map((t) => t.id));
@@ -26,7 +29,7 @@ const yearBounds = { min: YEAR_MIN, max: YEAR_MAX };
 let cachedPrefs: ReturnType<typeof loadPreferences> | null = null;
 function getInitialPreferences() {
   cachedPrefs ??= loadPreferences(
-    DEFAULT_TEAM,
+    undefined,
     DEFAULT_YEAR_MIN,
     YEAR_MAX,
     yearBounds,
@@ -35,18 +38,25 @@ function getInitialPreferences() {
   return cachedPrefs;
 }
 
-function getInitialState() {
+function getInitialState(): {
+  team: string | null;
+  yearRange: [number, number];
+  showRankingsView: boolean;
+} {
   const urlState = getUrlState(validTeamIds, yearBounds);
   if (urlState) {
     return {
       team: urlState.team,
-      yearRange: [urlState.from, urlState.to] as [number, number],
+      yearRange: [urlState.from, urlState.to],
+      showRankingsView: urlState.team === null,
     };
   }
   const p = getInitialPreferences();
+  const showRankingsView = p.view !== 'team'; // rankings if view is 'rankings' or undefined (new/legacy)
   return {
-    team: p.team,
-    yearRange: [p.yearMin, p.yearMax] as [number, number],
+    team: p.team ?? null,
+    yearRange: [p.yearMin, p.yearMax],
+    showRankingsView,
   };
 }
 
@@ -57,25 +67,38 @@ function App() {
   const [yearRange, setYearRange] = useState<[number, number]>(
     () => getInitialState().yearRange,
   );
-  useEffect(() => {
-    savePreferences({
-      team: selectedTeam,
-      yearMin: yearRange[0],
-      yearMax: yearRange[1],
-    });
-  }, [selectedTeam, yearRange]);
-
-  useEffect(() => {
-    updateUrl(selectedTeam, yearRange[0], yearRange[1]);
-  }, [selectedTeam, yearRange]);
+  const [showRankingsView, setShowRankingsView] = useState(
+    () => getInitialState().showRankingsView,
+  );
   const [draftClasses, setDraftClasses] = useState<DraftClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showRankingsView, setShowRankingsView] = useState(false);
+
+  useEffect(() => {
+    const prefs: Parameters<typeof savePreferences>[0] = {
+      yearMin: yearRange[0],
+      yearMax: yearRange[1],
+      view: showRankingsView ? 'rankings' : 'team',
+    };
+    if (selectedTeam) prefs.team = selectedTeam;
+    savePreferences(prefs);
+  }, [selectedTeam, yearRange, showRankingsView]);
+
+  useEffect(() => {
+    updateUrl(
+      showRankingsView ? null : selectedTeam,
+      yearRange[0],
+      yearRange[1],
+    );
+  }, [selectedTeam, yearRange, showRankingsView]);
   const [copyFeedback, setCopyFeedback] = useState(false);
 
   const handleCopyLink = () => {
-    const url = getShareableUrl(selectedTeam, yearRange[0], yearRange[1]);
+    const url = getShareableUrl(
+      showRankingsView ? null : selectedTeam,
+      yearRange[0],
+      yearRange[1],
+    );
     void navigator.clipboard.writeText(url).then(() => {
       setCopyFeedback(true);
       setTimeout(() => setCopyFeedback(false), 2000);
@@ -113,12 +136,12 @@ function App() {
 
   const draftingTeamOnly = true;
   const fiveYearScore =
-    draftClasses.length > 0
+    draftClasses.length > 0 && selectedTeam
       ? getFiveYearScore(draftClasses, selectedTeam, { draftingTeamOnly })
       : null;
 
   const teamRank =
-    draftClasses.length > 0 && fiveYearScore
+    draftClasses.length > 0
       ? (() => {
           const teamScores = TEAMS.map((t) => ({
             teamId: t.id,
@@ -169,25 +192,51 @@ function App() {
     return latestSeason?.retained === true;
   });
 
-  const selectedTeamData = TEAMS.find((t) => t.id === selectedTeam);
-  const depthChartUrl = selectedTeamData
-    ? getTeamDepthChartUrl(selectedTeam, selectedTeamData.name)
-    : null;
+  const selectedTeamData = selectedTeam
+    ? TEAMS.find((t) => t.id === selectedTeam)
+    : undefined;
+  const depthChartUrl =
+    selectedTeam && selectedTeamData
+      ? getTeamDepthChartUrl(selectedTeam, selectedTeamData.name)
+      : null;
 
   return (
     <main className="app">
       <header className="app-header">
         <div className="app-header__brand">
-          <img
-            src={getTeamLogoUrl(selectedTeam)}
-            alt=""
-            className="app-header__logo"
-            aria-hidden
-          />
+          {selectedTeam ? (
+            <img
+              src={getTeamLogoUrl(selectedTeam)}
+              alt=""
+              className="app-header__logo"
+              aria-hidden
+            />
+          ) : (
+            <img
+              src={NFL_LOGO_URL}
+              alt=""
+              className="app-header__logo"
+              aria-hidden
+            />
+          )}
           <h1>NFL Draft Success</h1>
         </div>
         <div className="app-controls">
-          <TeamSelector value={selectedTeam} onChange={setSelectedTeam} />
+          {!showRankingsView && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedTeam(null);
+                setShowRankingsView(true);
+              }}
+              className="app-header__rankings-link"
+            >
+              Team rankings
+            </button>
+          )}
+          {!showRankingsView && selectedTeam && (
+            <TeamSelector value={selectedTeam} onChange={setSelectedTeam} />
+          )}
           <YearRangeFilter
             min={YEAR_MIN}
             max={YEAR_MAX}
@@ -243,7 +292,7 @@ function App() {
 
       {loading ? (
         <p>Loading draft data…</p>
-      ) : showRankingsView && teamRank?.rankings ? (
+      ) : (showRankingsView || !selectedTeam) && teamRank?.rankings ? (
         <TeamRankingsView
           rankings={teamRank.rankings}
           yearCount={yearRange[1] - yearRange[0] + 1}
@@ -251,9 +300,9 @@ function App() {
             setSelectedTeam(teamId);
             setShowRankingsView(false);
           }}
-          onBack={() => setShowRankingsView(false)}
+          onBack={selectedTeam ? () => setShowRankingsView(false) : undefined}
         />
-      ) : (
+      ) : selectedTeam ? (
         <>
           {fiveYearScore && (
             <section className="app-score">
@@ -308,6 +357,8 @@ function App() {
             />
           </section>
         </>
+      ) : (
+        <p>Loading draft data…</p>
       )}
     </main>
   );

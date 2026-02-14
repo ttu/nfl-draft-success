@@ -5,7 +5,7 @@ export interface TeamRankingsViewProps {
   rankings: TeamRanking[];
   yearCount: number;
   onTeamSelect: (teamId: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 export function TeamRankingsView({
@@ -17,13 +17,15 @@ export function TeamRankingsView({
   return (
     <section className="team-rankings-view" aria-label="Team draft rankings">
       <div className="team-rankings-view__header">
-        <button
-          type="button"
-          className="team-rankings-view__back"
-          onClick={onBack}
-        >
-          ← Back
-        </button>
+        {onBack && (
+          <button
+            type="button"
+            className="team-rankings-view__back"
+            onClick={onBack}
+          >
+            ← Back
+          </button>
+        )}
         <h2 className="team-rankings-view__title">
           {yearCount}-Year Draft Score Rankings
         </h2>
