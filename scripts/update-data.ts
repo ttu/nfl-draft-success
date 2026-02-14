@@ -55,7 +55,8 @@ interface SeasonSnapData {
 
 /**
  * Aggregate per (pfr_id, season): gamesPlayed, snapShare, primaryTeam.
- * snapShare = avg of max(offense_pct, defense_pct) per game (unit share, 0-1).
+ * snapShare = avg of max(offense_pct, defense_pct, st_pct) per game (unit share, 0-1).
+ * Includes special teams so kickers/punters/LS get proper contribution.
  */
 async function loadSnapData(
   seasons: number[],
@@ -85,12 +86,14 @@ async function loadSnapData(
 
       const off = parseInt(row.offense_snaps ?? '0', 10) || 0;
       const def = parseInt(row.defense_snaps ?? '0', 10) || 0;
-      const snaps = off + def;
+      const st = parseInt(row.st_snaps ?? '0', 10) || 0;
+      const snaps = off + def + st;
       if (snaps === 0) continue;
 
       const offPct = parseFloat(row.offense_pct ?? '0') || 0;
       const defPct = parseFloat(row.defense_pct ?? '0') || 0;
-      const share = Math.max(offPct, defPct);
+      const stPct = parseFloat(row.st_pct ?? '0') || 0;
+      const share = Math.max(offPct, defPct, stPct);
 
       let acc = playerAccum.get(pfrId);
       if (!acc) {
