@@ -1,6 +1,6 @@
 .app {
   min-height: 100vh;
-  padding: 1.5rem max(1rem, 5vw);
+  padding: 1.75rem max(1.25rem, 5vw);
 }
 
 .app-header {
@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .app-header__logo {
@@ -24,18 +24,20 @@
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .app-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 2rem;
   align-items: center;
 }
 
 .app-controls select {
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  padding: 0.5rem 2rem 0.5rem 0.875rem;
   font-size: 1rem;
+  font-weight: 600;
   border-radius: 6px;
   border: 1px solid #555;
   background: #1a1a1a;
@@ -48,10 +50,22 @@
   gap: 0.5rem;
 }
 
+.year-range-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.year-range-filter label {
+  gap: 0.75rem;
+}
+
 .app-controls input[type='number'] {
-  width: 4rem;
-  padding: 0.5rem;
+  width: 4.25rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.625rem;
   font-size: 1rem;
+  font-weight: 600;
   border-radius: 6px;
   border: 1px solid #555;
   background: #1a1a1a;
@@ -72,7 +86,7 @@
 
 .app-score article {
   max-width: 320px;
-  padding: 1rem;
+  padding: 1.25rem;
   background: #1e1e1e;
   border-radius: 8px;
   border: 1px solid #333;
@@ -82,7 +96,7 @@
   margin: 0;
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.25rem 1rem;
+  gap: 0.5rem 1.25rem;
 }
 
 .app-score dt {
@@ -96,15 +110,22 @@
   font-weight: 500;
 }
 
+.draft-score__rank {
+  font-size: 0.9em;
+  font-weight: 400;
+  color: #888;
+  margin-left: 0.5em;
+}
+
 .app-draft-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
 .app-draft-cards article {
-  padding: 1rem;
+  padding: 1.25rem;
   background: #1e1e1e;
   border-radius: 8px;
   border: 1px solid #333;
@@ -116,7 +137,7 @@
 }
 
 .draft-class-card__picks {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.875rem;
   font-size: 0.875rem;
   color: #888;
 }
@@ -125,7 +146,7 @@
   margin: 0;
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.25rem 1rem;
+  gap: 0.4rem 1rem;
 }
 
 .draft-class-card__breakdown dt {
@@ -140,8 +161,8 @@
 }
 
 .draft-class-card__retained {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
@@ -244,8 +265,8 @@
   grid-area: info;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  padding: 0 1rem;
+  gap: 0.25rem;
+  padding: 0 1.25rem;
   min-width: 0;
 }
 
@@ -273,7 +294,7 @@
 
 .player-card__badge {
   grid-area: badge;
-  padding: 0 1rem 0 0.5rem;
+  padding: 0 1.25rem 0 0.75rem;
 }
 
 .player-card__role-badge {
@@ -325,6 +346,10 @@
   }
 
   .app-score dt {
+    color: #6c757d;
+  }
+
+  .draft-score__rank {
     color: #6c757d;
   }
 

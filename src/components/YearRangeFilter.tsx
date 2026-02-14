@@ -12,7 +12,11 @@ export function YearRangeFilter({
   onChange,
 }: YearRangeFilterProps) {
   return (
-    <div role="group" aria-label="Year range filter">
+    <div
+      role="group"
+      aria-label="Year range filter"
+      className="year-range-filter"
+    >
       <label>
         From
         <input

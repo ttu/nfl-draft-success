@@ -22,4 +22,15 @@ describe('FiveYearScoreCard', () => {
     render(<FiveYearScoreCard score={mockScore} yearCount={8} />);
     expect(screen.getByText('8-Year Draft Score')).toBeInTheDocument();
   });
+
+  it('displays rank when provided', () => {
+    render(
+      <FiveYearScoreCard
+        score={mockScore}
+        yearCount={5}
+        rank={{ rank: 12, total: 32 }}
+      />,
+    );
+    expect(screen.getByText(/Rank 12 of 32/)).toBeInTheDocument();
+  });
 });

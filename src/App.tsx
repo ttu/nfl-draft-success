@@ -86,6 +86,31 @@ function App() {
       ? getFiveYearScore(draftClasses, selectedTeam, { draftingTeamOnly })
       : null;
 
+  const teamRank =
+    draftClasses.length > 0 && fiveYearScore
+      ? (() => {
+          const scores = TEAMS.map((t) => ({
+            teamId: t.id,
+            score: getFiveYearScore(draftClasses, t.id, {
+              draftingTeamOnly,
+            }).score,
+          }));
+          scores.sort((a, b) => b.score - a.score);
+          let rank = 1;
+          let prevScore = Infinity;
+          let found = 0;
+          for (let i = 0; i < scores.length; i++) {
+            if (scores[i].score < prevScore) rank = i + 1;
+            prevScore = scores[i].score;
+            if (scores[i].teamId === selectedTeam) {
+              found = rank;
+              break;
+            }
+          }
+          return { rank: found, total: TEAMS.length };
+        })()
+      : null;
+
   const allTeamPicks = draftClasses.flatMap((dc) =>
     dc.picks
       .filter((p) => p.teamId === selectedTeam)
@@ -139,6 +164,7 @@ function App() {
               <FiveYearScoreCard
                 score={fiveYearScore}
                 yearCount={yearRange[1] - yearRange[0] + 1}
+                rank={teamRank}
               />
             </section>
           )}
