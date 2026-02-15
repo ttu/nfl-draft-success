@@ -1,4 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import {
+  Routes,
+  Route,
+  useParams,
+  useSearchParams,
+  useNavigate,
+} from 'react-router-dom';
 import { TeamSelector } from './components/TeamSelector';
 import { YearRangeFilter } from './components/YearRangeFilter';
 import { RoleFilter } from './components/RoleFilter';
@@ -12,8 +19,8 @@ import { getPlayerRole } from './lib/getPlayerRole';
 import { loadDataForYears } from './lib/loadData';
 import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
 import { getFiveYearScore } from './lib/getFiveYearScore';
-import { loadPreferences, savePreferences } from './lib/storage';
-import { getUrlState, getShareableUrl, clearUrlParams } from './lib/urlState';
+import { loadRoleFilter, saveRoleFilter } from './lib/storage';
+import { getShareableUrl } from './lib/urlState';
 import { TEAMS } from './data/teams';
 import {
   getTeamLogoUrl,
@@ -30,81 +37,57 @@ const DEFAULT_YEAR_MIN = 2021;
 const validTeamIds = new Set(TEAMS.map((t) => t.id));
 const yearBounds = { min: YEAR_MIN, max: YEAR_MAX };
 
-let cachedPrefs: ReturnType<typeof loadPreferences> | null = null;
-function getInitialPreferences() {
-  cachedPrefs ??= loadPreferences(
-    undefined,
-    DEFAULT_YEAR_MIN,
-    YEAR_MAX,
-    yearBounds,
-    validTeamIds,
-  );
-  return cachedPrefs;
+function useValidYearRange(
+  searchParams: URLSearchParams,
+  setSearchParams: (params: Record<string, string>) => void,
+): [number, number] {
+  const from = parseInt(searchParams.get('from') ?? '', 10);
+  const to = parseInt(searchParams.get('to') ?? '', 10);
+  const valid =
+    Number.isInteger(from) &&
+    Number.isInteger(to) &&
+    from >= yearBounds.min &&
+    to <= yearBounds.max &&
+    from <= to;
+  useEffect(() => {
+    if (!valid) {
+      setSearchParams({
+        from: String(DEFAULT_YEAR_MIN),
+        to: String(YEAR_MAX),
+      });
+    }
+  }, [valid, setSearchParams]);
+  return valid ? [from, to] : [DEFAULT_YEAR_MIN, YEAR_MAX];
 }
 
-function getInitialState(): {
-  team: string | null;
-  yearRange: [number, number];
-  showRankingsView: boolean;
-  roleFilter: Set<Role>;
-} {
-  const urlState = getUrlState(validTeamIds, yearBounds);
-  const p = getInitialPreferences();
-  const roleFilter =
-    p.roleFilter && p.roleFilter.length > 0
-      ? (new Set(p.roleFilter) as Set<Role>)
-      : new Set(DEFAULT_ROLE_FILTER);
-  if (urlState) {
-    return {
-      team: urlState.team,
-      yearRange: [urlState.from, urlState.to],
-      showRankingsView: urlState.team === null,
-      roleFilter,
-    };
-  }
-  const showRankingsView = p.view !== 'team'; // rankings if view is 'rankings' or undefined (new/legacy)
-  return {
-    team: p.team ?? null,
-    yearRange: [p.yearMin, p.yearMax],
-    showRankingsView,
-    roleFilter,
-  };
-}
+function AppContent() {
+  const { teamId } = useParams<{ teamId?: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const selectedTeam = teamId && validTeamIds.has(teamId) ? teamId : null;
+  const showRankingsView = selectedTeam === null;
 
-function App() {
-  const [selectedTeam, setSelectedTeam] = useState(
-    () => getInitialState().team,
-  );
-  const [yearRange, setYearRange] = useState<[number, number]>(
-    () => getInitialState().yearRange,
-  );
-  const [showRankingsView, setShowRankingsView] = useState(
-    () => getInitialState().showRankingsView,
-  );
-  const [roleFilter, setRoleFilter] = useState<Set<Role>>(
-    () => getInitialState().roleFilter,
-  );
+  const yearRange = useValidYearRange(searchParams, setSearchParams);
+  const [roleFilter, setRoleFilter] = useState<Set<Role>>(() => {
+    const stored = loadRoleFilter();
+    return (
+      stored?.length ? new Set(stored) : new Set(DEFAULT_ROLE_FILTER)
+    ) as Set<Role>;
+  });
   const [draftClasses, setDraftClasses] = useState<DraftClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const loadIdRef = useRef(0);
-
-  useEffect(() => {
-    const prefs: Parameters<typeof savePreferences>[0] = {
-      yearMin: yearRange[0],
-      yearMax: yearRange[1],
-      view: showRankingsView ? 'rankings' : 'team',
-      roleFilter: Array.from(roleFilter),
-    };
-    if (selectedTeam) prefs.team = selectedTeam;
-    savePreferences(prefs);
-  }, [selectedTeam, yearRange, showRankingsView, roleFilter]);
-
-  useEffect(() => {
-    clearUrlParams();
-  }, []);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [showInfoView, setShowInfoView] = useState(false);
+
+  useEffect(() => {
+    saveRoleFilter(Array.from(roleFilter));
+  }, [roleFilter]);
+
+  const handleYearRangeChange = (range: [number, number]) => {
+    setSearchParams({ from: String(range[0]), to: String(range[1]) });
+  };
 
   const handleCopyLink = () => {
     const url = getShareableUrl(
@@ -116,6 +99,14 @@ function App() {
       setCopyFeedback(true);
       setTimeout(() => setCopyFeedback(false), 2000);
     });
+  };
+
+  const handleTeamSelect = (team: string) => {
+    navigate(`/${team}?from=${yearRange[0]}&to=${yearRange[1]}`);
+  };
+
+  const handleShowRankings = () => {
+    navigate(`/?from=${yearRange[0]}&to=${yearRange[1]}`);
   };
 
   useEffect(() => {
@@ -264,23 +255,20 @@ function App() {
           {!showRankingsView && (
             <button
               type="button"
-              onClick={() => {
-                setSelectedTeam(null);
-                setShowRankingsView(true);
-              }}
+              onClick={handleShowRankings}
               className="app-header__rankings-link"
             >
               Team rankings
             </button>
           )}
           {!showRankingsView && selectedTeam && (
-            <TeamSelector value={selectedTeam} onChange={setSelectedTeam} />
+            <TeamSelector value={selectedTeam} onChange={handleTeamSelect} />
           )}
           <YearRangeFilter
             min={YEAR_MIN}
             max={YEAR_MAX}
             value={yearRange}
-            onChange={setYearRange}
+            onChange={handleYearRangeChange}
           />
           <button
             type="button"
@@ -362,11 +350,8 @@ function App() {
         <TeamRankingsView
           rankings={teamRank.rankings}
           yearCount={yearRange[1] - yearRange[0] + 1}
-          onTeamSelect={(teamId) => {
-            setSelectedTeam(teamId);
-            setShowRankingsView(false);
-          }}
-          onBack={selectedTeam ? () => setShowRankingsView(false) : undefined}
+          onTeamSelect={handleTeamSelect}
+          onBack={selectedTeam ? handleShowRankings : undefined}
         />
       ) : selectedTeam ? (
         <>
@@ -376,7 +361,7 @@ function App() {
                 score={fiveYearScore}
                 yearCount={yearRange[1] - yearRange[0] + 1}
                 rank={teamRank}
-                onShowRankings={() => setShowRankingsView(true)}
+                onShowRankings={handleShowRankings}
               />
             </section>
           )}
@@ -447,6 +432,15 @@ function App() {
         </div>
       )}
     </main>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<AppContent />} />
+      <Route path="/:teamId" element={<AppContent />} />
+    </Routes>
   );
 }
 

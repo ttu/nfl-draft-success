@@ -1,8 +1,10 @@
 /**
- * URL state for shareable links - team (optional) and year range in query params
- * Rankings: ?from=2021&to=2025
- * Team: ?team=SEA&from=2021&to=2025
+ * URL structure:
+ * - Root (rankings): /?from=2021&to=2025
+ * - Team: /SEA?from=2021&to=2025
  */
+
+const BASE = typeof window !== 'undefined' ? import.meta.env.BASE_URL : '/';
 
 export interface UrlState {
   team: string | null;
@@ -10,19 +12,45 @@ export interface UrlState {
   to: number;
 }
 
+function getPathWithoutBase(pathname: string): string {
+  const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+  if (base === '/') return pathname;
+  return pathname.startsWith(base)
+    ? pathname.slice(base.length) || '/'
+    : pathname;
+}
+
 /**
- * @param searchOverride - Optional search string for testing; uses window.location.search when omitted.
+ * Parse team from path. / or empty → null. /SEA → SEA.
+ */
+function parseTeamFromPath(
+  pathname: string,
+  validTeamIds: Set<string>,
+): string | null {
+  const path = getPathWithoutBase(pathname);
+  const segments = path.split('/').filter(Boolean);
+  if (segments.length === 0) return null;
+  const team = segments[0];
+  return validTeamIds.has(team) ? team : null;
+}
+
+/**
+ * @param locationOverride - Optional { pathname, search } for testing.
  */
 export function getUrlState(
   validTeamIds: Set<string>,
   yearBounds: { min: number; max: number },
-  searchOverride?: string,
+  locationOverride?: { pathname: string; search: string },
 ): UrlState | null {
+  const pathname =
+    locationOverride?.pathname ??
+    (typeof window !== 'undefined' ? window.location.pathname : '');
   const search =
-    searchOverride ??
+    locationOverride?.search ??
     (typeof window !== 'undefined' ? window.location.search : '');
+
+  const team = parseTeamFromPath(pathname, validTeamIds);
   const params = new URLSearchParams(search);
-  const teamParam = params.get('team') ?? '';
   const from = parseInt(params.get('from') ?? '', 10);
   const to = parseInt(params.get('to') ?? '', 10);
 
@@ -36,28 +64,30 @@ export function getUrlState(
     return null;
   }
 
-  const team = teamParam && validTeamIds.has(teamParam) ? teamParam : null;
   return { team, from, to };
 }
 
 /**
- * Remove query parameters from the URL, keeping pathname and hash.
+ * Build path for team or rankings. Respects BASE_URL.
  */
-export function clearUrlParams(): void {
-  if (typeof window === 'undefined') return;
-  const url = window.location.pathname + window.location.hash;
-  window.history.replaceState(null, '', url);
+function buildPath(team: string | null): string {
+  const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+  const root = base || '/';
+  if (!team) return root;
+  const basePath = root === '/' ? '' : root;
+  return `${basePath}/${team}`;
 }
 
+/**
+ * Update URL to reflect team and year range.
+ */
 export function updateUrl(team: string | null, from: number, to: number): void {
+  if (typeof window === 'undefined') return;
+  const path = buildPath(team);
   const params = new URLSearchParams();
   params.set('from', String(from));
   params.set('to', String(to));
-  if (team) params.set('team', team);
-  const search = params.toString();
-  const base = window.location.pathname;
-  const hash = window.location.hash;
-  const url = search ? `${base}?${search}${hash}` : base + hash;
+  const url = `${path}?${params.toString()}`;
   window.history.replaceState(null, '', url);
 }
 
@@ -66,13 +96,10 @@ export function getShareableUrl(
   from: number,
   to: number,
 ): string {
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const path = buildPath(team);
   const params = new URLSearchParams();
   params.set('from', String(from));
   params.set('to', String(to));
-  if (team) params.set('team', team);
-  const base =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}${window.location.pathname}`
-      : '';
-  return `${base}?${params.toString()}`;
+  return `${origin}${path}?${params.toString()}`;
 }

@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'nfl-draft-success-preferences';
+const STORAGE_KEY = 'nfl-draft-success-role-filter';
 
 const VALID_ROLES = new Set([
   'core_starter',
@@ -8,74 +8,33 @@ const VALID_ROLES = new Set([
   'non_contributor',
 ]);
 
-export interface StoredPreferences {
-  /** Present when view is 'team'; omitted when view is 'rankings'. */
-  team?: string;
-  yearMin: number;
-  yearMax: number;
-  /** Last view: 'rankings' = team list, 'team' = team-specific. Omit = legacy, treat as 'team'. */
-  view?: 'rankings' | 'team';
-  /** Selected role IDs for roster filter. Omit = all roles. */
-  roleFilter?: string[];
-}
-
-export function loadPreferences(
-  _defaultTeam: string | undefined,
-  defaultYearMin: number,
-  defaultYearMax: number,
-  yearBounds: { min: number; max: number },
-  validTeamIds: Set<string>,
-): StoredPreferences {
+/**
+ * Load persisted role filter. Returns undefined if none stored or invalid.
+ */
+export function loadRoleFilter(): string[] | undefined {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw)
-      return {
-        yearMin: defaultYearMin,
-        yearMax: defaultYearMax,
-      };
+    if (!raw) return undefined;
     const parsed = JSON.parse(raw) as unknown;
     if (
-      parsed &&
-      typeof parsed === 'object' &&
-      'yearMin' in parsed &&
-      'yearMax' in parsed
+      Array.isArray(parsed) &&
+      parsed.length > 0 &&
+      parsed.every((r) => typeof r === 'string' && VALID_ROLES.has(r))
     ) {
-      const { team, yearMin, yearMax, view, roleFilter } =
-        parsed as StoredPreferences;
-      const yearsValid =
-        typeof yearMin === 'number' &&
-        typeof yearMax === 'number' &&
-        yearMin >= yearBounds.min &&
-        yearMax <= yearBounds.max &&
-        yearMin <= yearMax;
-      const teamValid =
-        team === undefined ||
-        (typeof team === 'string' && validTeamIds.has(team));
-      const roleFilterValid =
-        roleFilter === undefined ||
-        (Array.isArray(roleFilter) &&
-          roleFilter.length > 0 &&
-          roleFilter.every((r) => typeof r === 'string' && VALID_ROLES.has(r)));
-      if (yearsValid && teamValid && roleFilterValid) {
-        const result: StoredPreferences = { yearMin, yearMax };
-        if (team !== undefined) result.team = team;
-        if (view === 'rankings' || view === 'team') result.view = view;
-        if (roleFilter !== undefined) result.roleFilter = roleFilter;
-        return result;
-      }
+      return parsed as string[];
     }
   } catch {
     // ignore parse errors
   }
-  return {
-    yearMin: defaultYearMin,
-    yearMax: defaultYearMax,
-  };
+  return undefined;
 }
 
-export function savePreferences(prefs: StoredPreferences): void {
+/**
+ * Persist role filter selection.
+ */
+export function saveRoleFilter(roleFilter: string[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(roleFilter));
   } catch {
     // ignore quota / private mode errors
   }
