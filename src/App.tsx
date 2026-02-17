@@ -49,14 +49,21 @@ function useValidYearRange(
     from >= yearBounds.min &&
     to <= yearBounds.max &&
     from <= to;
+
+  // Avoid setSearchParams loop: only correct once per mount when params are invalid.
+  // setSearchParams triggers navigation → searchParams update → re-render; without
+  // a guard, this can cause an infinite loop in some deployments.
+  const correctedRef = useRef(false);
   useEffect(() => {
-    if (!valid) {
+    if (!valid && !correctedRef.current) {
+      correctedRef.current = true;
       setSearchParams({
         from: String(DEFAULT_YEAR_MIN),
         to: String(YEAR_MAX),
       });
     }
   }, [valid, setSearchParams]);
+
   return valid ? [from, to] : [DEFAULT_YEAR_MIN, YEAR_MAX];
 }
 
