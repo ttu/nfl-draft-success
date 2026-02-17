@@ -153,7 +153,7 @@ function AppContent() {
       cancelled = true;
       if (showLoadingId) clearTimeout(showLoadingId);
     };
-  }, [yearRange]);
+  }, [yearRange[0], yearRange[1]]);
 
   const draftingTeamOnly = true;
   const fiveYearScore =
