@@ -63,6 +63,7 @@ teamGames = Math.max(1, Math.min(17, maxPlayed))
 | Old ID | Current ID |
 |--------|------------|
 | STL | LAR |
+| LA | LAR |
 | SD | LAC |
 | OAK | LV |
 | LVR | LV |

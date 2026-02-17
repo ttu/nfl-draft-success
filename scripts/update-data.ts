@@ -31,6 +31,7 @@ async function fetchCsv(url: string): Promise<string> {
 
 const FRANCHISE_MAP: Record<string, string> = {
   STL: 'LAR',
+  LA: 'LAR', // nflverse snap_counts uses LA for Rams (LAC = Chargers)
   SD: 'LAC',
   OAK: 'LV',
   LVR: 'LV', // nflverse uses LVR for Las Vegas Raiders (2020+)
