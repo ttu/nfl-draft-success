@@ -65,6 +65,7 @@ teamGames = Math.max(1, Math.min(17, maxPlayed))
 | STL | LAR |
 | SD | LAC |
 | OAK | LV |
+| LVR | LV |
 
 **Logic:**
 

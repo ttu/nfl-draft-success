@@ -33,6 +33,7 @@ const FRANCHISE_MAP: Record<string, string> = {
   STL: 'LAR',
   SD: 'LAC',
   OAK: 'LV',
+  LVR: 'LV', // nflverse uses LVR for Las Vegas Raiders (2020+)
   /** nflverse uses different abbrevs; normalize to match teams.ts */
   KAN: 'KC',
   GNB: 'GB',
