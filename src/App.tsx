@@ -7,6 +7,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { AppHeader } from './components/AppHeader';
+import { LoadingSpinner } from './components/LoadingSpinner';
 import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { getPlayerRole } from './lib/getPlayerRole';
 import { loadDataForYears } from './lib/loadData';
@@ -31,15 +32,6 @@ const TeamDetailContent = lazy(() =>
     default: m.TeamDetailContent,
   })),
 );
-
-function LoadingFallback() {
-  return (
-    <div className="app-loading" role="status" aria-live="polite">
-      <span className="app-loading__spinner" aria-hidden />
-      <span className="app-loading__text">Loading…</span>
-    </div>
-  );
-}
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2025;
@@ -275,12 +267,9 @@ function AppContent() {
       )}
 
       {loading ? (
-        <div className="app-loading" role="status" aria-live="polite">
-          <span className="app-loading__spinner" aria-hidden />
-          <span className="app-loading__text">Loading draft data…</span>
-        </div>
+        <LoadingSpinner message="Loading draft data…" />
       ) : (showRankingsView || !selectedTeam) && teamRank?.rankings ? (
-        <Suspense fallback={<LoadingFallback />}>
+        <Suspense fallback={<LoadingSpinner />}>
           <TeamRankingsView
             rankings={teamRank.rankings}
             yearCount={yearRange[1] - yearRange[0] + 1}
@@ -289,7 +278,7 @@ function AppContent() {
           />
         </Suspense>
       ) : selectedTeam && fiveYearScore ? (
-        <Suspense fallback={<LoadingFallback />}>
+        <Suspense fallback={<LoadingSpinner />}>
           <TeamDetailContent
             fiveYearScore={fiveYearScore}
             yearCount={yearRange[1] - yearRange[0] + 1}
@@ -304,16 +293,8 @@ function AppContent() {
             depthChartUrl={depthChartUrl}
           />
         </Suspense>
-      ) : selectedTeam ? (
-        <div className="app-loading" role="status" aria-live="polite">
-          <span className="app-loading__spinner" aria-hidden />
-          <span className="app-loading__text">Loading draft data…</span>
-        </div>
       ) : (
-        <div className="app-loading" role="status" aria-live="polite">
-          <span className="app-loading__spinner" aria-hidden />
-          <span className="app-loading__text">Loading draft data…</span>
-        </div>
+        <LoadingSpinner message="Loading draft data…" />
       )}
     </main>
   );
