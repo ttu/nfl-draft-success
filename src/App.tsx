@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import {
   Routes,
   Route,
@@ -8,16 +8,9 @@ import {
 } from 'react-router-dom';
 import { TeamSelector } from './components/TeamSelector';
 import { YearRangeFilter } from './components/YearRangeFilter';
-import { RoleFilter } from './components/RoleFilter';
-import { InfoView } from './components/InfoView';
 import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
-import { DraftClassCard } from './components/DraftClassCard';
-import { FiveYearScoreCard } from './components/FiveYearScoreCard';
-import { TeamRankingsView } from './components/TeamRankingsView';
-import { PlayerList } from './components/PlayerList';
 import { getPlayerRole } from './lib/getPlayerRole';
 import { loadDataForYears } from './lib/loadData';
-import { getDraftClassMetrics } from './lib/getDraftClassMetrics';
 import { getFiveYearScore } from './lib/getFiveYearScore';
 import { loadRoleFilter, saveRoleFilter } from './lib/storage';
 import { getShareableUrl } from './lib/urlState';
@@ -29,6 +22,29 @@ import {
 } from './data/teamColors';
 import type { DraftClass, Role } from './types';
 import './App.css';
+
+const InfoView = lazy(() =>
+  import('./components/InfoView').then((m) => ({ default: m.InfoView })),
+);
+const TeamRankingsView = lazy(() =>
+  import('./components/TeamRankingsView').then((m) => ({
+    default: m.TeamRankingsView,
+  })),
+);
+const TeamDetailContent = lazy(() =>
+  import('./components/TeamDetailContent').then((m) => ({
+    default: m.TeamDetailContent,
+  })),
+);
+
+function LoadingFallback() {
+  return (
+    <div className="app-loading" role="status" aria-live="polite">
+      <span className="app-loading__spinner" aria-hidden />
+      <span className="app-loading__text">Loading…</span>
+    </div>
+  );
+}
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2025;
@@ -340,7 +356,11 @@ function AppContent() {
         </div>
       </header>
 
-      {showInfoView && <InfoView onClose={() => setShowInfoView(false)} />}
+      {showInfoView && (
+        <Suspense fallback={null}>
+          <InfoView onClose={() => setShowInfoView(false)} />
+        </Suspense>
+      )}
 
       {error && (
         <div role="alert" className="app-error">
@@ -354,84 +374,35 @@ function AppContent() {
           <span className="app-loading__text">Loading draft data…</span>
         </div>
       ) : (showRankingsView || !selectedTeam) && teamRank?.rankings ? (
-        <TeamRankingsView
-          rankings={teamRank.rankings}
-          yearCount={yearRange[1] - yearRange[0] + 1}
-          onTeamSelect={handleTeamSelect}
-          onBack={selectedTeam ? handleShowRankings : undefined}
-        />
+        <Suspense fallback={<LoadingFallback />}>
+          <TeamRankingsView
+            rankings={teamRank.rankings}
+            yearCount={yearRange[1] - yearRange[0] + 1}
+            onTeamSelect={handleTeamSelect}
+            onBack={selectedTeam ? handleShowRankings : undefined}
+          />
+        </Suspense>
+      ) : selectedTeam && fiveYearScore ? (
+        <Suspense fallback={<LoadingFallback />}>
+          <TeamDetailContent
+            fiveYearScore={fiveYearScore}
+            yearCount={yearRange[1] - yearRange[0] + 1}
+            teamRank={teamRank}
+            onShowRankings={handleShowRankings}
+            draftClasses={draftClasses}
+            selectedTeam={selectedTeam}
+            draftingTeamOnly={draftingTeamOnly}
+            roleFilter={roleFilter}
+            setRoleFilter={setRoleFilter}
+            rosterByDraftYear={rosterByDraftYear}
+            depthChartUrl={depthChartUrl}
+          />
+        </Suspense>
       ) : selectedTeam ? (
-        <>
-          {fiveYearScore && (
-            <section className="app-score">
-              <FiveYearScoreCard
-                score={fiveYearScore}
-                yearCount={yearRange[1] - yearRange[0] + 1}
-                rank={teamRank}
-                onShowRankings={handleShowRankings}
-              />
-            </section>
-          )}
-
-          <section
-            className="app-draft-cards"
-            aria-label="Draft class metrics by year"
-          >
-            {draftClasses.map((dc) => {
-              const metrics = getDraftClassMetrics(dc, selectedTeam, {
-                draftingTeamOnly,
-              });
-              return (
-                <DraftClassCard
-                  key={dc.year}
-                  year={dc.year}
-                  metrics={metrics}
-                />
-              );
-            })}
-          </section>
-
-          <section
-            className="app-players"
-            aria-label="Current roster draft picks"
-          >
-            <div className="app-players__header">
-              <h2>Current roster</h2>
-              <RoleFilter value={roleFilter} onChange={setRoleFilter} />
-              {depthChartUrl && (
-                <a
-                  href={depthChartUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="app-players__depth-link"
-                >
-                  Open external depth chart
-                </a>
-              )}
-            </div>
-            <div className="app-roster-by-year">
-              {rosterByDraftYear.map(({ year, picks }) => (
-                <article
-                  key={year}
-                  aria-labelledby={`roster-${year}-title`}
-                  className="roster-year-section"
-                >
-                  <h3
-                    id={`roster-${year}-title`}
-                    className="roster-year-section__title"
-                  >
-                    Draft {year}
-                  </h3>
-                  <PlayerList
-                    picks={picks}
-                    teamId={selectedTeam}
-                    draftingTeamOnly={draftingTeamOnly}
-                  />
-                </article>
-              ))}
-            </div>
-          </section>
-        </>
+        <div className="app-loading" role="status" aria-live="polite">
+          <span className="app-loading__spinner" aria-hidden />
+          <span className="app-loading__text">Loading draft data…</span>
+        </div>
       ) : (
         <div className="app-loading" role="status" aria-live="polite">
           <span className="app-loading__spinner" aria-hidden />
