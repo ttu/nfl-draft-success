@@ -1,0 +1,8 @@
+# Cache draft data JSON files at the edge (Cloudflare).
+# Adjust max-age if you update data more or less often (86400 = 24h).
+/data/*.json
+  Cache-Control: public, max-age=86400
+
+# Hashed JS/CSS; safe to cache long (immutable). Each deploy gets new names, so old URLs never change.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
