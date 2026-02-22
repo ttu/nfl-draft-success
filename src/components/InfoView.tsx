@@ -176,8 +176,8 @@ export function InfoView({ onClose }: InfoViewProps) {
             <h4>Images</h4>
             <ul>
               <li>
-                <strong>Team logos</strong> – ESPN CDN (
-                <code>a.espncdn.com/i/teamlogos/nfl/500/...</code>)
+                <strong>Team logos</strong> – Wikipedia / Wikimedia Commons (per
+                nflverse; Tennessee Titans from nflverse)
               </li>
               <li>
                 <strong>Player headshots</strong> – URLs from nflverse players
