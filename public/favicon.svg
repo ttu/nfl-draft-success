@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="6" fill="#1a1a1a"/>
-  <path d="M16 6L8 12v8l8 6 8-6v-8L16 6z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
-  <path d="M16 6v12M8 12l8 6 8-6" stroke="#fff" stroke-width="1" stroke-linecap="round" fill="none"/>
+  <rect width="32" height="32" rx="6" fill="none"/>
+  <!-- Football shape -->
+  <ellipse cx="16" cy="16" rx="10" ry="6.5" transform="rotate(-45 16 16)" fill="#8B4513" stroke="#5C2E00" stroke-width="0.5"/>
+  <!-- Highlight -->
+  <ellipse cx="14.5" cy="14.5" rx="7" ry="4" transform="rotate(-45 14.5 14.5)" fill="#A0622E" opacity="0.4"/>
+  <!-- Laces - center line -->
+  <line x1="11.5" y1="20.5" x2="20.5" y2="11.5" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
+  <!-- Laces - cross stitches -->
+  <line x1="13.2" y1="16.2" x2="15.8" y2="18.8" stroke="#fff" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="14.8" y1="14.8" x2="17.4" y2="17.4" stroke="#fff" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="16.5" y1="13.5" x2="19.1" y2="16.1" stroke="#fff" stroke-width="0.8" stroke-linecap="round"/>
 </svg>
