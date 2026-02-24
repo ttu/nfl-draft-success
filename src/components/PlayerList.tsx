@@ -80,7 +80,10 @@ export function PlayerList({
             <div className="player-card__avatar" aria-hidden>
               {pick.headshotUrl ? (
                 <img
-                  src={pick.headshotUrl}
+                  src={pick.headshotUrl.replace(
+                    '/f_auto,q_auto/',
+                    '/f_auto,q_auto,w_128,h_128,c_thumb,g_face/',
+                  )}
                   alt=""
                   className="player-card__headshot"
                   loading="lazy"
