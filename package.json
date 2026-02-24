@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate-og-image && tsc -b && vite build",
+    "build": "npm run generate-og-image && npm run generate-rankings && tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "prepare": "husky",
-    "update-data": "tsx scripts/update-data.ts",
+    "update-data": "tsx scripts/update-data.ts && tsx scripts/generate-default-rankings.ts",
+    "generate-rankings": "tsx scripts/generate-default-rankings.ts",
     "generate-og-image": "tsx scripts/generate-og-image.ts",
     "validate": "npm run format:check && npm run type-check && npm run lint && npm test && npm run build",
     "preview": "vite preview"

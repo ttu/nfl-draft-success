@@ -10,22 +10,19 @@ import { AppHeader } from './components/AppHeader';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { getPlayerRole } from './lib/getPlayerRole';
-import { loadDataForYears } from './lib/loadData';
+import { loadDataForYears, loadDefaultRankings } from './lib/loadData';
 import { getFiveYearScore } from './lib/getFiveYearScore';
 import { loadRoleFilter, saveRoleFilter } from './lib/storage';
 import { getShareableUrl } from './lib/urlState';
 import { TEAMS } from './data/teams';
 import { getTeamDepthChartUrl } from './data/teamColors';
-import type { DraftClass, Role } from './types';
+import type { DraftClass, DefaultRankingsData, Role } from './types';
 import './App.css';
+
+import { TeamRankingsView } from './components/TeamRankingsView';
 
 const InfoView = lazy(() =>
   import('./components/InfoView').then((m) => ({ default: m.InfoView })),
-);
-const TeamRankingsView = lazy(() =>
-  import('./components/TeamRankingsView').then((m) => ({
-    default: m.TeamRankingsView,
-  })),
 );
 const TeamDetailContent = lazy(() =>
   import('./components/TeamDetailContent').then((m) => ({
@@ -88,12 +85,22 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const loadIdRef = useRef(0);
+  const [defaultRankings, setDefaultRankings] =
+    useState<DefaultRankingsData | null>(null);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [showInfoView, setShowInfoView] = useState(false);
 
   useEffect(() => {
     saveRoleFilter(Array.from(roleFilter));
   }, [roleFilter]);
+
+  useEffect(() => {
+    loadDefaultRankings()
+      .then(setDefaultRankings)
+      .catch(() => {
+        // Silently fail — falls back to full data load
+      });
+  }, []);
 
   const handleYearRangeChange = (range: [number, number]) => {
     setSearchParams({ from: String(range[0]), to: String(range[1]) });
@@ -266,17 +273,21 @@ function AppContent() {
         </div>
       )}
 
-      {loading ? (
+      {loading && showRankingsView && defaultRankings ? (
+        <TeamRankingsView
+          rankings={defaultRankings.rankings}
+          yearCount={yearRange[1] - yearRange[0] + 1}
+          onTeamSelect={handleTeamSelect}
+        />
+      ) : loading ? (
         <LoadingSpinner message="Loading draft data…" />
       ) : (showRankingsView || !selectedTeam) && teamRank?.rankings ? (
-        <Suspense fallback={<LoadingSpinner />}>
-          <TeamRankingsView
-            rankings={teamRank.rankings}
-            yearCount={yearRange[1] - yearRange[0] + 1}
-            onTeamSelect={handleTeamSelect}
-            onBack={selectedTeam ? handleShowRankings : undefined}
-          />
-        </Suspense>
+        <TeamRankingsView
+          rankings={teamRank.rankings}
+          yearCount={yearRange[1] - yearRange[0] + 1}
+          onTeamSelect={handleTeamSelect}
+          onBack={selectedTeam ? handleShowRankings : undefined}
+        />
       ) : selectedTeam && fiveYearScore ? (
         <Suspense fallback={<LoadingSpinner />}>
           <TeamDetailContent

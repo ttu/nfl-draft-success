@@ -38,3 +38,17 @@ export interface DraftClass {
   year: number;
   picks: DraftPick[];
 }
+
+export interface DefaultRankingsData {
+  from: number;
+  to: number;
+  rankings: Array<{
+    teamId: string;
+    teamName: string;
+    score: number;
+    rank: number;
+    totalPicks: number;
+    coreStarterRate: number;
+    retentionRate: number;
+  }>;
+}
