@@ -176,8 +176,14 @@ export function InfoView({ onClose }: InfoViewProps) {
             <h4>Images</h4>
             <ul>
               <li>
-                <strong>Team logos</strong> – Wikipedia / Wikimedia Commons (per
-                nflverse; Tennessee Titans from nflverse)
+                <strong>Team logos</strong> – Courtesy of{' '}
+                <a
+                  href="https://www.sportslogos.net/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  SportsLogos.net
+                </a>
               </li>
               <li>
                 <strong>Player headshots</strong> – URLs from nflverse players
@@ -188,6 +194,13 @@ export function InfoView({ onClose }: InfoViewProps) {
                 chart for the selected team
               </li>
             </ul>
+            <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+              Team logos are the property of their respective owners. We do not
+              own these logos and use them under a fair use argument: small
+              resolution images for educational purposes only, which do not
+              impact the economic viability of the logos for their owners. This
+              is not legal advice.
+            </p>
           </section>
         </div>
       </div>

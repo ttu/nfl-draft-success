@@ -43,6 +43,7 @@ export function TeamRankingsView({
                 src={getTeamLogoUrl(r.teamId)}
                 alt=""
                 className="team-rankings-view__logo"
+                referrerPolicy="no-referrer"
               />
               <span className="team-rankings-view__name">{r.teamName}</span>
               <span className="team-rankings-view__score">

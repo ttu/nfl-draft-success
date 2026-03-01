@@ -36,45 +36,45 @@ export const TEAM_COLORS: Record<string, string> = {
   WAS: '#5a1414',
 };
 
-/** Team logo URLs: Wikipedia (Wikimedia Commons) per nflverse teams_colors_logos; TEN from nflverse (no Wikipedia asset). */
+/** Team logo URLs from SportsLogos.net (small thumbnails for educational/fair use). */
 const TEAM_LOGO_URL: Record<string, string> = {
-  ARI: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/72/Arizona_Cardinals_logo.svg/179px-Arizona_Cardinals_logo.svg.png',
-  ATL: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/Atlanta_Falcons_logo.svg/192px-Atlanta_Falcons_logo.svg.png',
-  BAL: 'https://upload.wikimedia.org/wikipedia/en/thumb/1/16/Baltimore_Ravens_logo.svg/193px-Baltimore_Ravens_logo.svg.png',
-  BUF: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/77/Buffalo_Bills_logo.svg/189px-Buffalo_Bills_logo.svg.png',
-  CAR: 'https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/Carolina_Panthers_logo.svg/100px-Carolina_Panthers_logo.svg.png',
-  CHI: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Chicago_Bears_logo.svg/100px-Chicago_Bears_logo.svg.png',
-  CIN: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cincinnati_Bengals_logo.svg/100px-Cincinnati_Bengals_logo.svg.png',
-  CLE: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d9/Cleveland_Browns_logo.svg/100px-Cleveland_Browns_logo.svg.png',
-  DAL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Dallas_Cowboys.svg/100px-Dallas_Cowboys.svg.png',
-  DEN: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/44/Denver_Broncos_logo.svg/100px-Denver_Broncos_logo.svg.png',
-  DET: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/71/Detroit_Lions_logo.svg/100px-Detroit_Lions_logo.svg.png',
-  GB: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Green_Bay_Packers_logo.svg/100px-Green_Bay_Packers_logo.svg.png',
-  HOU: 'https://upload.wikimedia.org/wikipedia/en/thumb/2/28/Houston_Texans_logo.svg/100px-Houston_Texans_logo.svg.png',
-  IND: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Indianapolis_Colts_logo.svg/100px-Indianapolis_Colts_logo.svg.png',
-  JAX: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/74/Jacksonville_Jaguars_logo.svg/100px-Jacksonville_Jaguars_logo.svg.png',
-  KC: 'https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Kansas_City_Chiefs_logo.svg/100px-Kansas_City_Chiefs_logo.svg.png',
-  LAC: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/72/NFL_Chargers_logo.svg/100px-NFL_Chargers_logo.svg.png',
-  LAR: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Los_Angeles_Rams_logo.svg/100px-Los_Angeles_Rams_logo.svg.png',
-  LV: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/48/Las_Vegas_Raiders_logo.svg/100px-Las_Vegas_Raiders_logo.svg.png',
-  MIA: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Miami_Dolphins_logo.svg/100px-Miami_Dolphins_logo.svg.png',
-  MIN: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/48/Minnesota_Vikings_logo.svg/98px-Minnesota_Vikings_logo.svg.png',
-  NE: 'https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/New_England_Patriots_logo.svg/100px-New_England_Patriots_logo.svg.png',
-  NO: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/New_Orleans_Saints_logo.svg/98px-New_Orleans_Saints_logo.svg.png',
-  NYG: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/New_York_Giants_logo.svg/100px-New_York_Giants_logo.svg.png',
-  NYJ: 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/New_York_Jets_logo.svg/100px-New_York_Jets_logo.svg.png',
-  PHI: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Philadelphia_Eagles_logo.svg/100px-Philadelphia_Eagles_logo.svg.png',
-  PIT: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Pittsburgh_Steelers_logo.svg/100px-Pittsburgh_Steelers_logo.svg.png',
-  SEA: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Seattle_Seahawks_logo.svg/100px-Seattle_Seahawks_logo.svg.png',
-  SF: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/San_Francisco_49ers_logo.svg/100px-San_Francisco_49ers_logo.svg.png',
-  TB: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/Tampa_Bay_Buccaneers_logo.svg/100px-Tampa_Bay_Buccaneers_logo.svg.png',
-  TEN: 'https://github.com/nflverse/nflverse-pbp/raw/master/titans.png',
-  WAS: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Washington_commanders.svg/100px-Washington_commanders.svg.png',
+  ARI: 'https://content.sportslogos.net/logos/7/177/thumbs/kwth8f1cfa2sch5xhjjfaof90.gif',
+  ATL: 'https://content.sportslogos.net/logos/7/173/thumbs/299.gif',
+  BAL: 'https://content.sportslogos.net/logos/7/153/thumbs/318.gif',
+  BUF: 'https://content.sportslogos.net/logos/7/149/thumbs/n0fd1z6xmhigb0eej3323ebwq.gif',
+  CAR: 'https://content.sportslogos.net/logos/7/174/thumbs/f1wggq2k8ql88fe33jzhw641u.gif',
+  CHI: 'https://content.sportslogos.net/logos/7/169/thumbs/16975942023.gif',
+  CIN: 'https://content.sportslogos.net/logos/7/154/thumbs/15420492021.gif',
+  CLE: 'https://content.sportslogos.net/logos/7/155/thumbs/15566962024.gif',
+  DAL: 'https://content.sportslogos.net/logos/7/165/thumbs/406.gif',
+  DEN: 'https://content.sportslogos.net/logos/7/161/thumbs/9ebzja2zfeigaziee8y605aqp.gif',
+  DET: 'https://content.sportslogos.net/logos/7/170/thumbs/17013982017.gif',
+  GB: 'https://content.sportslogos.net/logos/7/171/thumbs/dcy03myfhffbki5d7il3.gif',
+  HOU: 'https://content.sportslogos.net/logos/7/157/thumbs/15758902024.gif',
+  IND: 'https://content.sportslogos.net/logos/7/158/thumbs/593.gif',
+  JAX: 'https://content.sportslogos.net/logos/7/159/thumbs/15988562013.gif',
+  KC: 'https://content.sportslogos.net/logos/7/162/thumbs/kansas_city_chiefs_logo_primary_1972sportslogosnet6237.gif',
+  LAC: 'https://content.sportslogos.net/logos/7/6446/thumbs/644616602020.gif',
+  LAR: 'https://content.sportslogos.net/logos/7/5941/thumbs/594183342020.gif',
+  LV: 'https://content.sportslogos.net/logos/7/6708/thumbs/670885212020.gif',
+  MIA: 'https://content.sportslogos.net/logos/7/150/thumbs/miami_dolphins_logo_primary_2018sportslogosnet4756.gif',
+  MIN: 'https://content.sportslogos.net/logos/7/172/thumbs/17227042013.gif',
+  NE: 'https://content.sportslogos.net/logos/7/151/thumbs/y71myf8mlwlk8lbgagh3fd5e0.gif',
+  NO: 'https://content.sportslogos.net/logos/7/175/thumbs/907.gif',
+  NYG: 'https://content.sportslogos.net/logos/7/166/thumbs/919.gif',
+  NYJ: 'https://content.sportslogos.net/logos/7/152/thumbs/15274172024.gif',
+  PHI: 'https://content.sportslogos.net/logos/7/167/thumbs/960.gif',
+  PIT: 'https://content.sportslogos.net/logos/7/156/thumbs/970.gif',
+  SEA: 'https://content.sportslogos.net/logos/7/180/thumbs/pfiobtreaq7j0pzvadktsc6jv.gif',
+  SF: 'https://content.sportslogos.net/logos/7/179/thumbs/17994552009.gif',
+  TB: 'https://content.sportslogos.net/logos/7/176/thumbs/17683632020.gif',
+  TEN: 'https://content.sportslogos.net/logos/7/160/thumbs/1053.gif',
+  WAS: 'https://content.sportslogos.net/logos/7/6832/thumbs/683260482022.gif',
 };
 
-/** NFL league logo (nflverse) – use on rankings/list view when no team selected */
+/** NFL league logo (SportsLogos.net) – use on rankings/list view when no team selected */
 export const NFL_LOGO_URL =
-  'https://raw.githubusercontent.com/nflverse/nflverse-pbp/master/NFL.png';
+  'https://content.sportslogos.net/logos/7/1007/thumbs/dwuw5lojnwsj12vfe0hfa6z47.gif';
 
 export function getTeamLogoUrl(teamId: string): string {
   return TEAM_LOGO_URL[teamId] ?? '';

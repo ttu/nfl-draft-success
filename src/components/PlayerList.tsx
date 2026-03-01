@@ -74,6 +74,7 @@ export function PlayerList({
                 src={logoUrl}
                 alt=""
                 className="player-card__logo"
+                referrerPolicy="no-referrer"
                 loading="lazy"
               />
             </div>

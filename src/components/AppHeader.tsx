@@ -36,6 +36,7 @@ export function AppHeader({
             src={getTeamLogoUrl(selectedTeam)}
             alt=""
             className="app-header__logo"
+            referrerPolicy="no-referrer"
             aria-hidden
           />
         ) : (
@@ -43,6 +44,7 @@ export function AppHeader({
             src={NFL_LOGO_URL}
             alt=""
             className="app-header__logo"
+            referrerPolicy="no-referrer"
             aria-hidden
           />
         )}

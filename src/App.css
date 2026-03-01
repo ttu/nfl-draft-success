@@ -141,6 +141,33 @@
   }
 }
 
+.app-footer {
+  margin-top: 3rem;
+  padding: 1.5rem 0 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
+.app-footer p {
+  margin: 0 0 0.35rem;
+}
+
+.app-footer p:last-child {
+  margin-bottom: 0;
+}
+
+.app-footer a {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+}
+
+.app-footer a:hover {
+  text-decoration: underline;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .app-error {
   padding: 1rem;
   margin-bottom: 1rem;
@@ -1133,5 +1160,18 @@
 
   .player-card__meta {
     color: rgba(0, 0, 0, 0.55);
+  }
+
+  .app-footer {
+    border-top-color: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .app-footer a {
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .app-footer a:hover {
+    color: rgba(0, 0, 0, 0.7);
   }
 }
