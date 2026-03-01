@@ -55,6 +55,21 @@ Guide for AI-assisted development on NFL Draft Retention & Role Tracker. All rel
 
 ---
 
+## Visual Verification (MANDATORY)
+
+After ANY implementation change that affects UI (components, styles, layout, data display), you MUST run the visual verification loop before considering the work complete:
+
+1. **Invoke `/visual-verify`** — this runs the full verification loop with Playwright MCP
+2. The loop takes screenshots, analyzes them, and fixes any visual/UX/layout issues
+3. **Zero tolerance** — every issue found must be fixed, no deferrals
+4. Work is NOT complete until visual verification passes
+
+The Playwright MCP server is configured in `.claude/settings.json` and provides browser automation tools (`browser_navigate`, `browser_take_screenshot`, `browser_console_messages`, etc.).
+
+Session artifacts are saved to `verification-sessions/` (gitignored).
+
+---
+
 ## Version Control & PR Workflow
 
 **Commits:** `type: description` + optional bullet details. Types: `feat`, `fix`, `refactor`, `test`, `docs`, `style`, `chore`, `ci`. Never `--no-verify`.
