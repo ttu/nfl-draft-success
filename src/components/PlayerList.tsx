@@ -1,6 +1,18 @@
-import type { DraftPick, Role } from '../types';
+import type { DraftPick, Role, Season } from '../types';
 import { getPlayerRole } from '../lib/getPlayerRole';
 import { TEAM_COLORS, getTeamLogoUrl } from '../data/teamColors';
+
+function getLatestSeason(pick: DraftPick): Season | undefined {
+  return [...pick.seasons].sort((a, b) => b.year - a.year)[0];
+}
+
+function isDeparted(pick: DraftPick): boolean {
+  return getLatestSeason(pick)?.retained === false;
+}
+
+function getCurrentTeam(pick: DraftPick): string | undefined {
+  return getLatestSeason(pick)?.currentTeam;
+}
 
 const ROLE_COLORS: Record<Role, { bg: string; text: string }> = {
   core_starter: { bg: '#16a34a', text: '#fff' },
@@ -58,25 +70,40 @@ export function PlayerList({
         const role = getPlayerRole(pick, { draftingTeamOnly });
         const colors = ROLE_COLORS[role];
         const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
+        const departed = isDeparted(pick);
+        const currentTeam = departed ? getCurrentTeam(pick) : undefined;
+        const isFa = departed && !currentTeam;
+        const displayAccent = isFa
+          ? '#6b7280'
+          : departed && currentTeam
+            ? (TEAM_COLORS[currentTeam] ?? accentColor)
+            : accentColor;
+        const displayLogo = isFa
+          ? ''
+          : departed && currentTeam
+            ? getTeamLogoUrl(currentTeam)
+            : logoUrl;
         return (
           <li
             key={`${pick.playerId}-${draftYear}`}
-            className="player-card"
-            style={{ '--card-accent': accentColor } as React.CSSProperties}
+            className={`player-card${departed ? ' player-card--departed' : ''}`}
+            style={{ '--card-accent': displayAccent } as React.CSSProperties}
           >
             <div className="player-card__draft">RD {pick.round}</div>
             <div
               className="player-card__accent"
-              style={{ backgroundColor: accentColor }}
+              style={{ backgroundColor: displayAccent }}
               aria-hidden
             >
-              <img
-                src={logoUrl}
-                alt=""
-                className="player-card__logo"
-                referrerPolicy="no-referrer"
-                loading="lazy"
-              />
+              {displayLogo && (
+                <img
+                  src={displayLogo}
+                  alt=""
+                  className="player-card__logo"
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
+                />
+              )}
             </div>
             <div className="player-card__avatar" aria-hidden>
               {pick.headshotUrl ? (
@@ -109,6 +136,12 @@ export function PlayerList({
               )}
               <span className="player-card__meta">
                 {pick.position} · Pick {pick.overallPick}
+                {departed && (
+                  <span className="player-card__departed-team">
+                    {' \u2192 '}
+                    {currentTeam ?? 'FA'}
+                  </span>
+                )}
               </span>
             </div>
             <div

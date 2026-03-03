@@ -12,7 +12,12 @@ import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { getPlayerRole } from './lib/getPlayerRole';
 import { loadDataForYears, loadDefaultRankings } from './lib/loadData';
 import { getFiveYearScore } from './lib/getFiveYearScore';
-import { loadRoleFilter, saveRoleFilter } from './lib/storage';
+import {
+  loadRoleFilter,
+  saveRoleFilter,
+  loadShowDeparted,
+  saveShowDeparted,
+} from './lib/storage';
 import { getShareableUrl } from './lib/urlState';
 import { TEAMS } from './data/teams';
 import { getTeamDepthChartUrl } from './data/teamColors';
@@ -89,10 +94,15 @@ function AppContent() {
     useState<DefaultRankingsData | null>(null);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [showInfoView, setShowInfoView] = useState(false);
+  const [showDeparted, setShowDeparted] = useState(() => loadShowDeparted());
 
   useEffect(() => {
     saveRoleFilter(Array.from(roleFilter));
   }, [roleFilter]);
+
+  useEffect(() => {
+    saveShowDeparted(showDeparted);
+  }, [showDeparted]);
 
   useEffect(() => {
     loadDefaultRankings()
@@ -218,18 +228,22 @@ function AppContent() {
       a.draftYear - b.draftYear || a.pick.overallPick - b.pick.overallPick,
   );
 
-  const retainedPicks = allTeamPicks.filter(({ pick }) => {
-    const latestSeason = [...pick.seasons].sort((a, b) => b.year - a.year)[0];
-    return latestSeason?.retained === true;
-  });
+  const rosterPicks = showDeparted
+    ? allTeamPicks
+    : allTeamPicks.filter(({ pick }) => {
+        const latestSeason = [...pick.seasons].sort(
+          (a, b) => b.year - a.year,
+        )[0];
+        return latestSeason?.retained === true;
+      });
 
-  const filteredRetainedPicks = retainedPicks.filter(({ pick }) =>
+  const filteredRosterPicks = rosterPicks.filter(({ pick }) =>
     roleFilterAllows(roleFilter, getPlayerRole(pick, { draftingTeamOnly })),
   );
 
   const rosterByDraftYear = (() => {
-    const byYear = new Map<number, typeof filteredRetainedPicks>();
-    for (const item of filteredRetainedPicks) {
+    const byYear = new Map<number, typeof filteredRosterPicks>();
+    for (const item of filteredRosterPicks) {
       const list = byYear.get(item.draftYear) ?? [];
       list.push(item);
       byYear.set(item.draftYear, list);
@@ -302,6 +316,8 @@ function AppContent() {
             setRoleFilter={setRoleFilter}
             rosterByDraftYear={rosterByDraftYear}
             depthChartUrl={depthChartUrl}
+            showDeparted={showDeparted}
+            setShowDeparted={setShowDeparted}
           />
         </Suspense>
       ) : (

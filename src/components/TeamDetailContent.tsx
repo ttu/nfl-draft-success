@@ -24,6 +24,8 @@ export interface TeamDetailContentProps {
   setRoleFilter: (value: Set<Role>) => void;
   rosterByDraftYear: { year: number; picks: RosterPick[] }[];
   depthChartUrl: string | null;
+  showDeparted: boolean;
+  setShowDeparted: (value: boolean) => void;
 }
 
 export function TeamDetailContent({
@@ -38,6 +40,8 @@ export function TeamDetailContent({
   setRoleFilter,
   rosterByDraftYear,
   depthChartUrl,
+  showDeparted,
+  setShowDeparted,
 }: TeamDetailContentProps) {
   return (
     <>
@@ -67,6 +71,15 @@ export function TeamDetailContent({
       <section className="app-players" aria-label="Current roster draft picks">
         <div className="app-players__header">
           <h2>Current roster</h2>
+          <label className="app-players__departed-toggle">
+            <input
+              type="checkbox"
+              checked={showDeparted}
+              onChange={(e) => setShowDeparted(e.target.checked)}
+              aria-label="Show departed players"
+            />
+            <span>Show departed</span>
+          </label>
           <RoleFilter value={roleFilter} onChange={setRoleFilter} />
           {depthChartUrl && (
             <a

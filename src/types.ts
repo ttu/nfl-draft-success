@@ -13,6 +13,8 @@ export interface Season {
   retained: boolean;
   /** Weeks on official injury report (from nflverse injuries data) */
   injuryReportWeeks?: number;
+  /** Team abbreviation the player played for (set when retained === false) */
+  currentTeam?: string;
 }
 
 export interface DraftPick {

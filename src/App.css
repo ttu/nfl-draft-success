@@ -564,6 +564,23 @@
   margin-bottom: 1.5rem;
 }
 
+.app-players__departed-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #888;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-players__departed-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: #4a5568;
+  cursor: pointer;
+}
+
 @media (max-width: 540px) {
   .app-players__header {
     gap: 0.75rem;
@@ -796,6 +813,28 @@
 
 .player-card:hover {
   background: rgba(255, 255, 255, 0.06);
+}
+
+.player-card--departed {
+  opacity: 0.5;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(255, 255, 255, 0.02) 8px,
+    rgba(255, 255, 255, 0.02) 16px
+  );
+  filter: grayscale(0.6);
+}
+
+.player-card--departed:hover {
+  opacity: 0.75;
+  filter: grayscale(0.3);
+}
+
+.player-card__departed-team {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
 }
 
 .player-card__draft {
@@ -1160,6 +1199,20 @@
 
   .player-card__meta {
     color: rgba(0, 0, 0, 0.55);
+  }
+
+  .player-card--departed {
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 8px,
+      rgba(0, 0, 0, 0.02) 8px,
+      rgba(0, 0, 0, 0.02) 16px
+    );
+  }
+
+  .player-card__departed-team {
+    color: rgba(0, 0, 0, 0.6);
   }
 
   .app-footer {

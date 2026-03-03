@@ -39,3 +39,30 @@ export function saveRoleFilter(roleFilter: string[]): void {
     // ignore quota / private mode errors
   }
 }
+
+const SHOW_DEPARTED_KEY = 'nfl-draft-success-show-departed';
+
+/**
+ * Load persisted showDeparted toggle. Returns false if not stored or invalid.
+ */
+export function loadShowDeparted(): boolean {
+  try {
+    const raw = localStorage.getItem(SHOW_DEPARTED_KEY);
+    if (raw === null) return false;
+    const parsed = JSON.parse(raw) as unknown;
+    return parsed === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Persist showDeparted toggle.
+ */
+export function saveShowDeparted(value: boolean): void {
+  try {
+    localStorage.setItem(SHOW_DEPARTED_KEY, JSON.stringify(value));
+  } catch {
+    // ignore quota / private mode errors
+  }
+}

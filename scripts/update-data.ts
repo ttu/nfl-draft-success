@@ -275,6 +275,7 @@ async function main() {
         snapShare: number;
         retained: boolean;
         injuryReportWeeks?: number;
+        currentTeam?: string;
       }>;
     }> = [];
 
@@ -294,6 +295,7 @@ async function main() {
         snapShare: number;
         retained: boolean;
         injuryReportWeeks?: number;
+        currentTeam?: string;
       }> = [];
 
       for (let s = year; s <= MAX_SEASON; s++) {
@@ -331,6 +333,15 @@ async function main() {
           }
         }
 
+        // Determine currentTeam for departed players
+        const currentTeamId = !retained
+          ? primaryTeam !== ''
+            ? normalizeTeam(primaryTeam)
+            : injuryTeam !== ''
+              ? normalizeTeam(injuryTeam)
+              : undefined
+          : undefined;
+
         seasons.push({
           year: s,
           gamesPlayed,
@@ -338,6 +349,7 @@ async function main() {
           snapShare,
           retained,
           ...(injuryReportWeeks > 0 ? { injuryReportWeeks } : {}),
+          ...(currentTeamId ? { currentTeam: currentTeamId } : {}),
         });
       }
 

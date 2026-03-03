@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { loadRoleFilter, saveRoleFilter } from './storage';
+import {
+  loadRoleFilter,
+  saveRoleFilter,
+  loadShowDeparted,
+  saveShowDeparted,
+} from './storage';
 
 describe('storage', () => {
   beforeEach(() => {
@@ -40,5 +45,30 @@ describe('storage', () => {
     ];
     saveRoleFilter(roles);
     expect(loadRoleFilter()).toEqual(roles);
+  });
+});
+
+describe('showDeparted storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('returns false when localStorage is empty', () => {
+    expect(loadShowDeparted()).toBe(false);
+  });
+
+  it('loads and persists true', () => {
+    saveShowDeparted(true);
+    expect(loadShowDeparted()).toBe(true);
+  });
+
+  it('loads and persists false', () => {
+    saveShowDeparted(false);
+    expect(loadShowDeparted()).toBe(false);
+  });
+
+  it('returns false for non-boolean stored value', () => {
+    localStorage.setItem('nfl-draft-success-show-departed', '"yes"');
+    expect(loadShowDeparted()).toBe(false);
   });
 });

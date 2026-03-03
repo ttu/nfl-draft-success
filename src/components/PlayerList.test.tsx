@@ -58,4 +58,76 @@ describe('PlayerList', () => {
     expect(screen.getByText('Non Contributor')).toBeInTheDocument();
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
   });
+
+  it('renders departed players with current team badge and departed class', () => {
+    const departedPicks = [
+      {
+        pick: {
+          playerId: 'p3',
+          playerName: 'Traded Away',
+          position: 'WR',
+          round: 2,
+          overallPick: 40,
+          teamId: 'KC',
+          seasons: [
+            {
+              year: 2022,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.7,
+              retained: true,
+            },
+            {
+              year: 2023,
+              gamesPlayed: 17,
+              teamGames: 17,
+              snapShare: 0.8,
+              retained: false,
+              currentTeam: 'NYG',
+            },
+          ],
+        } as DraftPick,
+        draftYear: 2022,
+      },
+    ];
+    render(<PlayerList picks={departedPicks} teamId="KC" draftingTeamOnly />);
+    expect(screen.getByText('Traded Away')).toBeInTheDocument();
+    expect(screen.getByText(/→ NYG/)).toBeInTheDocument();
+    const card = screen.getByRole('listitem');
+    expect(card.className).toContain('player-card--departed');
+  });
+
+  it('shows FA for departed players with no currentTeam', () => {
+    const faPicks = [
+      {
+        pick: {
+          playerId: 'p4',
+          playerName: 'Free Agent Guy',
+          position: 'RB',
+          round: 5,
+          overallPick: 150,
+          teamId: 'KC',
+          seasons: [
+            {
+              year: 2022,
+              gamesPlayed: 10,
+              teamGames: 17,
+              snapShare: 0.4,
+              retained: true,
+            },
+            {
+              year: 2023,
+              gamesPlayed: 0,
+              teamGames: 17,
+              snapShare: 0,
+              retained: false,
+            },
+          ],
+        } as DraftPick,
+        draftYear: 2022,
+      },
+    ];
+    render(<PlayerList picks={faPicks} teamId="KC" draftingTeamOnly />);
+    expect(screen.getByText('FA')).toBeInTheDocument();
+  });
 });
