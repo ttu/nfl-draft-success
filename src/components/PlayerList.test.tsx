@@ -92,7 +92,9 @@ describe('PlayerList', () => {
     ];
     render(<PlayerList picks={departedPicks} teamId="KC" draftingTeamOnly />);
     expect(screen.getByText('Traded Away')).toBeInTheDocument();
-    expect(screen.getByText(/→ NYG/)).toBeInTheDocument();
+    // Team journey shows drafting team through current team
+    expect(screen.getByText(/→.*KC/)).toBeInTheDocument();
+    expect(screen.getByText(/→.*NYG/)).toBeInTheDocument();
     const card = screen.getByRole('listitem');
     expect(card.className).toContain('player-card--departed');
   });
@@ -128,6 +130,68 @@ describe('PlayerList', () => {
       },
     ];
     render(<PlayerList picks={faPicks} teamId="KC" draftingTeamOnly />);
-    expect(screen.getByText('FA')).toBeInTheDocument();
+    // Team journey shows drafting team then FA
+    expect(screen.getByText(/→.*KC/)).toBeInTheDocument();
+    expect(screen.getByText(/→.*FA/)).toBeInTheDocument();
+  });
+
+  it('shows full team journey for players who moved through multiple teams', () => {
+    const multiTeamPicks = [
+      {
+        pick: {
+          playerId: 'p5',
+          playerName: 'Journey Man',
+          position: 'QB',
+          round: 1,
+          overallPick: 3,
+          teamId: 'CLE',
+          seasons: [
+            {
+              year: 2018,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.95,
+              retained: true,
+            },
+            {
+              year: 2019,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.95,
+              retained: true,
+            },
+            {
+              year: 2020,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.95,
+              retained: false,
+              currentTeam: 'CAR',
+            },
+            {
+              year: 2021,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.95,
+              retained: false,
+              currentTeam: 'TB',
+            },
+            {
+              year: 2022,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.95,
+              retained: false,
+              currentTeam: 'TB',
+            },
+          ],
+        } as DraftPick,
+        draftYear: 2018,
+      },
+    ];
+    render(<PlayerList picks={multiTeamPicks} teamId="CLE" draftingTeamOnly />);
+    expect(screen.getByText(/→.*CLE/)).toBeInTheDocument();
+    expect(screen.getByText(/→.*CAR/)).toBeInTheDocument();
+    expect(screen.getByText(/→.*TB/)).toBeInTheDocument();
   });
 });
