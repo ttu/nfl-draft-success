@@ -14,6 +14,18 @@ function getCurrentTeam(pick: DraftPick): string | undefined {
   return getLatestSeason(pick)?.currentTeam;
 }
 
+function getTeamJourney(pick: DraftPick): string[] {
+  const journey: string[] = [];
+  const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
+  for (const season of sortedSeasons) {
+    const team = season.retained ? pick.teamId : (season.currentTeam ?? 'FA');
+    if (journey[journey.length - 1] !== team) {
+      journey.push(team);
+    }
+  }
+  return journey;
+}
+
 const ROLE_COLORS: Record<Role, { bg: string; text: string }> = {
   core_starter: { bg: '#16a34a', text: '#fff' },
   starter_when_healthy: { bg: '#15803d', text: '#fff' },
@@ -138,8 +150,12 @@ export function PlayerList({
                 {pick.position} · Pick {pick.overallPick}
                 {departed && (
                   <span className="player-card__departed-team">
-                    {' \u2192 '}
-                    {currentTeam ?? 'FA'}
+                    {getTeamJourney(pick).map((team, i) => (
+                      <span key={i}>
+                        {' → '}
+                        {team}
+                      </span>
+                    ))}
                   </span>
                 )}
               </span>
