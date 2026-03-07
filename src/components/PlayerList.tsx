@@ -150,12 +150,14 @@ export function PlayerList({
                 {pick.position} · Pick {pick.overallPick}
                 {departed && (
                   <span className="player-card__departed-team">
-                    {getTeamJourney(pick).map((team, i) => (
-                      <span key={i}>
-                        {' → '}
-                        {team}
-                      </span>
-                    ))}
+                    {getTeamJourney(pick)
+                      .slice(1)
+                      .map((team, i) => (
+                        <span key={i}>
+                          {' → '}
+                          {team}
+                        </span>
+                      ))}
                   </span>
                 )}
               </span>

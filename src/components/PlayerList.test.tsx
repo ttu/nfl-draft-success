@@ -92,8 +92,8 @@ describe('PlayerList', () => {
     ];
     render(<PlayerList picks={departedPicks} teamId="KC" draftingTeamOnly />);
     expect(screen.getByText('Traded Away')).toBeInTheDocument();
-    // Team journey shows drafting team through current team
-    expect(screen.getByText(/→.*KC/)).toBeInTheDocument();
+    // Team journey shows teams after drafting team (drafting team is omitted)
+    expect(screen.queryByText(/→.*KC/)).not.toBeInTheDocument();
     expect(screen.getByText(/→.*NYG/)).toBeInTheDocument();
     const card = screen.getByRole('listitem');
     expect(card.className).toContain('player-card--departed');
@@ -130,8 +130,8 @@ describe('PlayerList', () => {
       },
     ];
     render(<PlayerList picks={faPicks} teamId="KC" draftingTeamOnly />);
-    // Team journey shows drafting team then FA
-    expect(screen.getByText(/→.*KC/)).toBeInTheDocument();
+    // Team journey shows FA (drafting team KC is omitted)
+    expect(screen.queryByText(/→.*KC/)).not.toBeInTheDocument();
     expect(screen.getByText(/→.*FA/)).toBeInTheDocument();
   });
 
@@ -190,7 +190,8 @@ describe('PlayerList', () => {
       },
     ];
     render(<PlayerList picks={multiTeamPicks} teamId="CLE" draftingTeamOnly />);
-    expect(screen.getByText(/→.*CLE/)).toBeInTheDocument();
+    // Drafting team CLE is omitted from journey
+    expect(screen.queryByText(/→.*CLE/)).not.toBeInTheDocument();
     expect(screen.getByText(/→.*CAR/)).toBeInTheDocument();
     expect(screen.getByText(/→.*TB/)).toBeInTheDocument();
   });
