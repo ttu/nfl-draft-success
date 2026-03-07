@@ -1,5 +1,6 @@
 import type { DraftPick, Role, Season } from '../types';
 import { getPlayerRole } from '../lib/getPlayerRole';
+import { classifyRole } from '../lib/classifyRole';
 import { TEAM_COLORS, getTeamLogoUrl } from '../data/teamColors';
 
 function getLatestSeason(pick: DraftPick): Season | undefined {
@@ -14,17 +15,42 @@ function getCurrentTeam(pick: DraftPick): string | undefined {
   return getLatestSeason(pick)?.currentTeam;
 }
 
-function getTeamJourney(pick: DraftPick): string[] {
-  const journey: string[] = [];
+interface TeamStint {
+  team: string;
+  role: Role;
+}
+
+function getTeamJourney(pick: DraftPick): TeamStint[] {
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
+  const stints: { team: string; seasons: Season[] }[] = [];
   for (const season of sortedSeasons) {
     const team = season.retained ? pick.teamId : (season.currentTeam ?? 'FA');
-    if (journey[journey.length - 1] !== team) {
-      journey.push(team);
+    const last = stints[stints.length - 1];
+    if (last && last.team === team) {
+      last.seasons.push(season);
+    } else {
+      stints.push({ team, seasons: [season] });
     }
   }
-  return journey;
+  return stints.map(({ team, seasons }) => {
+    let bestRole: Role = 'non_contributor';
+    for (const s of seasons) {
+      const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
+      const role = classifyRole(s.snapShare, gps);
+      if (ROLE_ORDER.indexOf(role) > ROLE_ORDER.indexOf(bestRole))
+        bestRole = role;
+    }
+    return { team, role: bestRole };
+  });
 }
+
+const ROLE_ORDER: Role[] = [
+  'non_contributor',
+  'depth',
+  'significant_contributor',
+  'starter_when_healthy',
+  'core_starter',
+];
 
 const ROLE_COLORS: Record<Role, { bg: string; text: string }> = {
   core_starter: { bg: '#16a34a', text: '#fff' },
@@ -40,6 +66,14 @@ function formatRole(role: Role): string {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
 }
+
+const ROLE_ABBREV: Record<Role, string> = {
+  core_starter: 'CS',
+  starter_when_healthy: 'SH',
+  significant_contributor: 'SC',
+  depth: 'D',
+  non_contributor: 'NC',
+};
 
 function getInitials(name: string): string {
   return name
@@ -152,10 +186,20 @@ export function PlayerList({
                   <span className="player-card__departed-team">
                     {getTeamJourney(pick)
                       .slice(1)
-                      .map((team, i) => (
+                      .map((stint, i) => (
                         <span key={i}>
                           {' → '}
-                          {team}
+                          {stint.team}
+                          <span
+                            className="player-card__stint-role"
+                            title={formatRole(stint.role)}
+                            style={{
+                              backgroundColor: ROLE_COLORS[stint.role].bg,
+                              color: ROLE_COLORS[stint.role].text,
+                            }}
+                          >
+                            {ROLE_ABBREV[stint.role]}
+                          </span>
                         </span>
                       ))}
                   </span>

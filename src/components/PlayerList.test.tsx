@@ -135,6 +135,45 @@ describe('PlayerList', () => {
     expect(screen.getByText(/→.*FA/)).toBeInTheDocument();
   });
 
+  it('shows role classification for each team in departed player journey', () => {
+    const departedPicks = [
+      {
+        pick: {
+          playerId: 'p6',
+          playerName: 'Role Journey',
+          position: 'WR',
+          round: 2,
+          overallPick: 40,
+          teamId: 'KC',
+          seasons: [
+            {
+              year: 2022,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.7,
+              retained: true,
+            },
+            {
+              year: 2023,
+              gamesPlayed: 10,
+              teamGames: 17,
+              snapShare: 0.2,
+              retained: false,
+              currentTeam: 'NYG',
+            },
+          ],
+        } as DraftPick,
+        draftYear: 2022,
+      },
+    ];
+    render(<PlayerList picks={departedPicks} teamId="KC" draftingTeamOnly />);
+    // The NYG stint had snapShare 0.2 → depth role (abbreviated as "D")
+    const stintRoles = document.querySelectorAll('.player-card__stint-role');
+    expect(stintRoles).toHaveLength(1);
+    expect(stintRoles[0].textContent).toBe('D');
+    expect(stintRoles[0].getAttribute('title')).toBe('Depth');
+  });
+
   it('shows full team journey for players who moved through multiple teams', () => {
     const multiTeamPicks = [
       {

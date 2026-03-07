@@ -11,5 +11,8 @@
         "1280x900"
       ]
     }
+  },
+  "permissions": {
+    "allow": ["mcp__plugin_playwright_playwright__browser_console_messages"]
   }
 }

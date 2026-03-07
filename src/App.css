@@ -835,6 +835,27 @@
 .player-card__departed-team {
   color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.player-card__departed-team > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.player-card__stint-role {
+  display: inline-block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  margin-left: 0.2em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1;
 }
 
 .player-card__draft {
