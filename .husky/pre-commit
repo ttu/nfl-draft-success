@@ -12,3 +12,6 @@ npm test
 
 # Build check
 npm run build
+
+# E2E tests (requires build above)
+npm run test:e2e
