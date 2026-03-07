@@ -184,24 +184,25 @@ export function PlayerList({
                 {pick.position} · Pick {pick.overallPick}
                 {departed && (
                   <span className="player-card__departed-team">
-                    {getTeamJourney(pick)
-                      .slice(1)
-                      .map((stint, i) => (
-                        <span key={i}>
-                          {' → '}
-                          {stint.team}
-                          <span
-                            className="player-card__stint-role"
-                            title={formatRole(stint.role)}
-                            style={{
-                              backgroundColor: ROLE_COLORS[stint.role].bg,
-                              color: ROLE_COLORS[stint.role].text,
-                            }}
-                          >
-                            {ROLE_ABBREV[stint.role]}
-                          </span>
+                    {(getTeamJourney(pick).slice(1).length > 0
+                      ? getTeamJourney(pick).slice(1)
+                      : [{ team: 'FA', role: 'non_contributor' as Role }]
+                    ).map((stint, i) => (
+                      <span key={i}>
+                        {' → '}
+                        {stint.team}
+                        <span
+                          className="player-card__stint-role"
+                          title={formatRole(stint.role)}
+                          style={{
+                            backgroundColor: ROLE_COLORS[stint.role].bg,
+                            color: ROLE_COLORS[stint.role].text,
+                          }}
+                        >
+                          {ROLE_ABBREV[stint.role]}
                         </span>
-                      ))}
+                      </span>
+                    ))}
                   </span>
                 )}
               </span>
