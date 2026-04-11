@@ -191,16 +191,18 @@ export function PlayerList({
                       <span key={i}>
                         {' → '}
                         {stint.team}
-                        <span
-                          className="player-card__stint-role"
-                          title={formatRole(stint.role)}
-                          style={{
-                            backgroundColor: ROLE_COLORS[stint.role].bg,
-                            color: ROLE_COLORS[stint.role].text,
-                          }}
-                        >
-                          {ROLE_ABBREV[stint.role]}
-                        </span>
+                        {stint.team !== 'FA' && (
+                          <span
+                            className="player-card__stint-role"
+                            title={formatRole(stint.role)}
+                            style={{
+                              backgroundColor: ROLE_COLORS[stint.role].bg,
+                              color: ROLE_COLORS[stint.role].text,
+                            }}
+                          >
+                            {ROLE_ABBREV[stint.role]}
+                          </span>
+                        )}
                       </span>
                     ))}
                   </span>

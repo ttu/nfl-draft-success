@@ -130,9 +130,12 @@ describe('PlayerList', () => {
       },
     ];
     render(<PlayerList picks={faPicks} teamId="KC" draftingTeamOnly />);
-    // Team journey shows FA (drafting team KC is omitted)
+    // Team journey shows FA (drafting team KC is omitted); FA has no role badge
     expect(screen.queryByText(/→.*KC/)).not.toBeInTheDocument();
     expect(screen.getByText(/→.*FA/)).toBeInTheDocument();
+    expect(document.querySelectorAll('.player-card__stint-role')).toHaveLength(
+      0,
+    );
   });
 
   it('shows role classification for each team in departed player journey', () => {
