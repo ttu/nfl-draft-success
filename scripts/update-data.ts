@@ -10,6 +10,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { parse } from 'csv-parse/sync';
+import { perGameSnapShareForRole } from '../src/lib/perGameSnapShare';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
@@ -55,13 +56,20 @@ interface SeasonSnapData {
   primaryTeam: string;
 }
 
+/** nflverse players.csv fields used when aggregating snap rows */
+interface NflversePlayerMeta {
+  position_group: string;
+  position: string;
+}
+
 /**
  * Aggregate per (pfr_id, season): gamesPlayed, snapShare, primaryTeam.
- * snapShare = avg of max(offense_pct, defense_pct, st_pct) per game (unit share, 0-1).
- * Includes special teams so kickers/punters/LS get proper contribution.
+ * Per-game share: max(off, def, st) for K/P/LS (SPEC); else max(off, def) so
+ * ST-only snaps do not inflate positional players (see perGameSnapShareForRole).
  */
 async function loadSnapData(
   seasons: number[],
+  metaByPfrId: Map<string, NflversePlayerMeta>,
 ): Promise<Map<string, Map<number, SeasonSnapData>>> {
   const result = new Map<string, Map<number, SeasonSnapData>>();
 
@@ -95,7 +103,14 @@ async function loadSnapData(
       const offPct = parseFloat(row.offense_pct ?? '0') || 0;
       const defPct = parseFloat(row.defense_pct ?? '0') || 0;
       const stPct = parseFloat(row.st_pct ?? '0') || 0;
-      const share = Math.max(offPct, defPct, stPct);
+      const meta = metaByPfrId.get(pfrId);
+      const share = perGameSnapShareForRole(
+        offPct,
+        defPct,
+        stPct,
+        meta?.position_group,
+        meta?.position,
+      );
 
       let acc = playerAccum.get(pfrId);
       if (!acc) {
@@ -202,18 +217,27 @@ async function loadInjuryData(
   return result;
 }
 
-/** Load pfr_id -> headshot URL from nflverse players */
-async function loadPlayerHeadshots(): Promise<Map<string, string>> {
-  const result = new Map<string, string>();
+/** Load headshots and position meta from nflverse players */
+async function loadNflversePlayers(): Promise<{
+  headshots: Map<string, string>;
+  metaByPfrId: Map<string, NflversePlayerMeta>;
+}> {
+  const headshots = new Map<string, string>();
+  const metaByPfrId = new Map<string, NflversePlayerMeta>();
   const url = `${BASE}/players/players.csv`;
   const csv = await fetchCsv(url);
   const rows = parseCsv(csv);
   for (const row of rows) {
     const pfrId = (row.pfr_id ?? '').trim();
+    if (!pfrId) continue;
     const headshot = (row.headshot ?? '').trim();
-    if (pfrId && headshot) result.set(pfrId, headshot);
+    if (headshot) headshots.set(pfrId, headshot);
+    metaByPfrId.set(pfrId, {
+      position_group: (row.position_group ?? '').trim(),
+      position: (row.position ?? '').trim(),
+    });
   }
-  return result;
+  return { headshots, metaByPfrId };
 }
 
 async function main() {
@@ -224,15 +248,15 @@ async function main() {
   const draftCsv = await fetchCsv(`${BASE}/draft_picks/draft_picks.csv`);
   const draftRows = parseCsv(draftCsv);
 
-  console.log('Fetching player headshots...');
-  const headshots = await loadPlayerHeadshots();
+  console.log('Fetching nflverse players (headshots + positions)...');
+  const { headshots, metaByPfrId } = await loadNflversePlayers();
 
   const snapSeasons = Array.from(
     { length: MAX_SEASON - 2012 + 1 },
     (_, i) => 2012 + i,
   );
   console.log('Fetching snap_counts (2012–' + MAX_SEASON + ')...');
-  const snapData = await loadSnapData(snapSeasons);
+  const snapData = await loadSnapData(snapSeasons, metaByPfrId);
 
   const injurySeasons = Array.from(
     { length: MAX_SEASON - 2009 + 1 },

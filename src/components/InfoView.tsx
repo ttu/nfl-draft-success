@@ -66,6 +66,15 @@ export function InfoView({ onClose }: InfoViewProps) {
             <h3>How the Calculation Works</h3>
             <h4>Role classification</h4>
             <p>
+              <strong>Snap share</strong> (per season) is the average, across
+              games with at least one snap, of each game&apos;s highest
+              offensive or defensive snap percentage. For kickers, punters, and
+              long snappers, special-teams percentage is included in that max so
+              their roles are measured fairly; for other positions it is not, so
+              players who rarely take offense/defense snaps are not treated like
+              high-usage starters.
+            </p>
+            <p>
               Each player is classified into one of five roles based on their
               snap share and games played per season:
             </p>

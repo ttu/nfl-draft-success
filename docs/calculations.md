@@ -10,15 +10,21 @@ Data comes from [nflverse](https://github.com/nflverse/nflverse-data). The `scri
 
 ### 1.1 Snap Share (per season, per player)
 
-**Source:** `snap_counts_{season}.csv`
+**Source:** `snap_counts_{season}.csv` plus `players.csv` (`position_group`, `position` by `pfr_id`).
 
-**Definition:** Average of `max(offense_pct, defense_pct, st_pct)` across games played in that season.
+**Definition:** Average of a per-game share across games with snaps &gt; 0. The per-game share depends on whether the player is a special-teams specialist:
+
+- **Kickers, punters, long snappers** (`position_group` = `SPEC`, or `position` is `K`, `P`, or `LS`):  
+  `share[game] = max(offense_pct, defense_pct, st_pct)`
+- **All other players:**  
+  `share[game] = max(offense_pct, defense_pct)`  
+  Special teams pct is omitted so positional players who mostly play ST (e.g. a safety with few defensive snaps) are not classified like full-time starters.
 
 **Formula:**
 
 ```
 For each game row where the player had snaps > 0:
-  share[game] = max(offense_pct, defense_pct, st_pct)
+  share[game] = per-game share (see above)
 
 snapShare = (sum of share[game] for all games) / gamesPlayed
 ```
@@ -27,7 +33,8 @@ snapShare = (sum of share[game] for all games) / gamesPlayed
 
 **Notes:**
 
-- Using the maximum of offense/defense/ST ensures kickers, punters, and long snappers receive appropriate contribution credit (they play mainly special teams).
+- Including `st_pct` only for specialists matches contribution for K/P/LS while keeping role bands meaningful for offense/defense positions.
+- If `pfr_id` is missing from `players.csv`, the non-specialist rule applies (conservative).
 - Games with zero snaps are excluded; the player does not increment `gamesPlayed` for that week.
 
 ### 1.2 Games Played (per season, per player)
