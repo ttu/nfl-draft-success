@@ -1,3 +1,4 @@
+import { useId, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type { DraftPick, Role, Season } from '../types';
 import { getPlayerRole } from '../lib/getPlayerRole';
 import { classifyRole } from '../lib/classifyRole';
@@ -91,6 +92,15 @@ function getPfrUrl(playerId: string, playerName: string): string | null {
   return `https://www.pro-football-reference.com/players/${letter}/${playerId}.htm`;
 }
 
+function seasonTeamAbbrev(season: Season, pick: DraftPick): string {
+  if (season.retained) return pick.teamId;
+  return season.currentTeam ?? 'FA';
+}
+
+function formatSnapPct(share: number): string {
+  return `${Math.round(share * 1000) / 10}%`;
+}
+
 export interface PlayerWithDraftYear {
   pick: DraftPick;
   draftYear: number;
@@ -100,6 +110,231 @@ export interface PlayerListProps {
   picks: PlayerWithDraftYear[];
   teamId: string;
   draftingTeamOnly?: boolean;
+}
+
+interface PlayerCardProps {
+  pick: DraftPick;
+  draftYear: number;
+  accentColor: string;
+  logoUrl: string;
+  draftingTeamOnly: boolean;
+}
+
+function PlayerCard({
+  pick,
+  draftYear,
+  accentColor,
+  logoUrl,
+  draftingTeamOnly,
+}: PlayerCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const reactId = useId();
+  const panelId = `${reactId}-career-panel`;
+  const role = getPlayerRole(pick, { draftingTeamOnly });
+  const colors = ROLE_COLORS[role];
+  const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
+  const departed = isDeparted(pick);
+  const currentTeam = departed ? getCurrentTeam(pick) : undefined;
+  const isFa = departed && !currentTeam;
+  const displayAccent = isFa
+    ? '#6b7280'
+    : departed && currentTeam
+      ? (TEAM_COLORS[currentTeam] ?? accentColor)
+      : accentColor;
+  const displayLogo = isFa
+    ? ''
+    : departed && currentTeam
+      ? getTeamLogoUrl(currentTeam)
+      : logoUrl;
+
+  const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
+
+  const toggleId = `${panelId}-toggle`;
+  const toggleLabel = `${pick.playerName}, ${expanded ? 'collapse' : 'expand'} career breakdown`;
+
+  function handleMainKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setExpanded((v) => !v);
+    }
+  }
+
+  return (
+    <li
+      className={`player-card${departed ? ' player-card--departed' : ''}`}
+      style={{ '--card-accent': displayAccent } as CSSProperties}
+    >
+      <div
+        className="player-card__main"
+        id={toggleId}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        aria-controls={panelId}
+        aria-label={toggleLabel}
+        onClick={() => setExpanded((v) => !v)}
+        onKeyDown={handleMainKeyDown}
+      >
+        <div className="player-card__draft">RD {pick.round}</div>
+        <div
+          className="player-card__accent"
+          style={{ backgroundColor: displayAccent }}
+          aria-hidden
+        >
+          {displayLogo && (
+            <img
+              src={displayLogo}
+              alt=""
+              className="player-card__logo"
+              referrerPolicy="no-referrer"
+              loading="lazy"
+            />
+          )}
+        </div>
+        <div className="player-card__avatar" aria-hidden>
+          {pick.headshotUrl ? (
+            <img
+              src={pick.headshotUrl.replace(
+                '/f_auto,q_auto/',
+                '/f_auto,q_auto,w_128,h_128,c_thumb,g_face/',
+              )}
+              alt=""
+              className="player-card__headshot"
+              loading="lazy"
+            />
+          ) : (
+            getInitials(pick.playerName)
+          )}
+        </div>
+        <div className="player-card__info">
+          <span className="player-card__name">{pick.playerName}</span>
+          <span className="player-card__meta">
+            {pick.position} · Pick {pick.overallPick}
+            {departed && (
+              <span className="player-card__departed-team">
+                {(getTeamJourney(pick).slice(1).length > 0
+                  ? getTeamJourney(pick).slice(1)
+                  : [{ team: 'FA', role: 'non_contributor' as Role }]
+                ).map((stint, i) => (
+                  <span key={i}>
+                    {' → '}
+                    {stint.team}
+                    {stint.team !== 'FA' && (
+                      <span
+                        className="player-card__stint-role"
+                        title={formatRole(stint.role)}
+                        style={{
+                          backgroundColor: ROLE_COLORS[stint.role].bg,
+                          color: ROLE_COLORS[stint.role].text,
+                        }}
+                      >
+                        {ROLE_ABBREV[stint.role]}
+                      </span>
+                    )}
+                  </span>
+                ))}
+              </span>
+            )}
+          </span>
+        </div>
+        <div
+          className="player-card__badge"
+          title={formatRole(role)}
+          style={
+            {
+              '--role-bg': colors.bg,
+              '--role-text': colors.text,
+            } as CSSProperties
+          }
+        >
+          <span
+            className="player-card__role-badge"
+            data-testid="role-badge"
+            data-role={role}
+            aria-label={formatRole(role)}
+          >
+            <span className="player-card__role-badge-text">
+              {formatRole(role)}
+            </span>
+          </span>
+        </div>
+      </div>
+      {expanded && (
+        <div
+          id={panelId}
+          role="region"
+          aria-labelledby={toggleId}
+          className="player-card__career"
+          data-testid="player-career-panel"
+        >
+          {pfrUrl && (
+            <div className="player-card__career-actions">
+              <a
+                href={pfrUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="player-card__stats-link"
+                data-testid="player-stats-link"
+              >
+                Career stats on Pro Football Reference
+              </a>
+            </div>
+          )}
+          <div className="player-card__career-inner">
+            <table className="player-card__career-table">
+              <caption className="visually-hidden">
+                Career breakdown for {pick.playerName}, drafted {draftYear}
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Season</th>
+                  <th scope="col">Team</th>
+                  <th scope="col">GP</th>
+                  <th scope="col">Snap</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">IR wks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedSeasons.map((s) => {
+                  const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
+                  const seasonRole = classifyRole(s.snapShare, gps);
+                  const rc = ROLE_COLORS[seasonRole];
+                  return (
+                    <tr key={s.year}>
+                      <td>{s.year}</td>
+                      <td>{seasonTeamAbbrev(s, pick)}</td>
+                      <td>
+                        {s.gamesPlayed}/{s.teamGames}
+                      </td>
+                      <td>{formatSnapPct(s.snapShare)}</td>
+                      <td>
+                        <span
+                          className="player-card__career-role"
+                          style={{
+                            backgroundColor: rc.bg,
+                            color: rc.text,
+                          }}
+                          title={formatRole(seasonRole)}
+                        >
+                          {ROLE_ABBREV[seasonRole]}
+                        </span>
+                      </td>
+                      <td>
+                        {s.injuryReportWeeks != null
+                          ? s.injuryReportWeeks
+                          : '—'}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </li>
+  );
 }
 
 export function PlayerList({
@@ -112,127 +347,16 @@ export function PlayerList({
 
   return (
     <ul role="list" aria-label="Draft picks" className="player-cards">
-      {picks.map(({ pick, draftYear }) => {
-        const role = getPlayerRole(pick, { draftingTeamOnly });
-        const colors = ROLE_COLORS[role];
-        const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
-        const departed = isDeparted(pick);
-        const currentTeam = departed ? getCurrentTeam(pick) : undefined;
-        const isFa = departed && !currentTeam;
-        const displayAccent = isFa
-          ? '#6b7280'
-          : departed && currentTeam
-            ? (TEAM_COLORS[currentTeam] ?? accentColor)
-            : accentColor;
-        const displayLogo = isFa
-          ? ''
-          : departed && currentTeam
-            ? getTeamLogoUrl(currentTeam)
-            : logoUrl;
-        return (
-          <li
-            key={`${pick.playerId}-${draftYear}`}
-            className={`player-card${departed ? ' player-card--departed' : ''}`}
-            style={{ '--card-accent': displayAccent } as React.CSSProperties}
-          >
-            <div className="player-card__draft">RD {pick.round}</div>
-            <div
-              className="player-card__accent"
-              style={{ backgroundColor: displayAccent }}
-              aria-hidden
-            >
-              {displayLogo && (
-                <img
-                  src={displayLogo}
-                  alt=""
-                  className="player-card__logo"
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                />
-              )}
-            </div>
-            <div className="player-card__avatar" aria-hidden>
-              {pick.headshotUrl ? (
-                <img
-                  src={pick.headshotUrl.replace(
-                    '/f_auto,q_auto/',
-                    '/f_auto,q_auto,w_128,h_128,c_thumb,g_face/',
-                  )}
-                  alt=""
-                  className="player-card__headshot"
-                  loading="lazy"
-                />
-              ) : (
-                getInitials(pick.playerName)
-              )}
-            </div>
-            <div className="player-card__info">
-              {pfrUrl ? (
-                <a
-                  href={pfrUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="player-card__name player-card__name--link"
-                  title="View on Pro-Football-Reference"
-                >
-                  {pick.playerName}
-                </a>
-              ) : (
-                <span className="player-card__name">{pick.playerName}</span>
-              )}
-              <span className="player-card__meta">
-                {pick.position} · Pick {pick.overallPick}
-                {departed && (
-                  <span className="player-card__departed-team">
-                    {(getTeamJourney(pick).slice(1).length > 0
-                      ? getTeamJourney(pick).slice(1)
-                      : [{ team: 'FA', role: 'non_contributor' as Role }]
-                    ).map((stint, i) => (
-                      <span key={i}>
-                        {' → '}
-                        {stint.team}
-                        {stint.team !== 'FA' && (
-                          <span
-                            className="player-card__stint-role"
-                            title={formatRole(stint.role)}
-                            style={{
-                              backgroundColor: ROLE_COLORS[stint.role].bg,
-                              color: ROLE_COLORS[stint.role].text,
-                            }}
-                          >
-                            {ROLE_ABBREV[stint.role]}
-                          </span>
-                        )}
-                      </span>
-                    ))}
-                  </span>
-                )}
-              </span>
-            </div>
-            <div
-              className="player-card__badge"
-              title={formatRole(role)}
-              style={
-                {
-                  '--role-bg': colors.bg,
-                  '--role-text': colors.text,
-                } as React.CSSProperties
-              }
-            >
-              <span
-                className="player-card__role-badge"
-                data-testid="role-badge"
-                data-role={role}
-                aria-label={formatRole(role)}
-              >
-                <span className="player-card__role-badge-text">
-                  {formatRole(role)}
-                </span>
-              </span>
-            </div>
-          </li>
-        );
-      })}
+      {picks.map(({ pick, draftYear }) => (
+        <PlayerCard
+          key={`${pick.playerId}-${draftYear}`}
+          pick={pick}
+          draftYear={draftYear}
+          accentColor={accentColor}
+          logoUrl={logoUrl}
+          draftingTeamOnly={draftingTeamOnly}
+        />
+      ))}
     </ul>
   );
 }

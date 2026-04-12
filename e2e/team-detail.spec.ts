@@ -42,6 +42,23 @@ test.describe('Team detail view', () => {
     await expect(firstCard.locator('.player-card__draft')).toContainText('RD');
   });
 
+  test('player name toggles career breakdown and PFR stats link is present', async ({
+    page,
+  }) => {
+    const firstCard = page.locator('.player-card').first();
+    await expect(
+      firstCard.getByTestId('player-career-panel'),
+    ).not.toBeVisible();
+    await firstCard.getByRole('button').first().click();
+    await expect(firstCard.getByTestId('player-career-panel')).toBeVisible();
+    await expect(
+      firstCard.getByRole('columnheader', { name: 'Season' }),
+    ).toBeVisible();
+    const stats = firstCard.getByTestId('player-stats-link');
+    await expect(stats).toBeVisible();
+    await expect(stats).toHaveAttribute('href', /pro-football-reference\.com/);
+  });
+
   test('back navigation returns to rankings', async ({ page }) => {
     await page.locator('.app-header__rankings-link').click();
     await expect(

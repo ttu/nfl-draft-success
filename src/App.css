@@ -787,6 +787,19 @@
   text-decoration: underline;
 }
 
+/* Screen-reader-only captions / labels */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Player cards - modern card layout */
 .player-cards {
   list-style: none;
@@ -798,17 +811,32 @@
 }
 
 .player-card {
-  display: grid;
-  grid-template-columns: auto auto auto 1fr auto;
-  grid-template-areas: 'draft accent avatar info badge';
-  align-items: center;
-  gap: 0;
+  display: flex;
+  flex-direction: column;
   min-height: 88px;
   background: rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   position: relative;
   overflow: hidden;
   transition: background 0.15s ease;
+}
+
+.player-card__main {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr auto;
+  grid-template-areas: 'draft accent avatar info badge';
+  align-items: center;
+  gap: 0;
+  min-height: 88px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.player-card__main:focus-visible {
+  outline: 2px solid rgba(96, 165, 250, 0.9);
+  outline-offset: 2px;
+  border-radius: 2px;
+  z-index: 1;
 }
 
 .player-card:hover {
@@ -928,6 +956,21 @@
   text-overflow: ellipsis;
 }
 
+.player-card__stats-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.player-card__stats-link:hover {
+  text-decoration: underline;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .player-card__name--link {
   color: inherit;
   text-decoration: none;
@@ -935,6 +978,61 @@
 
 .player-card__name--link:hover {
   text-decoration: underline;
+}
+
+.player-card__career {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.75rem 1rem 1rem;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.player-card__career-actions {
+  margin-bottom: 0.65rem;
+}
+
+.player-card__career-inner {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.player-card__career-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.player-card__career-table th,
+.player-card__career-table td {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.player-card__career-table th {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+
+.player-card__career-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.player-card__career-table td:nth-child(3),
+.player-card__career-table td:nth-child(4),
+.player-card__career-table td:nth-child(6) {
+  font-variant-numeric: tabular-nums;
+}
+
+.player-card__career-role {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .player-card__meta {
@@ -975,11 +1073,15 @@
 
 @media (max-width: 540px) {
   .player-card {
-    grid-template-columns: auto auto 1fr auto;
-    grid-template-areas: 'draft avatar info badge';
     min-height: 64px;
     padding-left: 0;
     border-left: 4px solid var(--card-accent, #4a5568);
+  }
+
+  .player-card__main {
+    grid-template-columns: auto auto 1fr auto;
+    grid-template-areas: 'draft avatar info badge';
+    min-height: 64px;
   }
 
   .player-card__draft {
@@ -1220,6 +1322,32 @@
 
   .player-card__meta {
     color: rgba(0, 0, 0, 0.55);
+  }
+
+  .player-card__stats-link {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .player-card__stats-link:hover {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .player-card__career {
+    border-top-color: rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .player-card__career-table {
+    color: rgba(0, 0, 0, 0.88);
+  }
+
+  .player-card__career-table th {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .player-card__career-table th,
+  .player-card__career-table td {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
   }
 
   .player-card--departed {
