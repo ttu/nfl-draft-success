@@ -1,13 +1,5 @@
 import type { DraftClass } from '../types';
-import { getPlayerRole } from './getPlayerRole';
-
-const ROLE_WEIGHTS: Record<string, number> = {
-  core_starter: 3,
-  starter_when_healthy: 3,
-  significant_contributor: 2,
-  depth: 1,
-  non_contributor: 0,
-};
+import { getPlayerAverageScoreWeight, getPlayerRole } from './getPlayerRole';
 
 export interface FiveYearScore {
   score: number;
@@ -23,7 +15,7 @@ export interface GetFiveYearScoreOptions {
 
 /**
  * Compute 5-year rolling draft score for a team.
- * Score = sum(role weights) / total picks.
+ * Score = sum(per-pick average seasonal role weights) / total picks.
  */
 export function getFiveYearScore(
   draftClasses: DraftClass[],
@@ -40,9 +32,9 @@ export function getFiveYearScore(
     const picks = draft.picks.filter((p) => p.teamId === teamId);
     for (const pick of picks) {
       totalPicks += 1;
-      const role = getPlayerRole(pick, { draftingTeamOnly });
-      weightSum += ROLE_WEIGHTS[role] ?? 0;
-      if (role === 'core_starter') coreStarterCount += 1;
+      const opts = { draftingTeamOnly };
+      weightSum += getPlayerAverageScoreWeight(pick, opts);
+      if (getPlayerRole(pick, opts) === 'core_starter') coreStarterCount += 1;
 
       const latestSeason = [...pick.seasons].sort((a, b) => b.year - a.year)[0];
       if (latestSeason?.retained) retentionCount += 1;

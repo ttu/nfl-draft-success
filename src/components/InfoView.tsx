@@ -98,9 +98,12 @@ export function InfoView({ onClose }: InfoViewProps) {
               </li>
             </ul>
             <p>
-              A player&apos;s overall role is their highest achieved role across
-              all seasons. If the most recent season has 0 games played (e.g.,
-              cut or holdout), they are classified as Non Contributor.
+              Overall role comes from the <strong>average</strong> of each
+              season&apos;s role weight (0–3). Strong years and weak or inactive
+              years blend together, so a pick that was a star for several
+              seasons but missed a full year will land below a steady starter.
+              Core Starter % uses the same representative role (mean-based), not
+              a separate peak-only tally.
             </p>
 
             <h4>Role weights &amp; score</h4>

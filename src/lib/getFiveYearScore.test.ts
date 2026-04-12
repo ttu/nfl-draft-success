@@ -49,7 +49,7 @@ const depthPick = (year: number): DraftClass => ({
 });
 
 describe('getFiveYearScore', () => {
-  it('score = sum(weights) / total picks', () => {
+  it('score = sum(per-pick average seasonal weights) / total picks', () => {
     const drafts: DraftClass[] = [coreStarterPick(2023), depthPick(2023)];
     const result = getFiveYearScore(drafts, 'KC');
     expect(result.totalPicks).toBe(2);

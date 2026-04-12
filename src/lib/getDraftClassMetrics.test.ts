@@ -138,7 +138,7 @@ describe('getDraftClassMetrics', () => {
       draftingTeamOnly: true,
     });
 
-    expect(career.coreStarterCount).toBe(1);
+    expect(career.coreStarterCount).toBe(0);
     expect(draftingOnly.coreStarterCount).toBe(0);
     expect(draftingOnly.nonContributorCount).toBe(1);
   });

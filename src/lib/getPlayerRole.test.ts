@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { getPlayerRole } from './getPlayerRole';
+import { getPlayerAverageScoreWeight, getPlayerRole } from './getPlayerRole';
 import type { DraftPick } from '../types';
 
 describe('getPlayerRole', () => {
-  it('returns highest role across seasons', () => {
+  it('uses average seasonal value: mixed depth and core starter years → significant contributor', () => {
     const pick: DraftPick = {
       playerId: 'p1',
       playerName: 'Test',
@@ -28,7 +28,8 @@ describe('getPlayerRole', () => {
         },
       ],
     };
-    expect(getPlayerRole(pick)).toBe('core_starter');
+    expect(getPlayerAverageScoreWeight(pick)).toBeCloseTo(2);
+    expect(getPlayerRole(pick)).toBe('significant_contributor');
   });
 
   it('returns non_contributor when no seasons', () => {
@@ -90,11 +91,11 @@ describe('getPlayerRole', () => {
         },
       ],
     };
-    expect(getPlayerRole(pick)).toBe('core_starter');
+    expect(getPlayerRole(pick)).toBe('significant_contributor');
     expect(getPlayerRole(pick, { draftingTeamOnly: true })).toBe('depth');
   });
 
-  it('returns non_contributor when most recent season has 0 games (e.g. free agent, team change)', () => {
+  it('pulls down representative role when a strong year is averaged with an inactive season', () => {
     const pick: DraftPick = {
       playerId: 'p1',
       playerName: 'Nicholas Petit-Frere',
@@ -126,7 +127,8 @@ describe('getPlayerRole', () => {
         },
       ],
     };
-    expect(getPlayerRole(pick)).toBe('non_contributor');
+    expect(getPlayerAverageScoreWeight(pick)).toBeCloseTo(2);
+    expect(getPlayerRole(pick)).toBe('significant_contributor');
   });
 
   it('returns depth when best season is depth', () => {

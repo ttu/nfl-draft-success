@@ -130,11 +130,13 @@ Classification uses a **first-match-wins** order. All thresholds use `>=` (inclu
 
 ## 4. Player Overall Role (across seasons)
 
-**Function:** `getPlayerRole(pick, options)` in `src/lib/getPlayerRole.ts`
+**Functions:** `getPlayerAverageScoreWeight`, `getPlayerRole` in `src/lib/getPlayerRole.ts`
 
-**Definition:** The player's **highest** achieved role across all seasons (by role hierarchy).
+**Definition:** Each season gets a **score weight** (0–3) from its classified role. The pick’s **draft value** is the **mean** of those weights across in-scope seasons. **Overall role** (UI badge, filters, draft-class counts) maps that mean to a representative `Role`, with thresholds at 0.5 / 1.5 / 2.5 on the 0–3 scale. If the mean is in the top band (≥ 2.5), Core Starter vs Starter when healthy is taken from the **peak** single-season role so both weight-3 roles stay distinguishable.
 
 ### 4.1 Role Hierarchy (low to high)
+
+Used for peak comparison and mapping; score weights collapse the two starter roles to 3.
 
 1. Non-Contributor
 2. Depth
@@ -145,13 +147,13 @@ Classification uses a **first-match-wins** order. All thresholds use `>=` (inclu
 ### 4.2 Algorithm
 
 1. **Season filter:** If `draftingTeamOnly` is true, only consider seasons where `retained === true`.
-2. **Zero games in most recent season:** If the most recent season has `gamesPlayed === 0`, return `non_contributor` immediately. (Player is free agent, cut, holdout, etc.)
-3. **Iterate seasons:** For each (filtered) season, compute `classifyRole(snapShare, gamesPlayedShare)`.
-4. **Take maximum:** Return the highest role achieved (by position in hierarchy).
+2. **Per season:** `classifyRole` → map to score weight via `ROLE_SCORE_WEIGHTS`.
+3. **Mean:** Average weight across those seasons (`getPlayerAverageScoreWeight`).
+4. **Representative role:** Map mean to Non-Contributor / Depth / Significant Contributor, or (if mean ≥ 2.5) use peak season among `{core_starter, starter_when_healthy}` (`getPlayerRole`).
 
 ### 4.3 Option: draftingTeamOnly
 
-When true, only seasons where the player was retained (on drafting team) count toward role. Useful to measure contribution _to the drafting team_ rather than career-best elsewhere.
+When true, only seasons where the player was retained (on drafting team) count toward the mean and peak. Useful to measure contribution _to the drafting team_ rather than career totals elsewhere.
 
 ---
 
@@ -270,7 +272,7 @@ gamesPlayedShare = gamesPlayed / teamGames
     ↓
 classifyRole(snapShare, gamesPlayedShare) → per-season role
     ↓
-getPlayerRole(pick) → overall role (max across seasons, with zero-games override)
+getPlayerAverageScoreWeight(pick) → mean seasonal weight; getPlayerRole(pick) → representative role from mean (+ peak for starter label)
     ↓
 getDraftClassMetrics() → counts, rates per draft class
 getFiveYearScore() → score, coreStarterRate, retentionRate across classes

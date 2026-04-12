@@ -26,9 +26,11 @@ Classification order (first match wins):
 4. `snapShare >= 0.1` → `depth`
 5. Else → `non_contributor`
 
-**Overall classification:** Player's highest achieved role across all seasons determines their overall classification.
+**Overall classification (badges, filters, draft-class buckets):** Derived from the **mean** of each season’s role weight (0–3), then mapped to a representative role. A mixed career (e.g. starter years plus an injured or inactive year) scores below a steady peak. For the top band (mean ≥ 2.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
 
-**Zero games in most recent season:** If the player's most recent season has 0 games played (e.g., free agent who left, cut, holdout), their overall classification is `non_contributor` regardless of prior roles. Avoids marking players as starters when they are no longer contributing.
+**5-Year / draft score:** Uses the same **mean seasonal weight** per pick (not the peak-only weight).
+
+**Core Starter %:** Share of picks whose **representative** overall role (from mean seasonal weights) is Core Starter — same rule as draft-class “Core starters” counts.
 
 ## Retention
 
@@ -57,7 +59,7 @@ Include with partial data. Metrics computed from available games. `teamGames` = 
 
 ## 5-Year Rolling Score
 
-- Score per player = highest role weight
+- Score per player = **mean** of that player’s per-season role weights (0–3)
 - Team Score = (sum of player scores) / (total picks)
 - Display: 5-Year Draft Score, Core Starter %, Retention %
 
