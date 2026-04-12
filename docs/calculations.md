@@ -72,20 +72,20 @@ cumulativeSnapShare = sum(playerNum) / teamSeasonDen
 
 ### 1.4 Team Games (per season)
 
-**Definition:** Number of games the team played in that season. Used as the denominator for `gamesPlayedShare`.
+**Definition:** Number of games the **relevant franchise** played that NFL season (regular season **and** postseason), used as the denominator for `gamesPlayedShare`. Counts come from distinct `game_id` rows per team in nflverse `snap_counts` (same source as cumulative load `gameCount`).
 
-**Formula (in script):**
+**Resolution (in script, `resolveTeamGamesDenominator`):**
 
-```
-maxPlayed = max(gamesPlayed) across all players in the league for that season
-teamGames = Math.max(1, Math.min(17, maxPlayed))
-```
+1. Primary team from snap data (most snaps that season), if known
+2. Else injury-report primary team
+3. Else drafting franchise
+4. Else `max` franchise game count in that season’s file (at least 1)
 
 **Behavior:**
 
-- Regular season is 17 games (since 2021); prior years used 16.
-- For ongoing/incomplete seasons: `teamGames` = games played so far by any team (clamped to 1–17).
-- Ensures `gamesPlayedShare` is meaningful for partial seasons.
+- Playoff games are included so `gamesPlayed` and `teamGames` stay aligned (e.g. 20/20 for a full Bills season with three playoff games).
+- Pre-2021 seasons still reflect the schedule length in the data (16-game regular seasons, plus any postseason for that franchise).
+- For ongoing/incomplete seasons: each franchise’s count reflects games played so far in `snap_counts`.
 
 ### 1.5 Retention (per season, per player)
 

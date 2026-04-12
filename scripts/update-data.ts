@@ -23,6 +23,7 @@ import {
   buildTeamSeasonDenominatorTotals,
   resolveCumulativeLoadShare,
   resolveCumulativeLoadShareWithInjury,
+  resolveTeamGamesDenominator,
 } from '../src/lib/teamSeasonDenominator';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
@@ -82,8 +83,14 @@ interface NflversePlayerMeta {
 async function loadSnapData(
   seasons: number[],
   metaByPfrId: Map<string, NflversePlayerMeta>,
-): Promise<Map<string, Map<number, SeasonSnapData>>> {
+): Promise<{
+  snapData: Map<string, Map<number, SeasonSnapData>>;
+  franchiseGameCountsBySeason: Map<number, Map<string, number>>;
+  maxFranchiseGamesBySeason: Map<number, number>;
+}> {
   const result = new Map<string, Map<number, SeasonSnapData>>();
+  const franchiseGameCountsBySeason = new Map<number, Map<string, number>>();
+  const maxFranchiseGamesBySeason = new Map<number, number>();
 
   for (const season of seasons) {
     const url = `${BASE}/snap_counts/snap_counts_${season}.csv`;
@@ -98,6 +105,13 @@ async function loadSnapData(
     const rows = parseCsv(csv);
     const { scrimByTeam, fullByTeam, gameCountByTeam } =
       buildTeamSeasonDenominatorTotals(rows);
+
+    franchiseGameCountsBySeason.set(season, new Map(gameCountByTeam));
+    let maxFranchiseG = 0;
+    for (const c of gameCountByTeam.values()) {
+      if (c > maxFranchiseG) maxFranchiseG = c;
+    }
+    maxFranchiseGamesBySeason.set(season, Math.max(1, maxFranchiseG));
 
     const playerAccum = new Map<
       string,
@@ -221,7 +235,11 @@ async function loadSnapData(
     }
   }
 
-  return result;
+  return {
+    snapData: result,
+    franchiseGameCountsBySeason,
+    maxFranchiseGamesBySeason,
+  };
 }
 
 interface InjurySeasonData {
@@ -331,7 +349,8 @@ async function main() {
     (_, i) => 2012 + i,
   );
   console.log('Fetching snap_counts (2012–' + MAX_SEASON + ')...');
-  const snapData = await loadSnapData(snapSeasons, metaByPfrId);
+  const { snapData, franchiseGameCountsBySeason, maxFranchiseGamesBySeason } =
+    await loadSnapData(snapSeasons, metaByPfrId);
 
   const injurySeasons = Array.from(
     { length: MAX_SEASON - 2009 + 1 },
@@ -339,17 +358,6 @@ async function main() {
   );
   console.log('Fetching injuries (2009–' + MAX_SEASON + ')...');
   const injuryData = await loadInjuryData(injurySeasons);
-
-  /** Max games played by any player per season; for ongoing seasons < 17 */
-  const maxGamesBySeason = new Map<number, number>();
-  for (const [, seasonMap] of snapData) {
-    for (const [s, data] of seasonMap) {
-      maxGamesBySeason.set(
-        s,
-        Math.max(maxGamesBySeason.get(s) ?? 0, data.gamesPlayed),
-      );
-    }
-  }
 
   for (const year of YEARS) {
     console.log(`Processing ${year}...`);
@@ -403,8 +411,16 @@ async function main() {
         const data = playerSnaps?.get(s);
         const injData = playerInjuries?.get(s);
         const gamesPlayed = data?.gamesPlayed ?? 0;
-        const maxPlayed = maxGamesBySeason.get(s) ?? 17;
-        const teamGames = Math.max(1, Math.min(17, maxPlayed));
+        const primaryTeam = data?.primaryTeam ?? '';
+        const injuryTeam = injData?.primaryTeam ?? '';
+        const teamGames = resolveTeamGamesDenominator({
+          franchiseGameCounts: franchiseGameCountsBySeason.get(s),
+          maxFranchiseGamesInSeason: maxFranchiseGamesBySeason.get(s) ?? 17,
+          primaryTeamRaw: primaryTeam,
+          injuryTeamRaw: injuryTeam,
+          draftingTeamNormalized: teamId,
+          normalizeTeam,
+        });
         const snapShare = data?.snapShare ?? 0;
         const injuryReportWeeks = injData?.injuryReportWeeks ?? 0;
         let cumulativeSnapShare = data?.cumulativeSnapShare ?? snapShare;
@@ -423,8 +439,6 @@ async function main() {
         if (snapShare > 0 && cumulativeSnapShare > snapShare) {
           cumulativeSnapShare = snapShare;
         }
-        const primaryTeam = data?.primaryTeam ?? '';
-        const injuryTeam = injData?.primaryTeam ?? '';
 
         let retained =
           primaryTeam !== '' ? normalizeTeam(primaryTeam) === teamId : false;
@@ -475,7 +489,7 @@ async function main() {
         seasons.push({
           year,
           gamesPlayed: 0,
-          teamGames: 17,
+          teamGames: maxFranchiseGamesBySeason.get(year) ?? 17,
           snapShare: 0,
           cumulativeSnapShare: 0,
           retained: false,

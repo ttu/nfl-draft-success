@@ -24,7 +24,7 @@ export interface SnapCountCsvRow {
 export function buildTeamSeasonDenominatorTotals(rows: SnapCountCsvRow[]): {
   scrimByTeam: Map<string, number>;
   fullByTeam: Map<string, number>;
-  /** Distinct games played (regular season rows) per normalized franchise */
+  /** Distinct games (regular + postseason) per normalized franchise */
   gameCountByTeam: Map<string, number>;
 } {
   const scrimByTeam = new Map<string, number>();
@@ -58,6 +58,47 @@ export function buildTeamSeasonDenominatorTotals(rows: SnapCountCsvRow[]): {
   }
 
   return { scrimByTeam, fullByTeam, gameCountByTeam };
+}
+
+/**
+ * Denominator for `gamesPlayedShare`: how many games the relevant franchise
+ * played that NFL season (regular + postseason), from distinct `game_id` rows
+ * in snap_counts. Fallback order: primary team (snaps) → injury team →
+ * drafting team → league max franchise games in that season.
+ */
+export function resolveTeamGamesDenominator(options: {
+  franchiseGameCounts: Map<string, number> | undefined;
+  maxFranchiseGamesInSeason: number;
+  primaryTeamRaw: string;
+  injuryTeamRaw: string;
+  draftingTeamNormalized: string;
+  normalizeTeam: (raw: string) => string;
+}): number {
+  const {
+    franchiseGameCounts,
+    maxFranchiseGamesInSeason,
+    primaryTeamRaw,
+    injuryTeamRaw,
+    draftingTeamNormalized,
+    normalizeTeam,
+  } = options;
+
+  const fromMap = (raw: string): number | undefined => {
+    const t = normalizeTeam(raw);
+    if (!t) return undefined;
+    const g = franchiseGameCounts?.get(t);
+    return g != null && g > 0 ? g : undefined;
+  };
+
+  const gPrimary = fromMap(primaryTeamRaw);
+  if (gPrimary != null) return gPrimary;
+  const gInj = fromMap(injuryTeamRaw);
+  if (gInj != null) return gInj;
+  if (draftingTeamNormalized) {
+    const g = franchiseGameCounts?.get(draftingTeamNormalized);
+    if (g != null && g > 0) return g;
+  }
+  return Math.max(1, maxFranchiseGamesInSeason);
 }
 
 /**

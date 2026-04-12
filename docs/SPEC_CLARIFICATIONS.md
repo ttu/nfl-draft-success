@@ -46,7 +46,7 @@ Classification order (first match wins). Let **cumulative snap share** mean `sna
 
 ## Ongoing Seasons
 
-Include with partial data. Metrics computed from available games. `teamGames` = games played by team so far in that season.
+Include with partial data. Metrics computed from available games. `teamGames` = that franchise’s games in `snap_counts` so far (regular + postseason), resolved via primary team → injury team → drafting team → league max in file.
 
 ## Team Metrics (per draft class)
 

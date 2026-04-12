@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest';
+import { normalizeNflverseTeam } from './nflverseFranchise';
 import {
   buildTeamSeasonDenominatorTotals,
   injuryAdjustedFullSeasonDenominator,
   resolveCumulativeLoadShare,
   resolveCumulativeLoadShareWithInjury,
+  resolveTeamGamesDenominator,
 } from './teamSeasonDenominator';
 
 describe('buildTeamSeasonDenominatorTotals', () => {
@@ -99,6 +101,65 @@ describe('resolveCumulativeLoadShareWithInjury', () => {
       gameCount: 17,
     });
     expect(adj).toBeGreaterThan(raw);
+  });
+});
+
+describe('resolveTeamGamesDenominator', () => {
+  it('uses primary team franchise schedule length when present', () => {
+    const franchiseGameCounts = new Map([
+      ['BUF', 20],
+      ['MIA', 17],
+    ]);
+    expect(
+      resolveTeamGamesDenominator({
+        franchiseGameCounts,
+        maxFranchiseGamesInSeason: 20,
+        primaryTeamRaw: 'BUF',
+        injuryTeamRaw: '',
+        draftingTeamNormalized: 'MIA',
+        normalizeTeam: normalizeNflverseTeam,
+      }),
+    ).toBe(20);
+  });
+
+  it('falls back to injury team then drafting team', () => {
+    const franchiseGameCounts = new Map([
+      ['BUF', 20],
+      ['NYJ', 17],
+    ]);
+    expect(
+      resolveTeamGamesDenominator({
+        franchiseGameCounts,
+        maxFranchiseGamesInSeason: 20,
+        primaryTeamRaw: '',
+        injuryTeamRaw: 'BUF',
+        draftingTeamNormalized: 'NYJ',
+        normalizeTeam: normalizeNflverseTeam,
+      }),
+    ).toBe(20);
+    expect(
+      resolveTeamGamesDenominator({
+        franchiseGameCounts,
+        maxFranchiseGamesInSeason: 20,
+        primaryTeamRaw: '',
+        injuryTeamRaw: '',
+        draftingTeamNormalized: 'NYJ',
+        normalizeTeam: normalizeNflverseTeam,
+      }),
+    ).toBe(17);
+  });
+
+  it('uses league max when franchise unknown', () => {
+    expect(
+      resolveTeamGamesDenominator({
+        franchiseGameCounts: new Map([['DAL', 18]]),
+        maxFranchiseGamesInSeason: 21,
+        primaryTeamRaw: '',
+        injuryTeamRaw: '',
+        draftingTeamNormalized: 'XXX',
+        normalizeTeam: normalizeNflverseTeam,
+      }),
+    ).toBe(21);
   });
 });
 
