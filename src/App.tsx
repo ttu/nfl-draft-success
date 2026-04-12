@@ -17,14 +17,16 @@ import {
   saveRoleFilter,
   loadShowDeparted,
   saveShowDeparted,
+  loadLandingIntroDismissed,
+  saveLandingIntroDismissed,
 } from './lib/storage';
-import { getShareableUrl } from './lib/urlState';
 import { TEAMS } from './data/teams';
 import { getTeamDepthChartUrl } from './data/teamColors';
 import type { DraftClass, DefaultRankingsData, Role } from './types';
 import './App.css';
 
 import { TeamRankingsView } from './components/TeamRankingsView';
+import { SiteIntroBanner } from './components/SiteIntroBanner';
 
 const InfoView = lazy(() =>
   import('./components/InfoView').then((m) => ({ default: m.InfoView })),
@@ -92,7 +94,9 @@ function AppContent() {
   const loadIdRef = useRef(0);
   const [defaultRankings, setDefaultRankings] =
     useState<DefaultRankingsData | null>(null);
-  const [copyFeedback, setCopyFeedback] = useState(false);
+  const [showLandingIntro, setShowLandingIntro] = useState(
+    () => !loadLandingIntroDismissed(),
+  );
   const [showInfoView, setShowInfoView] = useState(false);
   const [showDeparted, setShowDeparted] = useState(() => loadShowDeparted());
 
@@ -116,16 +120,9 @@ function AppContent() {
     setSearchParams({ from: String(range[0]), to: String(range[1]) });
   };
 
-  const handleCopyLink = () => {
-    const url = getShareableUrl(
-      showRankingsView ? null : selectedTeam,
-      yearRange[0],
-      yearRange[1],
-    );
-    void navigator.clipboard.writeText(url).then(() => {
-      setCopyFeedback(true);
-      setTimeout(() => setCopyFeedback(false), 2000);
-    });
+  const handleDismissLandingIntro = () => {
+    setShowLandingIntro(false);
+    saveLandingIntroDismissed(true);
   };
 
   const handleTeamSelect = (team: string) => {
@@ -267,13 +264,15 @@ function AppContent() {
         selectedTeam={selectedTeam}
         showRankingsView={showRankingsView}
         yearRange={yearRange}
-        copyFeedback={copyFeedback}
         onShowRankings={handleShowRankings}
         onTeamSelect={handleTeamSelect}
         onYearRangeChange={handleYearRangeChange}
-        onCopyLink={handleCopyLink}
         onShowInfo={() => setShowInfoView(true)}
       />
+
+      {showRankingsView && showLandingIntro && (
+        <SiteIntroBanner onDismiss={handleDismissLandingIntro} />
+      )}
 
       {showInfoView && (
         <Suspense fallback={null}>

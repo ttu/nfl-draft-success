@@ -58,3 +58,24 @@ test.describe('Landing page', () => {
     await expect(page.locator('[role="dialog"]')).toBeVisible();
   });
 });
+
+test.describe('Landing page intro banner', () => {
+  test('dismiss persists after reload', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() =>
+      localStorage.removeItem('nfl-draft-success-landing-intro-dismissed'),
+    );
+    await page.reload();
+    await expect(
+      page.locator('[aria-labelledby="site-intro-banner-title"]'),
+    ).toBeVisible();
+    await page.locator('[aria-label="Dismiss site introduction"]').click();
+    await expect(
+      page.locator('[aria-labelledby="site-intro-banner-title"]'),
+    ).toHaveCount(0);
+    await page.reload();
+    await expect(
+      page.locator('[aria-labelledby="site-intro-banner-title"]'),
+    ).toHaveCount(0);
+  });
+});

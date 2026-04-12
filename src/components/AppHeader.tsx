@@ -9,11 +9,9 @@ export interface AppHeaderProps {
   selectedTeam: string | null;
   showRankingsView: boolean;
   yearRange: [number, number];
-  copyFeedback: boolean;
   onShowRankings: () => void;
   onTeamSelect: (teamId: string) => void;
   onYearRangeChange: (range: [number, number]) => void;
-  onCopyLink: () => void;
   onShowInfo: () => void;
 }
 
@@ -21,11 +19,9 @@ export function AppHeader({
   selectedTeam,
   showRankingsView,
   yearRange,
-  copyFeedback,
   onShowRankings,
   onTeamSelect,
   onYearRangeChange,
-  onCopyLink,
   onShowInfo,
 }: AppHeaderProps) {
   return (
@@ -71,46 +67,8 @@ export function AppHeader({
         />
         <button
           type="button"
-          onClick={onCopyLink}
-          className="app-controls__copy-link"
-          aria-label={copyFeedback ? 'Copied!' : 'Copy shareable link'}
-          title="Copy shareable link"
-        >
-          {copyFeedback ? (
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <path d="M20 6L9 17l-5-5" />
-            </svg>
-          ) : (
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
-          )}
-        </button>
-        <button
-          type="button"
           onClick={onShowInfo}
-          className="app-controls__copy-link"
+          className="app-controls__icon-btn"
           aria-label="About"
           title="About"
         >

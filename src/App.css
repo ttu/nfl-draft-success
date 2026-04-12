@@ -71,7 +71,7 @@
   gap: 0.5rem;
 }
 
-.app-controls__copy-link {
+.app-controls__icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,8 +86,65 @@
   font-family: inherit;
 }
 
-.app-controls__copy-link:hover {
+.app-controls__icon-btn:hover {
   background: #252525;
+}
+
+.site-intro-banner {
+  margin-bottom: 1.75rem;
+  padding: 1.25rem 1.25rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.site-intro-banner__inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.site-intro-banner__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.site-intro-banner__close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin: -0.25rem -0.25rem 0 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.site-intro-banner__close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.site-intro-banner__body p {
+  margin: 0 0 0.75rem;
+  line-height: 1.55;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.site-intro-banner__body p:last-child {
+  margin-bottom: 0;
 }
 
 .year-range-filter {
@@ -1139,13 +1196,26 @@
 
   .app-controls select,
   .app-controls input[type='number'],
-  .app-controls__copy-link {
+  .app-controls__icon-btn {
     background: #fff;
     border-color: #ccc;
   }
 
-  .app-controls__copy-link:hover {
+  .app-controls__icon-btn:hover {
     background: #f0f0f0;
+  }
+
+  .site-intro-banner {
+    border-color: #dee2e6;
+    background: #f8f9fa;
+  }
+
+  .site-intro-banner__body p {
+    color: #212529;
+  }
+
+  .site-intro-banner__close:hover {
+    background: rgba(0, 0, 0, 0.06);
   }
 
   .app-header__rankings-link {

@@ -66,3 +66,27 @@ export function saveShowDeparted(value: boolean): void {
     // ignore quota / private mode errors
   }
 }
+
+const LANDING_INTRO_DISMISSED_KEY = 'nfl-draft-success-landing-intro-dismissed';
+
+/**
+ * Whether the user closed the landing-page site intro banner (persisted).
+ */
+export function loadLandingIntroDismissed(): boolean {
+  try {
+    const raw = localStorage.getItem(LANDING_INTRO_DISMISSED_KEY);
+    if (raw === null) return false;
+    const parsed = JSON.parse(raw) as unknown;
+    return parsed === true;
+  } catch {
+    return false;
+  }
+}
+
+export function saveLandingIntroDismissed(value: boolean): void {
+  try {
+    localStorage.setItem(LANDING_INTRO_DISMISSED_KEY, JSON.stringify(value));
+  } catch {
+    // ignore quota / private mode errors
+  }
+}

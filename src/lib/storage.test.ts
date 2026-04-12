@@ -4,6 +4,8 @@ import {
   saveRoleFilter,
   loadShowDeparted,
   saveShowDeparted,
+  loadLandingIntroDismissed,
+  saveLandingIntroDismissed,
 } from './storage';
 
 describe('storage', () => {
@@ -70,5 +72,30 @@ describe('showDeparted storage', () => {
   it('returns false for non-boolean stored value', () => {
     localStorage.setItem('nfl-draft-success-show-departed', '"yes"');
     expect(loadShowDeparted()).toBe(false);
+  });
+});
+
+describe('landing intro dismissed storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('returns false when localStorage is empty', () => {
+    expect(loadLandingIntroDismissed()).toBe(false);
+  });
+
+  it('loads and persists true', () => {
+    saveLandingIntroDismissed(true);
+    expect(loadLandingIntroDismissed()).toBe(true);
+  });
+
+  it('loads and persists false', () => {
+    saveLandingIntroDismissed(false);
+    expect(loadLandingIntroDismissed()).toBe(false);
+  });
+
+  it('returns false for non-boolean stored value', () => {
+    localStorage.setItem('nfl-draft-success-landing-intro-dismissed', '"yes"');
+    expect(loadLandingIntroDismissed()).toBe(false);
   });
 });

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { SiteIntroContent } from '../content/siteIntro';
 
 const GITHUB_URL = 'https://github.com/ttu/nfl-draft-success';
 const CONTACT_EMAIL = 'contact@nfldraftsuccess.com';
@@ -45,6 +46,14 @@ export function InfoView({ onClose }: InfoViewProps) {
           </button>
         </div>
         <div className="info-view__body">
+          <section
+            className="info-view__intro"
+            aria-labelledby="info-view-intro-title"
+          >
+            <h3 id="info-view-intro-title">What this site is</h3>
+            <SiteIntroContent />
+          </section>
+
           <section>
             <h3>Open Source</h3>
             <p>
