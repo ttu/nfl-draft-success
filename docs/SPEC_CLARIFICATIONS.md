@@ -18,12 +18,14 @@ Single source of truth for all spec decisions, edge cases, and formulas. Prevent
 gamesPlayedShare = gamesPlayed / teamGames
 ```
 
-Classification order (first match wins):
+**Threshold inputs:** Classification uses **cumulative snap share** (Load in the UI): your season snaps ÷ **full-season** team snap capacity for your primary franchise when you only played for one team, with an **injury-report adjustment** that shrinks the denominator for missed games covered by `injuryReportWeeks` (capped by games actually missed); see `docs/calculations.md`. Load is then **capped at `snapShare`** (Avg) so it never exceeds typical per-game role share. The career table’s **Avg snap** column shows **average active-game share** (`snapShare`). Effective tier input is `snapShareForRoleTier(season)` (`src/lib/snapShareForTier.ts`); if `cumulativeSnapShare` is absent (legacy JSON), that equals `snapShare`.
 
-1. `snapShare >= 0.65` AND `gamesPlayedShare >= 0.5` → `core_starter`
-2. `snapShare >= 0.65` AND `gamesPlayedShare < 0.5` → `starter_when_healthy`
-3. `snapShare >= 0.35` → `significant_contributor`
-4. `snapShare >= 0.1` → `depth`
+Classification order (first match wins). Let **cumulative snap share** mean `snapShareForRoleTier(season)` (stored load capped at Avg when needed; legacy JSON falls back to `snapShare`).
+
+1. `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare >= 0.5` → `core_starter`
+2. `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare < 0.5` → `starter_when_healthy`
+3. `cumulativeSnapShare >= 0.35` AND `gamesPlayed >= 2` → `significant_contributor` (single-game seasons cannot be SC; they fall through to 4–5)
+4. `cumulativeSnapShare >= 0.1` → `depth`
 5. Else → `non_contributor`
 
 **Overall classification (badges, filters, draft-class buckets):** Derived from the **mean** of each season’s role weight (0–3), then mapped to a representative role. A mixed career (e.g. starter years plus an injured or inactive year) scores below a steady peak. For the top band (mean ≥ 2.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.

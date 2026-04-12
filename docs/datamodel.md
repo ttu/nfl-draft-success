@@ -27,6 +27,7 @@ erDiagram
         int gamesPlayed
         int teamGames
         float snapShare
+        float cumulativeSnapShare_optional
         boolean retained
         int injuryReportWeeks_optional
     }
@@ -47,6 +48,8 @@ export interface Season {
   gamesPlayed: number;
   teamGames: number;
   snapShare: number;
+  /** Season load (player snaps / primary team full-season capacity; see calculations.md). Stored capped at `snapShare` when computed load would exceed it. Optional on older files. */
+  cumulativeSnapShare?: number;
   retained: boolean;
   /** Weeks on official injury report (nflverse injuries data). Optional. */
   injuryReportWeeks?: number;

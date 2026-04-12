@@ -3,14 +3,27 @@
  * Fetch nflverse data and write public/data/draft-{year}.json
  * Sources: draft_picks, snap_counts_{season}, injuries_{season}
  *
- * Builds per-season data: gamesPlayed, snapShare, injuryReportWeeks.
+ * Builds per-season data: gamesPlayed, snapShare, cumulativeSnapShare, injuryReportWeeks.
  * Retention uses snap data (primary team) or injury data (team on report) when no snaps.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import { parse } from 'csv-parse/sync';
-import { perGameSnapShareForRole } from '../src/lib/perGameSnapShare';
+import {
+  isSpecialTeamsSpecialistPosition,
+  perGameSnapShareForRole,
+} from '../src/lib/perGameSnapShare';
+import {
+  playerSnapsForCumulativeLoad,
+  teamDenominatorForCumulativeLoad,
+} from '../src/lib/snapCountTotals';
+import { normalizeNflverseTeam } from '../src/lib/nflverseFranchise';
+import {
+  buildTeamSeasonDenominatorTotals,
+  resolveCumulativeLoadShare,
+  resolveCumulativeLoadShareWithInjury,
+} from '../src/lib/teamSeasonDenominator';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
@@ -30,30 +43,29 @@ async function fetchCsv(url: string): Promise<string> {
   return res.text();
 }
 
-const FRANCHISE_MAP: Record<string, string> = {
-  STL: 'LAR',
-  LA: 'LAR', // nflverse snap_counts uses LA for Rams (LAC = Chargers)
-  SD: 'LAC',
-  OAK: 'LV',
-  LVR: 'LV', // nflverse uses LVR for Las Vegas Raiders (2020+)
-  /** nflverse uses different abbrevs; normalize to match teams.ts */
-  KAN: 'KC',
-  GNB: 'GB',
-  NWE: 'NE',
-  NOR: 'NO',
-  SFO: 'SF',
-  TAM: 'TB',
-};
-
 function normalizeTeam(team: string): string {
-  return FRANCHISE_MAP[team] ?? team;
+  return normalizeNflverseTeam(team);
+}
+
+/** Optional; used when merging injuries to adjust full-season load denominator */
+interface SeasonLoadMeta {
+  cumNum: number;
+  fullSeasonTeamDen: number;
+  cumDenGamesPlayed: number;
+  useFullSeason: boolean;
+  gameCount: number;
 }
 
 interface SeasonSnapData {
   gamesPlayed: number;
+  /** Average per-game role share among games with snaps (display) */
   snapShare: number;
+  /** Base season load (before injury adjustment); see loadMeta */
+  cumulativeSnapShare: number;
   /** Primary team (most snaps) for retention check */
   primaryTeam: string;
+  /** Present when full-season denominator applies (single franchise); merge step applies injury */
+  loadMeta?: SeasonLoadMeta;
 }
 
 /** nflverse players.csv fields used when aggregating snap rows */
@@ -63,7 +75,7 @@ interface NflversePlayerMeta {
 }
 
 /**
- * Aggregate per (pfr_id, season): gamesPlayed, snapShare, primaryTeam.
+ * Aggregate per (pfr_id, season): gamesPlayed, snapShare, cumulativeSnapShare, primaryTeam.
  * Per-game share: max(off, def, st) for K/P/LS (SPEC); else max(off, def) so
  * ST-only snaps do not inflate positional players (see perGameSnapShareForRole).
  */
@@ -84,9 +96,18 @@ async function loadSnapData(
     }
 
     const rows = parseCsv(csv);
+    const { scrimByTeam, fullByTeam, gameCountByTeam } =
+      buildTeamSeasonDenominatorTotals(rows);
+
     const playerAccum = new Map<
       string,
-      { gamesPlayed: number; shareSum: number; teamSnaps: Map<string, number> }
+      {
+        gamesPlayed: number;
+        shareSum: number;
+        cumNum: number;
+        cumDen: number;
+        teamSnaps: Map<string, number>;
+      }
     >();
 
     for (const row of rows) {
@@ -111,14 +132,36 @@ async function loadSnapData(
         meta?.position_group,
         meta?.position,
       );
+      const isSpec = isSpecialTeamsSpecialistPosition(
+        meta?.position_group,
+        meta?.position,
+      );
+      const cumNum = playerSnapsForCumulativeLoad(off, def, st, isSpec);
+      const cumDen = teamDenominatorForCumulativeLoad(
+        off,
+        offPct,
+        def,
+        defPct,
+        st,
+        stPct,
+        isSpec,
+      );
 
       let acc = playerAccum.get(pfrId);
       if (!acc) {
-        acc = { gamesPlayed: 0, shareSum: 0, teamSnaps: new Map() };
+        acc = {
+          gamesPlayed: 0,
+          shareSum: 0,
+          cumNum: 0,
+          cumDen: 0,
+          teamSnaps: new Map(),
+        };
         playerAccum.set(pfrId, acc);
       }
       acc.gamesPlayed += 1;
       acc.shareSum += share;
+      acc.cumNum += cumNum;
+      acc.cumDen += cumDen;
       if (team) {
         acc.teamSnaps.set(team, (acc.teamSnaps.get(team) ?? 0) + snaps);
       }
@@ -138,10 +181,42 @@ async function loadSnapData(
         pm = new Map();
         result.set(pfrId, pm);
       }
+      const meta = metaByPfrId.get(pfrId);
+      const isSpec = isSpecialTeamsSpecialistPosition(
+        meta?.position_group,
+        meta?.position,
+      );
+      const pt = primaryTeam ? normalizeTeam(primaryTeam) : '';
+      const fullSeasonTeamDen = isSpec
+        ? (fullByTeam.get(pt) ?? 0)
+        : (scrimByTeam.get(pt) ?? 0);
+      const useFullSeasonDen =
+        acc.teamSnaps.size <= 1 && pt !== '' && fullSeasonTeamDen > 0;
+      const gameCount = gameCountByTeam.get(pt) ?? 0;
+
+      const baseLoad = resolveCumulativeLoadShare({
+        cumNum: acc.cumNum,
+        cumDenGamesPlayed: acc.cumDen,
+        fullSeasonTeamDen,
+        useFullSeasonDenominator: useFullSeasonDen,
+      });
+
       pm.set(season, {
         gamesPlayed: acc.gamesPlayed,
         snapShare: acc.gamesPlayed > 0 ? acc.shareSum / acc.gamesPlayed : 0,
+        cumulativeSnapShare: baseLoad,
         primaryTeam,
+        ...(useFullSeasonDen
+          ? {
+              loadMeta: {
+                cumNum: acc.cumNum,
+                fullSeasonTeamDen,
+                cumDenGamesPlayed: acc.cumDen,
+                useFullSeason: true,
+                gameCount,
+              },
+            }
+          : {}),
       });
     }
   }
@@ -297,6 +372,7 @@ async function main() {
         gamesPlayed: number;
         teamGames: number;
         snapShare: number;
+        cumulativeSnapShare: number;
         retained: boolean;
         injuryReportWeeks?: number;
         currentTeam?: string;
@@ -317,6 +393,7 @@ async function main() {
         gamesPlayed: number;
         teamGames: number;
         snapShare: number;
+        cumulativeSnapShare: number;
         retained: boolean;
         injuryReportWeeks?: number;
         currentTeam?: string;
@@ -330,6 +407,22 @@ async function main() {
         const teamGames = Math.max(1, Math.min(17, maxPlayed));
         const snapShare = data?.snapShare ?? 0;
         const injuryReportWeeks = injData?.injuryReportWeeks ?? 0;
+        let cumulativeSnapShare = data?.cumulativeSnapShare ?? snapShare;
+        if (data?.loadMeta?.useFullSeason) {
+          cumulativeSnapShare = resolveCumulativeLoadShareWithInjury({
+            cumNum: data.loadMeta.cumNum,
+            cumDenGamesPlayed: data.loadMeta.cumDenGamesPlayed,
+            fullSeasonTeamDen: data.loadMeta.fullSeasonTeamDen,
+            useFullSeasonDenominator: true,
+            injuryReportWeeks,
+            teamGames,
+            gamesPlayed,
+            gameCount: data.loadMeta.gameCount,
+          });
+        }
+        if (snapShare > 0 && cumulativeSnapShare > snapShare) {
+          cumulativeSnapShare = snapShare;
+        }
         const primaryTeam = data?.primaryTeam ?? '';
         const injuryTeam = injData?.primaryTeam ?? '';
 
@@ -371,6 +464,7 @@ async function main() {
           gamesPlayed,
           teamGames,
           snapShare,
+          cumulativeSnapShare,
           retained,
           ...(injuryReportWeeks > 0 ? { injuryReportWeeks } : {}),
           ...(currentTeamId ? { currentTeam: currentTeamId } : {}),
@@ -383,6 +477,7 @@ async function main() {
           gamesPlayed: 0,
           teamGames: 17,
           snapShare: 0,
+          cumulativeSnapShare: 0,
           retained: false,
         });
       }

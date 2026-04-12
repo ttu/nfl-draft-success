@@ -37,13 +37,40 @@ snapShare = (sum of share[game] for all games) / gamesPlayed
 - If `pfr_id` is missing from `players.csv`, the non-specialist rule applies (conservative).
 - Games with zero snaps are excluded; the player does not increment `gamesPlayed` for that week.
 
-### 1.2 Games Played (per season, per player)
+### 1.2 Season load share (cumulative, per season, per player)
+
+**Purpose:** Role tier thresholds (65% / 35% / 10%) use this value so **missed games** reduce a player’s tier: inactive weeks add nothing to the numerator but the denominator still reflects the **full team season**.
+
+**Numerator (`playerNum`):** For each game row with snaps &gt; 0, add player scrimmage snaps (offense + defense; kickers/punters/long snappers also add ST snaps), same rules as `playerSnapsForCumulativeLoad` in `src/lib/snapCountTotals.ts`.
+
+**Denominator (single-franchise seasons):** Sum team snap capacity **for every game that franchise played** in that season (from `snap_counts`, one row per `(game_id, team)`):
+
+- **Non-specialists:** Sum of `team_offense_snaps + team_defense_snaps` per game (from percentages on any row for that game).
+- **Specialists (K, P, LS / SPEC):** Sum of scrimmage capacity **plus** team special-teams capacity per game (so numerator and denominator stay comparable).
+
+Franchise codes are normalized (`src/lib/nflverseFranchise.ts`). Let `teamSeasonDen` be that full-season total for the player’s **primary team** (most snaps).
+
+```
+cumulativeSnapShare = sum(playerNum) / teamSeasonDen
+```
+
+**Injury adjustment:** After the base load is computed, we optionally **shrink the denominator** using nflverse injury data (`injuryReportWeeks` on the season). Let `missedGames = max(0, teamGames - gamesPlayed)` and `excusedWeeks = min(injuryReportWeeks, missedGames)`. We subtract `excusedWeeks × (teamSeasonDen / gameCount)` where `gameCount` is the number of distinct games that franchise played in `snap_counts`. That approximates “weeks missed while on the injury report” without penalizing load for those absences as harshly as healthy scratches. Applied only for single-franchise seasons when merging draft output (`resolveCumulativeLoadShareWithInjury`).
+
+**Cap vs Avg snap:** Full-season + injury math can still produce a load **above** average weekly role share. We set `cumulativeSnapShare = min(computedLoad, snapShare)` when storing JSON and in `snapShareForRoleTier`, so Load never exceeds **Avg snap** (typical usage when active).
+
+**Multi-team seasons (traded mid-year):** If the player appears on more than one franchise in `snap_counts` for that year, fall back to the **games-played** ratio: `sum(playerNum) / sum(teamDen per game row)` so we do not attribute one team’s full-season denominator to snaps earned with another club. Injury adjustment is **not** applied (no `loadMeta`).
+
+**Implementation:** `scripts/update-data.ts`, `buildTeamSeasonDenominatorTotals`, `injuryAdjustedFullSeasonDenominator`, and `resolveCumulativeLoadShareWithInjury` in `src/lib/teamSeasonDenominator.ts`; per-game helpers in `src/lib/snapCountTotals.ts`. Stored as `cumulativeSnapShare` on each `Season`.
+
+**Range:** 0.0–1.0 (values above 1.0 are not expected but would clamp in display if ever needed).
+
+### 1.3 Games Played (per season, per player)
 
 **Definition:** Count of games in which the player had at least one snap (offense + defense + ST > 0).
 
 **Source:** Accumulated per-game in snap_counts data. Each row with `snaps > 0` increments the count.
 
-### 1.3 Team Games (per season)
+### 1.4 Team Games (per season)
 
 **Definition:** Number of games the team played in that season. Used as the denominator for `gamesPlayedShare`.
 
@@ -60,7 +87,7 @@ teamGames = Math.max(1, Math.min(17, maxPlayed))
 - For ongoing/incomplete seasons: `teamGames` = games played so far by any team (clamped to 1–17).
 - Ensures `gamesPlayedShare` is meaningful for partial seasons.
 
-### 1.4 Retention (per season, per player)
+### 1.5 Retention (per season, per player)
 
 **Definition:** Player is considered retained if their primary team (by snap count) matches the drafting franchise.
 
@@ -93,38 +120,40 @@ gamesPlayedShare = gamesPlayed / teamGames
 
 **Range:** 0.0–1.0+ (can exceed 1.0 if a player appears in more games than team total, e.g., traded mid-season)
 
-**Usage:** Input to role classification. Combined with `snapShare` to distinguish Core Starter vs Starter When Healthy.
+**Usage:** Input to role classification. Combined with **cumulative snap share** (`snapShareForRoleTier(season)` — `Season.cumulativeSnapShare` capped at `Season.snapShare` when needed, else fallback) to distinguish Core Starter vs Starter When Healthy.
 
 ---
 
 ## 3. Role Classification (per season)
 
-**Function:** `classifyRole(snapShare, gamesPlayedShare)` in `src/lib/classifyRole.ts`
+**Function:** `classifyRole(cumulativeSnapShare, gamesPlayedShare, gamesPlayed)` in `src/lib/classifyRole.ts`. **`cumulativeSnapShare`** is that effective cumulative value from `snapShareForRoleTier` (stored season load when set, else average share for legacy JSON).
 
 Classification uses a **first-match-wins** order. All thresholds use `>=` (inclusive).
 
 ### 3.1 Classification Table
 
-| Order | Condition                                         | Role                    |
-| ----- | ------------------------------------------------- | ----------------------- |
-| 1     | `snapShare >= 0.65` AND `gamesPlayedShare >= 0.5` | Core Starter            |
-| 2     | `snapShare >= 0.65` AND `gamesPlayedShare < 0.5`  | Starter When Healthy    |
-| 3     | `snapShare >= 0.35`                               | Significant Contributor |
-| 4     | `snapShare >= 0.1`                                | Depth                   |
-| 5     | (else)                                            | Non-Contributor         |
+| Order | Condition                                                   | Role                    |
+| ----- | ----------------------------------------------------------- | ----------------------- |
+| 1     | `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare >= 0.5` | Core Starter            |
+| 2     | `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare < 0.5`  | Starter When Healthy    |
+| 3     | `cumulativeSnapShare >= 0.35` AND `gamesPlayed >= 2`        | Significant Contributor |
+| 4     | `cumulativeSnapShare >= 0.1`                                | Depth                   |
+| 5     | (else)                                                      | Non-Contributor         |
 
 ### 3.2 Threshold Summary
 
-| Metric           | Core Starter | Starter When Healthy | Significant Contributor | Depth  |
-| ---------------- | ------------ | -------------------- | ----------------------- | ------ |
-| snapShare        | ≥ 0.65       | ≥ 0.65               | ≥ 0.35                  | ≥ 0.10 |
-| gamesPlayedShare | ≥ 0.5        | < 0.5                | (any)                   | (any)  |
+| Metric              | Core Starter | Starter When Healthy | Significant Contributor | Depth  |
+| ------------------- | ------------ | -------------------- | ----------------------- | ------ |
+| cumulativeSnapShare | ≥ 0.65       | ≥ 0.65               | ≥ 0.35                  | ≥ 0.10 |
+| gamesPlayedShare    | ≥ 0.5        | < 0.5                | —                       | —      |
+| gamesPlayed         | —            | —                    | ≥ 2                     | —      |
 
 ### 3.3 Edge Cases
 
-- **snapShare = 0, teamGames = 0:** `gamesPlayedShare` is 0; role = `non_contributor`
-- **snapShare = 0.65, gamesPlayedShare = 0.5:** Exactly on boundary → `core_starter`
-- **snapShare = 0.649:** Fails first two checks → `significant_contributor`
+- **cumulativeSnapShare = 0, teamGames = 0:** `gamesPlayedShare` is 0; role = `non_contributor`
+- **cumulativeSnapShare = 0.65, gamesPlayedShare = 0.5:** Exactly on boundary → `core_starter`
+- **cumulativeSnapShare = 0.649, gamesPlayed >= 2:** Fails first two checks → `significant_contributor`
+- **cumulativeSnapShare >= 0.35 but `gamesPlayed < 2`:** Not SC; if `cumulativeSnapShare >= 0.1` → `depth` (avoids labeling a one-game sample as a significant contributor)
 
 ---
 
@@ -270,7 +299,7 @@ Raw nflverse data
     ↓
 gamesPlayedShare = gamesPlayed / teamGames
     ↓
-classifyRole(snapShare, gamesPlayedShare) → per-season role
+classifyRole(cumulativeSnapShare, gamesPlayedShare, gamesPlayed) → per-season role
     ↓
 getPlayerAverageScoreWeight(pick) → mean seasonal weight; getPlayerRole(pick) → representative role from mean (+ peak for starter label)
     ↓

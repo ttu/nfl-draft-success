@@ -1052,6 +1052,13 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.player-card__career-legend {
+  margin: 0 0 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .player-card__career-table {
   width: 100%;
   border-collapse: collapse;
@@ -1078,7 +1085,8 @@
 
 .player-card__career-table td:nth-child(3),
 .player-card__career-table td:nth-child(4),
-.player-card__career-table td:nth-child(6) {
+.player-card__career-table td:nth-child(5),
+.player-card__career-table td:nth-child(7) {
   font-variant-numeric: tabular-nums;
 }
 
@@ -1405,6 +1413,10 @@
   .player-card__career {
     border-top-color: rgba(0, 0, 0, 0.08);
     background: rgba(0, 0, 0, 0.03);
+  }
+
+  .player-card__career-legend {
+    color: rgba(0, 0, 0, 0.5);
   }
 
   .player-card__career-table {

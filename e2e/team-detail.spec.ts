@@ -51,8 +51,15 @@ test.describe('Team detail view', () => {
     ).not.toBeVisible();
     await firstCard.getByRole('button').first().click();
     await expect(firstCard.getByTestId('player-career-panel')).toBeVisible();
+    const careerTable = firstCard.locator('.player-card__career-table');
     await expect(
-      firstCard.getByRole('columnheader', { name: 'Season' }),
+      careerTable.getByRole('columnheader', { name: 'Season' }),
+    ).toBeVisible();
+    await expect(
+      careerTable.locator('thead th').filter({ hasText: 'Avg snap' }),
+    ).toBeVisible();
+    await expect(
+      careerTable.locator('thead th').filter({ hasText: /^Load$/ }),
     ).toBeVisible();
     const stats = firstCard.getByTestId('player-stats-link');
     await expect(stats).toBeVisible();

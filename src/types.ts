@@ -9,7 +9,16 @@ export interface Season {
   year: number;
   gamesPlayed: number;
   teamGames: number;
+  /** Average per-game role share in games with snaps (UI “Snap” column) */
   snapShare: number;
+  /**
+   * Season load: player snaps ÷ primary team’s full-season snap capacity (K/P/LS
+   * include ST in both parts), with injury-report adjustment when available.
+   * Traded seasons use games-played ratio in data script. Stored capped at
+   * snapShare when computed load would exceed weekly average. Role tiering only;
+   * omit in older data.
+   */
+  cumulativeSnapShare?: number;
   retained: boolean;
   /** Weeks on official injury report (from nflverse injuries data) */
   injuryReportWeeks?: number;

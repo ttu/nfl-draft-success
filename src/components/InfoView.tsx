@@ -75,35 +75,62 @@ export function InfoView({ onClose }: InfoViewProps) {
             <h3>How the Calculation Works</h3>
             <h4>Role classification</h4>
             <p>
-              <strong>Snap share</strong> (per season) is the average, across
-              games with at least one snap, of each game&apos;s highest
-              offensive or defensive snap percentage. For kickers, punters, and
-              long snappers, special-teams percentage is included in that max so
-              their roles are measured fairly; for other positions it is not, so
-              players who rarely take offense/defense snaps are not treated like
-              high-usage starters.
-            </p>
-            <p>
-              Each player is classified into one of five roles based on their
-              snap share and games played per season:
+              Each season row in a player&apos;s career table has two snap
+              columns:
             </p>
             <ul>
               <li>
-                <strong>Core Starter</strong> – Snap share ≥65% and played in
+                <strong>Avg snap</strong> — Average <em>role share</em> in games
+                where you had at least one snap: each week we take the higher of
+                offensive or defensive snap percentage (and for kickers,
+                punters, and long snappers, the max includes special teams). We
+                average those weekly values. This reads like &ldquo;when you
+                played, how big was your role?&rdquo;
+              </li>
+              <li>
+                <strong>Load</strong> — <em>Season snap load</em>: your season
+                scrimmage snaps (ST included for specialists) divided by your
+                primary team&apos;s <strong>full-season</strong> snap capacity
+                (every game that team played). Weeks you don&apos;t play add no
+                snaps to the numerator but the full schedule stays in the
+                denominator, so part-time seasons read lower than playing every
+                week. Weeks on the official injury report can reduce that
+                denominator (up to games you missed), so injury absences
+                don&apos;t hurt Load as much as healthy scratches. If you were
+                traded mid-season, the script uses a games-played-only ratio
+                instead. <strong>Role tiers</strong> use Load, not Avg snap.
+                Load is capped at Avg snap so it never exceeds typical per-game
+                role share when you were active.
+              </li>
+            </ul>
+            <p>
+              Kickers, punters, and long snappers include special teams in those
+              calculations so their usage is measured fairly; other positions do
+              not use ST-only weeks to inflate offense/defense role share.
+            </p>
+            <p>
+              Each player is classified into one of five roles based on season
+              load share and games played per season:
+            </p>
+            <ul>
+              <li>
+                <strong>Core Starter</strong> – Load share ≥65% and played in
                 ≥50% of team games
               </li>
               <li>
-                <strong>Starter when healthy</strong> – Snap share ≥65% but
+                <strong>Starter when healthy</strong> – Load share ≥65% but
                 played in &lt;50% of team games (e.g., injured)
               </li>
               <li>
-                <strong>Significant Contributor</strong> – Snap share ≥35%
+                <strong>Significant Contributor</strong> – Load share ≥35% and
+                played in at least 2 games (single-game samples map to Depth or
+                lower)
               </li>
               <li>
-                <strong>Depth</strong> – Snap share ≥10%
+                <strong>Depth</strong> – Load share ≥10%
               </li>
               <li>
-                <strong>Non Contributor</strong> – Snap share &lt;10%
+                <strong>Non Contributor</strong> – Load share &lt;10%
               </li>
             </ul>
             <p>

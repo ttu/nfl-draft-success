@@ -2,6 +2,7 @@ import { useId, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type { DraftPick, Role, Season } from '../types';
 import { getPlayerRole } from '../lib/getPlayerRole';
 import { classifyRole } from '../lib/classifyRole';
+import { snapShareForRoleTier } from '../lib/snapShareForTier';
 import { TEAM_COLORS, getTeamLogoUrl } from '../data/teamColors';
 
 function getLatestSeason(pick: DraftPick): Season | undefined {
@@ -37,7 +38,7 @@ function getTeamJourney(pick: DraftPick): TeamStint[] {
     let bestRole: Role = 'non_contributor';
     for (const s of seasons) {
       const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
-      const role = classifyRole(s.snapShare, gps);
+      const role = classifyRole(snapShareForRoleTier(s), gps, s.gamesPlayed);
       if (ROLE_ORDER.indexOf(role) > ROLE_ORDER.indexOf(bestRole))
         bestRole = role;
     }
@@ -150,6 +151,7 @@ function PlayerCard({
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
 
   const toggleId = `${panelId}-toggle`;
+  const careerLegendId = `${reactId}-career-legend`;
   const toggleLabel = `${pick.playerName}, ${expanded ? 'collapse' : 'expand'} career breakdown`;
 
   function handleMainKeyDown(e: KeyboardEvent<HTMLDivElement>) {
@@ -281,16 +283,39 @@ function PlayerCard({
             </div>
           )}
           <div className="player-card__career-inner">
-            <table className="player-card__career-table">
+            <p className="player-card__career-legend" id={careerLegendId}>
+              <strong>Avg snap</strong>: typical role share in games you played
+              (weekly max of off/def snap %, averaged). <strong>Load</strong>:
+              your season snaps vs your primary team&apos;s full-season snap
+              capacity; injury-report weeks can soften the penalty for games
+              missed. Role badges use this.
+            </p>
+            <table
+              className="player-card__career-table"
+              aria-describedby={careerLegendId}
+            >
               <caption className="visually-hidden">
-                Career breakdown for {pick.playerName}, drafted {draftYear}
+                Career breakdown for {pick.playerName}, drafted {draftYear}. Avg
+                snap is average weekly role share when active; Load is season
+                snap load vs full team season capacity for role classification.
               </caption>
               <thead>
                 <tr>
                   <th scope="col">Season</th>
                   <th scope="col">Team</th>
                   <th scope="col">GP</th>
-                  <th scope="col">Snap</th>
+                  <th
+                    scope="col"
+                    title="Average role share in games with at least one snap."
+                  >
+                    Avg snap
+                  </th>
+                  <th
+                    scope="col"
+                    title="Season load: your snaps vs your primary team’s full-season snap capacity (trades: games-played ratio). Used for role tiers."
+                  >
+                    Load
+                  </th>
                   <th scope="col">Role</th>
                   <th scope="col">IR wks</th>
                 </tr>
@@ -298,7 +323,11 @@ function PlayerCard({
               <tbody>
                 {sortedSeasons.map((s) => {
                   const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
-                  const seasonRole = classifyRole(s.snapShare, gps);
+                  const seasonRole = classifyRole(
+                    snapShareForRoleTier(s),
+                    gps,
+                    s.gamesPlayed,
+                  );
                   const rc = ROLE_COLORS[seasonRole];
                   return (
                     <tr key={s.year}>
@@ -308,6 +337,7 @@ function PlayerCard({
                         {s.gamesPlayed}/{s.teamGames}
                       </td>
                       <td>{formatSnapPct(s.snapShare)}</td>
+                      <td>{formatSnapPct(snapShareForRoleTier(s))}</td>
                       <td>
                         <span
                           className="player-card__career-role"
