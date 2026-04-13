@@ -1,13 +1,24 @@
+import { Link } from 'react-router-dom';
 import { TeamSelector } from './TeamSelector';
 import { YearRangeFilter } from './YearRangeFilter';
+import { DraftYearPicker } from './DraftYearPicker';
 import { getTeamLogoUrl, NFL_LOGO_URL } from '../data/teamColors';
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2025;
 
+function clampDraftYear(y: number): number {
+  return Math.min(YEAR_MAX, Math.max(YEAR_MIN, y));
+}
+
 export interface AppHeaderProps {
   selectedTeam: string | null;
   showRankingsView: boolean;
+  /** Full-draft-by-year page (/year/:y) — show Team rankings control like team detail */
+  showYearDraftView?: boolean;
+  /** Year for drafts-page picker only */
+  draftPickYear: number;
+  onDraftPickYear: (year: number) => void;
   yearRange: [number, number];
   onShowRankings: () => void;
   onTeamSelect: (teamId: string) => void;
@@ -18,12 +29,18 @@ export interface AppHeaderProps {
 export function AppHeader({
   selectedTeam,
   showRankingsView,
+  showYearDraftView = false,
+  draftPickYear,
+  onDraftPickYear,
   yearRange,
   onShowRankings,
   onTeamSelect,
   onYearRangeChange,
   onShowInfo,
 }: AppHeaderProps) {
+  const draftsLinkYear = clampDraftYear(yearRange[1]);
+  const draftsBoardTitle = `Open the ${draftsLinkYear} draft board (every pick). Choose a different year on that page.`;
+
   return (
     <header className="app-header">
       <div className="app-header__brand">
@@ -44,49 +61,127 @@ export function AppHeader({
             aria-hidden
           />
         )}
-        <h1>NFL Draft Success</h1>
-      </div>
-      <div className="app-controls">
-        {!showRankingsView && (
+        <div className="app-header__title-row">
+          <h1>NFL Draft Success</h1>
           <button
             type="button"
-            onClick={onShowRankings}
-            className="app-header__rankings-link"
+            onClick={onShowInfo}
+            className="app-controls__icon-btn app-header__info-btn"
+            aria-label="About"
+            title="About"
           >
-            Team rankings
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4M12 8h.01" />
+            </svg>
           </button>
-        )}
-        {!showRankingsView && selectedTeam && (
-          <TeamSelector value={selectedTeam} onChange={onTeamSelect} />
-        )}
-        <YearRangeFilter
-          min={YEAR_MIN}
-          max={YEAR_MAX}
-          value={yearRange}
-          onChange={onYearRangeChange}
-        />
-        <button
-          type="button"
-          onClick={onShowInfo}
-          className="app-controls__icon-btn"
-          aria-label="About"
-          title="About"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
+        </div>
+      </div>
+      <div className="app-controls app-controls--grouped">
+        {(!showRankingsView || showYearDraftView) && (
+          <div
+            className="app-controls__group app-controls__group--nav"
+            role="group"
+            aria-label="Team navigation"
           >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4M12 8h.01" />
-          </svg>
-        </button>
+            <button
+              type="button"
+              onClick={onShowRankings}
+              className="app-header__rankings-link"
+            >
+              Team rankings
+            </button>
+            {!showRankingsView && selectedTeam && (
+              <TeamSelector value={selectedTeam} onChange={onTeamSelect} />
+            )}
+          </div>
+        )}
+
+        {!showYearDraftView && (
+          <div
+            className="app-controls__group"
+            role="group"
+            aria-labelledby="app-header-score-window-heading"
+          >
+            <div
+              id="app-header-score-window-heading"
+              className="app-controls__group-heading"
+            >
+              Team score window
+            </div>
+            <p className="app-controls__group-hint">
+              Draft classes from these years feed the rankings and team scores
+              below.
+            </p>
+            <YearRangeFilter
+              min={YEAR_MIN}
+              max={YEAR_MAX}
+              value={yearRange}
+              onChange={onYearRangeChange}
+              groupAriaLabel="Years included in team scores (rankings below)"
+            />
+          </div>
+        )}
+
+        {showRankingsView && !showYearDraftView && (
+          <div
+            className="app-controls__group"
+            role="group"
+            aria-labelledby="app-header-draft-board-heading"
+          >
+            <div
+              id="app-header-draft-board-heading"
+              className="app-controls__group-heading"
+            >
+              Full draft board
+            </div>
+            <p className="app-controls__group-hint">
+              Leave this page to see every pick in one draft (pick order).
+            </p>
+            <Link
+              to={`/year/${draftsLinkYear}`}
+              className="app-header__rankings-link"
+              title={draftsBoardTitle}
+            >
+              Drafts
+            </Link>
+          </div>
+        )}
+
+        {showYearDraftView && (
+          <div
+            className="app-controls__group"
+            role="group"
+            aria-labelledby="app-header-which-draft-heading"
+          >
+            <div
+              id="app-header-which-draft-heading"
+              className="app-controls__group-heading"
+            >
+              Which draft
+            </div>
+            <p className="app-controls__group-hint">
+              Pick a year to load that draft&apos;s full pick list.
+            </p>
+            <DraftYearPicker
+              min={YEAR_MIN}
+              max={YEAR_MAX}
+              value={draftPickYear}
+              onChange={onDraftPickYear}
+              showLabel={false}
+            />
+          </div>
+        )}
       </div>
     </header>
   );

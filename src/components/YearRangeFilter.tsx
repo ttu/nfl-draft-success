@@ -5,6 +5,8 @@ export interface YearRangeFilterProps {
   max: number;
   value: [number, number];
   onChange: (range: [number, number]) => void;
+  /** Accessible name for the From/To control group */
+  groupAriaLabel?: string;
 }
 
 export function YearRangeFilter({
@@ -12,6 +14,7 @@ export function YearRangeFilter({
   max,
   value: [minYear, maxYear],
   onChange,
+  groupAriaLabel = 'Year range filter',
 }: YearRangeFilterProps) {
   const [fromFocused, setFromFocused] = useState(false);
   const [toFocused, setToFocused] = useState(false);
@@ -40,11 +43,7 @@ export function YearRangeFilter({
   const toDisplay = toFocused ? toInput : String(maxYear);
 
   return (
-    <div
-      role="group"
-      aria-label="Year range filter"
-      className="year-range-filter"
-    >
+    <div role="group" aria-label={groupAriaLabel} className="year-range-filter">
       <label>
         From
         <input

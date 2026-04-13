@@ -14,6 +14,14 @@
   margin-bottom: 1.25rem;
 }
 
+.app-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
 .app-header__logo {
   width: 56px;
   height: 56px;
@@ -29,6 +37,7 @@
   font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .app-controls {
@@ -36,6 +45,42 @@
   flex-wrap: wrap;
   gap: 2rem;
   align-items: center;
+}
+
+.app-controls--grouped {
+  align-items: flex-end;
+  gap: 1.25rem 2rem;
+}
+
+.app-controls__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 100%;
+}
+
+.app-controls__group--nav {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.app-controls__group-heading {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.app-controls__group-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #7a7a7a;
+  max-width: 22rem;
 }
 
 .app-header__rankings-link {
@@ -71,6 +116,23 @@
   gap: 0.5rem;
 }
 
+.draft-year-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.draft-year-picker__label {
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.draft-year-picker__select {
+  min-width: 5rem;
+}
+
 .app-controls__icon-btn {
   display: flex;
   align-items: center;
@@ -88,6 +150,30 @@
 
 .app-controls__icon-btn:hover {
   background: #252525;
+}
+
+.app-controls__icon-btn.app-header__info-btn {
+  flex-shrink: 0;
+  width: 2.375rem;
+  height: 2.375rem;
+  min-width: 2.375rem;
+  min-height: 2.375rem;
+  padding: 0;
+  border-radius: 50%;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.88);
+  box-sizing: border-box;
+}
+
+.app-controls__icon-btn.app-header__info-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.app-controls__icon-btn.app-header__info-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .site-intro-banner {
@@ -613,6 +699,49 @@
   font-variant-numeric: tabular-nums;
 }
 
+.year-draft-view__intro {
+  margin-bottom: 2rem;
+}
+
+.year-draft-view__intro h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.year-draft-view__lede {
+  margin: 0;
+  max-width: 42rem;
+  line-height: 1.5;
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+button.year-draft-view__inline-link {
+  display: inline;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #93c5fd;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+button.year-draft-view__inline-link:hover {
+  color: #bfdbfe;
+}
+
+a.year-draft-view__inline-link {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+a.year-draft-view__inline-link:hover {
+  color: #bfdbfe;
+}
+
 .app-players__header {
   display: flex;
   flex-wrap: wrap;
@@ -950,6 +1079,12 @@
   letter-spacing: -0.02em;
   padding: 0 1.25rem 0 1rem;
   min-width: 4rem;
+}
+
+.player-card__draft-team {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .player-card__accent {

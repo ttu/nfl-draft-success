@@ -120,8 +120,16 @@ export interface PlayerWithDraftYear {
 
 export interface PlayerListProps {
   picks: PlayerWithDraftYear[];
+  /** Drafting team accent; ignored when brandByDraftingTeam is true (each pick uses its drafting team). */
   teamId: string;
   draftingTeamOnly?: boolean;
+  /** League draft view: logo and accent follow each pick’s drafting team. */
+  brandByDraftingTeam?: boolean;
+  /**
+   * Full draft-by-year list: always show drafting team on the card, never dim departed
+   * players or swap the accent strip for their current team.
+   */
+  yearDraftBoard?: boolean;
 }
 
 interface PlayerCardProps {
@@ -130,6 +138,7 @@ interface PlayerCardProps {
   accentColor: string;
   logoUrl: string;
   draftingTeamOnly: boolean;
+  yearDraftBoard?: boolean;
 }
 
 function PlayerCard({
@@ -138,6 +147,7 @@ function PlayerCard({
   accentColor,
   logoUrl,
   draftingTeamOnly,
+  yearDraftBoard = false,
 }: PlayerCardProps) {
   const [expanded, setExpanded] = useState(false);
   const reactId = useId();
@@ -148,16 +158,20 @@ function PlayerCard({
   const departed = isDeparted(pick);
   const currentTeam = departed ? getCurrentTeam(pick) : undefined;
   const isFa = departed && !currentTeam;
-  const displayAccent = isFa
-    ? '#6b7280'
-    : departed && currentTeam
-      ? (TEAM_COLORS[currentTeam] ?? accentColor)
-      : accentColor;
-  const displayLogo = isFa
-    ? ''
-    : departed && currentTeam
-      ? getTeamLogoUrl(currentTeam)
-      : logoUrl;
+  const displayAccent = yearDraftBoard
+    ? accentColor
+    : isFa
+      ? '#6b7280'
+      : departed && currentTeam
+        ? (TEAM_COLORS[currentTeam] ?? accentColor)
+        : accentColor;
+  const displayLogo = yearDraftBoard
+    ? logoUrl
+    : isFa
+      ? ''
+      : departed && currentTeam
+        ? getTeamLogoUrl(currentTeam)
+        : logoUrl;
 
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
 
@@ -172,9 +186,11 @@ function PlayerCard({
     }
   }
 
+  const showDepartedDimming = departed && !yearDraftBoard;
+
   return (
     <li
-      className={`player-card${departed ? ' player-card--departed' : ''}`}
+      className={`player-card${showDepartedDimming ? ' player-card--departed' : ''}`}
       style={{ '--card-accent': displayAccent } as CSSProperties}
     >
       <div
@@ -223,6 +239,12 @@ function PlayerCard({
           <span className="player-card__name">{pick.playerName}</span>
           <span className="player-card__meta">
             {pick.position} · Pick {pick.overallPick}
+            {yearDraftBoard && (
+              <>
+                {' '}
+                · <span className="player-card__draft-team">{pick.teamId}</span>
+              </>
+            )}
             {departed && (
               <span className="player-card__departed-team">
                 {(getTeamJourney(pick).slice(1).length > 0
@@ -386,22 +408,32 @@ export function PlayerList({
   picks,
   teamId,
   draftingTeamOnly = false,
+  brandByDraftingTeam = false,
+  yearDraftBoard = false,
 }: PlayerListProps) {
-  const accentColor = TEAM_COLORS[teamId] ?? '#4a5568';
-  const logoUrl = getTeamLogoUrl(teamId);
+  const defaultAccent = TEAM_COLORS[teamId] ?? '#4a5568';
+  const defaultLogo = getTeamLogoUrl(teamId);
 
   return (
     <ul role="list" aria-label="Draft picks" className="player-cards">
-      {picks.map(({ pick, draftYear }) => (
-        <PlayerCard
-          key={`${pick.playerId}-${draftYear}`}
-          pick={pick}
-          draftYear={draftYear}
-          accentColor={accentColor}
-          logoUrl={logoUrl}
-          draftingTeamOnly={draftingTeamOnly}
-        />
-      ))}
+      {picks.map(({ pick, draftYear }) => {
+        const brandingTeam = brandByDraftingTeam ? pick.teamId : teamId;
+        const accentColor = TEAM_COLORS[brandingTeam] ?? defaultAccent;
+        const logoUrl = brandByDraftingTeam
+          ? getTeamLogoUrl(brandingTeam)
+          : defaultLogo;
+        return (
+          <PlayerCard
+            key={`${pick.playerId}-${draftYear}`}
+            pick={pick}
+            draftYear={draftYear}
+            accentColor={accentColor}
+            logoUrl={logoUrl}
+            draftingTeamOnly={draftingTeamOnly}
+            yearDraftBoard={yearDraftBoard}
+          />
+        );
+      })}
     </ul>
   );
 }

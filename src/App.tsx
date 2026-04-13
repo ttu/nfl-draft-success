@@ -1,4 +1,11 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  lazy,
+  Suspense,
+} from 'react';
 import {
   Routes,
   Route,
@@ -36,6 +43,11 @@ const TeamDetailContent = lazy(() =>
     default: m.TeamDetailContent,
   })),
 );
+const YearDraftView = lazy(() =>
+  import('./components/YearDraftView').then((m) => ({
+    default: m.YearDraftView,
+  })),
+);
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2025;
@@ -44,7 +56,12 @@ const DEFAULT_YEAR_MIN = 2021;
 const validTeamIds = new Set(TEAMS.map((t) => t.id));
 const yearBounds = { min: YEAR_MIN, max: YEAR_MAX };
 
-function useValidYearRange(
+/**
+ * When `forcedSingleYear` is set ( /year/:y route ), use that range only and do not
+ * overwrite missing query params with defaults (avoids clobbering /year/2020 ).
+ */
+function useResolvedYearRange(
+  forcedSingleYear: number | null,
   searchParams: URLSearchParams,
   setSearchParams: (params: Record<string, string>) => void,
 ): [number, number] {
@@ -57,11 +74,11 @@ function useValidYearRange(
     to <= yearBounds.max &&
     from <= to;
 
-  // Avoid setSearchParams loop: only correct once per mount when params are invalid.
-  // setSearchParams triggers navigation → searchParams update → re-render; without
-  // a guard, this can cause an infinite loop in some deployments.
   const correctedRef = useRef(false);
   useEffect(() => {
+    if (forcedSingleYear != null) {
+      return;
+    }
     if (!valid && !correctedRef.current) {
       correctedRef.current = true;
       setSearchParams({
@@ -69,19 +86,49 @@ function useValidYearRange(
         to: String(YEAR_MAX),
       });
     }
-  }, [valid, setSearchParams]);
+  }, [valid, setSearchParams, forcedSingleYear]);
+
+  if (
+    forcedSingleYear != null &&
+    forcedSingleYear >= yearBounds.min &&
+    forcedSingleYear <= yearBounds.max
+  ) {
+    return [forcedSingleYear, forcedSingleYear];
+  }
 
   return valid ? [from, to] : [DEFAULT_YEAR_MIN, YEAR_MAX];
 }
 
 function AppContent() {
-  const { teamId } = useParams<{ teamId?: string }>();
+  const { teamId, draftYear: draftYearParam } = useParams<{
+    teamId?: string;
+    draftYear?: string;
+  }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const selectedTeam = teamId && validTeamIds.has(teamId) ? teamId : null;
-  const showRankingsView = selectedTeam === null;
+  const parsedRouteYear =
+    draftYearParam != null ? parseInt(draftYearParam, 10) : NaN;
+  const routeYearValid =
+    Number.isInteger(parsedRouteYear) &&
+    parsedRouteYear >= YEAR_MIN &&
+    parsedRouteYear <= YEAR_MAX;
+  const isYearView = draftYearParam !== undefined && routeYearValid;
+  const forcedSingleYear = isYearView ? parsedRouteYear : null;
 
-  const yearRange = useValidYearRange(searchParams, setSearchParams);
+  useLayoutEffect(() => {
+    if (draftYearParam !== undefined && !routeYearValid) {
+      navigate(`/year/${YEAR_MAX}`, { replace: true });
+    }
+  }, [draftYearParam, routeYearValid, navigate]);
+
+  const selectedTeam = teamId && validTeamIds.has(teamId) ? teamId : null;
+  const showRankingsView = selectedTeam === null && !isYearView;
+
+  const yearRange = useResolvedYearRange(
+    forcedSingleYear,
+    searchParams,
+    setSearchParams,
+  );
   const [roleFilter, setRoleFilter] = useState<Set<Role>>(() => {
     const stored = loadRoleFilter();
     return (
@@ -117,7 +164,24 @@ function AppContent() {
   }, []);
 
   const handleYearRangeChange = (range: [number, number]) => {
+    if (isYearView) {
+      if (range[0] === range[1]) {
+        navigate(`/year/${range[0]}`);
+      } else {
+        navigate(`/?from=${range[0]}&to=${range[1]}`);
+      }
+      return;
+    }
     setSearchParams({ from: String(range[0]), to: String(range[1]) });
+  };
+
+  const draftPickYear = Math.min(
+    YEAR_MAX,
+    Math.max(YEAR_MIN, isYearView ? parsedRouteYear : yearRange[1]),
+  );
+
+  const handleDraftPickYear = (year: number) => {
+    navigate(`/year/${year}`);
   };
 
   const handleDismissLandingIntro = () => {
@@ -263,6 +327,9 @@ function AppContent() {
       <AppHeader
         selectedTeam={selectedTeam}
         showRankingsView={showRankingsView}
+        showYearDraftView={isYearView}
+        draftPickYear={draftPickYear}
+        onDraftPickYear={handleDraftPickYear}
         yearRange={yearRange}
         onShowRankings={handleShowRankings}
         onTeamSelect={handleTeamSelect}
@@ -294,6 +361,14 @@ function AppContent() {
         />
       ) : loading ? (
         <LoadingSpinner message="Loading draft data…" />
+      ) : isYearView && draftClasses.length === 1 ? (
+        <Suspense fallback={<LoadingSpinner />}>
+          <YearDraftView
+            draftClass={draftClasses[0]}
+            draftingTeamOnly={draftingTeamOnly}
+            onShowRankings={handleShowRankings}
+          />
+        </Suspense>
       ) : (showRankingsView || !selectedTeam) && teamRank?.rankings ? (
         <TeamRankingsView
           rankings={teamRank.rankings}
@@ -349,6 +424,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<AppContent />} />
+      <Route path="/year/:draftYear" element={<AppContent />} />
       <Route path="/:teamId" element={<AppContent />} />
     </Routes>
   );

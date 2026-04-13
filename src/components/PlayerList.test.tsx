@@ -260,4 +260,98 @@ describe('PlayerList', () => {
     expect(screen.getByText(/→.*CAR/)).toBeInTheDocument();
     expect(screen.getByText(/→.*TB/)).toBeInTheDocument();
   });
+
+  it('uses each pick’s drafting team for branding when brandByDraftingTeam is set', () => {
+    const crossConference: typeof mockPicks = [
+      {
+        pick: {
+          playerId: 'buf-1',
+          playerName: 'Buf Player',
+          position: 'WR',
+          round: 1,
+          overallPick: 1,
+          teamId: 'BUF',
+          seasons: [
+            {
+              year: 2020,
+              gamesPlayed: 16,
+              teamGames: 16,
+              snapShare: 0.5,
+              retained: true,
+            },
+          ],
+        } as DraftPick,
+        draftYear: 2020,
+      },
+      {
+        pick: {
+          playerId: 'kc-2',
+          playerName: 'KC Player',
+          position: 'CB',
+          round: 1,
+          overallPick: 2,
+          teamId: 'KC',
+          seasons: [
+            {
+              year: 2020,
+              gamesPlayed: 16,
+              teamGames: 16,
+              snapShare: 0.5,
+              retained: true,
+            },
+          ],
+        } as DraftPick,
+        draftYear: 2020,
+      },
+    ];
+    render(
+      <PlayerList picks={crossConference} teamId="KC" brandByDraftingTeam />,
+    );
+    expect(screen.getByText('Buf Player')).toBeInTheDocument();
+    expect(screen.getByText('KC Player')).toBeInTheDocument();
+  });
+
+  it('yearDraftBoard shows drafting team in meta and skips departed dimming', () => {
+    const departedPick = {
+      pick: {
+        playerId: 'gone-1',
+        playerName: 'Gone Player',
+        position: 'WR',
+        round: 3,
+        overallPick: 90,
+        teamId: 'DET',
+        seasons: [
+          {
+            year: 2023,
+            gamesPlayed: 14,
+            teamGames: 17,
+            snapShare: 0.45,
+            retained: true,
+          },
+          {
+            year: 2024,
+            gamesPlayed: 8,
+            teamGames: 17,
+            snapShare: 0.4,
+            retained: false,
+            currentTeam: 'CHI',
+          },
+        ],
+      } as DraftPick,
+      draftYear: 2022,
+    };
+    render(
+      <PlayerList
+        picks={[departedPick]}
+        teamId="DET"
+        brandByDraftingTeam
+        yearDraftBoard
+      />,
+    );
+    const card = screen.getByRole('listitem');
+    expect(card.className).not.toContain('player-card--departed');
+    expect(screen.getByText('DET')).toBeInTheDocument();
+    expect(screen.getByText(/→/)).toBeInTheDocument();
+    expect(screen.getByText(/CHI/)).toBeInTheDocument();
+  });
 });
