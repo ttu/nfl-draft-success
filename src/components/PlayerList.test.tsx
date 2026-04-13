@@ -193,11 +193,11 @@ describe('PlayerList', () => {
       },
     ];
     render(<PlayerList picks={departedPicks} teamId="KC" draftingTeamOnly />);
-    // The NYG stint had snapShare 0.2 → depth role (abbreviated as "D")
+    // The NYG stint had snapShare 0.2 → contributor tier (abbreviated as "Ct")
     const stintRoles = document.querySelectorAll('.player-card__stint-role');
     expect(stintRoles).toHaveLength(1);
-    expect(stintRoles[0].textContent).toBe('D');
-    expect(stintRoles[0].getAttribute('title')).toBe('Depth');
+    expect(stintRoles[0].textContent).toBe('Ct');
+    expect(stintRoles[0].getAttribute('title')).toBe('Contributor');
   });
 
   it('shows full team journey for players who moved through multiple teams', () => {

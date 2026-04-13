@@ -15,7 +15,7 @@ test.describe('Role filter', () => {
     const dialog = page.locator('[role="dialog"]');
     await expect(dialog).toBeVisible();
     const checkboxes = dialog.locator('.role-filter__checkbox');
-    await expect(checkboxes).toHaveCount(5);
+    await expect(checkboxes).toHaveCount(6);
   });
 
   test('selecting Starters preset filters to starter roles only', async ({

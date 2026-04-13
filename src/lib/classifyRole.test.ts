@@ -19,15 +19,19 @@ describe('classifyRole', () => {
     expect(classifyRole(0.64, 0.4, 10)).toBe('significant_contributor');
   });
 
-  it('returns depth for a single-game season even when snapShare would otherwise qualify for SC', () => {
-    expect(classifyRole(0.51, 1 / 17, 1)).toBe('depth');
-    expect(classifyRole(0.4, 0.2, 1)).toBe('depth');
+  it('returns contributor for a single-game season when snapShare would otherwise qualify for SC', () => {
+    expect(classifyRole(0.51, 1 / 17, 1)).toBe('contributor');
+    expect(classifyRole(0.4, 0.2, 1)).toBe('contributor');
   });
 
-  it('returns depth when snapShare >= 0.1 and below significant threshold', () => {
-    expect(classifyRole(0.2, 0.5, 5)).toBe('depth');
+  it('returns contributor when snapShare is in 20–35% band (below SC threshold)', () => {
+    expect(classifyRole(0.2, 0.5, 5)).toBe('contributor');
+    expect(classifyRole(0.34, 1, 17)).toBe('contributor');
+  });
+
+  it('returns depth when snapShare is in 10–20% band', () => {
+    expect(classifyRole(0.19, 0.5, 5)).toBe('depth');
     expect(classifyRole(0.1, 0, 0)).toBe('depth');
-    expect(classifyRole(0.34, 1, 17)).toBe('depth');
   });
 
   it('returns non_contributor when snapShare < 0.1', () => {

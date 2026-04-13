@@ -11,6 +11,7 @@ export function DraftClassCard({ year, metrics }: DraftClassCardProps) {
     coreStarterCount,
     starterWhenHealthyCount,
     significantContributorCount,
+    contributorRoleCount,
     depthCount,
     nonContributorCount,
     retentionCount,
@@ -34,6 +35,8 @@ export function DraftClassCard({ year, metrics }: DraftClassCardProps) {
         )}
         <dt>Significant contributors</dt>
         <dd>{significantContributorCount}</dd>
+        <dt>Contributors</dt>
+        <dd>{contributorRoleCount}</dd>
         <dt>Depth</dt>
         <dd>{depthCount}</dd>
         <dt>Non contributors</dt>

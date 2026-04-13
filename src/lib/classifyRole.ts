@@ -8,6 +8,9 @@ import type { Role } from '../types';
  *
  * Significant contributor requires at least two games played: one active game can
  * show a high average-game share without representing a real season-long role.
+ *
+ * Between 10% and 35% load: **Depth** (10–20%) vs **Contributor** (20–35%) splits
+ * limited / gadget usage from clear rotation snaps.
  */
 export function classifyRole(
   cumulativeSnapShare: number,
@@ -20,9 +23,11 @@ export function classifyRole(
   }
   if (cumulativeSnapShare >= 0.35) {
     if (gamesPlayed >= 2) return 'significant_contributor';
+    if (cumulativeSnapShare >= 0.2) return 'contributor';
     if (cumulativeSnapShare >= 0.1) return 'depth';
     return 'non_contributor';
   }
+  if (cumulativeSnapShare >= 0.2) return 'contributor';
   if (cumulativeSnapShare >= 0.1) return 'depth';
   return 'non_contributor';
 }

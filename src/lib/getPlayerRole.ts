@@ -6,6 +6,7 @@ import { snapShareForRoleTier } from './snapShareForTier';
 const ROLE_ORDER: Role[] = [
   'non_contributor',
   'depth',
+  'contributor',
   'significant_contributor',
   'starter_when_healthy',
   'core_starter',
@@ -50,13 +51,14 @@ function getPlayerPeakRole(
 
 /**
  * Map mean seasonal score weight to a representative Role for badges and filters.
- * Starter band (>= 2.5) uses peak role so Core Starter vs Starter when healthy
+ * Starter band (mean ≥ 3.5) uses peak role so Core Starter vs Starter when healthy
  * stays consistent with the player’s best seasons.
  */
 function averageScoreWeightToRole(avgWeight: number, peakRole: Role): Role {
   if (avgWeight < 0.5) return 'non_contributor';
   if (avgWeight < 1.5) return 'depth';
-  if (avgWeight < 2.5) return 'significant_contributor';
+  if (avgWeight < 2.5) return 'contributor';
+  if (avgWeight < 3.5) return 'significant_contributor';
   if (peakRole === 'core_starter' || peakRole === 'starter_when_healthy') {
     return peakRole;
   }
@@ -69,7 +71,7 @@ export interface GetPlayerRoleOptions {
 }
 
 /**
- * Mean of each season’s role weight (0–3). Drives draft score; down-weights
+ * Mean of each season’s role weight (0–4). Drives draft score; down-weights
  * mixed or inactive years versus a single peak season.
  */
 export function getPlayerAverageScoreWeight(

@@ -7,6 +7,7 @@ const mockMetrics = {
   coreStarterCount: 2,
   starterWhenHealthyCount: 1,
   significantContributorCount: 1,
+  contributorRoleCount: 0,
   depthCount: 1,
   nonContributorCount: 3,
   contributorCount: 5,
@@ -26,6 +27,7 @@ describe('DraftClassCard', () => {
     expect(screen.getByText('Core starters')).toBeInTheDocument();
     expect(screen.getByText('Starters when healthy')).toBeInTheDocument();
     expect(screen.getByText('Significant contributors')).toBeInTheDocument();
+    expect(screen.getByText(/^Contributors$/)).toBeInTheDocument();
     expect(screen.getByText('Depth')).toBeInTheDocument();
     expect(screen.getByText('Non contributors')).toBeInTheDocument();
     expect(screen.getByText('Retained')).toBeInTheDocument();
@@ -34,6 +36,7 @@ describe('DraftClassCard', () => {
       '2',
       '1',
       '1',
+      '0',
       '1',
       '3',
     ]);

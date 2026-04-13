@@ -118,6 +118,7 @@ export function RoleFilter({ value, onChange }: RoleFilterProps) {
                         'core_starter',
                         'starter_when_healthy',
                         'significant_contributor',
+                        'contributor',
                         'depth',
                       ]),
                     )

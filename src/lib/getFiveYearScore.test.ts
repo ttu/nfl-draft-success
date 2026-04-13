@@ -53,7 +53,7 @@ describe('getFiveYearScore', () => {
     const drafts: DraftClass[] = [coreStarterPick(2023), depthPick(2023)];
     const result = getFiveYearScore(drafts, 'KC');
     expect(result.totalPicks).toBe(2);
-    expect(result.score).toBeCloseTo((3 + 1) / 2);
+    expect(result.score).toBeCloseTo((4 + 1) / 2);
   });
 
   it('computes coreStarterRate and retentionRate', () => {
@@ -111,6 +111,6 @@ describe('getFiveYearScore', () => {
     ];
     const result = getFiveYearScore(drafts, 'KC');
     expect(result.totalPicks).toBe(3);
-    expect(result.score).toBeCloseTo((3 + 3 + 1) / 3);
+    expect(result.score).toBeCloseTo((4 + 4 + 1) / 3);
   });
 });

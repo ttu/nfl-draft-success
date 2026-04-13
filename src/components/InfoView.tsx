@@ -109,7 +109,7 @@ export function InfoView({ onClose }: InfoViewProps) {
               not use ST-only weeks to inflate offense/defense role share.
             </p>
             <p>
-              Each player is classified into one of five roles based on season
+              Each player is classified into one of six roles based on season
               load share and games played per season:
             </p>
             <ul>
@@ -123,11 +123,15 @@ export function InfoView({ onClose }: InfoViewProps) {
               </li>
               <li>
                 <strong>Significant Contributor</strong> – Load share ≥35% and
-                played in at least 2 games (single-game samples map to Depth or
-                lower)
+                played in at least 2 games (single-game samples map to
+                Contributor or lower)
               </li>
               <li>
-                <strong>Depth</strong> – Load share ≥10%
+                <strong>Contributor</strong> – Load share at least 20% and below
+                35% (rotation / primary backup usage)
+              </li>
+              <li>
+                <strong>Depth</strong> – Load share at least 10% and below 20%
               </li>
               <li>
                 <strong>Non Contributor</strong> – Load share &lt;10%
@@ -135,7 +139,7 @@ export function InfoView({ onClose }: InfoViewProps) {
             </ul>
             <p>
               Overall role comes from the <strong>average</strong> of each
-              season&apos;s role weight (0–3). Strong years and weak or inactive
+              season&apos;s role weight (0–4). Strong years and weak or inactive
               years blend together, so a pick that was a star for several
               seasons but missed a full year will land below a steady starter.
               Core Starter % uses the same representative role (mean-based), not
@@ -153,14 +157,18 @@ export function InfoView({ onClose }: InfoViewProps) {
               <tbody>
                 <tr>
                   <td>Core Starter</td>
-                  <td>3</td>
+                  <td>4</td>
                 </tr>
                 <tr>
                   <td>Starter when healthy</td>
-                  <td>3</td>
+                  <td>4</td>
                 </tr>
                 <tr>
                   <td>Significant Contributor</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>Contributor</td>
                   <td>2</td>
                 </tr>
                 <tr>

@@ -132,28 +132,36 @@ Classification uses a **first-match-wins** order. All thresholds use `>=` (inclu
 
 ### 3.1 Classification Table
 
+First-match evaluation in `classifyRole` (see `src/lib/classifyRole.ts`):
+
 | Order | Condition                                                   | Role                    |
 | ----- | ----------------------------------------------------------- | ----------------------- |
 | 1     | `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare >= 0.5` | Core Starter            |
 | 2     | `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare < 0.5`  | Starter When Healthy    |
 | 3     | `cumulativeSnapShare >= 0.35` AND `gamesPlayed >= 2`        | Significant Contributor |
-| 4     | `cumulativeSnapShare >= 0.1`                                | Depth                   |
-| 5     | (else)                                                      | Non-Contributor         |
+| 4     | `cumulativeSnapShare >= 0.2`                                | Contributor             |
+| 5     | `cumulativeSnapShare >= 0.1`                                | Depth                   |
+| 6     | (else)                                                      | Non-Contributor         |
+
+Steps 4–6 apply after any earlier branch fails (e.g. `>= 0.35` but `gamesPlayed < 2` is not SC, so Contributor vs Depth vs NC is resolved by the 0.2 / 0.1 thresholds).
 
 ### 3.2 Threshold Summary
 
-| Metric              | Core Starter | Starter When Healthy | Significant Contributor | Depth  |
-| ------------------- | ------------ | -------------------- | ----------------------- | ------ |
-| cumulativeSnapShare | ≥ 0.65       | ≥ 0.65               | ≥ 0.35                  | ≥ 0.10 |
-| gamesPlayedShare    | ≥ 0.5        | < 0.5                | —                       | —      |
-| gamesPlayed         | —            | —                    | ≥ 2                     | —      |
+| Role                    | cumulativeSnapShare             | gamesPlayedShare | gamesPlayed |
+| ----------------------- | ------------------------------- | ---------------- | ----------- |
+| Core Starter            | ≥ 0.65                          | ≥ 0.5            | —           |
+| Starter When Healthy    | ≥ 0.65                          | < 0.5            | —           |
+| Significant Contributor | ≥ 0.35                          | —                | ≥ 2         |
+| Contributor             | [0.20, 0.35) or SC fall-through | —                | —           |
+| Depth                   | [0.10, 0.20)                    | —                | —           |
+| Non-Contributor         | < 0.10                          | —                | —           |
 
 ### 3.3 Edge Cases
 
 - **cumulativeSnapShare = 0, teamGames = 0:** `gamesPlayedShare` is 0; role = `non_contributor`
 - **cumulativeSnapShare = 0.65, gamesPlayedShare = 0.5:** Exactly on boundary → `core_starter`
 - **cumulativeSnapShare = 0.649, gamesPlayed >= 2:** Fails first two checks → `significant_contributor`
-- **cumulativeSnapShare >= 0.35 but `gamesPlayed < 2`:** Not SC; if `cumulativeSnapShare >= 0.1` → `depth` (avoids labeling a one-game sample as a significant contributor)
+- **cumulativeSnapShare >= 0.35 but `gamesPlayed < 2`:** Not SC; if `>= 0.2` → `contributor`, else if `>= 0.1` → `depth` (avoids labeling a one-game sample as SC while still reflecting high snap share)
 
 ---
 
@@ -161,24 +169,25 @@ Classification uses a **first-match-wins** order. All thresholds use `>=` (inclu
 
 **Functions:** `getPlayerAverageScoreWeight`, `getPlayerRole` in `src/lib/getPlayerRole.ts`
 
-**Definition:** Each season gets a **score weight** (0–3) from its classified role. The pick’s **draft value** is the **mean** of those weights across in-scope seasons. **Overall role** (UI badge, filters, draft-class counts) maps that mean to a representative `Role`, with thresholds at 0.5 / 1.5 / 2.5 on the 0–3 scale. If the mean is in the top band (≥ 2.5), Core Starter vs Starter when healthy is taken from the **peak** single-season role so both weight-3 roles stay distinguishable.
+**Definition:** Each season gets a **score weight** (0–4) from its classified role. The pick’s **draft value** is the **mean** of those weights across in-scope seasons. **Overall role** (UI badge, filters, draft-class counts) maps that mean to a representative `Role`, with thresholds at 0.5 / 1.5 / 2.5 / 3.5 on the 0–4 scale. If the mean is in the top band (≥ 3.5), Core Starter vs Starter when healthy is taken from the **peak** single-season role so both weight-4 roles stay distinguishable.
 
 ### 4.1 Role Hierarchy (low to high)
 
-Used for peak comparison and mapping; score weights collapse the two starter roles to 3.
+Used for peak comparison and mapping; score weights collapse the two starter roles to 4.
 
 1. Non-Contributor
 2. Depth
-3. Significant Contributor
-4. Starter When Healthy
-5. Core Starter
+3. Contributor
+4. Significant Contributor
+5. Starter When Healthy
+6. Core Starter
 
 ### 4.2 Algorithm
 
 1. **Season filter:** If `draftingTeamOnly` is true, only consider seasons where `retained === true`.
 2. **Per season:** `classifyRole` → map to score weight via `ROLE_SCORE_WEIGHTS`.
 3. **Mean:** Average weight across those seasons (`getPlayerAverageScoreWeight`).
-4. **Representative role:** Map mean to Non-Contributor / Depth / Significant Contributor, or (if mean ≥ 2.5) use peak season among `{core_starter, starter_when_healthy}` (`getPlayerRole`).
+4. **Representative role:** Map mean to Non-Contributor / Depth / Contributor / Significant Contributor, or (if mean ≥ 3.5) use peak season among `{core_starter, starter_when_healthy}` (`getPlayerRole`).
 
 ### 4.3 Option: draftingTeamOnly
 
@@ -190,9 +199,10 @@ When true, only seasons where the player was retained (on drafting team) count t
 
 | Role                    | Weight |
 | ----------------------- | ------ |
-| Core Starter            | 3      |
-| Starter When Healthy    | 3      |
-| Significant Contributor | 2      |
+| Core Starter            | 4      |
+| Starter When Healthy    | 4      |
+| Significant Contributor | 3      |
+| Contributor             | 2      |
 | Depth                   | 1      |
 | Non-Contributor         | 0      |
 
@@ -206,16 +216,17 @@ When true, only seasons where the player was retained (on drafting team) count t
 
 ### 6.1 Counts
 
-| Metric                      | Definition                                                            |
-| --------------------------- | --------------------------------------------------------------------- |
-| totalPicks                  | Number of picks by the team in that draft                             |
-| coreStarterCount            | Picks with overall role = Core Starter                                |
-| starterWhenHealthyCount     | Picks with overall role = Starter When Healthy                        |
-| significantContributorCount | Picks with overall role = Significant Contributor                     |
-| depthCount                  | Picks with overall role = Depth                                       |
-| nonContributorCount         | Picks with overall role = Non-Contributor                             |
-| contributorCount            | core_starter + starter_when_healthy + significant_contributor + depth |
-| retentionCount              | Picks where `retained === true` in most recent season                 |
+| Metric                      | Definition                                                                          |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| totalPicks                  | Number of picks by the team in that draft                                           |
+| coreStarterCount            | Picks with overall role = Core Starter                                              |
+| starterWhenHealthyCount     | Picks with overall role = Starter When Healthy                                      |
+| significantContributorCount | Picks with overall role = Significant Contributor                                   |
+| contributorRoleCount        | Picks with overall role = Contributor                                               |
+| depthCount                  | Picks with overall role = Depth                                                     |
+| nonContributorCount         | Picks with overall role = Non-Contributor                                           |
+| contributorCount            | core_starter + starter_when_healthy + significant_contributor + contributor + depth |
+| retentionCount              | Picks where `retained === true` in most recent season                               |
 
 ### 6.2 Rates
 
@@ -250,10 +261,10 @@ score = sum(player role weight) / totalPicks
 
 Where:
 
-- **Player role weight:** The weight for the pick’s overall role (see §5).
+- **Player role weight:** The mean of that pick’s per-season weights (see §4), not the representative overall role alone.
 - **totalPicks:** Total number of picks by the team across all draft classes.
 
-**Range:** 0.0–3.0 (all Core Starters → 3.0; all Non-Contributors → 0.0)
+**Range:** 0.0–4.0 (all Core Starter seasons → 4.0 per season mean; all Non-Contributors → 0.0)
 
 ### 7.2 Auxiliary Metrics
 
@@ -268,12 +279,12 @@ Same retention logic as draft class metrics (most recent season per pick).
 
 Team drafts 10 players across 5 years:
 
-- 2 Core Starters (3 each) → 6
-- 3 Significant Contributors (2 each) → 6
+- 2 Core Starters (4 each) → 8
+- 3 Significant Contributors (3 each) → 9
 - 2 Depth (1 each) → 2
 - 3 Non-Contributors (0 each) → 0
 
-Score = (6 + 6 + 2 + 0) / 10 = **1.4**
+Score = (8 + 9 + 2 + 0) / 10 = **1.9**
 
 ---
 

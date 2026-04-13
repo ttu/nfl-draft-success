@@ -66,6 +66,7 @@ describe('getDraftClassMetrics', () => {
     expect(metrics.totalPicks).toBe(3);
     expect(metrics.coreStarterCount).toBe(1);
     expect(metrics.starterWhenHealthyCount).toBe(0);
+    expect(metrics.contributorRoleCount).toBe(0);
     expect(metrics.contributorCount).toBe(2);
     expect(metrics.retentionCount).toBe(2);
     expect(metrics.coreStarterRate).toBeCloseTo(1 / 3);
@@ -149,6 +150,7 @@ describe('getDraftClassMetrics', () => {
 
     expect(metrics.totalPicks).toBe(0);
     expect(metrics.coreStarterCount).toBe(0);
+    expect(metrics.contributorRoleCount).toBe(0);
     expect(metrics.contributorCount).toBe(0);
     expect(metrics.retentionCount).toBe(0);
     expect(metrics.coreStarterRate).toBe(0);

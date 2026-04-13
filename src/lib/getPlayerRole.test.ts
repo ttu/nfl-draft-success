@@ -28,7 +28,7 @@ describe('getPlayerRole', () => {
         },
       ],
     };
-    expect(getPlayerAverageScoreWeight(pick)).toBeCloseTo(2);
+    expect(getPlayerAverageScoreWeight(pick)).toBeCloseTo(2.5);
     expect(getPlayerRole(pick)).toBe('significant_contributor');
   });
 
@@ -127,7 +127,7 @@ describe('getPlayerRole', () => {
         },
       ],
     };
-    expect(getPlayerAverageScoreWeight(pick)).toBeCloseTo(2);
+    expect(getPlayerAverageScoreWeight(pick)).toBeCloseTo(8 / 3);
     expect(getPlayerRole(pick)).toBe('significant_contributor');
   });
 

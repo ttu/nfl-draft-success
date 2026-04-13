@@ -6,6 +6,7 @@ export interface DraftClassMetrics {
   coreStarterCount: number;
   starterWhenHealthyCount: number;
   significantContributorCount: number;
+  contributorRoleCount: number;
   depthCount: number;
   nonContributorCount: number;
   contributorCount: number;
@@ -34,6 +35,7 @@ export function getDraftClassMetrics(
   let coreStarterCount = 0;
   let starterWhenHealthyCount = 0;
   let significantContributorCount = 0;
+  let contributorRoleCount = 0;
   let depthCount = 0;
   let nonContributorCount = 0;
   let contributorCount = 0;
@@ -45,12 +47,14 @@ export function getDraftClassMetrics(
     if (role === 'core_starter') coreStarterCount += 1;
     if (role === 'starter_when_healthy') starterWhenHealthyCount += 1;
     if (role === 'significant_contributor') significantContributorCount += 1;
+    if (role === 'contributor') contributorRoleCount += 1;
     if (role === 'depth') depthCount += 1;
     if (role === 'non_contributor') nonContributorCount += 1;
     if (
       role === 'core_starter' ||
       role === 'starter_when_healthy' ||
       role === 'significant_contributor' ||
+      role === 'contributor' ||
       role === 'depth'
     ) {
       contributorCount += 1;
@@ -66,6 +70,7 @@ export function getDraftClassMetrics(
     coreStarterCount,
     starterWhenHealthyCount,
     significantContributorCount,
+    contributorRoleCount,
     depthCount,
     nonContributorCount,
     contributorCount,

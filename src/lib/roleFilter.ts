@@ -4,6 +4,7 @@ export const ALL_ROLES: Role[] = [
   'core_starter',
   'starter_when_healthy',
   'significant_contributor',
+  'contributor',
   'depth',
   'non_contributor',
 ];

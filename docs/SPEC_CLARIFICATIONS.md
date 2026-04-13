@@ -6,9 +6,10 @@ Single source of truth for all spec decisions, edge cases, and formulas. Prevent
 
 | Role                    | Weight |
 | ----------------------- | ------ |
-| Core Starter            | 3      |
-| Starter when healthy    | 3      |
-| Significant Contributor | 2      |
+| Core Starter            | 4      |
+| Starter when healthy    | 4      |
+| Significant Contributor | 3      |
+| Contributor             | 2      |
 | Depth                   | 1      |
 | Non-Contributor         | 0      |
 
@@ -24,11 +25,14 @@ Classification order (first match wins). Let **cumulative snap share** mean `sna
 
 1. `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare >= 0.5` → `core_starter`
 2. `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare < 0.5` → `starter_when_healthy`
-3. `cumulativeSnapShare >= 0.35` AND `gamesPlayed >= 2` → `significant_contributor` (single-game seasons cannot be SC; they fall through to 4–5)
-4. `cumulativeSnapShare >= 0.1` → `depth`
-5. Else → `non_contributor`
+3. `cumulativeSnapShare >= 0.35` AND `gamesPlayed >= 2` → `significant_contributor` (single-game seasons cannot be SC; they fall through)
+4. Else if `cumulativeSnapShare >= 0.2` → `contributor` (covers 20–35% load and single-game SC fall-through)
+5. Else if `cumulativeSnapShare >= 0.1` → `depth` (10–20% load)
+6. Else → `non_contributor`
 
-**Overall classification (badges, filters, draft-class buckets):** Derived from the **mean** of each season’s role weight (0–3), then mapped to a representative role. A mixed career (e.g. starter years plus an injured or inactive year) scores below a steady peak. For the top band (mean ≥ 2.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
+Together, **Depth** (10–20%) and **Contributor** (20–35%) cover the former single “depth” band below Significant Contributor.
+
+**Overall classification (badges, filters, draft-class buckets):** Derived from the **mean** of each season’s role weight (0–4), then mapped to a representative role. A mixed career (e.g. starter years plus an injured or inactive year) scores below a steady peak. For the top band (mean ≥ 3.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
 
 **5-Year / draft score:** Uses the same **mean seasonal weight** per pick (not the peak-only weight).
 
@@ -42,7 +46,7 @@ Classification order (first match wins). Let **cumulative snap share** mean `sna
 
 ## Contributor Count
 
-**Definition:** All non-zero roles — Core Starter + Starter when healthy + Significant Contributor + Depth.
+**Definition:** All non-zero roles — Core Starter + Starter when healthy + Significant Contributor + Contributor + Depth.
 
 ## Ongoing Seasons
 
@@ -53,7 +57,10 @@ Include with partial data. Metrics computed from available games. `teamGames` = 
 - Total picks
 - Core starter count
 - Starter when healthy count
-- Contributor count (all non-zero roles)
+- Significant contributor count
+- Contributor tier count (overall role = Contributor)
+- Depth count
+- Contributor count (all non-zero roles; aggregate)
 - Retention count (still on drafting team)
 - Core Starter Rate
 - Contributor Rate
@@ -61,7 +68,7 @@ Include with partial data. Metrics computed from available games. `teamGames` = 
 
 ## 5-Year Rolling Score
 
-- Score per player = **mean** of that player’s per-season role weights (0–3)
+- Score per player = **mean** of that player’s per-season role weights (0–4)
 - Team Score = (sum of player scores) / (total picks)
 - Display: 5-Year Draft Score, Core Starter %, Retention %
 
