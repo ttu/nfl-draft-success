@@ -120,41 +120,41 @@ gamesPlayedShare = gamesPlayed / teamGames
 
 **Range:** 0.0–1.0+ (can exceed 1.0 if a player appears in more games than team total, e.g., traded mid-season)
 
-**Usage:** Input to role classification. Combined with **cumulative snap share** (`snapShareForRoleTier(season)` — `Season.cumulativeSnapShare` capped at `Season.snapShare` when needed, else fallback) to distinguish Core Starter vs Starter When Healthy.
+**Usage:** Input to role classification. Combined with **effective tier share** from `snapShareForRoleTier(season, position)` — for most players this is cumulative load (capped at `Season.snapShare` when needed); for K/P/LS it is `Season.snapShare`.
 
 ---
 
 ## 3. Role Classification (per season)
 
-**Function:** `classifyRole(cumulativeSnapShare, gamesPlayedShare, gamesPlayed)` in `src/lib/classifyRole.ts`. **`cumulativeSnapShare`** is that effective cumulative value from `snapShareForRoleTier` (stored season load when set, else average share for legacy JSON).
+**Function:** `classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?)` in `src/lib/classifyRole.ts`. The first argument is **`snapShareForRoleTier(season, position)`** (stored season load when appropriate, else average share for legacy JSON; kickers/punters/long snappers use `snapShare`). Optional **`position`** selects the Significant Contributor floor: **0.35** by default, **0.32** for K/P/LS.
 
 Classification uses a **first-match-wins** order. All thresholds use `>=` (inclusive).
 
 ### 3.1 Classification Table
 
-First-match evaluation in `classifyRole` (see `src/lib/classifyRole.ts`):
+First-match evaluation in `classifyRole` (see `src/lib/classifyRole.ts`). Let **SCmin** = **0.32** for kickers, punters, long snappers and **0.35** for all other positions.
 
 | Order | Condition                                                   | Role                    |
 | ----- | ----------------------------------------------------------- | ----------------------- |
 | 1     | `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare >= 0.5` | Core Starter            |
 | 2     | `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare < 0.5`  | Starter When Healthy    |
-| 3     | `cumulativeSnapShare >= 0.35` AND `gamesPlayed >= 2`        | Significant Contributor |
+| 3     | `cumulativeSnapShare >= SCmin` AND `gamesPlayed >= 2`       | Significant Contributor |
 | 4     | `cumulativeSnapShare >= 0.2`                                | Contributor             |
 | 5     | `cumulativeSnapShare >= 0.1`                                | Depth                   |
 | 6     | (else)                                                      | Non-Contributor         |
 
-Steps 4–6 apply after any earlier branch fails (e.g. `>= 0.35` but `gamesPlayed < 2` is not SC, so Contributor vs Depth vs NC is resolved by the 0.2 / 0.1 thresholds).
+Steps 4–6 apply after any earlier branch fails (e.g. `>= SCmin` but `gamesPlayed < 2` is not SC, so Contributor vs Depth vs NC is resolved by the 0.2 / 0.1 thresholds).
 
 ### 3.2 Threshold Summary
 
-| Role                    | cumulativeSnapShare             | gamesPlayedShare | gamesPlayed |
-| ----------------------- | ------------------------------- | ---------------- | ----------- |
-| Core Starter            | ≥ 0.65                          | ≥ 0.5            | —           |
-| Starter When Healthy    | ≥ 0.65                          | < 0.5            | —           |
-| Significant Contributor | ≥ 0.35                          | —                | ≥ 2         |
-| Contributor             | [0.20, 0.35) or SC fall-through | —                | —           |
-| Depth                   | [0.10, 0.20)                    | —                | —           |
-| Non-Contributor         | < 0.10                          | —                | —           |
+| Role                    | cumulativeSnapShare                      | gamesPlayedShare | gamesPlayed |
+| ----------------------- | ---------------------------------------- | ---------------- | ----------- |
+| Core Starter            | ≥ 0.65                                   | ≥ 0.5            | —           |
+| Starter When Healthy    | ≥ 0.65                                   | < 0.5            | —           |
+| Significant Contributor | ≥ **0.35** (most) or **≥ 0.32** (K/P/LS) | —                | ≥ 2         |
+| Contributor             | [0.20, SCmin) or SC fall-through         | —                | —           |
+| Depth                   | [0.10, 0.20)                             | —                | —           |
+| Non-Contributor         | < 0.10                                   | —                | —           |
 
 ### 3.3 Edge Cases
 
@@ -310,7 +310,7 @@ Raw nflverse data
     ↓
 gamesPlayedShare = gamesPlayed / teamGames
     ↓
-classifyRole(cumulativeSnapShare, gamesPlayedShare, gamesPlayed) → per-season role
+classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?) → per-season role
     ↓
 getPlayerAverageScoreWeight(pick) → mean seasonal weight; getPlayerRole(pick) → representative role from mean (+ peak for starter label)
     ↓

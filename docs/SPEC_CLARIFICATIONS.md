@@ -19,18 +19,20 @@ Single source of truth for all spec decisions, edge cases, and formulas. Prevent
 gamesPlayedShare = gamesPlayed / teamGames
 ```
 
-**Threshold inputs:** Classification uses **cumulative snap share** (Load in the UI): your season snaps ÷ **full-season** team snap capacity for your primary franchise when you only played for one team, with an **injury-report adjustment** that shrinks the denominator for missed games covered by `injuryReportWeeks` (capped by games actually missed); see `docs/calculations.md`. Load is then **capped at `snapShare`** (Avg) so it never exceeds typical per-game role share. The career table’s **Avg snap** column shows **average active-game share** (`snapShare`). Effective tier input is `snapShareForRoleTier(season)` (`src/lib/snapShareForTier.ts`); if `cumulativeSnapShare` is absent (legacy JSON), that equals `snapShare`.
+**Threshold inputs:** For **most positions**, classification uses **cumulative snap share** (Load in the UI): your season snaps ÷ **full-season** team snap capacity for your primary franchise when you only played for one team, with an **injury-report adjustment** that shrinks the denominator for missed games covered by `injuryReportWeeks` (capped by games actually missed); see `docs/calculations.md`. Load is then **capped at `snapShare`** (Avg) so it never exceeds typical per-game role share. For **kickers, punters, and long snappers**, cumulative load vs the entire team’s snap pool is tiny even for full-time starters, so effective tier input is **`snapShare`** (same as the Avg snap column). The career table’s **Load** column still shows stored cumulative share for transparency.
 
-Classification order (first match wins). Let **cumulative snap share** mean `snapShareForRoleTier(season)` (stored load capped at Avg when needed; legacy JSON falls back to `snapShare`).
+Effective tier input is `snapShareForRoleTier(season, position)` (`src/lib/snapShareForTier.ts`); if `cumulativeSnapShare` is absent (legacy JSON), non-specialists fall back to `snapShare`.
+
+Classification order (first match wins). Let **cumulative snap share** mean `snapShareForRoleTier(season, position)` (stored load capped at Avg when needed for non-specialists; K/P/LS use `snapShare`; legacy JSON falls back to `snapShare`).
 
 1. `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare >= 0.5` → `core_starter`
 2. `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare < 0.5` → `starter_when_healthy`
-3. `cumulativeSnapShare >= 0.35` AND `gamesPlayed >= 2` → `significant_contributor` (single-game seasons cannot be SC; they fall through)
-4. Else if `cumulativeSnapShare >= 0.2` → `contributor` (covers 20–35% load and single-game SC fall-through)
+3. `cumulativeSnapShare >=` **SC threshold** AND `gamesPlayed >= 2` → `significant_contributor` (single-game seasons cannot be SC; they fall through). **SC threshold** is **0.35** for most positions and **0.32** for kickers, punters, and long snappers (their avg in-game share rarely reaches the scrimmage-oriented 35% bar).
+4. Else if `cumulativeSnapShare >= 0.2` → `contributor` (covers 20% up to the SC threshold and single-game SC fall-through)
 5. Else if `cumulativeSnapShare >= 0.1` → `depth` (10–20% load)
 6. Else → `non_contributor`
 
-Together, **Depth** (10–20%) and **Contributor** (20–35%) cover the former single “depth” band below Significant Contributor.
+Together, **Depth** (10–20%) and **Contributor** (up to the SC threshold) cover usage below Significant Contributor.
 
 **Overall classification (badges, filters, draft-class buckets):** Derived from the **mean** of each season’s role weight (0–4), then mapped to a representative role. A mixed career (e.g. starter years plus an injured or inactive year) scores below a steady peak. For the top band (mean ≥ 3.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
 

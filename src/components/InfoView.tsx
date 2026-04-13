@@ -98,9 +98,11 @@ export function InfoView({ onClose }: InfoViewProps) {
                 denominator (up to games you missed), so injury absences
                 don&apos;t hurt Load as much as healthy scratches. If you were
                 traded mid-season, the script uses a games-played-only ratio
-                instead. <strong>Role tiers</strong> use Load, not Avg snap.
-                Load is capped at Avg snap so it never exceeds typical per-game
-                role share when you were active.
+                instead. <strong>Role tiers</strong> use Load (capped at Avg
+                snap when Load would exceed it), except kickers, punters, and
+                long snappers — for them tiers use <strong>Avg snap</strong>{' '}
+                because Load vs the entire team&apos;s snap pool is not
+                comparable to these bands.
               </li>
             </ul>
             <p>
@@ -109,32 +111,35 @@ export function InfoView({ onClose }: InfoViewProps) {
               not use ST-only weeks to inflate offense/defense role share.
             </p>
             <p>
-              Each player is classified into one of six roles based on season
-              load share and games played per season:
+              Each player is classified into one of six roles using the same
+              percentage thresholds: for most positions the input is season
+              Load; for K/P/LS it is Avg snap. Games played still apply (e.g.
+              Core Starter needs half the team schedule).
             </p>
             <ul>
               <li>
-                <strong>Core Starter</strong> – Load share ≥65% and played in
-                ≥50% of team games
+                <strong>Core Starter</strong> – Effective share ≥65% and played
+                in ≥50% of team games
               </li>
               <li>
-                <strong>Starter when healthy</strong> – Load share ≥65% but
+                <strong>Starter when healthy</strong> – Effective share ≥65% but
                 played in &lt;50% of team games (e.g., injured)
               </li>
               <li>
-                <strong>Significant Contributor</strong> – Load share ≥35% and
-                played in at least 2 games (single-game samples map to
-                Contributor or lower)
+                <strong>Significant Contributor</strong> – Effective share ≥35%
+                (≥32% for kickers, punters, long snappers) and played in at
+                least 2 games (single-game samples map to Contributor or lower)
               </li>
               <li>
-                <strong>Contributor</strong> – Load share at least 20% and below
-                35% (rotation / primary backup usage)
+                <strong>Contributor</strong> – Effective share at least 20% and
+                below the SC threshold (rotation / primary backup usage)
               </li>
               <li>
-                <strong>Depth</strong> – Load share at least 10% and below 20%
+                <strong>Depth</strong> – Effective share at least 10% and below
+                20%
               </li>
               <li>
-                <strong>Non Contributor</strong> – Load share &lt;10%
+                <strong>Non Contributor</strong> – Effective share &lt;10%
               </li>
             </ul>
             <p>

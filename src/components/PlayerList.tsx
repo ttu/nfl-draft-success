@@ -2,7 +2,10 @@ import { useId, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type { DraftPick, Role, Season } from '../types';
 import { getPlayerRole } from '../lib/getPlayerRole';
 import { classifyRole } from '../lib/classifyRole';
-import { snapShareForRoleTier } from '../lib/snapShareForTier';
+import {
+  snapShareForRoleTier,
+  seasonLoadDisplayShare,
+} from '../lib/snapShareForTier';
 import { TEAM_COLORS, getTeamLogoUrl } from '../data/teamColors';
 
 function getLatestSeason(pick: DraftPick): Season | undefined {
@@ -38,7 +41,12 @@ function getTeamJourney(pick: DraftPick): TeamStint[] {
     let bestRole: Role = 'non_contributor';
     for (const s of seasons) {
       const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
-      const role = classifyRole(snapShareForRoleTier(s), gps, s.gamesPlayed);
+      const role = classifyRole(
+        snapShareForRoleTier(s, pick.position),
+        gps,
+        s.gamesPlayed,
+        pick.position,
+      );
       if (ROLE_ORDER.indexOf(role) > ROLE_ORDER.indexOf(bestRole))
         bestRole = role;
     }
@@ -291,7 +299,10 @@ function PlayerCard({
               (weekly max of off/def snap %, averaged). <strong>Load</strong>:
               your season snaps vs your primary team&apos;s full-season snap
               capacity; injury-report weeks can soften the penalty for games
-              missed. Role badges use this.
+              missed. <strong>Role badges</strong> use load for most positions;
+              kickers, punters, and long snappers use avg snap (in-game role
+              share), since load vs the entire team&apos;s snap pool is not
+              comparable to the tier bands.
             </p>
             <table
               className="player-card__career-table"
@@ -327,9 +338,10 @@ function PlayerCard({
                 {sortedSeasons.map((s) => {
                   const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
                   const seasonRole = classifyRole(
-                    snapShareForRoleTier(s),
+                    snapShareForRoleTier(s, pick.position),
                     gps,
                     s.gamesPlayed,
+                    pick.position,
                   );
                   const rc = ROLE_COLORS[seasonRole];
                   return (
@@ -340,7 +352,7 @@ function PlayerCard({
                         {s.gamesPlayed}/{s.teamGames}
                       </td>
                       <td>{formatSnapPct(s.snapShare)}</td>
-                      <td>{formatSnapPct(snapShareForRoleTier(s))}</td>
+                      <td>{formatSnapPct(seasonLoadDisplayShare(s))}</td>
                       <td>
                         <span
                           className="player-card__career-role"

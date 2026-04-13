@@ -40,9 +40,10 @@ function getPlayerPeakRole(
   for (const s of seasons) {
     const gamesPlayedShare = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
     const role = classifyRole(
-      snapShareForRoleTier(s),
+      snapShareForRoleTier(s, pick.position),
       gamesPlayedShare,
       s.gamesPlayed,
+      pick.position,
     );
     if (ordinal(role) > ordinal(best)) best = role;
   }
@@ -85,9 +86,10 @@ export function getPlayerAverageScoreWeight(
   for (const s of seasons) {
     const gamesPlayedShare = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
     const role = classifyRole(
-      snapShareForRoleTier(s),
+      snapShareForRoleTier(s, pick.position),
       gamesPlayedShare,
       s.gamesPlayed,
+      pick.position,
     );
     sum += ROLE_SCORE_WEIGHTS[role];
   }

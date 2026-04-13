@@ -131,6 +131,37 @@ describe('getPlayerRole', () => {
     expect(getPlayerRole(pick)).toBe('significant_contributor');
   });
 
+  it('classifies full-time kickers by avg snap share, not tiny cumulative load', () => {
+    const pick: DraftPick = {
+      playerId: 'ReicWi00',
+      playerName: 'Will Reichard',
+      position: 'K',
+      round: 6,
+      overallPick: 203,
+      teamId: 'MIN',
+      seasons: [
+        {
+          year: 2024,
+          gamesPlayed: 14,
+          teamGames: 18,
+          snapShare: 0.4,
+          cumulativeSnapShare: 0.094,
+          retained: true,
+          injuryReportWeeks: 1,
+        },
+        {
+          year: 2025,
+          gamesPlayed: 17,
+          teamGames: 17,
+          snapShare: 0.346,
+          cumulativeSnapShare: 0.109,
+          retained: true,
+        },
+      ],
+    };
+    expect(getPlayerRole(pick)).toBe('significant_contributor');
+  });
+
   it('returns depth when best season is depth', () => {
     const pick: DraftPick = {
       playerId: 'p1',
