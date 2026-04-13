@@ -109,6 +109,22 @@ function seasonTeamAbbrev(season: Season, pick: DraftPick): string {
   return season.currentTeam ?? 'FA';
 }
 
+function isFaSeason(season: Season, pick: DraftPick): boolean {
+  return seasonTeamAbbrev(season, pick) === 'FA';
+}
+
+/** Trailing items matching `isFa` are collapsed to a single leading item of that run (earliest year / first in list order). */
+function collapseTrailingFaRun<T>(items: T[], isFa: (item: T) => boolean): T[] {
+  const n = items.length;
+  if (n < 2) return items;
+  let i = n - 1;
+  while (i >= 0 && isFa(items[i])) i -= 1;
+  const runStart = i + 1;
+  const runLen = n - runStart;
+  if (runLen <= 1) return items;
+  return items.slice(0, runStart + 1);
+}
+
 function formatSnapPct(share: number): string {
   return `${Math.round(share * 1000) / 10}%`;
 }
@@ -174,6 +190,19 @@ function PlayerCard({
         : logoUrl;
 
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
+  const careerTableSeasons = collapseTrailingFaRun(sortedSeasons, (s) =>
+    isFaSeason(s, pick),
+  );
+  const journeyAfterDraft = (() => {
+    const tail = getTeamJourney(pick).slice(1);
+    return tail.length > 0
+      ? tail
+      : [{ team: 'FA' as const, role: 'non_contributor' as Role }];
+  })();
+  const journeyDisplay = collapseTrailingFaRun(
+    journeyAfterDraft,
+    (st) => st.team === 'FA',
+  );
 
   const toggleId = `${panelId}-toggle`;
   const careerLegendId = `${reactId}-career-legend`;
@@ -247,10 +276,7 @@ function PlayerCard({
             )}
             {departed && (
               <span className="player-card__departed-team">
-                {(getTeamJourney(pick).slice(1).length > 0
-                  ? getTeamJourney(pick).slice(1)
-                  : [{ team: 'FA', role: 'non_contributor' as Role }]
-                ).map((stint, i) => (
+                {journeyDisplay.map((stint, i) => (
                   <span key={i}>
                     {' → '}
                     {stint.team}
@@ -357,35 +383,41 @@ function PlayerCard({
                 </tr>
               </thead>
               <tbody>
-                {sortedSeasons.map((s) => {
+                {careerTableSeasons.map((s) => {
+                  const faRow = isFaSeason(s, pick);
                   const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
-                  const seasonRole = classifyRole(
-                    snapShareForRoleTier(s, pick.position),
-                    gps,
-                    s.gamesPlayed,
-                    pick.position,
-                  );
-                  const rc = ROLE_COLORS[seasonRole];
+                  const seasonRole: Role | null = faRow
+                    ? null
+                    : classifyRole(
+                        snapShareForRoleTier(s, pick.position),
+                        gps,
+                        s.gamesPlayed,
+                        pick.position,
+                      );
                   return (
                     <tr key={s.year}>
                       <td>{s.year}</td>
                       <td>{seasonTeamAbbrev(s, pick)}</td>
+                      <td>{faRow ? '—' : `${s.gamesPlayed}/${s.teamGames}`}</td>
+                      <td>{faRow ? '—' : formatSnapPct(s.snapShare)}</td>
                       <td>
-                        {s.gamesPlayed}/{s.teamGames}
+                        {faRow ? '—' : formatSnapPct(seasonLoadDisplayShare(s))}
                       </td>
-                      <td>{formatSnapPct(s.snapShare)}</td>
-                      <td>{formatSnapPct(seasonLoadDisplayShare(s))}</td>
                       <td>
-                        <span
-                          className="player-card__career-role"
-                          style={{
-                            backgroundColor: rc.bg,
-                            color: rc.text,
-                          }}
-                          title={formatRole(seasonRole)}
-                        >
-                          {ROLE_ABBREV[seasonRole]}
-                        </span>
+                        {faRow ? (
+                          '—'
+                        ) : (
+                          <span
+                            className="player-card__career-role"
+                            style={{
+                              backgroundColor: ROLE_COLORS[seasonRole!].bg,
+                              color: ROLE_COLORS[seasonRole!].text,
+                            }}
+                            title={formatRole(seasonRole!)}
+                          >
+                            {ROLE_ABBREV[seasonRole!]}
+                          </span>
+                        )}
                       </td>
                       <td>
                         {s.injuryReportWeeks != null

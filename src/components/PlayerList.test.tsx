@@ -122,6 +122,109 @@ describe('PlayerList', () => {
     expect(card.className).toContain('player-card--departed');
   });
 
+  it('shows em dashes for GP, snap, and load on FA seasons in career table', () => {
+    const faPicks = [
+      {
+        pick: {
+          playerId: 'p-fa-dash',
+          playerName: 'FA Dash',
+          position: 'QB',
+          round: 1,
+          overallPick: 1,
+          teamId: 'ARI',
+          seasons: [
+            {
+              year: 2022,
+              gamesPlayed: 1,
+              teamGames: 17,
+              snapShare: 0.1,
+              retained: true,
+            },
+            {
+              year: 2023,
+              gamesPlayed: 0,
+              teamGames: 17,
+              snapShare: 0,
+              retained: false,
+            },
+          ],
+        } as DraftPick,
+        draftYear: 2022,
+      },
+    ];
+    render(<PlayerList picks={faPicks} teamId="ARI" draftingTeamOnly />);
+    const card = screen.getByRole('listitem');
+    fireEvent.click(within(card).getByRole('button', { name: /FA Dash/i }));
+    const panel = within(card).getByTestId('player-career-panel');
+    const rows = within(panel).getAllByRole('row');
+    // header + 2022 team row + 2023 FA row
+    expect(rows).toHaveLength(3);
+    const faRow = rows[2];
+    const cells = within(faRow).getAllByRole('cell');
+    expect(cells[0]).toHaveTextContent('2023');
+    expect(cells[1]).toHaveTextContent('FA');
+    expect(cells[2]).toHaveTextContent('—');
+    expect(cells[3]).toHaveTextContent('—');
+    expect(cells[4]).toHaveTextContent('—');
+    expect(cells[5]).toHaveTextContent('—');
+  });
+
+  it('collapses trailing consecutive FA seasons to the first FA row', () => {
+    const multiFaPicks = [
+      {
+        pick: {
+          playerId: 'p-fa-trail',
+          playerName: 'Trailing FA',
+          position: 'QB',
+          round: 1,
+          overallPick: 10,
+          teamId: 'ARI',
+          seasons: [
+            {
+              year: 2021,
+              gamesPlayed: 4,
+              teamGames: 17,
+              snapShare: 0.11,
+              retained: false,
+              currentTeam: 'ATL',
+            },
+            {
+              year: 2022,
+              gamesPlayed: 0,
+              teamGames: 17,
+              snapShare: 0,
+              retained: false,
+            },
+            {
+              year: 2023,
+              gamesPlayed: 0,
+              teamGames: 17,
+              snapShare: 0,
+              retained: false,
+            },
+            {
+              year: 2024,
+              gamesPlayed: 0,
+              teamGames: 17,
+              snapShare: 0,
+              retained: false,
+            },
+          ],
+        } as DraftPick,
+        draftYear: 2018,
+      },
+    ];
+    render(<PlayerList picks={multiFaPicks} teamId="ARI" draftingTeamOnly />);
+    const card = screen.getByRole('listitem');
+    fireEvent.click(within(card).getByRole('button', { name: /Trailing FA/i }));
+    const panel = within(card).getByTestId('player-career-panel');
+    const rows = within(panel).getAllByRole('row');
+    expect(rows).toHaveLength(3);
+    expect(within(rows[2]).getAllByRole('cell')[0]).toHaveTextContent('2022');
+    expect(screen.queryByText('2023')).not.toBeInTheDocument();
+    expect(screen.queryByText('2024')).not.toBeInTheDocument();
+  });
+
   it('shows FA for departed players with no currentTeam', () => {
     const faPicks = [
       {
