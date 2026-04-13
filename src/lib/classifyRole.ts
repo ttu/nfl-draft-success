@@ -16,9 +16,6 @@ const SC_THRESHOLD_SPECIALIST = 0.32;
  * kickers/punters/long snappers use `snapShare`.
  * gamesPlayedShare = gamesPlayed / teamGames. First match wins.
  *
- * Significant contributor requires at least two games played: one active game can
- * show a high average-game share without representing a real season-long role.
- *
  * Between 10% and 35% load: **Depth** (10–20%) vs **Contributor** (20–35%) splits
  * limited / gadget usage from clear rotation snaps (specialists use a lower SC
  * floor; see `SC_THRESHOLD_SPECIALIST`).
@@ -26,7 +23,7 @@ const SC_THRESHOLD_SPECIALIST = 0.32;
 export function classifyRole(
   cumulativeSnapShare: number,
   gamesPlayedShare: number,
-  gamesPlayed: number,
+  _gamesPlayed: number,
   position?: string,
 ): Role {
   const scThreshold = isSpecialTeamsSpecialistPosition(undefined, position)
@@ -38,10 +35,7 @@ export function classifyRole(
     return 'starter_when_healthy';
   }
   if (cumulativeSnapShare >= scThreshold) {
-    if (gamesPlayed >= 2) return 'significant_contributor';
-    if (cumulativeSnapShare >= 0.2) return 'contributor';
-    if (cumulativeSnapShare >= 0.1) return 'depth';
-    return 'non_contributor';
+    return 'significant_contributor';
   }
   if (cumulativeSnapShare >= 0.2) return 'contributor';
   if (cumulativeSnapShare >= 0.1) return 'depth';

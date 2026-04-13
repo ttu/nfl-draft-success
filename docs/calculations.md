@@ -126,7 +126,7 @@ gamesPlayedShare = gamesPlayed / teamGames
 
 ## 3. Role Classification (per season)
 
-**Function:** `classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?)` in `src/lib/classifyRole.ts`. The first argument is **`snapShareForRoleTier(season, position)`** (stored season load when appropriate, else average share for legacy JSON; kickers/punters/long snappers use `snapShare`). Optional **`position`** selects the Significant Contributor floor: **0.35** by default, **0.32** for K/P/LS.
+**Function:** `classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?)` in `src/lib/classifyRole.ts`. The first argument is **`snapShareForRoleTier(season, position)`** (stored season load when appropriate, else average share for legacy JSON; kickers/punters/long snappers use `snapShare`). Optional **`position`** selects the Significant Contributor floor: **0.35** by default, **0.32** for K/P/LS. The **`gamesPlayed`** argument is retained for call-site compatibility and is not used in classification.
 
 Classification uses a **first-match-wins** order. All thresholds use `>=` (inclusive).
 
@@ -138,12 +138,12 @@ First-match evaluation in `classifyRole` (see `src/lib/classifyRole.ts`). Let **
 | ----- | ----------------------------------------------------------- | ----------------------- |
 | 1     | `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare >= 0.5` | Core Starter            |
 | 2     | `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare < 0.5`  | Starter When Healthy    |
-| 3     | `cumulativeSnapShare >= SCmin` AND `gamesPlayed >= 2`       | Significant Contributor |
+| 3     | `cumulativeSnapShare >= SCmin`                              | Significant Contributor |
 | 4     | `cumulativeSnapShare >= 0.2`                                | Contributor             |
 | 5     | `cumulativeSnapShare >= 0.1`                                | Depth                   |
 | 6     | (else)                                                      | Non-Contributor         |
 
-Steps 4–6 apply after any earlier branch fails (e.g. `>= SCmin` but `gamesPlayed < 2` is not SC, so Contributor vs Depth vs NC is resolved by the 0.2 / 0.1 thresholds).
+Steps 4–6 apply after any earlier branch fails (e.g. `cumulativeSnapShare` below **SCmin** but still `>= 0.2`).
 
 ### 3.2 Threshold Summary
 
@@ -151,8 +151,8 @@ Steps 4–6 apply after any earlier branch fails (e.g. `>= SCmin` but `gamesPlay
 | ----------------------- | ---------------------------------------- | ---------------- | ----------- |
 | Core Starter            | ≥ 0.65                                   | ≥ 0.5            | —           |
 | Starter When Healthy    | ≥ 0.65                                   | < 0.5            | —           |
-| Significant Contributor | ≥ **0.35** (most) or **≥ 0.32** (K/P/LS) | —                | ≥ 2         |
-| Contributor             | [0.20, SCmin) or SC fall-through         | —                | —           |
+| Significant Contributor | ≥ **0.35** (most) or **≥ 0.32** (K/P/LS) | —                | —           |
+| Contributor             | [0.20, SCmin)                            | —                | —           |
 | Depth                   | [0.10, 0.20)                             | —                | —           |
 | Non-Contributor         | < 0.10                                   | —                | —           |
 
@@ -160,8 +160,7 @@ Steps 4–6 apply after any earlier branch fails (e.g. `>= SCmin` but `gamesPlay
 
 - **cumulativeSnapShare = 0, teamGames = 0:** `gamesPlayedShare` is 0; role = `non_contributor`
 - **cumulativeSnapShare = 0.65, gamesPlayedShare = 0.5:** Exactly on boundary → `core_starter`
-- **cumulativeSnapShare = 0.649, gamesPlayed >= 2:** Fails first two checks → `significant_contributor`
-- **cumulativeSnapShare >= 0.35 but `gamesPlayed < 2`:** Not SC; if `>= 0.2` → `contributor`, else if `>= 0.1` → `depth` (avoids labeling a one-game sample as SC while still reflecting high snap share)
+- **cumulativeSnapShare = 0.649:** Fails first two checks → `significant_contributor`
 
 ---
 

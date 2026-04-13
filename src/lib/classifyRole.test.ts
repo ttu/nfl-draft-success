@@ -13,15 +13,12 @@ describe('classifyRole', () => {
     expect(classifyRole(0.65, 0, 0)).toBe('starter_when_healthy');
   });
 
-  it('returns significant_contributor when snapShare >= 0.35, below core threshold, and gamesPlayed >= 2', () => {
+  it('returns significant_contributor when snapShare >= 0.35 and below core threshold', () => {
     expect(classifyRole(0.5, 0.6, 12)).toBe('significant_contributor');
     expect(classifyRole(0.35, 0, 2)).toBe('significant_contributor');
     expect(classifyRole(0.64, 0.4, 10)).toBe('significant_contributor');
-  });
-
-  it('returns contributor for a single-game season when snapShare would otherwise qualify for SC', () => {
-    expect(classifyRole(0.51, 1 / 17, 1)).toBe('contributor');
-    expect(classifyRole(0.4, 0.2, 1)).toBe('contributor');
+    expect(classifyRole(0.51, 1 / 17, 1)).toBe('significant_contributor');
+    expect(classifyRole(0.4, 0.2, 1)).toBe('significant_contributor');
   });
 
   it('returns contributor when snapShare is in 20–35% band (below SC threshold)', () => {

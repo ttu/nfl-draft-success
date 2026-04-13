@@ -27,8 +27,8 @@ Classification order (first match wins). Let **cumulative snap share** mean `sna
 
 1. `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare >= 0.5` → `core_starter`
 2. `cumulativeSnapShare >= 0.65` AND `gamesPlayedShare < 0.5` → `starter_when_healthy`
-3. `cumulativeSnapShare >=` **SC threshold** AND `gamesPlayed >= 2` → `significant_contributor` (single-game seasons cannot be SC; they fall through). **SC threshold** is **0.35** for most positions and **0.32** for kickers, punters, and long snappers (their avg in-game share rarely reaches the scrimmage-oriented 35% bar).
-4. Else if `cumulativeSnapShare >= 0.2` → `contributor` (covers 20% up to the SC threshold and single-game SC fall-through)
+3. `cumulativeSnapShare >=` **SC threshold** → `significant_contributor`. **SC threshold** is **0.35** for most positions and **0.32** for kickers, punters, and long snappers (their avg in-game share rarely reaches the scrimmage-oriented 35% bar).
+4. Else if `cumulativeSnapShare >= 0.2` → `contributor` (covers 20% up to the SC threshold)
 5. Else if `cumulativeSnapShare >= 0.1` → `depth` (10–20% load)
 6. Else → `non_contributor`
 
