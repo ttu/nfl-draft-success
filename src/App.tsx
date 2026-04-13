@@ -2,6 +2,7 @@ import {
   useState,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   lazy,
   Suspense,
@@ -12,6 +13,7 @@ import {
   useParams,
   useSearchParams,
   useNavigate,
+  useMatch,
 } from 'react-router-dom';
 import { AppHeader } from './components/AppHeader';
 import { LoadingSpinner } from './components/LoadingSpinner';
@@ -19,6 +21,10 @@ import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { getPlayerRole } from './lib/getPlayerRole';
 import { loadDataForYears, loadDefaultRankings } from './lib/loadData';
 import { getFiveYearScore } from './lib/getFiveYearScore';
+import {
+  collectDraftPositions,
+  resolveCanonicalPosition,
+} from './lib/positionDraft';
 import {
   loadRoleFilter,
   saveRoleFilter,
@@ -46,6 +52,11 @@ const TeamDetailContent = lazy(() =>
 const YearDraftView = lazy(() =>
   import('./components/YearDraftView').then((m) => ({
     default: m.YearDraftView,
+  })),
+);
+const PositionDraftView = lazy(() =>
+  import('./components/PositionDraftView').then((m) => ({
+    default: m.PositionDraftView,
   })),
 );
 
@@ -104,6 +115,11 @@ function AppContent() {
     teamId?: string;
     draftYear?: string;
   }>();
+  const positionMatch = useMatch('/position/:position');
+  const isPositionView = positionMatch != null;
+  const positionParamRaw = positionMatch?.params.position;
+  const positionParam =
+    positionParamRaw != null ? decodeURIComponent(positionParamRaw) : undefined;
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const parsedRouteYear =
@@ -122,7 +138,8 @@ function AppContent() {
   }, [draftYearParam, routeYearValid, navigate]);
 
   const selectedTeam = teamId && validTeamIds.has(teamId) ? teamId : null;
-  const showRankingsView = selectedTeam === null && !isYearView;
+  const showRankingsView =
+    selectedTeam === null && !isYearView && !isPositionView;
 
   const yearRange = useResolvedYearRange(
     forcedSingleYear,
@@ -146,6 +163,43 @@ function AppContent() {
   );
   const [showInfoView, setShowInfoView] = useState(false);
   const [showDeparted, setShowDeparted] = useState(() => loadShowDeparted());
+
+  const positionOptions = useMemo(
+    () => collectDraftPositions(draftClasses),
+    [draftClasses],
+  );
+
+  const canonicalPosition =
+    positionParam != null && positionOptions.length > 0
+      ? resolveCanonicalPosition(positionOptions, positionParam)
+      : null;
+
+  useLayoutEffect(() => {
+    if (!isPositionView || loading || draftClasses.length === 0) return;
+    if (positionParam == null || positionParam.trim() === '') {
+      navigate('/', { replace: true });
+      return;
+    }
+    if (positionOptions.length === 0) return;
+    if (canonicalPosition != null) return;
+    const fallback = positionOptions.includes('QB') ? 'QB' : positionOptions[0];
+    navigate(
+      {
+        pathname: `/position/${encodeURIComponent(fallback)}`,
+        search: searchParams.toString(),
+      },
+      { replace: true },
+    );
+  }, [
+    isPositionView,
+    loading,
+    draftClasses.length,
+    positionParam,
+    positionOptions,
+    canonicalPosition,
+    navigate,
+    searchParams,
+  ]);
 
   useEffect(() => {
     saveRoleFilter(Array.from(roleFilter));
@@ -195,6 +249,24 @@ function AppContent() {
 
   const handleShowRankings = () => {
     navigate(`/?from=${yearRange[0]}&to=${yearRange[1]}`);
+  };
+
+  const positionBrowseSearch = new URLSearchParams({
+    from: String(yearRange[0]),
+    to: String(yearRange[1]),
+  }).toString();
+
+  const handlePositionChange = (pos: string) => {
+    const search =
+      searchParams.toString() ||
+      new URLSearchParams({
+        from: String(yearRange[0]),
+        to: String(yearRange[1]),
+      }).toString();
+    navigate({
+      pathname: `/position/${encodeURIComponent(pos)}`,
+      search,
+    });
   };
 
   useEffect(() => {
@@ -328,6 +400,7 @@ function AppContent() {
         selectedTeam={selectedTeam}
         showRankingsView={showRankingsView}
         showYearDraftView={isYearView}
+        showPositionView={isPositionView}
         draftPickYear={draftPickYear}
         onDraftPickYear={handleDraftPickYear}
         yearRange={yearRange}
@@ -335,6 +408,10 @@ function AppContent() {
         onTeamSelect={handleTeamSelect}
         onYearRangeChange={handleYearRangeChange}
         onShowInfo={() => setShowInfoView(true)}
+        positionBrowseSearch={positionBrowseSearch}
+        positionOptions={positionOptions}
+        selectedPosition={canonicalPosition}
+        onPositionChange={handlePositionChange}
       />
 
       {showRankingsView && showLandingIntro && (
@@ -353,7 +430,7 @@ function AppContent() {
         </div>
       )}
 
-      {loading && showRankingsView && defaultRankings ? (
+      {loading && showRankingsView && defaultRankings && !isPositionView ? (
         <TeamRankingsView
           rankings={defaultRankings.rankings}
           yearCount={yearRange[1] - yearRange[0] + 1}
@@ -365,6 +442,17 @@ function AppContent() {
         <Suspense fallback={<LoadingSpinner />}>
           <YearDraftView
             draftClass={draftClasses[0]}
+            draftingTeamOnly={draftingTeamOnly}
+            onShowRankings={handleShowRankings}
+          />
+        </Suspense>
+      ) : isPositionView && canonicalPosition && draftClasses.length > 0 ? (
+        <Suspense fallback={<LoadingSpinner />}>
+          <PositionDraftView
+            position={canonicalPosition}
+            yearFrom={yearRange[0]}
+            yearTo={yearRange[1]}
+            draftClasses={draftClasses}
             draftingTeamOnly={draftingTeamOnly}
             onShowRankings={handleShowRankings}
           />
@@ -424,6 +512,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<AppContent />} />
+      <Route path="/position/:position" element={<AppContent />} />
       <Route path="/year/:draftYear" element={<AppContent />} />
       <Route path="/:teamId" element={<AppContent />} />
     </Routes>

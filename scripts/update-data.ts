@@ -25,6 +25,7 @@ import {
   resolveCumulativeLoadShareWithInjury,
   resolveTeamGamesDenominator,
 } from '../src/lib/teamSeasonDenominator';
+import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
@@ -501,7 +502,7 @@ async function main() {
         playerId: pfrId || `unknown-${year}-${picks.length}`,
         playerName:
           row.pfr_player_name ?? row.player_name ?? row.player ?? 'Unknown',
-        position: row.pos ?? row.position ?? '?',
+        position: normalizeDraftPosition(row.pos ?? row.position ?? '?'),
         round: parseInt(row.round ?? '0', 10) || 1,
         overallPick: parseInt(row.pick ?? row.overall ?? '0', 10) || 1,
         teamId,

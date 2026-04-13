@@ -742,6 +742,39 @@ a.year-draft-view__inline-link:hover {
   color: #bfdbfe;
 }
 
+.app-header__draft-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+}
+
+.app-header__position-select {
+  min-width: 5.5rem;
+}
+
+.position-draft-view__intro {
+  margin-bottom: 1.5rem;
+}
+
+.position-draft-view__year {
+  margin-bottom: 2rem;
+}
+
+.position-draft-view__year-heading {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #e5e7eb;
+}
+
+.position-draft-view__empty {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 0.95rem;
+}
+
 .app-players__header {
   display: flex;
   flex-wrap: wrap;
