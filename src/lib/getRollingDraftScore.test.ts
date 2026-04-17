@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getFiveYearScore } from './getFiveYearScore';
+import { getRollingDraftScore } from './getRollingDraftScore';
 import type { DraftClass } from '../types';
 
 const coreStarterPick = (year: number): DraftClass => ({
@@ -48,17 +48,17 @@ const depthPick = (year: number): DraftClass => ({
   ],
 });
 
-describe('getFiveYearScore', () => {
+describe('getRollingDraftScore', () => {
   it('score = sum(per-pick average seasonal weights) / total picks', () => {
     const drafts: DraftClass[] = [coreStarterPick(2023), depthPick(2023)];
-    const result = getFiveYearScore(drafts, 'KC');
+    const result = getRollingDraftScore(drafts, 'KC');
     expect(result.totalPicks).toBe(2);
     expect(result.score).toBeCloseTo((4 + 1) / 2);
   });
 
   it('computes coreStarterRate and retentionRate', () => {
     const drafts: DraftClass[] = [coreStarterPick(2023)];
-    const result = getFiveYearScore(drafts, 'KC');
+    const result = getRollingDraftScore(drafts, 'KC');
     expect(result.coreStarterRate).toBe(1);
     expect(result.retentionRate).toBe(1);
   });
@@ -94,8 +94,8 @@ describe('getFiveYearScore', () => {
       ],
     };
 
-    const career = getFiveYearScore([draft], 'KC');
-    const draftingOnly = getFiveYearScore([draft], 'KC', {
+    const career = getRollingDraftScore([draft], 'KC');
+    const draftingOnly = getRollingDraftScore([draft], 'KC', {
       draftingTeamOnly: true,
     });
 
@@ -109,7 +109,7 @@ describe('getFiveYearScore', () => {
       coreStarterPick(2021),
       depthPick(2022),
     ];
-    const result = getFiveYearScore(drafts, 'KC');
+    const result = getRollingDraftScore(drafts, 'KC');
     expect(result.totalPicks).toBe(3);
     expect(result.score).toBeCloseTo((4 + 4 + 1) / 3);
   });

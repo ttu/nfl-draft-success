@@ -36,7 +36,7 @@ Together, **Depth** (10–20%) and **Contributor** (up to the SC threshold) cove
 
 **Overall classification (badges, filters, draft-class buckets):** Derived from the **mean** of each season’s role weight (0–4), then mapped to a representative role. A mixed career (e.g. starter years plus an injured or inactive year) scores below a steady peak. For the top band (mean ≥ 3.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
 
-**5-Year / draft score:** Uses the same **mean seasonal weight** per pick (not the peak-only weight).
+**Rolling draft score:** Uses the same **mean seasonal weight** per pick (not the peak-only weight).
 
 **Core Starter %:** Share of picks whose **representative** overall role (from mean seasonal weights) is Core Starter — same rule as draft-class “Core starters” counts.
 
@@ -68,11 +68,11 @@ Include with partial data. Metrics computed from available games. `teamGames` = 
 - Contributor Rate
 - Retention Rate
 
-## 5-Year Rolling Score
+## Rolling draft score
 
 - Score per player = **mean** of that player’s per-season role weights (0–4)
 - Team Score = (sum of player scores) / (total picks)
-- Display: 5-Year Draft Score, Core Starter %, Retention %
+- Display: Rolling draft score (with selected season span), Core Starter %, Retention %
 
 ## JSON Field Names
 

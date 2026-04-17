@@ -8,7 +8,7 @@
  */
 import * as fs from 'fs';
 import * as path from 'path';
-import { getFiveYearScore } from '../src/lib/getFiveYearScore';
+import { getRollingDraftScore } from '../src/lib/getRollingDraftScore';
 import { TEAMS } from '../src/data/teams';
 import type { DraftClass } from '../src/types';
 
@@ -30,7 +30,7 @@ function main() {
   const teamScores = TEAMS.map((t) => ({
     teamId: t.id,
     teamName: t.name,
-    ...getFiveYearScore(draftClasses, t.id, { draftingTeamOnly: true }),
+    ...getRollingDraftScore(draftClasses, t.id, { draftingTeamOnly: true }),
   }));
 
   teamScores.sort((a, b) => b.score - a.score);

@@ -20,7 +20,7 @@ import { LoadingSpinner } from './components/LoadingSpinner';
 import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { getPlayerRole } from './lib/getPlayerRole';
 import { loadDataForYears, loadDefaultRankings } from './lib/loadData';
-import { getFiveYearScore } from './lib/getFiveYearScore';
+import { getRollingDraftScore } from './lib/getRollingDraftScore';
 import {
   collectDraftPositions,
   resolveCanonicalPosition,
@@ -309,9 +309,9 @@ function AppContent() {
   }, [yearRange[0], yearRange[1]]);
 
   const draftingTeamOnly = true;
-  const fiveYearScore =
+  const rollingDraftScore =
     draftClasses.length > 0 && selectedTeam
-      ? getFiveYearScore(draftClasses, selectedTeam, { draftingTeamOnly })
+      ? getRollingDraftScore(draftClasses, selectedTeam, { draftingTeamOnly })
       : null;
 
   const teamRank =
@@ -320,7 +320,7 @@ function AppContent() {
           const teamScores = TEAMS.map((t) => ({
             teamId: t.id,
             teamName: t.name,
-            score: getFiveYearScore(draftClasses, t.id, {
+            score: getRollingDraftScore(draftClasses, t.id, {
               draftingTeamOnly,
             }).score,
           }));
@@ -464,10 +464,10 @@ function AppContent() {
           onTeamSelect={handleTeamSelect}
           onBack={selectedTeam ? handleShowRankings : undefined}
         />
-      ) : selectedTeam && fiveYearScore ? (
+      ) : selectedTeam && rollingDraftScore ? (
         <Suspense fallback={<LoadingSpinner />}>
           <TeamDetailContent
-            fiveYearScore={fiveYearScore}
+            rollingDraftScore={rollingDraftScore}
             yearCount={yearRange[1] - yearRange[0] + 1}
             teamRank={teamRank}
             onShowRankings={handleShowRankings}

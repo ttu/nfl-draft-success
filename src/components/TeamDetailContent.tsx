@@ -1,11 +1,11 @@
 import { DraftClassCard } from './DraftClassCard';
-import { FiveYearScoreCard } from './FiveYearScoreCard';
+import { RollingDraftScoreCard } from './RollingDraftScoreCard';
 import { PlayerList } from './PlayerList';
 import { RoleFilter } from './RoleFilter';
 import { getDraftClassMetrics } from '../lib/getDraftClassMetrics';
 import type { DraftClass, DraftPick, Role } from '../types';
-import type { TeamRanking } from './FiveYearScoreCard';
-import type { FiveYearScore } from '../lib/getFiveYearScore';
+import type { TeamRanking } from './RollingDraftScoreCard';
+import type { RollingDraftScore } from '../lib/getRollingDraftScore';
 
 export interface RosterPick {
   pick: DraftPick;
@@ -13,7 +13,7 @@ export interface RosterPick {
 }
 
 export interface TeamDetailContentProps {
-  fiveYearScore: FiveYearScore;
+  rollingDraftScore: RollingDraftScore;
   yearCount: number;
   teamRank: { rank: number; total: number; rankings: TeamRanking[] } | null;
   onShowRankings: () => void;
@@ -29,7 +29,7 @@ export interface TeamDetailContentProps {
 }
 
 export function TeamDetailContent({
-  fiveYearScore,
+  rollingDraftScore,
   yearCount,
   teamRank,
   onShowRankings,
@@ -46,8 +46,8 @@ export function TeamDetailContent({
   return (
     <>
       <section className="app-score">
-        <FiveYearScoreCard
-          score={fiveYearScore}
+        <RollingDraftScoreCard
+          score={rollingDraftScore}
           yearCount={yearCount}
           rank={teamRank}
           onShowRankings={onShowRankings}

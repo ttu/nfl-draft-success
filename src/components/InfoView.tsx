@@ -187,9 +187,10 @@ export function InfoView({ onClose }: InfoViewProps) {
               </tbody>
             </table>
             <p>
-              <strong>5-Year Draft Score</strong> = (sum of player role weights)
-              ÷ (total picks). Core Starter % and Retention % are computed as
-              the share of picks that reached that status.
+              <strong>Rolling draft score</strong> (over your selected season
+              span) = (sum of player role weights) ÷ (total picks). Core Starter
+              % and Retention % are computed as the share of picks that reached
+              that status.
             </p>
             <p>
               <strong>Retention</strong> means the player is still on the

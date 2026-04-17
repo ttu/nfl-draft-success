@@ -246,11 +246,11 @@ Retention for metrics uses the **most recent season** only:
 
 ---
 
-## 7. 5-Year Rolling Score
+## 7. Rolling draft score
 
-**Function:** `getFiveYearScore(draftClasses, teamId, options)` in `src/lib/getFiveYearScore.ts`
+**Function:** `getRollingDraftScore(draftClasses, teamId, options)` in `src/lib/getRollingDraftScore.ts`
 
-**Scope:** All picks by the team across the provided draft classes (typically 5 consecutive years).
+**Scope:** All picks by the team across the provided draft classes (the app’s selected season span).
 
 ### 7.1 Score Formula
 
@@ -314,7 +314,7 @@ classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?) → per-s
 getPlayerAverageScoreWeight(pick) → mean seasonal weight; getPlayerRole(pick) → representative role from mean (+ peak for starter label)
     ↓
 getDraftClassMetrics() → counts, rates per draft class
-getFiveYearScore() → score, coreStarterRate, retentionRate across classes
+getRollingDraftScore() → score, coreStarterRate, retentionRate across classes
 ```
 
 ---
@@ -326,5 +326,5 @@ getFiveYearScore() → score, coreStarterRate, retentionRate across classes
 | Role classification | `src/lib/classifyRole.ts`         |
 | Player overall role | `src/lib/getPlayerRole.ts`        |
 | Draft class metrics | `src/lib/getDraftClassMetrics.ts` |
-| 5-Year score        | `src/lib/getFiveYearScore.ts`     |
+| Rolling draft score | `src/lib/getRollingDraftScore.ts` |
 | Raw data derivation | `scripts/update-data.ts`          |

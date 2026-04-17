@@ -1,4 +1,4 @@
-import type { FiveYearScore } from '../lib/getFiveYearScore';
+import type { RollingDraftScore } from '../lib/getRollingDraftScore';
 
 export interface TeamRanking {
   teamId: string;
@@ -7,8 +7,8 @@ export interface TeamRanking {
   rank: number;
 }
 
-export interface FiveYearScoreCardProps {
-  score: FiveYearScore;
+export interface RollingDraftScoreCardProps {
+  score: RollingDraftScore;
   yearCount: number;
   rank?: {
     rank: number;
@@ -18,14 +18,18 @@ export interface FiveYearScoreCardProps {
   onShowRankings?: () => void;
 }
 
-export function FiveYearScoreCard({
+function seasonsLabel(count: number): string {
+  return `${count} season${count === 1 ? '' : 's'}`;
+}
+
+export function RollingDraftScoreCard({
   score,
   yearCount,
   rank,
   onShowRankings,
-}: FiveYearScoreCardProps) {
+}: RollingDraftScoreCardProps) {
   const { score: value, totalPicks, coreStarterRate, retentionRate } = score;
-  const title = `${yearCount}-Year Draft Score`;
+  const title = `Rolling draft score, ${seasonsLabel(yearCount)}`;
 
   return (
     <article aria-labelledby="draft-score-title">

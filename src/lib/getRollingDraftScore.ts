@@ -1,27 +1,29 @@
 import type { DraftClass } from '../types';
 import { getPlayerAverageScoreWeight, getPlayerRole } from './getPlayerRole';
 
-export interface FiveYearScore {
+export interface RollingDraftScore {
   score: number;
   totalPicks: number;
   coreStarterRate: number;
   retentionRate: number;
 }
 
-export interface GetFiveYearScoreOptions {
+export interface GetRollingDraftScoreOptions {
   /** When true, roles based only on seasons with drafting team */
   draftingTeamOnly?: boolean;
 }
 
 /**
- * Compute 5-year rolling draft score for a team.
+ * Compute rolling draft score for a team over the loaded draft seasons
+ * (whatever year range is in `draftClasses`, typically matching the app’s
+ * selected season span).
  * Score = sum(per-pick average seasonal role weights) / total picks.
  */
-export function getFiveYearScore(
+export function getRollingDraftScore(
   draftClasses: DraftClass[],
   teamId: string,
-  options?: GetFiveYearScoreOptions,
-): FiveYearScore {
+  options?: GetRollingDraftScoreOptions,
+): RollingDraftScore {
   let totalPicks = 0;
   let weightSum = 0;
   let coreStarterCount = 0;

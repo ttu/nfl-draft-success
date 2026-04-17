@@ -1,5 +1,5 @@
 import { getTeamLogoUrl } from '../data/teamColors';
-import type { TeamRanking } from './FiveYearScoreCard';
+import type { TeamRanking } from './RollingDraftScoreCard';
 
 export interface TeamRankingsViewProps {
   rankings: TeamRanking[];
@@ -27,7 +27,8 @@ export function TeamRankingsView({
           </button>
         )}
         <h2 className="team-rankings-view__title">
-          {yearCount}-Year Draft Score Rankings
+          Rolling draft score rankings, {yearCount} season
+          {yearCount === 1 ? '' : 's'}
         </h2>
       </div>
       <ul className="team-rankings-view__list" role="list">

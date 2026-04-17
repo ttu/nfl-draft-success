@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { YearRangeFilter } from './YearRangeFilter';
 
 describe('YearRangeFilter', () => {
-  it('displays range 2021–2025 (5-year default)', () => {
+  it('displays range 2021–2025 (default window)', () => {
     render(
       <YearRangeFilter
         min={2018}

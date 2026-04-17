@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { FiveYearScoreCard } from './FiveYearScoreCard';
+import { RollingDraftScoreCard } from './RollingDraftScoreCard';
 
 const mockScore = {
   score: 1.5,
@@ -9,23 +9,27 @@ const mockScore = {
   retentionRate: 0.8,
 };
 
-describe('FiveYearScoreCard', () => {
+describe('RollingDraftScoreCard', () => {
   it('displays score, Core Starter %, Retention %', () => {
-    render(<FiveYearScoreCard score={mockScore} yearCount={5} />);
-    expect(screen.getByText('5-Year Draft Score')).toBeInTheDocument();
+    render(<RollingDraftScoreCard score={mockScore} yearCount={5} />);
+    expect(
+      screen.getByText('Rolling draft score, 5 seasons'),
+    ).toBeInTheDocument();
     expect(screen.getByText('1.50')).toBeInTheDocument();
     expect(screen.getByText('25.0%')).toBeInTheDocument();
     expect(screen.getByText('80.0%')).toBeInTheDocument();
   });
 
-  it('displays dynamic year count in title', () => {
-    render(<FiveYearScoreCard score={mockScore} yearCount={8} />);
-    expect(screen.getByText('8-Year Draft Score')).toBeInTheDocument();
+  it('displays dynamic season span in title', () => {
+    render(<RollingDraftScoreCard score={mockScore} yearCount={8} />);
+    expect(
+      screen.getByText('Rolling draft score, 8 seasons'),
+    ).toBeInTheDocument();
   });
 
   it('displays rank when provided', () => {
     render(
-      <FiveYearScoreCard
+      <RollingDraftScoreCard
         score={mockScore}
         yearCount={5}
         rank={{ rank: 12, total: 32, rankings: [] }}
