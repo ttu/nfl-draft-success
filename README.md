@@ -1,6 +1,6 @@
 # NFL Draft Success
 
-A static site that evaluates NFL draft success by team using snap share, games played, and retention. Team-centric view with draft class metrics and 5-year rolling scores.
+A static site that evaluates NFL draft success by team using snap share, games played, and retention. Team-centric view with draft class metrics and a rolling draft score over the years you select.
 
 ## Quick Start
 
@@ -14,10 +14,10 @@ Open http://localhost:5173
 ## Features
 
 - **32 NFL teams** – Select any team to view their draft performance
-- **Configurable year range** – Default 2018–2025
+- **Configurable year range** – Select any span within 2018–2025 (default 2021–2025)
 - **Role classification** – Core Starter, Starter When Healthy, Significant Contributor, Depth, Non Contributor (from snap share + availability)
 - **Draft class metrics** – Picks, core starters, contributors, retention per year
-- **5-year rolling score** – Aggregated score with Core Starter % and Retention %
+- **Rolling draft score** – Aggregated score across your chosen year range, with Core Starter % and Retention %
 - **Player list** – Retained draft picks with draft year, position, and role
 
 ## Scripts
