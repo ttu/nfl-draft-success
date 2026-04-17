@@ -1,3 +1,4 @@
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TeamSelector } from './TeamSelector';
 import { YearRangeFilter } from './YearRangeFilter';
@@ -51,41 +52,84 @@ export function AppHeader({
   selectedPosition = null,
   onPositionChange,
 }: AppHeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuPanelId = useId();
+  const menuCloseRef = useRef<HTMLButtonElement>(null);
   const draftsLinkYear = clampDraftYear(yearRange[1]);
   const draftsBoardTitle = `Open the ${draftsLinkYear} draft board (every pick). Choose a different year on that page.`;
 
+  const closeMenu = () => setMenuOpen(false);
+
+  const handleAbout = () => {
+    closeMenu();
+    onShowInfo();
+  };
+
+  const handleTeamRankings = () => {
+    closeMenu();
+    onShowRankings();
+  };
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMenu();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (menuOpen) menuCloseRef.current?.focus();
+  }, [menuOpen]);
+
   return (
     <header className="app-header">
-      <div className="app-header__brand">
-        {selectedTeam ? (
-          <img
-            src={getTeamLogoUrl(selectedTeam)}
-            alt=""
-            className="app-header__logo"
-            referrerPolicy="no-referrer"
-            aria-hidden
-          />
-        ) : (
-          <img
-            src={NFL_LOGO_URL}
-            alt=""
-            className="app-header__logo"
-            referrerPolicy="no-referrer"
-            aria-hidden
-          />
-        )}
-        <div className="app-header__title-row">
-          <h1>NFL Draft Success</h1>
-          <button
-            type="button"
-            onClick={onShowInfo}
-            className="app-controls__icon-btn app-header__info-btn"
-            aria-label="About"
-            title="About"
-          >
+      <div className="app-header__bar">
+        <div className="app-header__brand">
+          {selectedTeam ? (
+            <img
+              src={getTeamLogoUrl(selectedTeam)}
+              alt=""
+              className="app-header__logo"
+              referrerPolicy="no-referrer"
+              aria-hidden
+            />
+          ) : (
+            <img
+              src={NFL_LOGO_URL}
+              alt=""
+              className="app-header__logo"
+              referrerPolicy="no-referrer"
+              aria-hidden
+            />
+          )}
+          <div className="app-header__title-row">
+            <h1>NFL Draft Success</h1>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="app-controls__icon-btn app-header__menu-btn"
+          aria-expanded={menuOpen}
+          aria-controls={menuPanelId}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          title="Menu"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          {menuOpen ? (
             <svg
-              width="20"
-              height="20"
+              width="22"
+              height="22"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -94,29 +138,124 @@ export function AppHeader({
               strokeLinejoin="round"
               aria-hidden
             >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4M12 8h.01" />
+              <path d="M18 6L6 18M6 6l12 12" />
             </svg>
-          </button>
-        </div>
+          ) : (
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          )}
+        </button>
       </div>
+
+      {menuOpen && (
+        <>
+          <div
+            className="app-header__menu-backdrop"
+            aria-hidden
+            onClick={closeMenu}
+          />
+          <div
+            id={menuPanelId}
+            className="app-header__menu-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="app-header-menu-title"
+          >
+            <div className="app-header__menu-panel-header">
+              <h2 id="app-header-menu-title" className="app-header__menu-title">
+                Menu
+              </h2>
+              <button
+                ref={menuCloseRef}
+                type="button"
+                className="app-controls__icon-btn app-header__menu-close"
+                aria-label="Close menu"
+                onClick={closeMenu}
+              >
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="app-header__menu-body">
+              <nav aria-label="Site navigation">
+                <ul className="app-header__menu-list">
+                  <li>
+                    <button
+                      type="button"
+                      className="app-header__menu-item"
+                      onClick={handleTeamRankings}
+                    >
+                      Team rankings
+                    </button>
+                  </li>
+                  <li>
+                    <Link
+                      to={`/year/${draftsLinkYear}`}
+                      className="app-header__menu-item"
+                      title={draftsBoardTitle}
+                      onClick={closeMenu}
+                    >
+                      Drafts
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={{
+                        pathname: '/position/QB',
+                        search: positionBrowseSearch,
+                      }}
+                      className="app-header__menu-item"
+                      title="All quarterbacks drafted in the years selected for team scores"
+                      onClick={closeMenu}
+                    >
+                      By position
+                    </Link>
+                  </li>
+                  <li className="app-header__menu-footer">
+                    <button
+                      type="button"
+                      className="app-header__menu-item"
+                      onClick={handleAbout}
+                    >
+                      About
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </>
+      )}
       <div className="app-controls app-controls--grouped">
-        {(!showRankingsView || showYearDraftView || showPositionView) && (
+        {!showRankingsView && selectedTeam && (
           <div
             className="app-controls__group app-controls__group--nav"
             role="group"
             aria-label="Team navigation"
           >
-            <button
-              type="button"
-              onClick={onShowRankings}
-              className="app-header__rankings-link"
-            >
-              Team rankings
-            </button>
-            {!showRankingsView && selectedTeam && (
-              <TeamSelector value={selectedTeam} onChange={onTeamSelect} />
-            )}
+            <TeamSelector value={selectedTeam} onChange={onTeamSelect} />
           </div>
         )}
 
@@ -143,40 +282,6 @@ export function AppHeader({
               onChange={onYearRangeChange}
               groupAriaLabel="Years included in team scores (rankings below)"
             />
-          </div>
-        )}
-
-        {showRankingsView && !showYearDraftView && (
-          <div
-            className="app-controls__group"
-            role="group"
-            aria-labelledby="app-header-draft-board-heading"
-          >
-            <div
-              id="app-header-draft-board-heading"
-              className="app-controls__group-heading"
-            >
-              League drafts
-            </div>
-            <p className="app-controls__group-hint">
-              Browse one draft year or one position across your selected years.
-            </p>
-            <div className="app-header__draft-links">
-              <Link
-                to={`/year/${draftsLinkYear}`}
-                className="app-header__rankings-link"
-                title={draftsBoardTitle}
-              >
-                Drafts
-              </Link>
-              <Link
-                to={{ pathname: '/position/QB', search: positionBrowseSearch }}
-                className="app-header__rankings-link"
-                title="All quarterbacks drafted in the years selected for team scores"
-              >
-                By position
-              </Link>
-            </div>
           </div>
         )}
 

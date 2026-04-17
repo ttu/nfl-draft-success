@@ -1,4 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+/** Header slide-over menu (avoids clashing with in-page “team rankings” controls). */
+function headerMenu(page: Page) {
+  return page.getByRole('dialog', { name: /^menu$/i });
+}
 
 test.describe('Year draft view (all picks in one draft)', () => {
   test('deep link /year/2020 shows full draft heading and pick list', async ({
@@ -21,7 +26,10 @@ test.describe('Year draft view (all picks in one draft)', () => {
     page,
   }) => {
     await page.goto('/');
-    await page.getByRole('link', { name: /^Drafts$/i }).click();
+    await page.getByRole('button', { name: /open menu/i }).click();
+    await headerMenu(page)
+      .getByRole('link', { name: /^Drafts$/i })
+      .click();
     await expect(page).toHaveURL(/\/year\/2025$/);
     await page
       .getByRole('combobox', {
@@ -29,7 +37,10 @@ test.describe('Year draft view (all picks in one draft)', () => {
       })
       .selectOption('2019');
     await expect(page).toHaveURL(/\/year\/2019$/);
-    await page.getByRole('button', { name: /^Team rankings$/i }).click();
+    await page.getByRole('button', { name: /open menu/i }).click();
+    await headerMenu(page)
+      .getByRole('button', { name: /^Team rankings$/i })
+      .click();
     await expect(page).toHaveURL(/\?from=/);
   });
 

@@ -67,7 +67,11 @@ test.describe('Team detail view', () => {
   });
 
   test('back navigation returns to rankings', async ({ page }) => {
-    await page.locator('.app-header__rankings-link').click();
+    await page.getByRole('button', { name: /open menu/i }).click();
+    await page
+      .getByRole('dialog', { name: /^menu$/i })
+      .getByRole('button', { name: /^Team rankings$/i })
+      .click();
     await expect(
       page.locator('[aria-label="Team draft rankings"]'),
     ).toBeVisible();

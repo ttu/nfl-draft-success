@@ -53,9 +53,15 @@ test.describe('Landing page', () => {
     expect(page.url()).toMatch(/\/[A-Z]{2,3}\?/);
   });
 
-  test('info button opens info modal', async ({ page }) => {
-    await page.locator('[aria-label="About"]').click();
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
+  test('info opens from menu About item', async ({ page }) => {
+    await page.getByRole('button', { name: /open menu/i }).click();
+    await page
+      .getByRole('dialog', { name: /^menu$/i })
+      .getByRole('button', { name: /^About$/ })
+      .click();
+    await expect(
+      page.getByRole('dialog', { name: /About NFL Draft Success/i }),
+    ).toBeVisible();
   });
 });
 
