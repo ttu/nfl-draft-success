@@ -63,16 +63,9 @@
 
 .app-controls--grouped {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: 1fr;
   align-items: start;
-  gap: 1.25rem 2rem;
-}
-
-@media (max-width: 520px) {
-  .app-controls--grouped {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
+  gap: 1.25rem;
 }
 
 .app-controls__group {
@@ -879,8 +872,8 @@ a.year-draft-view__inline-link:hover {
 
 .app-header__position-select {
   min-width: 5.5rem;
-  max-width: 100%;
-  width: 100%;
+  width: min(100%, 24rem);
+  align-self: flex-start;
   box-sizing: border-box;
 }
 

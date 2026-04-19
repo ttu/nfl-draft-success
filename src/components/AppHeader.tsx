@@ -321,7 +321,7 @@ export function AppHeader({
               Position
             </div>
             <p className="app-controls__group-hint">
-              Filter by position; years are set to the left.
+              Filter by position; draft years are set above.
             </p>
             <select
               aria-label="Select position"
