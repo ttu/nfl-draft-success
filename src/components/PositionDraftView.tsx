@@ -31,16 +31,30 @@ export function PositionDraftView({
   }, [draftClasses, position]);
 
   const positionTitle = getPositionDisplayName(position);
+  const singleCalendarYear = yearFrom === yearTo;
+  const titleDraftRange = singleCalendarYear
+    ? ` · ${yearFrom}`
+    : ` — drafts ${yearFrom}–${yearTo}`;
 
   return (
     <>
       <div className="year-draft-view__intro position-draft-view__intro">
         <h2 id="position-draft-title">
-          {positionTitle} ({position}) — drafts {yearFrom}–{yearTo}
+          {positionTitle} ({position}){titleDraftRange}
         </h2>
         <p className="year-draft-view__lede">
-          Every player drafted at {positionTitle.toLowerCase()} ({position}) in
-          the years you selected (pick order within each year). Open{' '}
+          {singleCalendarYear ? (
+            <>
+              Every {positionTitle.toLowerCase()} ({position}) picked in{' '}
+              {yearFrom} (order below follows draft position within the year).
+              Open{' '}
+            </>
+          ) : (
+            <>
+              All {positionTitle.toLowerCase()} ({position}) picks in this range
+              (pick order within each year). Open{' '}
+            </>
+          )}
           <button
             type="button"
             className="year-draft-view__inline-link"
@@ -61,22 +75,35 @@ export function PositionDraftView({
           No picks at {positionTitle} ({position}) in this range.
         </p>
       ) : (
-        groups.map(({ year, picks }) => (
-          <section
-            key={year}
-            className="app-players position-draft-view__year"
-            aria-label={`${year} draft, ${positionTitle} (${position})`}
-          >
-            <h3 className="position-draft-view__year-heading">{year}</h3>
-            <PlayerList
-              picks={picks}
-              teamId={picks[0]?.pick.teamId ?? 'KC'}
-              brandByDraftingTeam
-              yearDraftBoard
-              draftingTeamOnly={draftingTeamOnly}
-            />
-          </section>
-        ))
+        groups.map(({ year, picks }) => {
+          const hideYearBanner =
+            singleCalendarYear && groups.length === 1 && year === yearFrom;
+          return (
+            <section
+              key={year}
+              className="app-players position-draft-view__year"
+              aria-label={
+                hideYearBanner
+                  ? undefined
+                  : `${year} draft, ${positionTitle} (${position})`
+              }
+              aria-labelledby={
+                hideYearBanner ? 'position-draft-title' : undefined
+              }
+            >
+              {!hideYearBanner && (
+                <h3 className="position-draft-view__year-heading">{year}</h3>
+              )}
+              <PlayerList
+                picks={picks}
+                teamId={picks[0]?.pick.teamId ?? 'KC'}
+                brandByDraftingTeam
+                yearDraftBoard
+                draftingTeamOnly={draftingTeamOnly}
+              />
+            </section>
+          );
+        })
       )}
     </>
   );

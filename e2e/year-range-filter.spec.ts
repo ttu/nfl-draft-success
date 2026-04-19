@@ -11,9 +11,11 @@ test.describe('Year range filter', () => {
 
   test('year range reflects in rankings title', async ({ page }) => {
     await page.goto('/?from=2022&to=2024');
-    const title = page.locator('.team-rankings-view__title');
-    await expect(title).toContainText(
-      'Rolling draft score rankings, 3 seasons',
+    await expect(page.locator('.team-rankings-view__title')).toHaveText(
+      'Team rankings',
+    );
+    await expect(page.locator('.team-rankings-view__subtitle')).toContainText(
+      '3 seasons',
     );
   });
 

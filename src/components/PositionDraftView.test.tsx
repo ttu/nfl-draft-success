@@ -36,6 +36,29 @@ const classes: DraftClass[] = [
 ];
 
 describe('PositionDraftView', () => {
+  it('uses a compact title when from and to are the same year', () => {
+    render(
+      <MemoryRouter>
+        <PositionDraftView
+          position="TE"
+          yearFrom={2021}
+          yearTo={2021}
+          draftClasses={[classes[1]]}
+          draftingTeamOnly
+          onShowRankings={() => {}}
+        />
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByRole('heading', {
+        name: /Tight end \(TE\) · 2021/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: '2021', level: 3 }),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders year sections and picks in draft order', () => {
     render(
       <MemoryRouter>

@@ -29,11 +29,15 @@ export function RollingDraftScoreCard({
   onShowRankings,
 }: RollingDraftScoreCardProps) {
   const { score: value, totalPicks, coreStarterRate, retentionRate } = score;
-  const title = `Rolling draft score, ${seasonsLabel(yearCount)}`;
+
+  const metaId = 'draft-score-meta';
 
   return (
-    <article aria-labelledby="draft-score-title">
-      <h3 id="draft-score-title">{title}</h3>
+    <article aria-labelledby="draft-score-title" aria-describedby={metaId}>
+      <h3 id="draft-score-title">Rolling draft score</h3>
+      <p id={metaId} className="draft-score__meta">
+        {seasonsLabel(yearCount)}
+      </p>
       <dl>
         <dt>Score</dt>
         <dd className="draft-score__value">

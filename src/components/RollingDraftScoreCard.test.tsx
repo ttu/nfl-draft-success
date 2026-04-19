@@ -13,18 +13,17 @@ describe('RollingDraftScoreCard', () => {
   it('displays score, Core Starter %, Retention %', () => {
     render(<RollingDraftScoreCard score={mockScore} yearCount={5} />);
     expect(
-      screen.getByText('Rolling draft score, 5 seasons'),
+      screen.getByRole('heading', { name: 'Rolling draft score' }),
     ).toBeInTheDocument();
+    expect(screen.getByText('5 seasons')).toBeInTheDocument();
     expect(screen.getByText('1.50')).toBeInTheDocument();
     expect(screen.getByText('25.0%')).toBeInTheDocument();
     expect(screen.getByText('80.0%')).toBeInTheDocument();
   });
 
-  it('displays dynamic season span in title', () => {
+  it('displays dynamic season span below title', () => {
     render(<RollingDraftScoreCard score={mockScore} yearCount={8} />);
-    expect(
-      screen.getByText('Rolling draft score, 8 seasons'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('8 seasons')).toBeInTheDocument();
   });
 
   it('displays rank when provided', () => {

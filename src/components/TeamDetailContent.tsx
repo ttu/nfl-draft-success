@@ -43,6 +43,12 @@ export function TeamDetailContent({
   showDeparted,
   setShowDeparted,
 }: TeamDetailContentProps) {
+  const hideRosterYearHeading =
+    yearCount === 1 &&
+    draftClasses.length === 1 &&
+    rosterByDraftYear.length === 1 &&
+    rosterByDraftYear[0].year === draftClasses[0].year;
+
   return (
     <>
       <section className="app-score">
@@ -96,15 +102,24 @@ export function TeamDetailContent({
           {rosterByDraftYear.map(({ year, picks }) => (
             <article
               key={year}
-              aria-labelledby={`roster-${year}-title`}
               className="roster-year-section"
+              aria-labelledby={
+                hideRosterYearHeading ? undefined : `roster-${year}-title`
+              }
+              aria-label={
+                hideRosterYearHeading
+                  ? `Current roster · ${year} draft class`
+                  : undefined
+              }
             >
-              <h3
-                id={`roster-${year}-title`}
-                className="roster-year-section__title"
-              >
-                Draft {year}
-              </h3>
+              {!hideRosterYearHeading && (
+                <h3
+                  id={`roster-${year}-title`}
+                  className="roster-year-section__title"
+                >
+                  Draft {year}
+                </h3>
+              )}
               <PlayerList
                 picks={picks}
                 teamId={selectedTeam}

@@ -26,7 +26,7 @@ export function YearDraftView({
       <div className="year-draft-view__intro">
         <h2 id="year-draft-title">{year} NFL Draft — all picks</h2>
         <p className="year-draft-view__lede">
-          Every selection in the {year} draft, in pick order. Choose a team from{' '}
+          Every pick in draft order (all teams). Choose a team from{' '}
           <button
             type="button"
             className="year-draft-view__inline-link"

@@ -58,6 +58,32 @@ export function AppHeader({
   const draftsLinkYear = clampDraftYear(yearRange[1]);
   const draftsBoardTitle = `Open the ${draftsLinkYear} draft board (every pick). Choose a different year on that page.`;
 
+  /** Route-specific copy so “team scores” framing does not fight position/team tasks. */
+  const draftYearsSection = showYearDraftView
+    ? null
+    : showPositionView
+      ? {
+          headingId: 'app-header-draft-years-heading',
+          heading: 'Draft years',
+          hint: 'Player lists below use this range.',
+          rangeAriaLabel:
+            'Years shown for player lists below (same window as team scores)',
+        }
+      : selectedTeam
+        ? {
+            headingId: 'app-header-draft-years-heading',
+            heading: 'Draft years',
+            hint: 'Rolling score, draft cards, and roster use this window.',
+            rangeAriaLabel:
+              'Years included in rolling score, draft cards, and roster below',
+          }
+        : {
+            headingId: 'app-header-draft-years-heading',
+            heading: 'Draft years',
+            hint: 'Classes in this window feed team scores and rankings.',
+            rangeAriaLabel: 'Years included in team scores and rankings below',
+          };
+
   const closeMenu = () => setMenuOpen(false);
 
   const handleAbout = () => {
@@ -259,28 +285,25 @@ export function AppHeader({
           </div>
         )}
 
-        {!showYearDraftView && (
+        {!showYearDraftView && draftYearsSection && (
           <div
             className="app-controls__group"
             role="group"
-            aria-labelledby="app-header-score-window-heading"
+            aria-labelledby={draftYearsSection.headingId}
           >
             <div
-              id="app-header-score-window-heading"
+              id={draftYearsSection.headingId}
               className="app-controls__group-heading"
             >
-              Team score window
+              {draftYearsSection.heading}
             </div>
-            <p className="app-controls__group-hint">
-              Draft classes from these years feed the rankings and team scores
-              below.
-            </p>
+            <p className="app-controls__group-hint">{draftYearsSection.hint}</p>
             <YearRangeFilter
               min={YEAR_MIN}
               max={YEAR_MAX}
               value={yearRange}
               onChange={onYearRangeChange}
-              groupAriaLabel="Years included in team scores (rankings below)"
+              groupAriaLabel={draftYearsSection.rangeAriaLabel}
             />
           </div>
         )}
@@ -298,10 +321,9 @@ export function AppHeader({
               Position
             </div>
             <p className="app-controls__group-hint">
-              Switch position; the year window matches team score settings.
+              Filter by position; years are set to the left.
             </p>
             <select
-              role="combobox"
               aria-label="Select position"
               className="draft-year-picker__select app-header__position-select"
               value={selectedPosition ?? ''}

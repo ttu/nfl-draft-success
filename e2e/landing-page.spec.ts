@@ -18,9 +18,11 @@ test.describe('Landing page', () => {
   });
 
   test('default year range is 2021-2025', async ({ page }) => {
-    const title = page.locator('.team-rankings-view__title');
-    await expect(title).toContainText(
-      'Rolling draft score rankings, 5 seasons',
+    await expect(page.locator('.team-rankings-view__title')).toHaveText(
+      'Team rankings',
+    );
+    await expect(page.locator('.team-rankings-view__subtitle')).toContainText(
+      '5 seasons',
     );
   });
 

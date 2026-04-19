@@ -26,10 +26,13 @@ export function TeamRankingsView({
             ← Back
           </button>
         )}
-        <h2 className="team-rankings-view__title">
-          Rolling draft score rankings, {yearCount} season
-          {yearCount === 1 ? '' : 's'}
-        </h2>
+        <div className="team-rankings-view__title-block">
+          <h2 className="team-rankings-view__title">Team rankings</h2>
+          <p className="team-rankings-view__subtitle">
+            Rolling draft score · {yearCount} season
+            {yearCount === 1 ? '' : 's'} in window
+          </p>
+        </div>
       </div>
       <ul className="team-rankings-view__list" role="list">
         {rankings.map((r) => (
