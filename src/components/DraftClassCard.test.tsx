@@ -4,6 +4,7 @@ import { DraftClassCard } from './DraftClassCard';
 
 const mockMetrics = {
   totalPicks: 8,
+  awaitingDataCount: 0,
   coreStarterCount: 2,
   starterWhenHealthyCount: 1,
   significantContributorCount: 1,
@@ -41,6 +42,53 @@ describe('DraftClassCard', () => {
       '3',
     ]);
     expect(screen.getByText('6')).toBeInTheDocument();
+  });
+
+  it('shows pending copy when no pick has season data yet', () => {
+    render(
+      <DraftClassCard
+        year={2026}
+        showAwaitingDataNote
+        metrics={{
+          ...mockMetrics,
+          awaitingDataCount: 5,
+          totalPicks: 5,
+          coreStarterCount: 0,
+          starterWhenHealthyCount: 0,
+          significantContributorCount: 0,
+          contributorRoleCount: 0,
+          depthCount: 0,
+          nonContributorCount: 0,
+          contributorCount: 0,
+          retentionCount: 0,
+          coreStarterRate: 0,
+          contributorRate: 0,
+          retentionRate: 0,
+        }}
+      />,
+    );
+    expect(
+      screen.getByText(/NFL season data is not available for this class yet/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Core starters')).not.toBeInTheDocument();
+  });
+
+  it('hides pending line when showAwaitingDataNote is false', () => {
+    render(
+      <DraftClassCard
+        year={2023}
+        showAwaitingDataNote={false}
+        metrics={{
+          ...mockMetrics,
+          awaitingDataCount: 2,
+          totalPicks: 8,
+        }}
+      />,
+    );
+    expect(
+      screen.queryByText(/not yet in season data/i),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Core starters')).toBeInTheDocument();
   });
 
   it('hides Starters when healthy when count is 0', () => {

@@ -64,14 +64,32 @@ export function TeamDetailContent({
         className="app-draft-cards"
         aria-label="Draft class metrics by year"
       >
-        {draftClasses.map((dc) => {
-          const metrics = getDraftClassMetrics(dc, selectedTeam, {
-            draftingTeamOnly,
-          });
-          return (
-            <DraftClassCard key={dc.year} year={dc.year} metrics={metrics} />
+        {(() => {
+          const rows = draftClasses.map((dc) => ({
+            dc,
+            metrics: getDraftClassMetrics(dc, selectedTeam, {
+              draftingTeamOnly,
+            }),
+          }));
+          const latestYearWithAwaiting = rows.reduce<number | null>(
+            (max, { dc, metrics }) => {
+              if (metrics.awaitingDataCount <= 0) return max;
+              return max == null || dc.year > max ? dc.year : max;
+            },
+            null,
           );
-        })}
+          return rows.map(({ dc, metrics }) => (
+            <DraftClassCard
+              key={dc.year}
+              year={dc.year}
+              metrics={metrics}
+              showAwaitingDataNote={
+                latestYearWithAwaiting != null &&
+                dc.year === latestYearWithAwaiting
+              }
+            />
+          ));
+        })()}
       </section>
 
       <section className="app-players" aria-label="Current roster draft picks">

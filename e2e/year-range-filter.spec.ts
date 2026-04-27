@@ -44,6 +44,6 @@ test.describe('Year range filter', () => {
   test('invalid year range is corrected to defaults', async ({ page }) => {
     await page.goto('/?from=abc&to=xyz');
     await expect(page).toHaveURL(/from=2021/);
-    await expect(page).toHaveURL(/to=2025/);
+    await expect(page).toHaveURL(/to=2026/);
   });
 });

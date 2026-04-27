@@ -64,6 +64,7 @@ describe('getDraftClassMetrics', () => {
     const metrics = getDraftClassMetrics(draft, 'KC');
 
     expect(metrics.totalPicks).toBe(3);
+    expect(metrics.awaitingDataCount).toBe(0);
     expect(metrics.coreStarterCount).toBe(1);
     expect(metrics.starterWhenHealthyCount).toBe(0);
     expect(metrics.contributorRoleCount).toBe(0);
@@ -100,7 +101,9 @@ describe('getDraftClassMetrics', () => {
     };
 
     expect(getDraftClassMetrics(draft, 'KC').totalPicks).toBe(1);
+    expect(getDraftClassMetrics(draft, 'KC').awaitingDataCount).toBe(1);
     expect(getDraftClassMetrics(draft, 'BUF').totalPicks).toBe(1);
+    expect(getDraftClassMetrics(draft, 'BUF').awaitingDataCount).toBe(1);
   });
 
   it('uses drafting-team-only seasons when draftingTeamOnly is true', () => {
@@ -149,6 +152,7 @@ describe('getDraftClassMetrics', () => {
     const metrics = getDraftClassMetrics(draft, 'KC');
 
     expect(metrics.totalPicks).toBe(0);
+    expect(metrics.awaitingDataCount).toBe(0);
     expect(metrics.coreStarterCount).toBe(0);
     expect(metrics.contributorRoleCount).toBe(0);
     expect(metrics.contributorCount).toBe(0);

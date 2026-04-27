@@ -27,11 +27,19 @@ function main() {
     return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
   });
 
-  const teamScores = TEAMS.map((t) => ({
-    teamId: t.id,
-    teamName: t.name,
-    ...getRollingDraftScore(draftClasses, t.id, { draftingTeamOnly: true }),
-  }));
+  const teamScores = TEAMS.map((t) => {
+    const rolling = getRollingDraftScore(draftClasses, t.id, {
+      draftingTeamOnly: true,
+    });
+    return {
+      teamId: t.id,
+      teamName: t.name,
+      score: rolling.score,
+      totalPicks: rolling.totalPicks,
+      coreStarterRate: rolling.coreStarterRate,
+      retentionRate: rolling.retentionRate,
+    };
+  });
 
   teamScores.sort((a, b) => b.score - a.score);
 

@@ -28,9 +28,16 @@ export function RollingDraftScoreCard({
   rank,
   onShowRankings,
 }: RollingDraftScoreCardProps) {
-  const { score: value, totalPicks, coreStarterRate, retentionRate } = score;
+  const {
+    score: value,
+    totalPicks,
+    scoredPickCount,
+    coreStarterRate,
+    retentionRate,
+  } = score;
 
   const metaId = 'draft-score-meta';
+  const hasNoScoredPicks = totalPicks > 0 && scoredPickCount === 0;
 
   return (
     <article aria-labelledby="draft-score-title" aria-describedby={metaId}>
@@ -41,7 +48,9 @@ export function RollingDraftScoreCard({
       <dl>
         <dt>Score</dt>
         <dd className="draft-score__value">
-          <span className="draft-score__number">{value.toFixed(2)}</span>
+          <span className="draft-score__number">
+            {hasNoScoredPicks ? '—' : value.toFixed(2)}
+          </span>
           {rank && rank.rank > 0 && (
             <button
               type="button"
@@ -59,9 +68,13 @@ export function RollingDraftScoreCard({
           )}
         </dd>
         <dt>Core Starter %</dt>
-        <dd>{(coreStarterRate * 100).toFixed(1)}%</dd>
+        <dd>
+          {hasNoScoredPicks ? '—' : `${(coreStarterRate * 100).toFixed(1)}%`}
+        </dd>
         <dt>Retention %</dt>
-        <dd>{(retentionRate * 100).toFixed(1)}%</dd>
+        <dd>
+          {hasNoScoredPicks ? '—' : `${(retentionRate * 100).toFixed(1)}%`}
+        </dd>
         <dt className="app-score__total-label">Total picks</dt>
         <dd className="app-score__total-value">{totalPicks}</dd>
       </dl>

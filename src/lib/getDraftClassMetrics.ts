@@ -3,6 +3,8 @@ import { getPlayerRole } from './getPlayerRole';
 
 export interface DraftClassMetrics {
   totalPicks: number;
+  /** Picks with no `seasons` rows yet (e.g. current-year draft before NFL data exists). */
+  awaitingDataCount: number;
   coreStarterCount: number;
   starterWhenHealthyCount: number;
   significantContributorCount: number;
@@ -32,6 +34,7 @@ export function getDraftClassMetrics(
   const picks = draft.picks.filter((p) => p.teamId === teamId);
   const totalPicks = picks.length;
 
+  let awaitingDataCount = 0;
   let coreStarterCount = 0;
   let starterWhenHealthyCount = 0;
   let significantContributorCount = 0;
@@ -43,6 +46,10 @@ export function getDraftClassMetrics(
 
   const draftingTeamOnly = options?.draftingTeamOnly === true;
   for (const pick of picks) {
+    if (pick.seasons.length === 0) {
+      awaitingDataCount += 1;
+      continue;
+    }
     const role = getPlayerRole(pick, { draftingTeamOnly });
     if (role === 'core_starter') coreStarterCount += 1;
     if (role === 'starter_when_healthy') starterWhenHealthyCount += 1;
@@ -65,8 +72,11 @@ export function getDraftClassMetrics(
     if (retained) retentionCount += 1;
   }
 
+  const scoredPickCount = totalPicks - awaitingDataCount;
+
   return {
     totalPicks,
+    awaitingDataCount,
     coreStarterCount,
     starterWhenHealthyCount,
     significantContributorCount,
@@ -75,8 +85,10 @@ export function getDraftClassMetrics(
     nonContributorCount,
     contributorCount,
     retentionCount,
-    coreStarterRate: totalPicks > 0 ? coreStarterCount / totalPicks : 0,
-    contributorRate: totalPicks > 0 ? contributorCount / totalPicks : 0,
-    retentionRate: totalPicks > 0 ? retentionCount / totalPicks : 0,
+    coreStarterRate:
+      scoredPickCount > 0 ? coreStarterCount / scoredPickCount : 0,
+    contributorRate:
+      scoredPickCount > 0 ? contributorCount / scoredPickCount : 0,
+    retentionRate: scoredPickCount > 0 ? retentionCount / scoredPickCount : 0,
   };
 }

@@ -16,7 +16,7 @@ const DATA_DIR = join(ROOT, 'public/data');
 const BASE = 'https://www.nfldraftsuccess.com';
 /** Keep in sync with App.tsx / AppHeader */
 const YEAR_MIN = 2018;
-const YEAR_MAX = 2025;
+const YEAR_MAX = 2026;
 
 function collectPositionsFromDraftFiles(): string[] {
   const byUpper = new Map<string, string>();

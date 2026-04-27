@@ -30,7 +30,7 @@ test.describe('Year draft view (all picks in one draft)', () => {
     await headerMenu(page)
       .getByRole('link', { name: /^Drafts$/i })
       .click();
-    await expect(page).toHaveURL(/\/year\/2025$/);
+    await expect(page).toHaveURL(/\/year\/2026$/);
     await page
       .getByRole('combobox', {
         name: /draft year \(all picks in that draft\)/i,
@@ -42,6 +42,15 @@ test.describe('Year draft view (all picks in one draft)', () => {
       .getByRole('button', { name: /^Team rankings$/i })
       .click();
     await expect(page).toHaveURL(/\?from=/);
+  });
+
+  test('2026 draft shows pending notice until season data exists', async ({
+    page,
+  }) => {
+    await page.goto('/year/2026');
+    await expect(
+      page.getByText(/Season stats are not in the dataset yet/i),
+    ).toBeVisible();
   });
 
   test('inspect draft dropdown switches year on year view', async ({

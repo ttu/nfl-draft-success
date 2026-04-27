@@ -20,11 +20,19 @@ export function YearDraftView({
   const year = draftClass.year;
   const sorted = sortPicksByOverall(draftClass.picks);
   const picks = sorted.map((pick) => ({ pick, draftYear: year }));
+  const noSeasonDataYet = sorted.every((p) => p.seasons.length === 0);
 
   return (
     <>
       <div className="year-draft-view__intro">
         <h2 id="year-draft-title">{year} NFL Draft — all picks</h2>
+        {noSeasonDataYet && (
+          <p className="year-draft-view__pending" role="status">
+            Season stats are not in the dataset yet for this class. Player cards
+            show draft slot only until NFL snap data is published for the new
+            league year.
+          </p>
+        )}
         <p className="year-draft-view__lede">
           Every pick in draft order (all teams). Choose a team from{' '}
           <button

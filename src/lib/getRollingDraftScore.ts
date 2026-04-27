@@ -1,9 +1,16 @@
 import type { DraftClass } from '../types';
-import { getPlayerAverageScoreWeight, getPlayerRole } from './getPlayerRole';
+import {
+  getPlayerAverageScoreWeight,
+  getPlayerRole,
+  pickHasSeasonSnapData,
+} from './getPlayerRole';
 
 export interface RollingDraftScore {
   score: number;
+  /** Team picks in the loaded draft span (includes picks with no season rows yet). */
   totalPicks: number;
+  /** Picks with at least one season row in the data (excludes only classes with no `seasons` yet). */
+  scoredPickCount: number;
   coreStarterRate: number;
   retentionRate: number;
 }
@@ -25,6 +32,7 @@ export function getRollingDraftScore(
   options?: GetRollingDraftScoreOptions,
 ): RollingDraftScore {
   let totalPicks = 0;
+  let scoredPickCount = 0;
   let weightSum = 0;
   let coreStarterCount = 0;
   let retentionCount = 0;
@@ -35,6 +43,8 @@ export function getRollingDraftScore(
     for (const pick of picks) {
       totalPicks += 1;
       const opts = { draftingTeamOnly };
+      if (!pickHasSeasonSnapData(pick)) continue;
+      scoredPickCount += 1;
       weightSum += getPlayerAverageScoreWeight(pick, opts);
       if (getPlayerRole(pick, opts) === 'core_starter') coreStarterCount += 1;
 
@@ -44,9 +54,11 @@ export function getRollingDraftScore(
   }
 
   return {
-    score: totalPicks > 0 ? weightSum / totalPicks : 0,
+    score: scoredPickCount > 0 ? weightSum / scoredPickCount : 0,
     totalPicks,
-    coreStarterRate: totalPicks > 0 ? coreStarterCount / totalPicks : 0,
-    retentionRate: totalPicks > 0 ? retentionCount / totalPicks : 0,
+    scoredPickCount,
+    coreStarterRate:
+      scoredPickCount > 0 ? coreStarterCount / scoredPickCount : 0,
+    retentionRate: scoredPickCount > 0 ? retentionCount / scoredPickCount : 0,
   };
 }

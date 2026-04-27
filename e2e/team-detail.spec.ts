@@ -42,7 +42,7 @@ test.describe('Team detail view', () => {
     await expect(firstCard.locator('.player-card__draft')).toContainText('RD');
   });
 
-  test('player name toggles career breakdown and PFR stats link is present', async ({
+  test('player name toggles career breakdown with season stats table', async ({
     page,
   }) => {
     const firstCard = page.locator('.player-card').first();
@@ -61,9 +61,6 @@ test.describe('Team detail view', () => {
     await expect(
       careerTable.locator('thead th').filter({ hasText: /^Load$/ }),
     ).toBeVisible();
-    const stats = firstCard.getByTestId('player-stats-link');
-    await expect(stats).toBeVisible();
-    await expect(stats).toHaveAttribute('href', /pro-football-reference\.com/);
   });
 
   test('back navigation returns to rankings', async ({ page }) => {

@@ -7,7 +7,7 @@ import { getTeamLogoUrl, NFL_LOGO_URL } from '../data/teamColors';
 import { getPositionDisplayName } from '../lib/positionDisplayName';
 
 const YEAR_MIN = 2018;
-const YEAR_MAX = 2025;
+const YEAR_MAX = 2026;
 
 function clampDraftYear(y: number): number {
   return Math.min(YEAR_MAX, Math.max(YEAR_MIN, y));

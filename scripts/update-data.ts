@@ -486,17 +486,6 @@ async function main() {
         });
       }
 
-      if (seasons.length === 0) {
-        seasons.push({
-          year,
-          gamesPlayed: 0,
-          teamGames: maxFranchiseGamesBySeason.get(year) ?? 17,
-          snapShare: 0,
-          cumulativeSnapShare: 0,
-          retained: false,
-        });
-      }
-
       const headshotUrl = pfrId ? headshots.get(pfrId) : undefined;
       picks.push({
         playerId: pfrId || `unknown-${year}-${picks.length}`,

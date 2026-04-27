@@ -97,13 +97,6 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-function getPfrUrl(playerId: string, playerName: string): string | null {
-  if (!playerId || playerId.startsWith('unknown-')) return null;
-  const last = playerName.split(/\s+/).pop() || '';
-  const letter = (last[0] || 'X').toUpperCase();
-  return `https://www.pro-football-reference.com/players/${letter}/${playerId}.htm`;
-}
-
 function seasonTeamAbbrev(season: Season, pick: DraftPick): string {
   if (season.retained) return pick.teamId;
   return season.currentTeam ?? 'FA';
@@ -168,9 +161,9 @@ function PlayerCard({
   const [expanded, setExpanded] = useState(false);
   const reactId = useId();
   const panelId = `${reactId}-career-panel`;
+  const hasCareerRows = pick.seasons.length > 0;
   const role = getPlayerRole(pick, { draftingTeamOnly });
   const colors = ROLE_COLORS[role];
-  const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
   const departed = isDeparted(pick);
   const currentTeam = departed ? getCurrentTeam(pick) : undefined;
   const isFa = departed && !currentTeam;
@@ -194,6 +187,7 @@ function PlayerCard({
     isFaSeason(s, pick),
   );
   const journeyAfterDraft = (() => {
+    if (!hasCareerRows) return [];
     const tail = getTeamJourney(pick).slice(1);
     return tail.length > 0
       ? tail
@@ -300,11 +294,15 @@ function PlayerCard({
         </div>
         <div
           className="player-card__badge"
-          title={formatRole(role)}
+          title={
+            hasCareerRows
+              ? formatRole(role)
+              : 'NFL season data not available yet for this pick'
+          }
           style={
             {
-              '--role-bg': colors.bg,
-              '--role-text': colors.text,
+              '--role-bg': hasCareerRows ? colors.bg : '#64748b',
+              '--role-text': hasCareerRows ? colors.text : '#f8fafc',
             } as CSSProperties
           }
         >
@@ -312,10 +310,15 @@ function PlayerCard({
             className="player-card__role-badge"
             data-testid="role-badge"
             data-role={role}
-            aria-label={formatRole(role)}
+            data-awaiting-season={hasCareerRows ? undefined : 'true'}
+            aria-label={
+              hasCareerRows
+                ? formatRole(role)
+                : 'NFL season data not available yet'
+            }
           >
             <span className="player-card__role-badge-text">
-              {formatRole(role)}
+              {hasCareerRows ? formatRole(role) : 'Awaiting data'}
             </span>
           </span>
         </div>
@@ -328,107 +331,110 @@ function PlayerCard({
           className="player-card__career"
           data-testid="player-career-panel"
         >
-          {pfrUrl && (
-            <div className="player-card__career-actions">
-              <a
-                href={pfrUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="player-card__stats-link"
-                data-testid="player-stats-link"
-              >
-                Career stats on Pro Football Reference
-              </a>
-            </div>
-          )}
           <div className="player-card__career-inner">
-            <p className="player-card__career-legend" id={careerLegendId}>
-              <strong>Avg snap</strong>: typical role share in games you played
-              (weekly max of off/def snap %, averaged). <strong>Load</strong>:
-              your season snaps vs your primary team&apos;s full-season snap
-              capacity; injury-report weeks can soften the penalty for games
-              missed. <strong>Role badges</strong> use load for most positions;
-              kickers, punters, and long snappers use avg snap (in-game role
-              share), since load vs the entire team&apos;s snap pool is not
-              comparable to the tier bands.
-            </p>
-            <table
-              className="player-card__career-table"
-              aria-describedby={careerLegendId}
-            >
-              <caption className="visually-hidden">
-                Career breakdown for {pick.playerName}, drafted {draftYear}. Avg
-                snap is average weekly role share when active; Load is season
-                snap load vs full team season capacity for role classification.
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">Season</th>
-                  <th scope="col">Team</th>
-                  <th scope="col">GP</th>
-                  <th
-                    scope="col"
-                    title="Average role share in games with at least one snap."
-                  >
-                    Avg snap
-                  </th>
-                  <th
-                    scope="col"
-                    title="Season load: your snaps vs your primary team’s full-season snap capacity (trades: games-played ratio). Used for role tiers."
-                  >
-                    Load
-                  </th>
-                  <th scope="col">Role</th>
-                  <th scope="col">IR wks</th>
-                </tr>
-              </thead>
-              <tbody>
-                {careerTableSeasons.map((s) => {
-                  const faRow = isFaSeason(s, pick);
-                  const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
-                  const seasonRole: Role | null = faRow
-                    ? null
-                    : classifyRole(
-                        snapShareForRoleTier(s, pick.position),
-                        gps,
-                        s.gamesPlayed,
-                        pick.position,
-                      );
-                  return (
-                    <tr key={s.year}>
-                      <td>{s.year}</td>
-                      <td>{seasonTeamAbbrev(s, pick)}</td>
-                      <td>{faRow ? '—' : `${s.gamesPlayed}/${s.teamGames}`}</td>
-                      <td>{faRow ? '—' : formatSnapPct(s.snapShare)}</td>
-                      <td>
-                        {faRow ? '—' : formatSnapPct(seasonLoadDisplayShare(s))}
-                      </td>
-                      <td>
-                        {faRow ? (
-                          '—'
-                        ) : (
-                          <span
-                            className="player-card__career-role"
-                            style={{
-                              backgroundColor: ROLE_COLORS[seasonRole!].bg,
-                              color: ROLE_COLORS[seasonRole!].text,
-                            }}
-                            title={formatRole(seasonRole!)}
-                          >
-                            {ROLE_ABBREV[seasonRole!]}
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        {s.injuryReportWeeks != null
-                          ? s.injuryReportWeeks
-                          : '—'}
-                      </td>
+            {!hasCareerRows ? (
+              <p className="player-card__career-empty" id={careerLegendId}>
+                No NFL season rows yet for this pick. After the regular season,
+                snap-based roles and retention will appear here.
+              </p>
+            ) : (
+              <>
+                <p className="player-card__career-legend" id={careerLegendId}>
+                  <strong>Avg snap</strong>: typical role share in games you
+                  played (weekly max of off/def snap %, averaged).{' '}
+                  <strong>Load</strong>: your season snaps vs your primary
+                  team&apos;s full-season snap capacity; injury-report weeks can
+                  soften the penalty for games missed.{' '}
+                  <strong>Role badges</strong> use load for most positions;
+                  kickers, punters, and long snappers use avg snap (in-game role
+                  share), since load vs the entire team&apos;s snap pool is not
+                  comparable to the tier bands.
+                </p>
+                <table
+                  className="player-card__career-table"
+                  aria-describedby={careerLegendId}
+                >
+                  <caption className="visually-hidden">
+                    Career breakdown for {pick.playerName}, drafted {draftYear}.
+                    Avg snap is average weekly role share when active; Load is
+                    season snap load vs full team season capacity for role
+                    classification.
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Season</th>
+                      <th scope="col">Team</th>
+                      <th scope="col">GP</th>
+                      <th
+                        scope="col"
+                        title="Average role share in games with at least one snap."
+                      >
+                        Avg snap
+                      </th>
+                      <th
+                        scope="col"
+                        title="Season load: your snaps vs your primary team’s full-season snap capacity (trades: games-played ratio). Used for role tiers."
+                      >
+                        Load
+                      </th>
+                      <th scope="col">Role</th>
+                      <th scope="col">IR wks</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    {careerTableSeasons.map((s) => {
+                      const faRow = isFaSeason(s, pick);
+                      const gps =
+                        s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
+                      const seasonRole: Role | null = faRow
+                        ? null
+                        : classifyRole(
+                            snapShareForRoleTier(s, pick.position),
+                            gps,
+                            s.gamesPlayed,
+                            pick.position,
+                          );
+                      return (
+                        <tr key={s.year}>
+                          <td>{s.year}</td>
+                          <td>{seasonTeamAbbrev(s, pick)}</td>
+                          <td>
+                            {faRow ? '—' : `${s.gamesPlayed}/${s.teamGames}`}
+                          </td>
+                          <td>{faRow ? '—' : formatSnapPct(s.snapShare)}</td>
+                          <td>
+                            {faRow
+                              ? '—'
+                              : formatSnapPct(seasonLoadDisplayShare(s))}
+                          </td>
+                          <td>
+                            {faRow ? (
+                              '—'
+                            ) : (
+                              <span
+                                className="player-card__career-role"
+                                style={{
+                                  backgroundColor: ROLE_COLORS[seasonRole!].bg,
+                                  color: ROLE_COLORS[seasonRole!].text,
+                                }}
+                                title={formatRole(seasonRole!)}
+                              >
+                                {ROLE_ABBREV[seasonRole!]}
+                              </span>
+                            )}
+                          </td>
+                          <td>
+                            {s.injuryReportWeeks != null
+                              ? s.injuryReportWeeks
+                              : '—'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -17,12 +17,12 @@ test.describe('Landing page', () => {
     await expect(page.locator('header.app-header')).toBeVisible();
   });
 
-  test('default year range is 2021-2025', async ({ page }) => {
+  test('default year range is 2021-2026', async ({ page }) => {
     await expect(page.locator('.team-rankings-view__title')).toHaveText(
       'Team rankings',
     );
     await expect(page.locator('.team-rankings-view__subtitle')).toContainText(
-      '5 seasons',
+      '6 seasons',
     );
   });
 

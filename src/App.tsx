@@ -61,7 +61,7 @@ const PositionDraftView = lazy(() =>
 );
 
 const YEAR_MIN = 2018;
-const YEAR_MAX = 2025;
+const YEAR_MAX = 2026;
 const DEFAULT_YEAR_MIN = 2021;
 
 const validTeamIds = new Set(TEAMS.map((t) => t.id));
@@ -364,14 +364,17 @@ function AppContent() {
   const rosterPicks = showDeparted
     ? allTeamPicks
     : allTeamPicks.filter(({ pick }) => {
+        if (pick.seasons.length === 0) return true;
         const latestSeason = [...pick.seasons].sort(
           (a, b) => b.year - a.year,
         )[0];
         return latestSeason?.retained === true;
       });
 
-  const filteredRosterPicks = rosterPicks.filter(({ pick }) =>
-    roleFilterAllows(roleFilter, getPlayerRole(pick, { draftingTeamOnly })),
+  const filteredRosterPicks = rosterPicks.filter(
+    ({ pick }) =>
+      pick.seasons.length === 0 ||
+      roleFilterAllows(roleFilter, getPlayerRole(pick, { draftingTeamOnly })),
   );
 
   const rosterByDraftYear = (() => {

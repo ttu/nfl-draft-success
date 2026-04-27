@@ -16,13 +16,29 @@ function ordinal(r: Role): number {
   return ROLE_ORDER.indexOf(r);
 }
 
-function getFilteredSeasons(
+export function getFilteredSeasons(
   pick: DraftPick,
   draftingTeamOnly: boolean | undefined,
 ) {
   return draftingTeamOnly === true
     ? pick.seasons.filter((s) => s.retained)
     : pick.seasons;
+}
+
+export interface GetPlayerRoleOptions {
+  /** When true, only consider seasons when player was with drafting team */
+  draftingTeamOnly?: boolean;
+}
+
+/**
+ * True when the pick has any season rows in the dataset.
+ * Rolling score / “tracked” counts use this so picks with only non-retained
+ * seasons (e.g. traded before playing for the drafting team) are not treated
+ * as “no data.” Role and weight math still respect `draftingTeamOnly` via
+ * {@link getFilteredSeasons}.
+ */
+export function pickHasSeasonSnapData(pick: DraftPick): boolean {
+  return pick.seasons.length > 0;
 }
 
 /**
@@ -64,11 +80,6 @@ function averageScoreWeightToRole(avgWeight: number, peakRole: Role): Role {
     return peakRole;
   }
   return 'significant_contributor';
-}
-
-export interface GetPlayerRoleOptions {
-  /** When true, only consider seasons when player was with drafting team */
-  draftingTeamOnly?: boolean;
 }
 
 /**

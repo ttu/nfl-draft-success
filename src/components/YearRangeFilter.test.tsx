@@ -3,17 +3,17 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { YearRangeFilter } from './YearRangeFilter';
 
 describe('YearRangeFilter', () => {
-  it('displays range 2021–2025 (default window)', () => {
+  it('displays range 2021–2026 (default window)', () => {
     render(
       <YearRangeFilter
         min={2018}
-        max={2025}
-        value={[2021, 2025]}
+        max={2026}
+        value={[2021, 2026]}
         onChange={() => {}}
       />,
     );
     expect(screen.getByDisplayValue('2021')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('2025')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('2026')).toBeInTheDocument();
   });
 
   it('fires onChange when min or max changes (on blur)', () => {
@@ -21,8 +21,8 @@ describe('YearRangeFilter', () => {
     render(
       <YearRangeFilter
         min={2018}
-        max={2025}
-        value={[2021, 2025]}
+        max={2026}
+        value={[2021, 2026]}
         onChange={onChange}
       />,
     );
@@ -30,7 +30,7 @@ describe('YearRangeFilter', () => {
     fireEvent.focus(minInput);
     fireEvent.change(minInput, { target: { value: '2019' } });
     fireEvent.blur(minInput);
-    expect(onChange).toHaveBeenCalledWith([2019, 2025]);
+    expect(onChange).toHaveBeenCalledWith([2019, 2026]);
     fireEvent.focus(maxInput);
     fireEvent.change(maxInput, { target: { value: '2023' } });
     fireEvent.blur(maxInput);
@@ -42,14 +42,14 @@ describe('YearRangeFilter', () => {
     render(
       <YearRangeFilter
         min={2018}
-        max={2025}
+        max={2026}
         value={[2021, 2023]}
         onChange={onChange}
       />,
     );
     const [minInput] = screen.getAllByRole('spinbutton');
     fireEvent.focus(minInput);
-    fireEvent.change(minInput, { target: { value: '2025' } });
+    fireEvent.change(minInput, { target: { value: '2026' } });
     fireEvent.blur(minInput);
     expect(onChange).toHaveBeenCalledWith([2023, 2023]);
   });
@@ -59,8 +59,8 @@ describe('YearRangeFilter', () => {
     render(
       <YearRangeFilter
         min={2018}
-        max={2025}
-        value={[2022, 2025]}
+        max={2026}
+        value={[2022, 2026]}
         onChange={onChange}
       />,
     );
@@ -76,8 +76,8 @@ describe('YearRangeFilter', () => {
     render(
       <YearRangeFilter
         min={2018}
-        max={2025}
-        value={[2021, 2025]}
+        max={2026}
+        value={[2021, 2026]}
         onChange={onChange}
       />,
     );
@@ -90,6 +90,6 @@ describe('YearRangeFilter', () => {
     expect(onChange).not.toHaveBeenCalled();
     fireEvent.change(minInput, { target: { value: '2024' } });
     fireEvent.blur(minInput);
-    expect(onChange).toHaveBeenCalledWith([2024, 2025]);
+    expect(onChange).toHaveBeenCalledWith([2024, 2026]);
   });
 });

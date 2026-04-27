@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { getUrlState, updateUrl, getShareableUrl } from './urlState';
 
 const validTeamIds = new Set(['SEA', 'KC', 'BUF']);
-const yearBounds = { min: 2018, max: 2025 };
+const yearBounds = { min: 2018, max: 2026 };
 
 function loc(pathname: string, search: string) {
   return { pathname, search };
@@ -18,14 +18,14 @@ describe('getUrlState', () => {
 
   it('returns state with team null for root path (rankings URL)', () => {
     expect(
-      getUrlState(validTeamIds, yearBounds, loc('/', '?from=2021&to=2025')),
-    ).toEqual({ team: null, from: 2021, to: 2025 });
+      getUrlState(validTeamIds, yearBounds, loc('/', '?from=2021&to=2026')),
+    ).toEqual({ team: null, from: 2021, to: 2026 });
   });
 
   it('returns state with team null when path is invalid team', () => {
     expect(
-      getUrlState(validTeamIds, yearBounds, loc('/XXX', '?from=2021&to=2025')),
-    ).toEqual({ team: null, from: 2021, to: 2025 });
+      getUrlState(validTeamIds, yearBounds, loc('/XXX', '?from=2021&to=2026')),
+    ).toEqual({ team: null, from: 2021, to: 2026 });
   });
 
   it('returns null for out-of-range years', () => {
@@ -36,17 +36,17 @@ describe('getUrlState', () => {
 
   it('returns null when from > to', () => {
     expect(
-      getUrlState(validTeamIds, yearBounds, loc('/SEA', '?from=2025&to=2021')),
+      getUrlState(validTeamIds, yearBounds, loc('/SEA', '?from=2026&to=2021')),
     ).toBeNull();
   });
 
   it('returns state for valid team path and params', () => {
     expect(
-      getUrlState(validTeamIds, yearBounds, loc('/SEA', '?from=2021&to=2025')),
+      getUrlState(validTeamIds, yearBounds, loc('/SEA', '?from=2021&to=2026')),
     ).toEqual({
       team: 'SEA',
       from: 2021,
-      to: 2025,
+      to: 2026,
     });
   });
 });

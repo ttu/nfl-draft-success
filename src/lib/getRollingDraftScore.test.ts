@@ -53,12 +53,14 @@ describe('getRollingDraftScore', () => {
     const drafts: DraftClass[] = [coreStarterPick(2023), depthPick(2023)];
     const result = getRollingDraftScore(drafts, 'KC');
     expect(result.totalPicks).toBe(2);
+    expect(result.scoredPickCount).toBe(2);
     expect(result.score).toBeCloseTo((4 + 1) / 2);
   });
 
   it('computes coreStarterRate and retentionRate', () => {
     const drafts: DraftClass[] = [coreStarterPick(2023)];
     const result = getRollingDraftScore(drafts, 'KC');
+    expect(result.scoredPickCount).toBe(1);
     expect(result.coreStarterRate).toBe(1);
     expect(result.retentionRate).toBe(1);
   });
@@ -99,6 +101,8 @@ describe('getRollingDraftScore', () => {
       draftingTeamOnly: true,
     });
 
+    expect(career.scoredPickCount).toBe(1);
+    expect(draftingOnly.scoredPickCount).toBe(1);
     expect(career.score).toBeGreaterThan(draftingOnly.score);
     expect(draftingOnly.score).toBe(0);
   });
@@ -111,6 +115,63 @@ describe('getRollingDraftScore', () => {
     ];
     const result = getRollingDraftScore(drafts, 'KC');
     expect(result.totalPicks).toBe(3);
+    expect(result.scoredPickCount).toBe(3);
     expect(result.score).toBeCloseTo((4 + 4 + 1) / 3);
+  });
+
+  it('ignores picks with no season rows for score and scoredPickCount', () => {
+    const drafts: DraftClass[] = [
+      coreStarterPick(2023),
+      {
+        year: 2026,
+        picks: [
+          {
+            playerId: 'rook',
+            playerName: 'Rookie',
+            position: 'WR',
+            round: 1,
+            overallPick: 1,
+            teamId: 'KC',
+            seasons: [],
+          },
+        ],
+      },
+    ];
+    const result = getRollingDraftScore(drafts, 'KC');
+    expect(result.totalPicks).toBe(2);
+    expect(result.scoredPickCount).toBe(1);
+    expect(result.score).toBeCloseTo(4);
+  });
+
+  it('counts picks with only non-retained seasons when draftingTeamOnly (weight can be zero)', () => {
+    const draft: DraftClass = {
+      year: 2021,
+      picks: [
+        {
+          playerId: 'gone',
+          playerName: 'Traded out',
+          position: 'DE',
+          round: 4,
+          overallPick: 134,
+          teamId: 'MIN',
+          seasons: [
+            {
+              year: 2021,
+              gamesPlayed: 5,
+              teamGames: 17,
+              snapShare: 0.1,
+              retained: false,
+              currentTeam: 'CAR',
+            },
+          ],
+        },
+      ],
+    };
+    const result = getRollingDraftScore([draft], 'MIN', {
+      draftingTeamOnly: true,
+    });
+    expect(result.totalPicks).toBe(1);
+    expect(result.scoredPickCount).toBe(1);
+    expect(result.score).toBe(0);
   });
 });

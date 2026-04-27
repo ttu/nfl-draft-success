@@ -59,7 +59,7 @@ describe('PlayerList', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
   });
 
-  it('expands career breakdown and exposes Pro Football Reference stats link', () => {
+  it('expands career breakdown and shows season table', () => {
     render(<PlayerList picks={mockPicks} teamId="KC" />);
     const firstCard = screen.getAllByRole('listitem')[0];
     const toggle = within(firstCard).getByRole('button', {
@@ -75,11 +75,9 @@ describe('PlayerList', () => {
       within(panel).getByRole('columnheader', { name: /season/i }),
     ).toBeInTheDocument();
     expect(within(panel).getByText('2018')).toBeInTheDocument();
-    const stats = within(firstCard).getByTestId('player-stats-link');
-    expect(stats).toHaveAttribute(
-      'href',
-      'https://www.pro-football-reference.com/players/M/p1.htm',
-    );
+    expect(
+      within(firstCard).queryByTestId('player-stats-link'),
+    ).not.toBeInTheDocument();
   });
 
   it('renders departed players with current team badge and departed class', () => {
