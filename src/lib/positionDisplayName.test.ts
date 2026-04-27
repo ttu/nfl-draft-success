@@ -6,6 +6,7 @@ describe('getPositionDisplayName', () => {
     expect(getPositionDisplayName('QB')).toBe('Quarterback');
     expect(getPositionDisplayName('qb')).toBe('Quarterback');
     expect(getPositionDisplayName(' OLB ')).toBe('Outside linebacker');
+    expect(getPositionDisplayName('T')).toBe('Offensive tackle');
   });
 
   it('returns uppercase code when unknown', () => {

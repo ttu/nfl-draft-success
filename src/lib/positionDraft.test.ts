@@ -4,6 +4,7 @@ import {
   collectDraftPositions,
   filterPicksByPosition,
   groupPicksByDraftYear,
+  resolveCanonicalPosition,
 } from './positionDraft';
 
 const dc2020: DraftClass = {
@@ -51,6 +52,32 @@ describe('collectDraftPositions', () => {
     expect(collectDraftPositions([dc2020])).toEqual(['DE', 'QB']);
     expect(collectDraftPositions([dc2021, dc2020])).toEqual(['DE', 'QB']);
   });
+
+  it('merges T and OT into one OT entry', () => {
+    const otPick = {
+      playerId: 'ot',
+      playerName: 'OT',
+      position: 'OT',
+      round: 1,
+      overallPick: 1,
+      teamId: 'DAL',
+      seasons: [],
+    };
+    const tPick = {
+      playerId: 't',
+      playerName: 'T',
+      position: 'T',
+      round: 2,
+      overallPick: 40,
+      teamId: 'GB',
+      seasons: [],
+    };
+    const dc: DraftClass = {
+      year: 2024,
+      picks: [otPick, tPick],
+    };
+    expect(collectDraftPositions([dc])).toEqual(['OT']);
+  });
 });
 
 describe('filterPicksByPosition', () => {
@@ -63,6 +90,32 @@ describe('filterPicksByPosition', () => {
 
   it('returns empty when no match', () => {
     expect(filterPicksByPosition([dc2020], 'WR')).toEqual([]);
+  });
+
+  it('matches T when filtering by OT and vice versa', () => {
+    const tPick = {
+      playerId: 't',
+      playerName: 'Lineman',
+      position: 'T',
+      round: 1,
+      overallPick: 10,
+      teamId: 'NYG',
+      seasons: [],
+    };
+    const dc: DraftClass = { year: 2019, picks: [tPick] };
+    expect(filterPicksByPosition([dc], 'OT')).toEqual([
+      { pick: tPick, draftYear: 2019 },
+    ]);
+    expect(filterPicksByPosition([dc], 't')).toEqual([
+      { pick: tPick, draftYear: 2019 },
+    ]);
+  });
+});
+
+describe('resolveCanonicalPosition', () => {
+  it('resolves T to OT when OT is in the option list', () => {
+    expect(resolveCanonicalPosition(['QB', 'OT'], 't')).toBe('OT');
+    expect(resolveCanonicalPosition(['QB', 'OT'], 'OT')).toBe('OT');
   });
 });
 

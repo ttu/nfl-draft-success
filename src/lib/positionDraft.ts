@@ -5,24 +5,34 @@ export interface PickWithDraftYear {
   draftYear: number;
 }
 
+/** nflverse-style draft JSON uses both `T` and `OT` for offensive tackle */
+const POSITION_CANONICAL: Record<string, string> = {
+  T: 'OT',
+};
+
+/** Uppercase position code with aliases collapsed (e.g. `T` → `OT`). */
+export function canonicalPositionCode(positionCode: string): string {
+  const key = positionCode.trim().toUpperCase();
+  return POSITION_CANONICAL[key] ?? key;
+}
+
 /**
  * Unique positions present in the loaded draft classes, sorted for display.
- * Canonical spelling is taken from the first pick encountered (scan years ascending,
- * then overall pick order).
+ * Aliases share one menu entry (e.g. `T` and `OT` → `OT`).
  */
 export function collectDraftPositions(draftClasses: DraftClass[]): string[] {
-  const byUpper = new Map<string, string>();
+  const byCanon = new Map<string, string>();
   const sortedClasses = [...draftClasses].sort((a, b) => a.year - b.year);
   for (const dc of sortedClasses) {
     const picks = [...dc.picks].sort((a, b) => a.overallPick - b.overallPick);
     for (const p of picks) {
       const raw = p.position.trim();
       if (!raw) continue;
-      const upper = raw.toUpperCase();
-      if (!byUpper.has(upper)) byUpper.set(upper, upper);
+      const canon = canonicalPositionCode(raw);
+      if (!byCanon.has(canon)) byCanon.set(canon, canon);
     }
   }
-  return [...byUpper.values()].sort((a, b) =>
+  return [...byCanon.values()].sort((a, b) =>
     a.localeCompare(b, undefined, { sensitivity: 'base' }),
   );
 }
@@ -31,12 +41,12 @@ export function filterPicksByPosition(
   draftClasses: DraftClass[],
   position: string,
 ): PickWithDraftYear[] {
-  const target = position.trim().toLowerCase();
+  const target = canonicalPositionCode(position.trim());
   if (!target) return [];
   const out: PickWithDraftYear[] = [];
   for (const dc of draftClasses) {
     for (const pick of dc.picks) {
-      if (pick.position.trim().toLowerCase() === target) {
+      if (canonicalPositionCode(pick.position.trim()) === target) {
         out.push({ pick, draftYear: dc.year });
       }
     }
@@ -66,7 +76,9 @@ export function resolveCanonicalPosition(
   positions: string[],
   urlSegment: string,
 ): string | null {
-  const q = urlSegment.trim().toLowerCase();
-  if (!q) return null;
-  return positions.find((p) => p.trim().toLowerCase() === q) ?? null;
+  const qCanon = canonicalPositionCode(urlSegment.trim());
+  if (!qCanon) return null;
+  return (
+    positions.find((p) => canonicalPositionCode(p.trim()) === qCanon) ?? null
+  );
 }

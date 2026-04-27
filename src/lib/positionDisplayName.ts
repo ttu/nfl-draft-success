@@ -9,6 +9,8 @@ const POSITION_LABELS: Record<string, string> = {
   WR: 'Wide receiver',
   TE: 'Tight end',
   OT: 'Offensive tackle',
+  /** Draft / nflverse JSON often uses `T` for offensive tackle (same role as OT) */
+  T: 'Offensive tackle',
   G: 'Guard',
   C: 'Center',
   OL: 'Offensive line',

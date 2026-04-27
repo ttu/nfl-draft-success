@@ -7,6 +7,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { TEAMS } from '../src/data/teams';
+import { canonicalPositionCode } from '../src/lib/positionDraft';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -19,7 +20,7 @@ const YEAR_MIN = 2018;
 const YEAR_MAX = 2026;
 
 function collectPositionsFromDraftFiles(): string[] {
-  const byUpper = new Map<string, string>();
+  const byCanon = new Map<string, string>();
   const files = readdirSync(DATA_DIR).filter(
     (f) => f.startsWith('draft-') && f.endsWith('.json'),
   );
@@ -29,11 +30,11 @@ function collectPositionsFromDraftFiles(): string[] {
     for (const p of j.picks ?? []) {
       const raw = (p.position ?? '').trim();
       if (!raw) continue;
-      const upper = raw.toUpperCase();
-      if (!byUpper.has(upper)) byUpper.set(upper, upper);
+      const canon = canonicalPositionCode(raw);
+      if (!byCanon.has(canon)) byCanon.set(canon, canon);
     }
   }
-  return [...byUpper.values()].sort((a, b) =>
+  return [...byCanon.values()].sort((a, b) =>
     a.localeCompare(b, undefined, { sensitivity: 'base' }),
   );
 }
