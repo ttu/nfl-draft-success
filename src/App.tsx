@@ -25,6 +25,7 @@ import {
   loadDataMeta,
 } from './lib/loadData';
 import { formatDataLastUpdatedDate } from './lib/formatDataLastUpdated';
+import { isDraftPickRetainedForRoster } from './lib/draftPickLatestSeason';
 import { getRollingDraftScore } from './lib/getRollingDraftScore';
 import {
   collectDraftPositions,
@@ -115,16 +116,33 @@ function useResolvedYearRange(
   return valid ? [from, to] : [DEFAULT_YEAR_MIN, YEAR_MAX];
 }
 
+/** Path params from `/:teamId` and `/year/:draftYear` in this file’s `Routes`. */
+type AppRouteParams = {
+  teamId?: string;
+  draftYear?: string;
+};
+
+/**
+ * Resolves `/position/:position` from `useMatch` — decodes the segment for display/routing.
+ */
+function getPositionParam(match: { params: { position?: string } } | null): {
+  isPositionView: boolean;
+  positionParam: string | undefined;
+} {
+  if (match == null) {
+    return { isPositionView: false, positionParam: undefined };
+  }
+  const raw = match.params.position;
+  return {
+    isPositionView: true,
+    positionParam: raw != null ? decodeURIComponent(raw) : undefined,
+  };
+}
+
 function AppContent() {
-  const { teamId, draftYear: draftYearParam } = useParams<{
-    teamId?: string;
-    draftYear?: string;
-  }>();
+  const { teamId, draftYear: draftYearParam } = useParams<AppRouteParams>();
   const positionMatch = useMatch('/position/:position');
-  const isPositionView = positionMatch != null;
-  const positionParamRaw = positionMatch?.params.position;
-  const positionParam =
-    positionParamRaw != null ? decodeURIComponent(positionParamRaw) : undefined;
+  const { isPositionView, positionParam } = getPositionParam(positionMatch);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const parsedRouteYear =
@@ -383,13 +401,7 @@ function AppContent() {
 
   const rosterPicks = showDeparted
     ? allTeamPicks
-    : allTeamPicks.filter(({ pick }) => {
-        if (pick.seasons.length === 0) return true;
-        const latestSeason = [...pick.seasons].sort(
-          (a, b) => b.year - a.year,
-        )[0];
-        return latestSeason?.retained === true;
-      });
+    : allTeamPicks.filter(({ pick }) => isDraftPickRetainedForRoster(pick));
 
   const filteredRosterPicks = rosterPicks.filter(
     ({ pick }) =>

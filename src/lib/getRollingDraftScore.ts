@@ -4,6 +4,7 @@ import {
   getPlayerRole,
   pickHasSeasonSnapData,
 } from './getPlayerRole';
+import { isDraftPickRetainedLatest } from './draftPickLatestSeason';
 
 export interface RollingDraftScore {
   score: number;
@@ -38,18 +39,19 @@ export function getRollingDraftScore(
   let retentionCount = 0;
 
   const draftingTeamOnly = options?.draftingTeamOnly === true;
+  const opts = { draftingTeamOnly };
+
   for (const draft of draftClasses) {
     const picks = draft.picks.filter((p) => p.teamId === teamId);
     for (const pick of picks) {
       totalPicks += 1;
-      const opts = { draftingTeamOnly };
       if (!pickHasSeasonSnapData(pick)) continue;
+
       scoredPickCount += 1;
       weightSum += getPlayerAverageScoreWeight(pick, opts);
-      if (getPlayerRole(pick, opts) === 'core_starter') coreStarterCount += 1;
 
-      const latestSeason = [...pick.seasons].sort((a, b) => b.year - a.year)[0];
-      if (latestSeason?.retained) retentionCount += 1;
+      if (getPlayerRole(pick, opts) === 'core_starter') coreStarterCount += 1;
+      if (isDraftPickRetainedLatest(pick)) retentionCount += 1;
     }
   }
 

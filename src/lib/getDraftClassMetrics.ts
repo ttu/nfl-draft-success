@@ -1,4 +1,5 @@
 import type { DraftClass } from '../types';
+import { isDraftPickRetainedLatest } from './draftPickLatestSeason';
 import { getPlayerRole } from './getPlayerRole';
 
 export interface DraftClassMetrics {
@@ -51,25 +52,33 @@ export function getDraftClassMetrics(
       continue;
     }
     const role = getPlayerRole(pick, { draftingTeamOnly });
-    if (role === 'core_starter') coreStarterCount += 1;
-    if (role === 'starter_when_healthy') starterWhenHealthyCount += 1;
-    if (role === 'significant_contributor') significantContributorCount += 1;
-    if (role === 'contributor') contributorRoleCount += 1;
-    if (role === 'depth') depthCount += 1;
-    if (role === 'non_contributor') nonContributorCount += 1;
-    if (
-      role === 'core_starter' ||
-      role === 'starter_when_healthy' ||
-      role === 'significant_contributor' ||
-      role === 'contributor' ||
-      role === 'depth'
-    ) {
-      contributorCount += 1;
+    switch (role) {
+      case 'core_starter':
+        coreStarterCount += 1;
+        contributorCount += 1;
+        break;
+      case 'starter_when_healthy':
+        starterWhenHealthyCount += 1;
+        contributorCount += 1;
+        break;
+      case 'significant_contributor':
+        significantContributorCount += 1;
+        contributorCount += 1;
+        break;
+      case 'contributor':
+        contributorRoleCount += 1;
+        contributorCount += 1;
+        break;
+      case 'depth':
+        depthCount += 1;
+        contributorCount += 1;
+        break;
+      case 'non_contributor':
+        nonContributorCount += 1;
+        break;
     }
 
-    const latestSeason = [...pick.seasons].sort((a, b) => b.year - a.year)[0];
-    const retained = latestSeason?.retained ?? false;
-    if (retained) retentionCount += 1;
+    if (isDraftPickRetainedLatest(pick)) retentionCount += 1;
   }
 
   const scoredPickCount = totalPicks - awaitingDataCount;
