@@ -33,6 +33,8 @@ export interface AppHeaderProps {
   positionOptions?: string[];
   selectedPosition?: string | null;
   onPositionChange?: (position: string) => void;
+  /** e.g. "30 April 2026" from `data-meta.json`; shown under About in the menu */
+  dataLastUpdatedDate?: string | null;
 }
 
 export function AppHeader({
@@ -51,6 +53,7 @@ export function AppHeader({
   positionOptions = [],
   selectedPosition = null,
   onPositionChange,
+  dataLastUpdatedDate = null,
 }: AppHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuPanelId = useId();
@@ -267,6 +270,20 @@ export function AppHeader({
                     >
                       About
                     </button>
+                    {dataLastUpdatedDate ? (
+                      <>
+                        <hr
+                          className="app-header__menu-footer-divider"
+                          aria-hidden
+                        />
+                        <p
+                          className="app-header__menu-data-updated"
+                          aria-live="polite"
+                        >
+                          Data last updated: {dataLastUpdatedDate}
+                        </p>
+                      </>
+                    ) : null}
                   </li>
                 </ul>
               </nav>

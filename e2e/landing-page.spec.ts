@@ -67,6 +67,28 @@ test.describe('Landing page', () => {
       page.getByRole('dialog', { name: /About NFL Draft Success/i }),
     ).toBeVisible();
   });
+
+  test('About shows data last updated from data-meta', async ({ page }) => {
+    await page.getByRole('button', { name: /open menu/i }).click();
+    await page
+      .getByRole('dialog', { name: /^menu$/i })
+      .getByRole('button', { name: /^About$/ })
+      .click();
+    await expect(
+      page.getByRole('dialog', { name: /About NFL Draft Success/i }),
+    ).toBeVisible();
+    await expect(page.getByText(/^Data last updated:/)).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
+  test('menu lists data last updated under About', async ({ page }) => {
+    await page.getByRole('button', { name: /open menu/i }).click();
+    const menu = page.getByRole('dialog', { name: /^menu$/i });
+    await expect(
+      menu.getByText(/^Data last updated: \d+ \w+ \d{4}$/),
+    ).toBeVisible({ timeout: 15_000 });
+  });
 });
 
 test.describe('Landing page intro banner', () => {

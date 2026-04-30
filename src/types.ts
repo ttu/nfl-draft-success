@@ -51,6 +51,12 @@ export interface DraftClass {
   picks: DraftPick[];
 }
 
+/** Written by `npm run update-data` as `public/data/data-meta.json` */
+export interface DataMeta {
+  /** UTC calendar date `YYYY-MM-DD` when draft JSON was last regenerated */
+  lastUpdated: string;
+}
+
 export interface DefaultRankingsData {
   from: number;
   to: number;

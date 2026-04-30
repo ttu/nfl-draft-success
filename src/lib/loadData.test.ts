@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { loadData, loadDefaultRankings } from './loadData';
+import { loadData, loadDataMeta, loadDefaultRankings } from './loadData';
 
 describe('loadData', () => {
   beforeEach(() => {
@@ -85,5 +85,30 @@ describe('loadDefaultRankings', () => {
     await expect(loadDefaultRankings()).rejects.toThrow(
       'Failed to load default rankings: 404',
     );
+  });
+});
+
+describe('loadDataMeta', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  it('returns null when data-meta.json is missing', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+    } as Response);
+
+    await expect(loadDataMeta()).resolves.toBeNull();
+  });
+
+  it('returns metadata when present', async () => {
+    const meta = { lastUpdated: '2026-04-30' };
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(meta),
+    } as Response);
+
+    await expect(loadDataMeta()).resolves.toEqual(meta);
   });
 });

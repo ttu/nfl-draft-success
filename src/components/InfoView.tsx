@@ -6,9 +6,14 @@ const CONTACT_EMAIL = 'contact@nfldraftsuccess.com';
 
 export interface InfoViewProps {
   onClose: () => void;
+  /** Formatted like "30 April 2026" (set from App after loading `data-meta.json`) */
+  dataLastUpdatedDate?: string | null;
 }
 
-export function InfoView({ onClose }: InfoViewProps) {
+export function InfoView({
+  onClose,
+  dataLastUpdatedDate = null,
+}: InfoViewProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -235,6 +240,11 @@ export function InfoView({ onClose }: InfoViewProps) {
               <code>public/data/draft-&#123;year&#125;.json</code>. Run{' '}
               <code>npm run update-data</code> to regenerate from nflverse.
             </p>
+            {dataLastUpdatedDate && (
+              <p>
+                <strong>Data last updated:</strong> {dataLastUpdatedDate}
+              </p>
+            )}
             <h4>Images</h4>
             <ul>
               <li>

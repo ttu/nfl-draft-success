@@ -1,4 +1,4 @@
-import type { DraftClass, DefaultRankingsData } from '../types';
+import type { DataMeta, DraftClass, DefaultRankingsData } from '../types';
 
 /**
  * Load draft data for a given year from public/data/draft-{year}.json
@@ -29,6 +29,18 @@ export async function loadDefaultRankings(): Promise<DefaultRankingsData> {
   const res = await fetch(`${base}data/default-rankings.json`);
   if (!res.ok) {
     throw new Error(`Failed to load default rankings: ${res.status}`);
+  }
+  return res.json();
+}
+
+/**
+ * When draft data was last regenerated (nflverse pull). Optional for older deploys.
+ */
+export async function loadDataMeta(): Promise<DataMeta | null> {
+  const base = import.meta.env.BASE_URL;
+  const res = await fetch(`${base}data/data-meta.json`);
+  if (!res.ok) {
+    return null;
   }
   return res.json();
 }

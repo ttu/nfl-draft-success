@@ -507,6 +507,11 @@ async function main() {
     console.log(`  Wrote ${picks.length} picks to ${outPath}`);
   }
 
+  const metaPath = path.join(outDir, 'data-meta.json');
+  const lastUpdated = new Date().toISOString().slice(0, 10);
+  fs.writeFileSync(metaPath, JSON.stringify({ lastUpdated }, null, 2) + '\n');
+  console.log(`  Wrote data stamp ${metaPath}`);
+
   console.log('Done.');
 }
 

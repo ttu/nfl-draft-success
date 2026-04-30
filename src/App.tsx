@@ -19,7 +19,12 @@ import { AppHeader } from './components/AppHeader';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { getPlayerRole } from './lib/getPlayerRole';
-import { loadDataForYears, loadDefaultRankings } from './lib/loadData';
+import {
+  loadDataForYears,
+  loadDefaultRankings,
+  loadDataMeta,
+} from './lib/loadData';
+import { formatDataLastUpdatedDate } from './lib/formatDataLastUpdated';
 import { getRollingDraftScore } from './lib/getRollingDraftScore';
 import {
   collectDraftPositions,
@@ -162,6 +167,9 @@ function AppContent() {
     () => !loadLandingIntroDismissed(),
   );
   const [showInfoView, setShowInfoView] = useState(false);
+  const [dataLastUpdatedDate, setDataLastUpdatedDate] = useState<string | null>(
+    null,
+  );
   const [showDeparted, setShowDeparted] = useState(() => loadShowDeparted());
 
   const positionOptions = useMemo(
@@ -215,6 +223,18 @@ function AppContent() {
       .catch(() => {
         // Silently fail — falls back to full data load
       });
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadDataMeta().then((meta) => {
+      if (cancelled || !meta?.lastUpdated) return;
+      const label = formatDataLastUpdatedDate(meta.lastUpdated);
+      if (label) setDataLastUpdatedDate(label);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleYearRangeChange = (range: [number, number]) => {
@@ -415,6 +435,7 @@ function AppContent() {
         positionOptions={positionOptions}
         selectedPosition={canonicalPosition}
         onPositionChange={handlePositionChange}
+        dataLastUpdatedDate={dataLastUpdatedDate}
       />
 
       {showRankingsView && showLandingIntro && (
@@ -423,7 +444,10 @@ function AppContent() {
 
       {showInfoView && (
         <Suspense fallback={null}>
-          <InfoView onClose={() => setShowInfoView(false)} />
+          <InfoView
+            onClose={() => setShowInfoView(false)}
+            dataLastUpdatedDate={dataLastUpdatedDate}
+          />
         </Suspense>
       )}
 

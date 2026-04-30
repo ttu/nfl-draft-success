@@ -238,6 +238,21 @@
   font-weight: 500;
 }
 
+.app-header__menu-footer-divider {
+  margin: 0.5rem 0.25rem;
+  border: none;
+  border-top: 1px solid #4a4a4a;
+}
+
+.app-header__menu-data-updated {
+  margin: 0;
+  padding: 0 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.55);
+}
+
 .app-header__menu-item {
   box-sizing: border-box;
   display: flex;
@@ -1589,6 +1604,14 @@ a.year-draft-view__inline-link:hover {
 
   .app-header__menu-footer .app-header__menu-item {
     color: #495057;
+  }
+
+  .app-header__menu-footer-divider {
+    border-top-color: #adb5bd;
+  }
+
+  .app-header__menu-data-updated {
+    color: rgba(0, 0, 0, 0.55);
   }
 
   .app-header__menu-item:hover {
