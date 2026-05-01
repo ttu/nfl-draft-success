@@ -97,6 +97,14 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
+/** PFR career page; omit for placeholder IDs when nflverse has not matched a player yet */
+function getPfrUrl(playerId: string, playerName: string): string | null {
+  if (!playerId || playerId.startsWith('unknown-')) return null;
+  const last = playerName.split(/\s+/).pop() || '';
+  const letter = (last[0] || 'X').toUpperCase();
+  return `https://www.pro-football-reference.com/players/${letter}/${playerId}.htm`;
+}
+
 function seasonTeamAbbrev(season: Season, pick: DraftPick): string {
   if (season.retained) return pick.teamId;
   return season.currentTeam ?? 'FA';
@@ -164,6 +172,7 @@ function PlayerCard({
   const hasCareerRows = pick.seasons.length > 0;
   const role = getPlayerRole(pick, { draftingTeamOnly });
   const colors = ROLE_COLORS[role];
+  const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
   const departed = isDeparted(pick);
   const currentTeam = departed ? getCurrentTeam(pick) : undefined;
   const isFa = departed && !currentTeam;
@@ -331,6 +340,19 @@ function PlayerCard({
           className="player-card__career"
           data-testid="player-career-panel"
         >
+          {pfrUrl && (
+            <div className="player-card__career-actions">
+              <a
+                href={pfrUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="player-card__stats-link"
+                data-testid="player-stats-link"
+              >
+                Career stats on Pro Football Reference
+              </a>
+            </div>
+          )}
           <div className="player-card__career-inner">
             {!hasCareerRows ? (
               <p className="player-card__career-empty" id={careerLegendId}>

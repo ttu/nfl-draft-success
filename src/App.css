@@ -1354,11 +1354,30 @@ a.year-draft-view__inline-link:hover {
   text-decoration: underline;
 }
 
+.player-card__stats-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.player-card__stats-link:hover {
+  text-decoration: underline;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .player-card__career {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding: 0.75rem 1rem 1rem;
   background: rgba(0, 0, 0, 0.15);
   min-width: 0;
+}
+
+.player-card__career-actions {
+  margin-bottom: 0.65rem;
 }
 
 .player-card__career-inner {
@@ -1515,6 +1534,10 @@ a.year-draft-view__inline-link:hover {
     margin-bottom: 0.35rem;
     padding: 0.625rem 0.5rem 0.75rem;
     border-radius: 8px;
+  }
+
+  .player-card__career-actions {
+    margin-bottom: 0.5rem;
   }
 
   .player-card__career-legend {
@@ -1783,6 +1806,14 @@ a.year-draft-view__inline-link:hover {
 
   .player-card__meta {
     color: rgba(0, 0, 0, 0.55);
+  }
+
+  .player-card__stats-link {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .player-card__stats-link:hover {
+    color: rgba(0, 0, 0, 0.85);
   }
 
   .player-card__career {

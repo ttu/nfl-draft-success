@@ -75,8 +75,60 @@ describe('PlayerList', () => {
       within(panel).getByRole('columnheader', { name: /season/i }),
     ).toBeInTheDocument();
     expect(within(panel).getByText('2018')).toBeInTheDocument();
+    const statsLink = within(firstCard).getByTestId('player-stats-link');
+    expect(statsLink).toHaveAttribute(
+      'href',
+      'https://www.pro-football-reference.com/players/M/p1.htm',
+    );
+  });
+
+  it('shows Pro Football Reference link when awaiting season data but player id is known', () => {
+    const picks = [
+      {
+        pick: {
+          playerId: 'AbcdJo00',
+          playerName: 'John Abcdef',
+          position: 'WR',
+          round: 3,
+          overallPick: 99,
+          teamId: 'DAL',
+          seasons: [],
+        } as DraftPick,
+        draftYear: 2026,
+      },
+    ];
+    render(<PlayerList picks={picks} teamId="DAL" />);
+    const card = screen.getByRole('listitem');
+    fireEvent.click(within(card).getByRole('button', { name: /John Abcdef/i }));
+    const link = within(card).getByTestId('player-stats-link');
+    expect(link).toHaveAttribute(
+      'href',
+      'https://www.pro-football-reference.com/players/A/AbcdJo00.htm',
+    );
+  });
+
+  it('does not show Pro Football Reference link for placeholder unknown-* ids', () => {
+    const picks = [
+      {
+        pick: {
+          playerId: 'unknown-2026-0',
+          playerName: 'Rookie Player',
+          position: 'QB',
+          round: 1,
+          overallPick: 1,
+          teamId: 'KC',
+          seasons: [],
+        } as DraftPick,
+        draftYear: 2026,
+      },
+    ];
+    render(<PlayerList picks={picks} teamId="KC" />);
+    const card = screen.getByRole('listitem');
+    fireEvent.click(
+      within(card).getByRole('button', { name: /Rookie Player/i }),
+    );
     expect(
-      within(firstCard).queryByTestId('player-stats-link'),
+      within(card).queryByTestId('player-stats-link'),
     ).not.toBeInTheDocument();
   });
 
