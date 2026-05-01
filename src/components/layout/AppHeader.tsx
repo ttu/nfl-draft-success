@@ -5,12 +5,13 @@ import { YearRangeFilter } from '../filters/YearRangeFilter';
 import { DraftYearPicker } from '../draft/DraftYearPicker';
 import { getTeamLogoUrl, NFL_LOGO_URL } from '../../data/teamColors';
 import { getPositionDisplayName } from '../../lib/positionDisplayName';
+import { ActiveView } from '../../types';
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2026;
 
 const VIEW_SPECIFIC_CONTENT = {
-  playerLists: {
+  positionList: {
     headingId: 'app-header-draft-years-heading',
     heading: 'Draft years',
     hint: 'Player lists below use this range.',
@@ -37,12 +38,9 @@ function clampDraftYear(y: number): number {
 }
 
 export interface AppHeaderProps {
+  activeView: ActiveView;
   selectedTeam: string | null;
-  showRankingsView: boolean;
-  /** Full-draft-by-year page (/year/:y) — show Team rankings control like team detail */
-  showYearDraftView?: boolean;
-  /** Cross-year position browser (/position/:code) */
-  showPositionView?: boolean;
+
   /** Year for drafts-page picker only */
   draftPickYear: number;
   onDraftPickYear: (year: number) => void;
@@ -61,10 +59,8 @@ export interface AppHeaderProps {
 }
 
 export function AppHeader({
+  activeView,
   selectedTeam,
-  showRankingsView,
-  showYearDraftView = false,
-  showPositionView = false,
   draftPickYear,
   onDraftPickYear,
   yearRange,
@@ -83,15 +79,6 @@ export function AppHeader({
   const menuCloseRef = useRef<HTMLButtonElement>(null);
   const draftsLinkYear = clampDraftYear(yearRange[1]);
   const draftsBoardTitle = `Open the ${draftsLinkYear} draft board (every pick). Choose a different year on that page.`;
-
-  /** Route-specific copy so “team scores” framing does not fight position/team tasks. */
-  const draftYearsSection = showYearDraftView
-    ? null
-    : showPositionView
-      ? VIEW_SPECIFIC_CONTENT.playerLists
-      : selectedTeam
-        ? VIEW_SPECIFIC_CONTENT.teamDetail
-        : VIEW_SPECIFIC_CONTENT.teamRankings;
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -153,31 +140,45 @@ export function AppHeader({
       )}
 
       <div className="app-controls app-controls--grouped">
-        {!showRankingsView && selectedTeam && (
-          <TeamSelectorSection
-            selectedTeam={selectedTeam}
-            onTeamSelect={onTeamSelect}
-          />
-          /* YearRangeFilterSection */
+        {activeView === ActiveView.TeamDetail && selectedTeam && (
+          /* selectedTeam should always be set at this point */
+          <>
+            <TeamSelectorSection
+              selectedTeam={selectedTeam}
+              onTeamSelect={onTeamSelect}
+            />
+            <YearRangeFilterSection
+              yearRange={yearRange}
+              onYearRangeChange={onYearRangeChange}
+              draftYearsSection={VIEW_SPECIFIC_CONTENT.teamDetail}
+            />
+          </>
         )}
 
-        {!showYearDraftView && draftYearsSection && (
+        {activeView === ActiveView.TeamRankings && (
           <YearRangeFilterSection
             yearRange={yearRange}
             onYearRangeChange={onYearRangeChange}
-            draftYearsSection={draftYearsSection}
+            draftYearsSection={VIEW_SPECIFIC_CONTENT.teamRankings}
           />
         )}
 
-        {showPositionView && (
-          <PositionSelectorSection
-            selectedPosition={selectedPosition}
-            onPositionChange={onPositionChange ?? (() => {})}
-            positionOptions={positionOptions}
-          />
+        {activeView === ActiveView.Position && (
+          <>
+            <YearRangeFilterSection
+              yearRange={yearRange}
+              onYearRangeChange={onYearRangeChange}
+              draftYearsSection={VIEW_SPECIFIC_CONTENT.positionList}
+            />
+            <PositionSelectorSection
+              selectedPosition={selectedPosition}
+              onPositionChange={onPositionChange ?? (() => {})}
+              positionOptions={positionOptions}
+            />
+          </>
         )}
 
-        {showYearDraftView && (
+        {activeView === ActiveView.DraftYears && (
           <DraftYearPickerSection
             draftPickYear={draftPickYear}
             onDraftPickYear={onDraftPickYear}

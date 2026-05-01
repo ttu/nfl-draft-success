@@ -41,7 +41,12 @@ import {
 } from './lib/storage';
 import { TEAMS } from './data/teams';
 import { getTeamDepthChartUrl } from './data/teamColors';
-import type { DraftClass, DefaultRankingsData, Role } from './types';
+import {
+  type DraftClass,
+  type DefaultRankingsData,
+  type Role,
+  ActiveView,
+} from './types';
 import './App.css';
 
 import { TeamRankingsView } from './components/views/team/TeamRankingsView';
@@ -84,7 +89,7 @@ function useResolvedYearRange(
   forcedSingleYear: number | null,
   searchParams: URLSearchParams,
   setSearchParams: (params: Record<string, string>) => void,
-): [number, number] {
+): { startYear: number; endYear: number } {
   const from = parseInt(searchParams.get('from') ?? '', 10);
   const to = parseInt(searchParams.get('to') ?? '', 10);
   const valid =
@@ -113,10 +118,12 @@ function useResolvedYearRange(
     forcedSingleYear >= yearBounds.min &&
     forcedSingleYear <= yearBounds.max
   ) {
-    return [forcedSingleYear, forcedSingleYear];
+    return { startYear: forcedSingleYear, endYear: forcedSingleYear };
   }
 
-  return valid ? [from, to] : [DEFAULT_YEAR_MIN, YEAR_MAX];
+  return valid
+    ? { startYear: from, endYear: to }
+    : { startYear: DEFAULT_YEAR_MIN, endYear: YEAR_MAX };
 }
 
 /** Path params from `/:teamId` and `/year/:draftYear` in this file’s `Routes`. */
@@ -157,21 +164,29 @@ function AppContent() {
   const isYearView = draftYearParam !== undefined && routeYearValid;
   const forcedSingleYear = isYearView ? parsedRouteYear : null;
 
+  const selectedTeam = teamId && validTeamIds.has(teamId) ? teamId : null;
+
+  const activeView = isYearView
+    ? ActiveView.DraftYears
+    : isPositionView
+      ? ActiveView.Position
+      : selectedTeam
+        ? ActiveView.TeamDetail
+        : ActiveView.TeamRankings;
+
   useLayoutEffect(() => {
     if (draftYearParam !== undefined && !routeYearValid) {
       navigate(`/year/${YEAR_MAX}`, { replace: true });
     }
   }, [draftYearParam, routeYearValid, navigate]);
 
-  const selectedTeam = teamId && validTeamIds.has(teamId) ? teamId : null;
-  const showRankingsView =
-    selectedTeam === null && !isYearView && !isPositionView;
-
-  const yearRange = useResolvedYearRange(
+  const { startYear, endYear } = useResolvedYearRange(
     forcedSingleYear,
     searchParams,
     setSearchParams,
   );
+  const yearCount = endYear - startYear + 1;
+
   const [roleFilter, setRoleFilter] = useState<Set<Role>>(() => {
     const stored = loadRoleFilter();
     return (
@@ -272,7 +287,7 @@ function AppContent() {
 
   const draftPickYear = Math.min(
     YEAR_MAX,
-    Math.max(YEAR_MIN, isYearView ? parsedRouteYear : yearRange[1]),
+    Math.max(YEAR_MIN, isYearView ? parsedRouteYear : endYear),
   );
 
   const handleDraftPickYear = (year: number) => {
@@ -285,24 +300,24 @@ function AppContent() {
   };
 
   const handleTeamSelect = (team: string) => {
-    navigate(`/${team}?from=${yearRange[0]}&to=${yearRange[1]}`);
+    navigate(`/${team}?from=${startYear}&to=${endYear}`);
   };
 
   const handleShowRankings = () => {
-    navigate(`/?from=${yearRange[0]}&to=${yearRange[1]}`);
+    navigate(`/?from=${startYear}&to=${endYear}`);
   };
 
   const positionBrowseSearch = new URLSearchParams({
-    from: String(yearRange[0]),
-    to: String(yearRange[1]),
+    from: String(startYear),
+    to: String(endYear),
   }).toString();
 
   const handlePositionChange = (pos: string) => {
     const search =
       searchParams.toString() ||
       new URLSearchParams({
-        from: String(yearRange[0]),
-        to: String(yearRange[1]),
+        from: String(startYear),
+        to: String(endYear),
       }).toString();
     navigate({
       pathname: `/position/${encodeURIComponent(pos)}`,
@@ -322,8 +337,8 @@ function AppContent() {
       }
     }, delayBeforeShowMs);
     const years = Array.from(
-      { length: yearRange[1] - yearRange[0] + 1 },
-      (_, i) => yearRange[0] + i,
+      { length: endYear - startYear + 1 },
+      (_, i) => startYear + i,
     );
     loadDataForYears(years)
       .then((data) => {
@@ -347,7 +362,7 @@ function AppContent() {
       cancelled = true;
       if (showLoadingId) clearTimeout(showLoadingId);
     };
-  }, [yearRange[0], yearRange[1]]);
+  }, [startYear, endYear]);
 
   const draftingTeamOnly = true;
   const rollingDraftScore =
@@ -435,13 +450,11 @@ function AppContent() {
   return (
     <main className="app">
       <AppHeader
+        activeView={activeView}
         selectedTeam={selectedTeam}
-        showRankingsView={showRankingsView}
-        showYearDraftView={isYearView}
-        showPositionView={isPositionView}
         draftPickYear={draftPickYear}
         onDraftPickYear={handleDraftPickYear}
-        yearRange={yearRange}
+        yearRange={[startYear, endYear]}
         onShowRankings={handleShowRankings}
         onTeamSelect={handleTeamSelect}
         onYearRangeChange={handleYearRangeChange}
@@ -453,7 +466,7 @@ function AppContent() {
         dataLastUpdatedDate={dataLastUpdatedDate}
       />
 
-      {showRankingsView && showLandingIntro && (
+      {activeView === ActiveView.TeamRankings && showLandingIntro && (
         <SiteIntroBanner onDismiss={handleDismissLandingIntro} />
       )}
 
@@ -472,15 +485,18 @@ function AppContent() {
         </div>
       )}
 
-      {loading && showRankingsView && defaultRankings && !isPositionView ? (
+      {loading &&
+      activeView === ActiveView.TeamRankings &&
+      defaultRankings &&
+      !isPositionView ? (
         <TeamRankingsView
           rankings={defaultRankings.rankings}
-          yearCount={yearRange[1] - yearRange[0] + 1}
+          yearCount={endYear - startYear + 1}
           onTeamSelect={handleTeamSelect}
         />
       ) : loading ? (
         <LoadingSpinner message="Loading draft data…" />
-      ) : isYearView && draftClasses.length === 1 ? (
+      ) : activeView === ActiveView.DraftYears && draftClasses.length === 1 ? (
         <Suspense fallback={<LoadingSpinner />}>
           <YearDraftView
             draftClass={draftClasses[0]}
@@ -488,21 +504,24 @@ function AppContent() {
             onShowRankings={handleShowRankings}
           />
         </Suspense>
-      ) : isPositionView && canonicalPosition && draftClasses.length > 0 ? (
+      ) : activeView === ActiveView.Position &&
+        canonicalPosition &&
+        draftClasses.length > 0 ? (
         <Suspense fallback={<LoadingSpinner />}>
           <PositionDraftView
             position={canonicalPosition}
-            yearFrom={yearRange[0]}
-            yearTo={yearRange[1]}
+            yearFrom={startYear}
+            yearTo={endYear}
             draftClasses={draftClasses}
             draftingTeamOnly={draftingTeamOnly}
             onShowRankings={handleShowRankings}
           />
         </Suspense>
-      ) : (showRankingsView || !selectedTeam) && teamRank?.rankings ? (
+      ) : (activeView === ActiveView.TeamRankings || !selectedTeam) &&
+        teamRank?.rankings ? (
         <TeamRankingsView
           rankings={teamRank.rankings}
-          yearCount={yearRange[1] - yearRange[0] + 1}
+          yearCount={yearCount}
           onTeamSelect={handleTeamSelect}
           onBack={selectedTeam ? handleShowRankings : undefined}
         />
@@ -510,7 +529,7 @@ function AppContent() {
         <Suspense fallback={<LoadingSpinner />}>
           <TeamDetailContent
             rollingDraftScore={rollingDraftScore}
-            yearCount={yearRange[1] - yearRange[0] + 1}
+            yearCount={yearCount}
             teamRank={teamRank}
             onShowRankings={handleShowRankings}
             draftClasses={draftClasses}

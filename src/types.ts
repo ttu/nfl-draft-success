@@ -70,3 +70,12 @@ export interface DefaultRankingsData {
     retentionRate: number;
   }>;
 }
+
+export const ActiveView = {
+  TeamDetail: 'teamDetail',
+  TeamRankings: 'teamRankings',
+  DraftYears: 'draftYears',
+  Position: 'position',
+} as const;
+
+export type ActiveView = (typeof ActiveView)[keyof typeof ActiveView];
