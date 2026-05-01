@@ -9,6 +9,29 @@ import { getPositionDisplayName } from '../../lib/positionDisplayName';
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2026;
 
+const VIEW_SPECIFIC_CONTENT = {
+  playerLists: {
+    headingId: 'app-header-draft-years-heading',
+    heading: 'Draft years',
+    hint: 'Player lists below use this range.',
+    rangeAriaLabel:
+      'Years shown for player lists below (same window as team scores)',
+  },
+  teamDetail: {
+    headingId: 'app-header-draft-years-heading',
+    heading: 'Draft years',
+    hint: 'Rolling score, draft cards, and roster use this window.',
+    rangeAriaLabel:
+      'Years included in rolling score, draft cards, and roster below',
+  },
+  teamRankings: {
+    headingId: 'app-header-draft-years-heading',
+    heading: 'Draft years',
+    hint: 'Classes in this window feed team scores and rankings.',
+    rangeAriaLabel: 'Years included in team scores and rankings below',
+  },
+};
+
 function clampDraftYear(y: number): number {
   return Math.min(YEAR_MAX, Math.max(YEAR_MIN, y));
 }
@@ -65,27 +88,10 @@ export function AppHeader({
   const draftYearsSection = showYearDraftView
     ? null
     : showPositionView
-      ? {
-          headingId: 'app-header-draft-years-heading',
-          heading: 'Draft years',
-          hint: 'Player lists below use this range.',
-          rangeAriaLabel:
-            'Years shown for player lists below (same window as team scores)',
-        }
+      ? VIEW_SPECIFIC_CONTENT.playerLists
       : selectedTeam
-        ? {
-            headingId: 'app-header-draft-years-heading',
-            heading: 'Draft years',
-            hint: 'Rolling score, draft cards, and roster use this window.',
-            rangeAriaLabel:
-              'Years included in rolling score, draft cards, and roster below',
-          }
-        : {
-            headingId: 'app-header-draft-years-heading',
-            heading: 'Draft years',
-            hint: 'Classes in this window feed team scores and rankings.',
-            rangeAriaLabel: 'Years included in team scores and rankings below',
-          };
+        ? VIEW_SPECIFIC_CONTENT.teamDetail
+        : VIEW_SPECIFIC_CONTENT.teamRankings;
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -124,38 +130,313 @@ export function AppHeader({
   return (
     <header className="app-header">
       <div className="app-header__bar">
-        <div className="app-header__brand">
-          {selectedTeam ? (
-            <img
-              src={getTeamLogoUrl(selectedTeam)}
-              alt=""
-              className="app-header__logo"
-              referrerPolicy="no-referrer"
-              aria-hidden
-            />
-          ) : (
-            <img
-              src={NFL_LOGO_URL}
-              alt=""
-              className="app-header__logo"
-              referrerPolicy="no-referrer"
-              aria-hidden
-            />
-          )}
-          <div className="app-header__title-row">
-            <h1>NFL Draft Success</h1>
-          </div>
-        </div>
-        <button
-          type="button"
-          className="app-controls__icon-btn app-header__menu-btn"
-          aria-expanded={menuOpen}
-          aria-controls={menuPanelId}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          title="Menu"
-          onClick={() => setMenuOpen((o) => !o)}
+        <AppHeaderBrand selectedTeam={selectedTeam} />
+        <MenuButton
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+          menuPanelId={menuPanelId}
+        />
+      </div>
+
+      {menuOpen && (
+        <MenuSection
+          closeMenu={closeMenu}
+          menuPanelId={menuPanelId}
+          menuCloseRef={menuCloseRef}
+          draftsLinkYear={draftsLinkYear}
+          draftsBoardTitle={draftsBoardTitle}
+          handleTeamRankings={handleTeamRankings}
+          handleAbout={handleAbout}
+          positionBrowseSearch={positionBrowseSearch}
+          dataLastUpdatedDate={dataLastUpdatedDate}
+        />
+      )}
+
+      <div className="app-controls app-controls--grouped">
+        {!showRankingsView && selectedTeam && (
+          <TeamSelectorSection
+            selectedTeam={selectedTeam}
+            onTeamSelect={onTeamSelect}
+          />
+          /* YearRangeFilterSection */
+        )}
+
+        {!showYearDraftView && draftYearsSection && (
+          <YearRangeFilterSection
+            yearRange={yearRange}
+            onYearRangeChange={onYearRangeChange}
+            draftYearsSection={draftYearsSection}
+          />
+        )}
+
+        {showPositionView && (
+          <PositionSelectorSection
+            selectedPosition={selectedPosition}
+            onPositionChange={onPositionChange ?? (() => {})}
+            positionOptions={positionOptions}
+          />
+        )}
+
+        {showYearDraftView && (
+          <DraftYearPickerSection
+            draftPickYear={draftPickYear}
+            onDraftPickYear={onDraftPickYear}
+          />
+        )}
+      </div>
+    </header>
+  );
+}
+
+const TeamSelectorSection = ({
+  selectedTeam,
+  onTeamSelect,
+}: {
+  selectedTeam: string;
+  onTeamSelect: (teamId: string) => void;
+}) => {
+  return (
+    <div
+      className="app-controls__group app-controls__group--nav"
+      role="group"
+      aria-label="Team navigation"
+    >
+      <TeamSelector value={selectedTeam} onChange={onTeamSelect} />
+    </div>
+  );
+};
+
+const YearRangeFilterSection = ({
+  yearRange,
+  onYearRangeChange,
+  draftYearsSection,
+}: {
+  yearRange: [number, number];
+  onYearRangeChange: (range: [number, number]) => void;
+  draftYearsSection: {
+    headingId: string;
+    heading: string;
+    hint: string;
+    rangeAriaLabel: string;
+  };
+}) => {
+  return (
+    <div
+      className="app-controls__group"
+      role="group"
+      aria-labelledby={draftYearsSection.headingId}
+    >
+      <div
+        id={draftYearsSection.headingId}
+        className="app-controls__group-heading"
+      >
+        {draftYearsSection.heading}
+      </div>
+      <p className="app-controls__group-hint">{draftYearsSection.hint}</p>
+      <YearRangeFilter
+        min={YEAR_MIN}
+        max={YEAR_MAX}
+        value={yearRange}
+        onChange={onYearRangeChange}
+        groupAriaLabel={draftYearsSection.rangeAriaLabel}
+      />
+    </div>
+  );
+};
+
+const PositionSelectorSection = ({
+  selectedPosition,
+  onPositionChange,
+  positionOptions,
+}: {
+  selectedPosition: string | null;
+  onPositionChange: (position: string) => void;
+  positionOptions: string[];
+}) => {
+  return (
+    <div
+      className="app-controls__group"
+      role="group"
+      aria-labelledby="app-header-position-heading"
+    >
+      <div
+        id="app-header-position-heading"
+        className="app-controls__group-heading"
+      >
+        Position
+      </div>
+      <p className="app-controls__group-hint">
+        Filter by position; draft years are set above.
+      </p>
+      <select
+        aria-label="Select position"
+        className="draft-year-picker__select app-header__position-select"
+        value={selectedPosition ?? ''}
+        disabled={
+          !onPositionChange ||
+          positionOptions.length === 0 ||
+          selectedPosition == null
+        }
+        onChange={(e) => onPositionChange?.(e.target.value)}
+      >
+        {positionOptions.map((p) => (
+          <option key={p} value={p}>
+            {getPositionDisplayName(p)} ({p})
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+const DraftYearPickerSection = ({
+  draftPickYear,
+  onDraftPickYear,
+}: {
+  draftPickYear: number;
+  onDraftPickYear: (year: number) => void;
+}) => {
+  return (
+    <div
+      className="app-controls__group"
+      role="group"
+      aria-labelledby="app-header-which-draft-heading"
+    >
+      <div
+        id="app-header-which-draft-heading"
+        className="app-controls__group-heading"
+      >
+        Which draft
+      </div>
+      <p className="app-controls__group-hint">
+        Pick a year to load that draft&apos;s full pick list.
+      </p>
+      <DraftYearPicker
+        min={YEAR_MIN}
+        max={YEAR_MAX}
+        value={draftPickYear}
+        onChange={onDraftPickYear}
+        showLabel={false}
+      />
+    </div>
+  );
+};
+
+const AppHeaderBrand = ({ selectedTeam }: { selectedTeam: string | null }) => {
+  return (
+    <div className="app-header__brand">
+      <img
+        src={selectedTeam ? getTeamLogoUrl(selectedTeam) : NFL_LOGO_URL}
+        alt=""
+        className="app-header__logo"
+        referrerPolicy="no-referrer"
+        aria-hidden
+      />
+      <div className="app-header__title-row">
+        <h1>NFL Draft Success</h1>
+      </div>
+    </div>
+  );
+};
+
+const MenuButton = ({
+  menuOpen,
+  setMenuOpen,
+  menuPanelId,
+}: {
+  menuOpen: boolean;
+  setMenuOpen: (open: boolean) => void;
+  menuPanelId: string;
+}) => {
+  return (
+    <button
+      type="button"
+      className="app-controls__icon-btn app-header__menu-btn"
+      aria-expanded={menuOpen}
+      aria-controls={menuPanelId}
+      aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+      title="Menu"
+      onClick={() => setMenuOpen(!menuOpen)}
+    >
+      {menuOpen ? (
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
         >
-          {menuOpen ? (
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      ) : (
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      )}
+    </button>
+  );
+};
+
+const MenuSection = ({
+  closeMenu,
+  menuPanelId,
+  menuCloseRef,
+  draftsLinkYear,
+  draftsBoardTitle,
+  handleTeamRankings,
+  handleAbout,
+  positionBrowseSearch,
+  dataLastUpdatedDate,
+}: {
+  closeMenu: () => void;
+  menuPanelId: string;
+  menuCloseRef: React.RefObject<HTMLButtonElement | null>;
+  draftsLinkYear: number;
+  draftsBoardTitle: string;
+  handleTeamRankings: () => void;
+  handleAbout: () => void;
+  positionBrowseSearch: string;
+  dataLastUpdatedDate: string | null;
+}) => {
+  return (
+    <>
+      <div
+        className="app-header__menu-backdrop"
+        aria-hidden
+        onClick={closeMenu}
+      />
+      <div
+        id={menuPanelId}
+        className="app-header__menu-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="app-header-menu-title"
+      >
+        <div className="app-header__menu-panel-header">
+          <h2 id="app-header-menu-title" className="app-header__menu-title">
+            Menu
+          </h2>
+          <button
+            ref={menuCloseRef}
+            type="button"
+            className="app-controls__icon-btn app-header__menu-close"
+            aria-label="Close menu"
+            onClick={closeMenu}
+          >
             <svg
               width="22"
               height="22"
@@ -169,222 +450,70 @@ export function AppHeader({
             >
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
-          ) : (
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            </svg>
-          )}
-        </button>
-      </div>
-
-      {menuOpen && (
-        <>
-          <div
-            className="app-header__menu-backdrop"
-            aria-hidden
-            onClick={closeMenu}
-          />
-          <div
-            id={menuPanelId}
-            className="app-header__menu-panel"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="app-header-menu-title"
-          >
-            <div className="app-header__menu-panel-header">
-              <h2 id="app-header-menu-title" className="app-header__menu-title">
-                Menu
-              </h2>
-              <button
-                ref={menuCloseRef}
-                type="button"
-                className="app-controls__icon-btn app-header__menu-close"
-                aria-label="Close menu"
-                onClick={closeMenu}
-              >
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
+          </button>
+        </div>
+        <div className="app-header__menu-body">
+          <nav aria-label="Site navigation">
+            <ul className="app-header__menu-list">
+              <li>
+                <button
+                  type="button"
+                  className="app-header__menu-item"
+                  onClick={handleTeamRankings}
                 >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="app-header__menu-body">
-              <nav aria-label="Site navigation">
-                <ul className="app-header__menu-list">
-                  <li>
-                    <button
-                      type="button"
-                      className="app-header__menu-item"
-                      onClick={handleTeamRankings}
+                  Team rankings
+                </button>
+              </li>
+              <li>
+                <Link
+                  to={`/year/${draftsLinkYear}`}
+                  className="app-header__menu-item"
+                  title={draftsBoardTitle}
+                  onClick={closeMenu}
+                >
+                  Drafts
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to={{
+                    pathname: '/position/QB',
+                    search: positionBrowseSearch,
+                  }}
+                  className="app-header__menu-item"
+                  title="All quarterbacks drafted in the years selected for team scores"
+                  onClick={closeMenu}
+                >
+                  By position
+                </Link>
+              </li>
+              <li className="app-header__menu-footer">
+                <button
+                  type="button"
+                  className="app-header__menu-item"
+                  onClick={handleAbout}
+                >
+                  About
+                </button>
+                {dataLastUpdatedDate ? (
+                  <>
+                    <hr
+                      className="app-header__menu-footer-divider"
+                      aria-hidden
+                    />
+                    <p
+                      className="app-header__menu-data-updated"
+                      aria-live="polite"
                     >
-                      Team rankings
-                    </button>
-                  </li>
-                  <li>
-                    <Link
-                      to={`/year/${draftsLinkYear}`}
-                      className="app-header__menu-item"
-                      title={draftsBoardTitle}
-                      onClick={closeMenu}
-                    >
-                      Drafts
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to={{
-                        pathname: '/position/QB',
-                        search: positionBrowseSearch,
-                      }}
-                      className="app-header__menu-item"
-                      title="All quarterbacks drafted in the years selected for team scores"
-                      onClick={closeMenu}
-                    >
-                      By position
-                    </Link>
-                  </li>
-                  <li className="app-header__menu-footer">
-                    <button
-                      type="button"
-                      className="app-header__menu-item"
-                      onClick={handleAbout}
-                    >
-                      About
-                    </button>
-                    {dataLastUpdatedDate ? (
-                      <>
-                        <hr
-                          className="app-header__menu-footer-divider"
-                          aria-hidden
-                        />
-                        <p
-                          className="app-header__menu-data-updated"
-                          aria-live="polite"
-                        >
-                          Data last updated: {dataLastUpdatedDate}
-                        </p>
-                      </>
-                    ) : null}
-                  </li>
-                </ul>
-              </nav>
-            </div>
-          </div>
-        </>
-      )}
-      <div className="app-controls app-controls--grouped">
-        {!showRankingsView && selectedTeam && (
-          <div
-            className="app-controls__group app-controls__group--nav"
-            role="group"
-            aria-label="Team navigation"
-          >
-            <TeamSelector value={selectedTeam} onChange={onTeamSelect} />
-          </div>
-        )}
-
-        {!showYearDraftView && draftYearsSection && (
-          <div
-            className="app-controls__group"
-            role="group"
-            aria-labelledby={draftYearsSection.headingId}
-          >
-            <div
-              id={draftYearsSection.headingId}
-              className="app-controls__group-heading"
-            >
-              {draftYearsSection.heading}
-            </div>
-            <p className="app-controls__group-hint">{draftYearsSection.hint}</p>
-            <YearRangeFilter
-              min={YEAR_MIN}
-              max={YEAR_MAX}
-              value={yearRange}
-              onChange={onYearRangeChange}
-              groupAriaLabel={draftYearsSection.rangeAriaLabel}
-            />
-          </div>
-        )}
-
-        {showPositionView && (
-          <div
-            className="app-controls__group"
-            role="group"
-            aria-labelledby="app-header-position-heading"
-          >
-            <div
-              id="app-header-position-heading"
-              className="app-controls__group-heading"
-            >
-              Position
-            </div>
-            <p className="app-controls__group-hint">
-              Filter by position; draft years are set above.
-            </p>
-            <select
-              aria-label="Select position"
-              className="draft-year-picker__select app-header__position-select"
-              value={selectedPosition ?? ''}
-              disabled={
-                !onPositionChange ||
-                positionOptions.length === 0 ||
-                selectedPosition == null
-              }
-              onChange={(e) => onPositionChange?.(e.target.value)}
-            >
-              {positionOptions.map((p) => (
-                <option key={p} value={p}>
-                  {getPositionDisplayName(p)} ({p})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {showYearDraftView && (
-          <div
-            className="app-controls__group"
-            role="group"
-            aria-labelledby="app-header-which-draft-heading"
-          >
-            <div
-              id="app-header-which-draft-heading"
-              className="app-controls__group-heading"
-            >
-              Which draft
-            </div>
-            <p className="app-controls__group-hint">
-              Pick a year to load that draft&apos;s full pick list.
-            </p>
-            <DraftYearPicker
-              min={YEAR_MIN}
-              max={YEAR_MAX}
-              value={draftPickYear}
-              onChange={onDraftPickYear}
-              showLabel={false}
-            />
-          </div>
-        )}
+                      Data last updated: {dataLastUpdatedDate}
+                    </p>
+                  </>
+                ) : null}
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
-    </header>
+    </>
   );
-}
+};
