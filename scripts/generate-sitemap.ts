@@ -7,7 +7,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { TEAMS } from '../src/data/teams';
-import { canonicalPositionCode } from '../src/lib/positionDraft';
+import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -30,7 +30,7 @@ function collectPositionsFromDraftFiles(): string[] {
     for (const p of j.picks ?? []) {
       const raw = (p.position ?? '').trim();
       if (!raw) continue;
-      const canon = canonicalPositionCode(raw);
+      const canon = normalizeDraftPosition(raw);
       if (!byCanon.has(canon)) byCanon.set(canon, canon);
     }
   }

@@ -1,6 +1,7 @@
 /**
  * Human-readable NFL position labels for draft `position` codes in our data.
- * Unknown codes fall back to the uppercase abbreviation.
+ * Expects canonical codes from JSON / routing (see {@link normalizeDraftPosition}
+ * for upstream aliases). Unknown codes fall back to the uppercase abbreviation.
  */
 const POSITION_LABELS: Record<string, string> = {
   QB: 'Quarterback',
@@ -9,8 +10,6 @@ const POSITION_LABELS: Record<string, string> = {
   WR: 'Wide receiver',
   TE: 'Tight end',
   OT: 'Offensive tackle',
-  /** Draft / nflverse JSON often uses `T` for offensive tackle (same role as OT) */
-  T: 'Offensive tackle',
   G: 'Guard',
   C: 'Center',
   OL: 'Offensive line',
@@ -29,16 +28,15 @@ const POSITION_LABELS: Record<string, string> = {
   NB: 'Nickel back',
   FS: 'Free safety',
   SS: 'Strong safety',
-  /** Draft JSON uses `S`; upstream CSV may still say SAF — treat both as safety */
   S: 'Safety',
-  SAF: 'Safety',
   K: 'Kicker',
   P: 'Punter',
   LS: 'Long snapper',
 };
 
 export function getPositionDisplayName(positionCode: string): string {
-  const key = positionCode.trim().toUpperCase();
-  if (!key) return positionCode;
+  const trimmed = positionCode.trim();
+  if (!trimmed) return positionCode;
+  const key = trimmed.toUpperCase();
   return POSITION_LABELS[key] ?? key;
 }

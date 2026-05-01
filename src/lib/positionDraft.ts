@@ -1,24 +1,14 @@
 import type { DraftClass, DraftPick } from '../types';
+import { normalizeDraftPosition } from './normalizeDraftPosition';
 
 export interface PickWithDraftYear {
   pick: DraftPick;
   draftYear: number;
 }
 
-/** nflverse-style draft JSON uses both `T` and `OT` for offensive tackle */
-const POSITION_CANONICAL: Record<string, string> = {
-  T: 'OT',
-};
-
-/** Uppercase position code with aliases collapsed (e.g. `T` → `OT`). */
-export function canonicalPositionCode(positionCode: string): string {
-  const key = positionCode.trim().toUpperCase();
-  return POSITION_CANONICAL[key] ?? key;
-}
-
 /**
  * Unique positions present in the loaded draft classes, sorted for display.
- * Aliases share one menu entry (e.g. `T` and `OT` → `OT`).
+ * Uses {@link normalizeDraftPosition} so codes match persisted JSON.
  */
 export function collectDraftPositions(draftClasses: DraftClass[]): string[] {
   const byCanon = new Map<string, string>();
@@ -28,7 +18,7 @@ export function collectDraftPositions(draftClasses: DraftClass[]): string[] {
     for (const p of picks) {
       const raw = p.position.trim();
       if (!raw) continue;
-      const canon = canonicalPositionCode(raw);
+      const canon = normalizeDraftPosition(raw);
       if (!byCanon.has(canon)) byCanon.set(canon, canon);
     }
   }
@@ -41,12 +31,12 @@ export function filterPicksByPosition(
   draftClasses: DraftClass[],
   position: string,
 ): PickWithDraftYear[] {
-  const target = canonicalPositionCode(position.trim());
+  const target = normalizeDraftPosition(position.trim());
   if (!target) return [];
   const out: PickWithDraftYear[] = [];
   for (const dc of draftClasses) {
     for (const pick of dc.picks) {
-      if (canonicalPositionCode(pick.position.trim()) === target) {
+      if (normalizeDraftPosition(pick.position.trim()) === target) {
         out.push({ pick, draftYear: dc.year });
       }
     }
@@ -76,9 +66,9 @@ export function resolveCanonicalPosition(
   positions: string[],
   urlSegment: string,
 ): string | null {
-  const qCanon = canonicalPositionCode(urlSegment.trim());
+  const qCanon = normalizeDraftPosition(urlSegment.trim());
   if (!qCanon) return null;
   return (
-    positions.find((p) => canonicalPositionCode(p.trim()) === qCanon) ?? null
+    positions.find((p) => normalizeDraftPosition(p.trim()) === qCanon) ?? null
   );
 }

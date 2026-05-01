@@ -13,4 +13,10 @@ describe('normalizeDraftPosition', () => {
     expect(normalizeDraftPosition('FS')).toBe('FS');
     expect(normalizeDraftPosition('QB')).toBe('QB');
   });
+
+  it('maps T to OT', () => {
+    expect(normalizeDraftPosition('T')).toBe('OT');
+    expect(normalizeDraftPosition('t')).toBe('OT');
+    expect(normalizeDraftPosition('OT')).toBe('OT');
+  });
 });

@@ -34,9 +34,7 @@ export function classifyRole(
     if (gamesPlayedShare >= 0.5) return 'core_starter';
     return 'starter_when_healthy';
   }
-  if (cumulativeSnapShare >= scThreshold) {
-    return 'significant_contributor';
-  }
+  if (cumulativeSnapShare >= scThreshold) return 'significant_contributor';
   if (cumulativeSnapShare >= 0.2) return 'contributor';
   if (cumulativeSnapShare >= 0.1) return 'depth';
   return 'non_contributor';

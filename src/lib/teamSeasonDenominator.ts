@@ -16,17 +16,22 @@ export interface SnapCountCsvRow {
   st_pct?: string;
 }
 
+/** Totals from {@link buildTeamSeasonDenominatorTotals} for season load denominators */
+export interface TeamSeasonDenominatorTotals {
+  scrimByTeam: Map<string, number>;
+  fullByTeam: Map<string, number>;
+  /** Distinct games (regular + postseason) per normalized franchise */
+  gameCountByTeam: Map<string, number>;
+}
+
 /**
  * Per franchise, sum team scrimmage capacity (off+def) and scrim+ST capacity
  * across every distinct (game, team) in the file. Used as full-season
  * denominators for season load share.
  */
-export function buildTeamSeasonDenominatorTotals(rows: SnapCountCsvRow[]): {
-  scrimByTeam: Map<string, number>;
-  fullByTeam: Map<string, number>;
-  /** Distinct games (regular + postseason) per normalized franchise */
-  gameCountByTeam: Map<string, number>;
-} {
+export function buildTeamSeasonDenominatorTotals(
+  rows: SnapCountCsvRow[],
+): TeamSeasonDenominatorTotals {
   const scrimByTeam = new Map<string, number>();
   const fullByTeam = new Map<string, number>();
   const gameCountByTeam = new Map<string, number>();
@@ -170,21 +175,20 @@ export function resolveCumulativeLoadShareWithInjury(options: {
   gamesPlayed: number;
   gameCount: number;
 }): number {
-  let fullDen = options.fullSeasonTeamDen;
-  if (
+  const applyInjuryAdjustmentToFullSeasonDen =
     options.useFullSeasonDenominator &&
     options.injuryReportWeeks > 0 &&
-    options.gameCount > 0
-  ) {
-    fullDen = injuryAdjustedFullSeasonDenominator({
-      fullSeasonTeamDen: options.fullSeasonTeamDen,
-      gameCount: options.gameCount,
-      injuryReportWeeks: options.injuryReportWeeks,
-      teamGames: options.teamGames,
-      gamesPlayed: options.gamesPlayed,
-      cumDenGamesPlayed: options.cumDenGamesPlayed,
-    });
-  }
+    options.gameCount > 0;
+  const fullDen = applyInjuryAdjustmentToFullSeasonDen
+    ? injuryAdjustedFullSeasonDenominator({
+        fullSeasonTeamDen: options.fullSeasonTeamDen,
+        gameCount: options.gameCount,
+        injuryReportWeeks: options.injuryReportWeeks,
+        teamGames: options.teamGames,
+        gamesPlayed: options.gamesPlayed,
+        cumDenGamesPlayed: options.cumDenGamesPlayed,
+      })
+    : options.fullSeasonTeamDen;
   return resolveCumulativeLoadShare({
     cumNum: options.cumNum,
     cumDenGamesPlayed: options.cumDenGamesPlayed,

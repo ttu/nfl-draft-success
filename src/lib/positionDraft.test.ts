@@ -53,7 +53,7 @@ describe('collectDraftPositions', () => {
     expect(collectDraftPositions([dc2021, dc2020])).toEqual(['DE', 'QB']);
   });
 
-  it('merges T and OT into one OT entry', () => {
+  it('merges T and OT into one OT entry via normalizeDraftPosition', () => {
     const otPick = {
       playerId: 'ot',
       playerName: 'OT',
