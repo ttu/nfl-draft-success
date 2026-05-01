@@ -1,4 +1,4 @@
-import type { RollingDraftScore } from '../lib/getRollingDraftScore';
+import type { RollingDraftScore } from '../../lib/getRollingDraftScore';
 
 export interface TeamRanking {
   teamId: string;

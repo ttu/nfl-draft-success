@@ -1,10 +1,10 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TeamSelector } from './TeamSelector';
-import { YearRangeFilter } from './YearRangeFilter';
-import { DraftYearPicker } from './DraftYearPicker';
-import { getTeamLogoUrl, NFL_LOGO_URL } from '../data/teamColors';
-import { getPositionDisplayName } from '../lib/positionDisplayName';
+import { TeamSelector } from '../TeamSelector';
+import { YearRangeFilter } from '../filters/YearRangeFilter';
+import { DraftYearPicker } from '../draft/DraftYearPicker';
+import { getTeamLogoUrl, NFL_LOGO_URL } from '../../data/teamColors';
+import { getPositionDisplayName } from '../../lib/positionDisplayName';
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2026;

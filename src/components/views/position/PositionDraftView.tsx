@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { PlayerList } from './PlayerList';
+import { PlayerList } from '../../draft/PlayerList';
 import {
   filterPicksByPosition,
   groupPicksByDraftYear,
-} from '../lib/positionDraft';
-import { getPositionDisplayName } from '../lib/positionDisplayName';
-import type { DraftClass } from '../types';
+} from '../../../lib/positionDraft';
+import { getPositionDisplayName } from '../../../lib/positionDisplayName';
+import type { DraftClass } from '../../../types';
 
 export interface PositionDraftViewProps {
   position: string;

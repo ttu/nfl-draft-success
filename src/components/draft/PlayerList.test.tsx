@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { PlayerList } from './PlayerList';
-import type { DraftPick } from '../types';
+import type { DraftPick } from '../../types';
 
 const mockPicks = [
   {

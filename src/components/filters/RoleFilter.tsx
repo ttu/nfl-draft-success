@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { Role } from '../types';
-import { ALL_ROLES } from '../lib/roleFilter';
+import type { Role } from '../../types';
+import { ALL_ROLES } from '../../lib/roleFilter';
 
 function formatRoleLabel(role: Role): string {
   return role

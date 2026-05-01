@@ -1,11 +1,11 @@
-import { DraftClassCard } from './DraftClassCard';
-import { RollingDraftScoreCard } from './RollingDraftScoreCard';
-import { PlayerList } from './PlayerList';
-import { RoleFilter } from './RoleFilter';
-import { getDraftClassMetrics } from '../lib/getDraftClassMetrics';
-import type { DraftClass, DraftPick, Role } from '../types';
-import type { TeamRanking } from './RollingDraftScoreCard';
-import type { RollingDraftScore } from '../lib/getRollingDraftScore';
+import { DraftClassCard } from '../../draft/DraftClassCard';
+import { RollingDraftScoreCard } from '../../draft/RollingDraftScoreCard';
+import { PlayerList } from '../../draft/PlayerList';
+import { RoleFilter } from '../../filters/RoleFilter';
+import { getDraftClassMetrics } from '../../../lib/getDraftClassMetrics';
+import type { DraftClass, DraftPick, Role } from '../../../types';
+import type { TeamRanking } from '../../draft/RollingDraftScoreCard';
+import type { RollingDraftScore } from '../../../lib/getRollingDraftScore';
 
 export interface RosterPick {
   pick: DraftPick;

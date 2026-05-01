@@ -1,5 +1,5 @@
-import { getTeamLogoUrl } from '../data/teamColors';
-import type { TeamRanking } from './RollingDraftScoreCard';
+import { getTeamLogoUrl } from '../../../data/teamColors';
+import type { TeamRanking } from '../../draft/RollingDraftScoreCard';
 
 export interface TeamRankingsViewProps {
   rankings: TeamRanking[];

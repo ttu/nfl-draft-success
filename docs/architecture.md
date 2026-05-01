@@ -20,6 +20,11 @@ From [emergency-supply-tracker](https://github.com/ttu/emergency-supply-tracker)
 src/
   types.ts        # TypeScript interfaces (DraftPick, Season, Role, etc.)
   components/     # React components
+    layout/       # App chrome (header, intro, info, loading)
+    draft/        # Shared draft/player UI (lists, cards, pickers)
+    filters/      # Role and year-range controls
+    views/        # Route-level views: team/, draft-year/, position/
+    *.tsx         # e.g. TeamSelector used across views
   lib/            # Calculation logic (role classification, metrics)
   data/           # Team metadata, data loading helpers
 public/

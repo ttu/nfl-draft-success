@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { YearDraftView } from './YearDraftView';
-import type { DraftClass } from '../types';
+import type { DraftClass } from '../../../types';
 
 const draftClass: DraftClass = {
   year: 2020,

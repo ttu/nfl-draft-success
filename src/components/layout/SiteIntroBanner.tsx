@@ -1,4 +1,4 @@
-import { SiteIntroContent } from '../content/siteIntro';
+import { SiteIntroContent } from '../../content/siteIntro';
 
 export interface SiteIntroBannerProps {
   onDismiss: () => void;

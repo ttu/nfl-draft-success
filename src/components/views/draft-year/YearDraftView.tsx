@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { PlayerList } from './PlayerList';
-import type { DraftClass, DraftPick } from '../types';
+import { PlayerList } from '../../draft/PlayerList';
+import type { DraftClass, DraftPick } from '../../../types';
 
 export interface YearDraftViewProps {
   draftClass: DraftClass;

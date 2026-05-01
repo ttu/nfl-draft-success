@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { SiteIntroContent } from '../content/siteIntro';
+import { SiteIntroContent } from '../../content/siteIntro';
 
 const GITHUB_URL = 'https://github.com/ttu/nfl-draft-success';
 const CONTACT_EMAIL = 'contact@nfldraftsuccess.com';

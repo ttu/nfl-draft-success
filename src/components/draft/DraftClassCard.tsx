@@ -1,4 +1,4 @@
-import type { DraftClassMetrics } from '../lib/getDraftClassMetrics';
+import type { DraftClassMetrics } from '../../lib/getDraftClassMetrics';
 
 export interface DraftClassCardProps {
   year: number;

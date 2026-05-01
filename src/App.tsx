@@ -15,8 +15,8 @@ import {
   useNavigate,
   useMatch,
 } from 'react-router-dom';
-import { AppHeader } from './components/AppHeader';
-import { LoadingSpinner } from './components/LoadingSpinner';
+import { AppHeader } from './components/layout/AppHeader';
+import { LoadingSpinner } from './components/layout/LoadingSpinner';
 import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { getPlayerRole } from './lib/getPlayerRole';
 import {
@@ -44,24 +44,26 @@ import { getTeamDepthChartUrl } from './data/teamColors';
 import type { DraftClass, DefaultRankingsData, Role } from './types';
 import './App.css';
 
-import { TeamRankingsView } from './components/TeamRankingsView';
-import { SiteIntroBanner } from './components/SiteIntroBanner';
+import { TeamRankingsView } from './components/views/team/TeamRankingsView';
+import { SiteIntroBanner } from './components/layout/SiteIntroBanner';
 
 const InfoView = lazy(() =>
-  import('./components/InfoView').then((m) => ({ default: m.InfoView })),
+  import('./components/layout/InfoView').then((m) => ({
+    default: m.InfoView,
+  })),
 );
 const TeamDetailContent = lazy(() =>
-  import('./components/TeamDetailContent').then((m) => ({
+  import('./components/views/team/TeamDetailContent').then((m) => ({
     default: m.TeamDetailContent,
   })),
 );
 const YearDraftView = lazy(() =>
-  import('./components/YearDraftView').then((m) => ({
+  import('./components/views/draft-year/YearDraftView').then((m) => ({
     default: m.YearDraftView,
   })),
 );
 const PositionDraftView = lazy(() =>
-  import('./components/PositionDraftView').then((m) => ({
+  import('./components/views/position/PositionDraftView').then((m) => ({
     default: m.PositionDraftView,
   })),
 );

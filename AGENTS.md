@@ -12,7 +12,7 @@ Guide for AI-assisted development on NFL Draft Retention & Role Tracker. All rel
 
 ## Common Workflows
 
-**1. New component** – In `src/components/`. TypeScript props, integration tests (React Testing Library), CSS Modules. Follow implementation plan in `docs/plans/`.
+**1. New component** – Under `src/components/` (`layout/`, `draft/`, `filters/`, `views/{team,draft-year,position}/`, or root for cross-cutting widgets like `TeamSelector`). TypeScript props, integration tests (React Testing Library), CSS Modules. Follow implementation plan in `docs/plans/`.
 
 **2. Business logic** – Pure utils in `src/lib/`, full types, unit tests. Reference [docs/SPEC_CLARIFICATIONS.md](docs/SPEC_CLARIFICATIONS.md) for formulas.
 
@@ -36,7 +36,7 @@ Guide for AI-assisted development on NFL Draft Retention & Role Tracker. All rel
 
 ## Conventions
 
-- **Naming:** Components in `src/components/`, logic in `src/lib/`, data in `src/data/`, `public/data/`.
+- **Naming:** Components in `src/components/` (see [docs/architecture.md](docs/architecture.md) for folder roles), logic in `src/lib/`, data in `src/data/`, `public/data/`.
 - **Tests:** Unit `[function].test.ts`, component `[Component].test.tsx`.
 - **Commits:** Conventional (`feat`, `fix`, `docs`, etc.). Never `--no-verify`.
 

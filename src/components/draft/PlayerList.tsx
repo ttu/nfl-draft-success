@@ -1,12 +1,12 @@
 import { useId, useState, type CSSProperties, type KeyboardEvent } from 'react';
-import type { DraftPick, Role, Season } from '../types';
-import { getPlayerRole } from '../lib/getPlayerRole';
-import { classifyRole } from '../lib/classifyRole';
+import type { DraftPick, Role, Season } from '../../types';
+import { getPlayerRole } from '../../lib/getPlayerRole';
+import { classifyRole } from '../../lib/classifyRole';
 import {
   snapShareForRoleTier,
   seasonLoadDisplayShare,
-} from '../lib/snapShareForTier';
-import { TEAM_COLORS, getTeamLogoUrl } from '../data/teamColors';
+} from '../../lib/snapShareForTier';
+import { TEAM_COLORS, getTeamLogoUrl } from '../../data/teamColors';
 
 function getLatestSeason(pick: DraftPick): Season | undefined {
   return [...pick.seasons].sort((a, b) => b.year - a.year)[0];

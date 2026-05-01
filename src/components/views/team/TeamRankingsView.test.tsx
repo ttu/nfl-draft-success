@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TeamRankingsView } from './TeamRankingsView';
-import type { TeamRanking } from './RollingDraftScoreCard';
+import type { TeamRanking } from '../../draft/RollingDraftScoreCard';
 
 const sample: TeamRanking[] = [
   { teamId: 'KC', teamName: 'Chiefs', score: 1.2, rank: 1 },
