@@ -15,7 +15,12 @@ import {
   useNavigate,
   useMatch,
 } from 'react-router-dom';
-import { AppHeader } from './components/layout/AppHeader';
+import {
+  AppHeaderDraftYears,
+  AppHeaderPositionList,
+  AppHeaderTeamDetails,
+  AppHeaderTeamRankings,
+} from './components/layout/AppHeader';
 import { LoadingSpinner } from './components/layout/LoadingSpinner';
 import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import { getPlayerRole } from './lib/getPlayerRole';
@@ -458,24 +463,24 @@ function AppContent() {
 
   return (
     <main className="app">
-      <AppHeader
-        activeView={activeView}
-        selectedTeam={selectedTeam}
-        draftPickYear={draftPickYear}
-        onDraftPickYear={handleDraftPickYear}
-        yearRange={[startYear, endYear]}
-        onShowRankings={handleShowRankings}
-        onTeamSelect={handleTeamSelect}
-        onYearRangeChange={handleYearRangeChange}
-        onShowInfo={() => setShowInfoView(true)}
-        positionBrowseSearch={positionBrowseSearch}
-        positionOptions={positionOptions}
-        selectedPosition={canonicalPosition}
-        onPositionChange={handlePositionChange}
-        dataLastUpdatedDate={dataLastUpdatedDate}
-      />
-      {activeView === ActiveView.TeamRankings && showLandingIntro && (
-        <SiteIntroBanner onDismiss={handleDismissLandingIntro} />
+      {getHeader(
+        activeView,
+        selectedTeam,
+        draftPickYear,
+        handleDraftPickYear,
+        startYear,
+        endYear,
+        handleShowRankings,
+        handleTeamSelect,
+        handleYearRangeChange,
+        setShowInfoView,
+        positionBrowseSearch,
+        positionOptions,
+        canonicalPosition,
+        handlePositionChange,
+        dataLastUpdatedDate,
+        showLandingIntro,
+        handleDismissLandingIntro,
       )}
 
       {getMainContent(
@@ -518,6 +523,92 @@ function AppContent() {
     </main>
   );
 }
+
+const getHeader = (
+  activeView: ActiveView,
+  selectedTeam: string | null,
+  draftPickYear: number,
+  handleDraftPickYear: (year: number) => void,
+  startYear: number,
+  endYear: number,
+  handleShowRankings: () => void,
+  handleTeamSelect: (team: string) => void,
+  handleYearRangeChange: (range: [number, number]) => void,
+  setShowInfoView: (show: boolean) => void,
+  positionBrowseSearch: string,
+  positionOptions: string[],
+  canonicalPosition: string | null,
+  handlePositionChange: (pos: string) => void,
+  dataLastUpdatedDate: string,
+  showLandingIntro: boolean,
+  handleDismissLandingIntro: () => void,
+) => {
+  if (activeView === ActiveView.TeamRankings) {
+    return (
+      <>
+        <AppHeaderTeamRankings
+          yearRange={[startYear, endYear]}
+          onTeamSelect={handleTeamSelect}
+          onYearRangeChange={handleYearRangeChange}
+          onShowInfo={() => setShowInfoView(true)}
+          positionBrowseSearch={positionBrowseSearch}
+          dataLastUpdatedDate={dataLastUpdatedDate}
+        />
+        {showLandingIntro && (
+          <SiteIntroBanner onDismiss={handleDismissLandingIntro} />
+        )}
+      </>
+    );
+  }
+  if (activeView === ActiveView.TeamDetail) {
+    return (
+      <>
+        <AppHeaderTeamDetails
+          yearRange={[startYear, endYear]}
+          selectedTeam={selectedTeam ?? ''} // TODO: We should always have a selected team
+          onTeamSelect={handleTeamSelect}
+          onYearRangeChange={handleYearRangeChange}
+          onShowRankings={handleShowRankings}
+          onShowInfo={() => setShowInfoView(true)}
+          positionBrowseSearch={positionBrowseSearch}
+          dataLastUpdatedDate={dataLastUpdatedDate}
+        />
+      </>
+    );
+  }
+  if (activeView === ActiveView.DraftYears) {
+    return (
+      <>
+        <AppHeaderDraftYears
+          draftPickYear={draftPickYear}
+          onDraftPickYear={handleDraftPickYear}
+          onShowRankings={handleShowRankings}
+          onShowInfo={() => setShowInfoView(true)}
+          positionBrowseSearch={positionBrowseSearch}
+          dataLastUpdatedDate={dataLastUpdatedDate}
+        />
+      </>
+    );
+  }
+  if (activeView === ActiveView.Position) {
+    return (
+      <>
+        <AppHeaderPositionList
+          yearRange={[startYear, endYear]}
+          onTeamSelect={handleTeamSelect}
+          onYearRangeChange={handleYearRangeChange}
+          onShowRankings={handleShowRankings}
+          positionBrowseSearch={positionBrowseSearch}
+          positionOptions={positionOptions}
+          selectedPosition={canonicalPosition}
+          onPositionChange={handlePositionChange}
+          onShowInfo={() => setShowInfoView(true)}
+          dataLastUpdatedDate={dataLastUpdatedDate}
+        />
+      </>
+    );
+  }
+};
 
 const getMainContent = (
   activeView: ActiveView,

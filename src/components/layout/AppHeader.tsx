@@ -37,7 +37,49 @@ function clampDraftYear(y: number): number {
   return Math.min(YEAR_MAX, Math.max(YEAR_MIN, y));
 }
 
-export interface AppHeaderProps {
+export interface AppHeaderTeamRankingsProps {
+  yearRange: [number, number];
+  onTeamSelect: (teamId: string) => void;
+  onYearRangeChange: (range: [number, number]) => void;
+  onShowInfo: () => void;
+  positionBrowseSearch: string;
+  dataLastUpdatedDate: string;
+}
+
+export interface AppHeaderTeamDetailsProps {
+  yearRange: [number, number];
+  selectedTeam: string;
+  onTeamSelect: (teamId: string) => void;
+  onYearRangeChange: (range: [number, number]) => void;
+  onShowRankings: () => void;
+  onShowInfo: () => void;
+  positionBrowseSearch: string;
+  dataLastUpdatedDate: string;
+}
+
+export interface AppHeaderPositionListProps {
+  yearRange: [number, number];
+  onTeamSelect: (teamId: string) => void;
+  onYearRangeChange: (range: [number, number]) => void;
+  onShowRankings: () => void;
+  positionBrowseSearch: string;
+  positionOptions: string[];
+  selectedPosition: string | null;
+  onPositionChange: (position: string) => void;
+  onShowInfo: () => void;
+  dataLastUpdatedDate: string;
+}
+
+export interface AppHeaderDraftYearsProps {
+  draftPickYear: number;
+  onDraftPickYear: (year: number) => void;
+  onShowRankings: () => void;
+  onShowInfo: () => void;
+  positionBrowseSearch: string;
+  dataLastUpdatedDate: string;
+}
+
+interface AppHeaderProps {
   activeView: ActiveView;
   selectedTeam: string | null;
 
@@ -58,7 +100,125 @@ export interface AppHeaderProps {
   dataLastUpdatedDate: string;
 }
 
-export function AppHeader({
+export function AppHeaderTeamRankings({
+  yearRange,
+  onTeamSelect,
+  onYearRangeChange,
+  onShowInfo,
+  positionBrowseSearch,
+  dataLastUpdatedDate,
+}: AppHeaderTeamRankingsProps) {
+  return (
+    <AppHeader
+      activeView={ActiveView.TeamRankings}
+      selectedTeam={null}
+      draftPickYear={0}
+      onDraftPickYear={() => {}}
+      yearRange={yearRange}
+      onShowRankings={() => {}}
+      onTeamSelect={onTeamSelect}
+      onYearRangeChange={onYearRangeChange}
+      onShowInfo={onShowInfo}
+      positionBrowseSearch={positionBrowseSearch}
+      positionOptions={[]}
+      selectedPosition={null}
+      onPositionChange={() => {}}
+      dataLastUpdatedDate={dataLastUpdatedDate}
+    />
+  );
+}
+
+export function AppHeaderTeamDetails({
+  selectedTeam,
+  yearRange,
+  onTeamSelect,
+  onYearRangeChange,
+  onShowRankings,
+  onShowInfo,
+  positionBrowseSearch,
+  dataLastUpdatedDate,
+}: AppHeaderTeamDetailsProps) {
+  return (
+    <AppHeader
+      activeView={ActiveView.TeamDetail}
+      selectedTeam={selectedTeam}
+      draftPickYear={0}
+      onDraftPickYear={() => {}}
+      yearRange={yearRange}
+      onShowRankings={onShowRankings}
+      onTeamSelect={onTeamSelect}
+      onYearRangeChange={onYearRangeChange}
+      onShowInfo={onShowInfo}
+      positionBrowseSearch={positionBrowseSearch}
+      positionOptions={[]}
+      selectedPosition={null}
+      onPositionChange={() => {}}
+      dataLastUpdatedDate={dataLastUpdatedDate}
+    />
+  );
+}
+
+export function AppHeaderPositionList({
+  yearRange,
+  onShowRankings,
+  onTeamSelect,
+  onYearRangeChange,
+  positionBrowseSearch = '',
+  positionOptions = [],
+  selectedPosition = null,
+  onPositionChange,
+  onShowInfo,
+  dataLastUpdatedDate,
+}: AppHeaderPositionListProps) {
+  return (
+    <AppHeader
+      activeView={ActiveView.Position}
+      selectedTeam={null}
+      draftPickYear={0}
+      onDraftPickYear={() => {}}
+      yearRange={yearRange}
+      onShowRankings={onShowRankings}
+      onTeamSelect={onTeamSelect}
+      onYearRangeChange={onYearRangeChange}
+      onShowInfo={onShowInfo}
+      positionBrowseSearch={positionBrowseSearch}
+      positionOptions={positionOptions}
+      selectedPosition={selectedPosition}
+      onPositionChange={onPositionChange}
+      dataLastUpdatedDate={dataLastUpdatedDate}
+    />
+  );
+}
+
+export function AppHeaderDraftYears({
+  draftPickYear,
+  onDraftPickYear,
+  onShowRankings,
+  onShowInfo,
+  positionBrowseSearch,
+  dataLastUpdatedDate,
+}: AppHeaderDraftYearsProps) {
+  return (
+    <AppHeader
+      activeView={ActiveView.DraftYears}
+      selectedTeam={null}
+      draftPickYear={draftPickYear}
+      onDraftPickYear={onDraftPickYear}
+      yearRange={[YEAR_MIN, YEAR_MAX]}
+      onShowRankings={onShowRankings}
+      onTeamSelect={() => {}}
+      onYearRangeChange={() => {}}
+      onShowInfo={onShowInfo}
+      positionBrowseSearch={positionBrowseSearch}
+      positionOptions={[]}
+      selectedPosition={null}
+      onPositionChange={() => {}}
+      dataLastUpdatedDate={dataLastUpdatedDate}
+    />
+  );
+}
+
+function AppHeader({
   activeView,
   selectedTeam,
   draftPickYear,
