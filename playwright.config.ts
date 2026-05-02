@@ -1,8 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/** Local preview URL used when `E2E_BASE_URL` is unset. Remote example: `https://www.nfldraftsuccess.com` */
+/**
+ * Default local target: `vite` dev server (`vite.config.ts` server.port).
+ * Use `E2E_BASE_URL=http://localhost:4173` (or `npm run test:e2e:preview`) to test `dist/` via `vite preview`.
+ * Remote example: `https://www.nfldraftsuccess.com`
+ */
+const LOCAL_DEV = 'http://localhost:3000';
 const LOCAL_PREVIEW = 'http://localhost:4173';
-const baseURL = process.env.E2E_BASE_URL?.trim() || LOCAL_PREVIEW;
+const baseURL = process.env.E2E_BASE_URL?.trim() || LOCAL_DEV;
 
 function isLocalBaseURL(url: string): boolean {
   try {
@@ -13,7 +18,38 @@ function isLocalBaseURL(url: string): boolean {
   }
 }
 
-const runLocalServer = isLocalBaseURL(baseURL);
+function localWebServer():
+  | { command: string; url: string; reuseExistingServer: boolean }
+  | undefined {
+  if (!isLocalBaseURL(baseURL)) return undefined;
+  let u: URL;
+  try {
+    u = new URL(baseURL);
+  } catch {
+    return undefined;
+  }
+  const port = u.port || (u.protocol === 'https:' ? '443' : '80');
+
+  if (port === '4173') {
+    return {
+      command: 'npm run preview',
+      url: LOCAL_PREVIEW,
+      reuseExistingServer: !process.env.CI,
+    };
+  }
+
+  if (port === '3000') {
+    return {
+      command: 'npm run dev',
+      url: LOCAL_DEV,
+      reuseExistingServer: !process.env.CI,
+    };
+  }
+
+  return undefined;
+}
+
+const webServer = localWebServer();
 
 export default defineConfig({
   testDir: './e2e',
@@ -33,13 +69,5 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  ...(runLocalServer
-    ? {
-        webServer: {
-          command: 'npm run preview',
-          url: LOCAL_PREVIEW,
-          reuseExistingServer: !process.env.CI,
-        },
-      }
-    : {}),
+  ...(webServer ? { webServer } : {}),
 });
