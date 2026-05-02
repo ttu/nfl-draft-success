@@ -22,15 +22,15 @@ import {
   AppHeaderTeamRankings,
 } from './components/layout/AppHeader';
 import { LoadingSpinner } from './components/layout/LoadingSpinner';
-import { roleFilterAllows, DEFAULT_ROLE_FILTER } from './lib/roleFilter';
-import { getPlayerRole } from './lib/getPlayerRole';
+import { DEFAULT_ROLE_FILTER } from './lib/roleFilter';
 import {
   loadDataForYears,
   loadDefaultRankings,
   loadDataMeta,
 } from './lib/loadData';
 import { formatDataLastUpdatedDate } from './lib/formatDataLastUpdated';
-import { isDraftPickRetainedForRoster } from './lib/draftPickLatestSeason';
+import { getRosterByDraftYear } from './lib/getRosterByDraftYear';
+import { getTeamRankSummary } from './lib/getTeamRankSummary';
 import {
   getRollingDraftScore,
   type RollingDraftScore,
@@ -384,74 +384,17 @@ function AppContent() {
       ? getRollingDraftScore(draftClasses, selectedTeam, { draftingTeamOnly })
       : null;
 
-  const teamRank =
-    draftClasses.length > 0
-      ? (() => {
-          const teamScores = TEAMS.map((t) => ({
-            teamId: t.id,
-            teamName: t.name,
-            score: getRollingDraftScore(draftClasses, t.id, {
-              draftingTeamOnly,
-            }).score,
-          }));
-          teamScores.sort((a, b) => b.score - a.score);
-          const rankings: Array<{
-            teamId: string;
-            teamName: string;
-            score: number;
-            rank: number;
-          }> = [];
-          let rank = 1;
-          let prevScore = Infinity;
-          let selectedRank = 0;
-          for (let i = 0; i < teamScores.length; i++) {
-            if (teamScores[i].score < prevScore) rank = i + 1;
-            prevScore = teamScores[i].score;
-            rankings.push({
-              ...teamScores[i],
-              rank,
-            });
-            if (teamScores[i].teamId === selectedTeam) selectedRank = rank;
-          }
-          return {
-            rank: selectedRank,
-            total: TEAMS.length,
-            rankings,
-          };
-        })()
-      : null;
+  const teamRank = getTeamRankSummary(draftClasses, TEAMS, selectedTeam, {
+    draftingTeamOnly,
+  });
 
-  const allTeamPicks = draftClasses.flatMap((dc) =>
-    dc.picks
-      .filter((p) => p.teamId === selectedTeam)
-      .map((p) => ({ pick: p, draftYear: dc.year })),
+  const rosterByDraftYear = getRosterByDraftYear(
+    draftClasses,
+    selectedTeam,
+    showDeparted,
+    roleFilter,
+    draftingTeamOnly,
   );
-  allTeamPicks.sort(
-    (a, b) =>
-      a.draftYear - b.draftYear || a.pick.overallPick - b.pick.overallPick,
-  );
-
-  const rosterPicks = showDeparted
-    ? allTeamPicks
-    : allTeamPicks.filter(({ pick }) => isDraftPickRetainedForRoster(pick));
-
-  const filteredRosterPicks = rosterPicks.filter(
-    ({ pick }) =>
-      pick.seasons.length === 0 ||
-      roleFilterAllows(roleFilter, getPlayerRole(pick, { draftingTeamOnly })),
-  );
-
-  const rosterByDraftYear = (() => {
-    const byYear = new Map<number, typeof filteredRosterPicks>();
-    for (const item of filteredRosterPicks) {
-      const list = byYear.get(item.draftYear) ?? [];
-      list.push(item);
-      byYear.set(item.draftYear, list);
-    }
-    return draftClasses
-      .map((dc) => ({ year: dc.year, picks: byYear.get(dc.year) ?? [] }))
-      .filter((g) => g.picks.length > 0);
-  })();
 
   const selectedTeamData = selectedTeam
     ? TEAMS.find((t) => t.id === selectedTeam)
