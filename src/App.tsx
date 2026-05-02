@@ -26,7 +26,10 @@ import {
 } from './lib/loadData';
 import { formatDataLastUpdatedDate } from './lib/formatDataLastUpdated';
 import { isDraftPickRetainedForRoster } from './lib/draftPickLatestSeason';
-import { getRollingDraftScore } from './lib/getRollingDraftScore';
+import {
+  getRollingDraftScore,
+  type RollingDraftScore,
+} from './lib/getRollingDraftScore';
 import {
   collectDraftPositions,
   resolveCanonicalPosition,
@@ -49,9 +52,12 @@ import {
 } from './types';
 import './App.css';
 
+import type { TeamRanking } from './components/draft/RollingDraftScoreCard';
+
 import { TeamRankingsView } from './components/views/team/TeamRankingsView';
 import { SiteIntroBanner } from './components/layout/SiteIntroBanner';
 import { Footer } from './components/layout/Footer';
+import type { RosterPick } from './components/views/team/TeamDetailContent';
 
 const InfoView = lazy(() =>
   import('./components/layout/InfoView').then((m) => ({
@@ -80,6 +86,9 @@ const DEFAULT_YEAR_MIN = 2021;
 
 const validTeamIds = new Set(TEAMS.map((t) => t.id));
 const yearBounds = { min: YEAR_MIN, max: YEAR_MAX };
+
+/** Placeholder “data last updated” until `loadDataMeta` resolves (Unix epoch UTC). */
+const MIN_DATETIME_ISO = '1970-01-01T00:00:00.000Z';
 
 /**
  * When `forcedSingleYear` is set ( /year/:y route ), use that range only and do not
@@ -203,8 +212,8 @@ function AppContent() {
     () => !loadLandingIntroDismissed(),
   );
   const [showInfoView, setShowInfoView] = useState(false);
-  const [dataLastUpdatedDate, setDataLastUpdatedDate] = useState<string | null>(
-    null,
+  const [dataLastUpdatedDate, setDataLastUpdatedDate] = useState(() =>
+    formatDataLastUpdatedDate(MIN_DATETIME_ISO),
   );
   const [showDeparted, setShowDeparted] = useState(() => loadShowDeparted());
 
@@ -465,9 +474,31 @@ function AppContent() {
         onPositionChange={handlePositionChange}
         dataLastUpdatedDate={dataLastUpdatedDate}
       />
-
       {activeView === ActiveView.TeamRankings && showLandingIntro && (
         <SiteIntroBanner onDismiss={handleDismissLandingIntro} />
+      )}
+
+      {getMainContent(
+        activeView,
+        loading,
+        defaultRankings,
+        yearCount,
+        selectedTeam,
+        handleTeamSelect,
+        handleShowRankings,
+        teamRank,
+        rollingDraftScore,
+        draftClasses,
+        draftingTeamOnly,
+        roleFilter,
+        setRoleFilter,
+        rosterByDraftYear,
+        depthChartUrl,
+        showDeparted,
+        setShowDeparted,
+        canonicalPosition,
+        startYear,
+        endYear,
       )}
 
       {showInfoView && (
@@ -478,79 +509,123 @@ function AppContent() {
           />
         </Suspense>
       )}
-
       {error && (
         <div role="alert" className="app-error">
           {error}
         </div>
       )}
-
-      {loading &&
-      activeView === ActiveView.TeamRankings &&
-      defaultRankings &&
-      !isPositionView ? (
-        <TeamRankingsView
-          rankings={defaultRankings.rankings}
-          yearCount={endYear - startYear + 1}
-          onTeamSelect={handleTeamSelect}
-        />
-      ) : loading ? (
-        <LoadingSpinner message="Loading draft data…" />
-      ) : activeView === ActiveView.DraftYears && draftClasses.length === 1 ? (
-        <Suspense fallback={<LoadingSpinner />}>
-          <YearDraftView
-            draftClass={draftClasses[0]}
-            draftingTeamOnly={draftingTeamOnly}
-            onShowRankings={handleShowRankings}
-          />
-        </Suspense>
-      ) : activeView === ActiveView.Position &&
-        canonicalPosition &&
-        draftClasses.length > 0 ? (
-        <Suspense fallback={<LoadingSpinner />}>
-          <PositionDraftView
-            position={canonicalPosition}
-            yearFrom={startYear}
-            yearTo={endYear}
-            draftClasses={draftClasses}
-            draftingTeamOnly={draftingTeamOnly}
-            onShowRankings={handleShowRankings}
-          />
-        </Suspense>
-      ) : (activeView === ActiveView.TeamRankings || !selectedTeam) &&
-        teamRank?.rankings ? (
-        <TeamRankingsView
-          rankings={teamRank.rankings}
-          yearCount={yearCount}
-          onTeamSelect={handleTeamSelect}
-          onBack={selectedTeam ? handleShowRankings : undefined}
-        />
-      ) : selectedTeam && rollingDraftScore ? (
-        <Suspense fallback={<LoadingSpinner />}>
-          <TeamDetailContent
-            rollingDraftScore={rollingDraftScore}
-            yearCount={yearCount}
-            teamRank={teamRank}
-            onShowRankings={handleShowRankings}
-            draftClasses={draftClasses}
-            selectedTeam={selectedTeam}
-            draftingTeamOnly={draftingTeamOnly}
-            roleFilter={roleFilter}
-            setRoleFilter={setRoleFilter}
-            rosterByDraftYear={rosterByDraftYear}
-            depthChartUrl={depthChartUrl}
-            showDeparted={showDeparted}
-            setShowDeparted={setShowDeparted}
-          />
-        </Suspense>
-      ) : (
-        <LoadingSpinner message="Loading draft data…" />
-      )}
-
       <Footer />
     </main>
   );
 }
+
+const getMainContent = (
+  activeView: ActiveView,
+  loading: boolean,
+  defaultRankings: DefaultRankingsData | null,
+  yearCount: number,
+  selectedTeam: string | null,
+  handleTeamSelect: (team: string) => void,
+  handleShowRankings: () => void,
+  teamRank: { rank: number; total: number; rankings: TeamRanking[] } | null,
+  rollingDraftScore: RollingDraftScore | null,
+  draftClasses: DraftClass[],
+  draftingTeamOnly: boolean,
+  roleFilter: Set<Role>,
+  setRoleFilter: (value: Set<Role>) => void,
+  rosterByDraftYear: { year: number; picks: RosterPick[] }[],
+  depthChartUrl: string | null,
+  showDeparted: boolean,
+  setShowDeparted: (value: boolean) => void,
+  canonicalPosition: string | null,
+  startYear: number,
+  endYear: number,
+) => {
+  const showTeamRankingsWithDefaultRankings =
+    activeView === ActiveView.TeamRankings && loading && defaultRankings;
+  if (showTeamRankingsWithDefaultRankings) {
+    return (
+      <TeamRankingsView
+        rankings={defaultRankings.rankings}
+        yearCount={yearCount}
+        onTeamSelect={handleTeamSelect}
+        onBack={selectedTeam ? handleShowRankings : undefined}
+      />
+    );
+  }
+
+  const showTeamRankings =
+    activeView === ActiveView.TeamRankings && !loading && teamRank?.rankings;
+  if (showTeamRankings) {
+    return (
+      <TeamRankingsView
+        rankings={teamRank.rankings}
+        yearCount={yearCount}
+        onTeamSelect={handleTeamSelect}
+        onBack={selectedTeam ? handleShowRankings : undefined}
+      />
+    );
+  }
+
+  if (
+    activeView === ActiveView.TeamDetail &&
+    !loading &&
+    rollingDraftScore &&
+    selectedTeam
+  ) {
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <TeamDetailContent
+          rollingDraftScore={rollingDraftScore}
+          yearCount={yearCount}
+          teamRank={teamRank}
+          onShowRankings={handleShowRankings}
+          draftClasses={draftClasses}
+          selectedTeam={selectedTeam}
+          draftingTeamOnly={draftingTeamOnly}
+          roleFilter={roleFilter}
+          setRoleFilter={setRoleFilter}
+          rosterByDraftYear={rosterByDraftYear}
+          depthChartUrl={depthChartUrl}
+          showDeparted={showDeparted}
+          setShowDeparted={setShowDeparted}
+        />
+      </Suspense>
+    );
+  }
+  if (activeView === ActiveView.DraftYears && draftClasses.length === 1) {
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <YearDraftView
+          draftClass={draftClasses[0]}
+          draftingTeamOnly={draftingTeamOnly}
+          onShowRankings={handleShowRankings}
+        />
+      </Suspense>
+    );
+  }
+
+  if (
+    activeView === ActiveView.Position &&
+    canonicalPosition &&
+    draftClasses.length > 0
+  ) {
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <PositionDraftView
+          position={canonicalPosition}
+          yearFrom={startYear}
+          yearTo={endYear}
+          draftClasses={draftClasses}
+          draftingTeamOnly={draftingTeamOnly}
+          onShowRankings={handleShowRankings}
+        />
+      </Suspense>
+    );
+  }
+
+  return <LoadingSpinner message="Loading draft data…" />;
+};
 
 function App() {
   return (

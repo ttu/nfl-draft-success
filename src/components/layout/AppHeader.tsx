@@ -55,7 +55,7 @@ export interface AppHeaderProps {
   selectedPosition?: string | null;
   onPositionChange?: (position: string) => void;
   /** e.g. "30 April 2026" from `data-meta.json`; shown under About in the menu */
-  dataLastUpdatedDate?: string | null;
+  dataLastUpdatedDate: string;
 }
 
 export function AppHeader({
@@ -72,13 +72,12 @@ export function AppHeader({
   positionOptions = [],
   selectedPosition = null,
   onPositionChange,
-  dataLastUpdatedDate = null,
+  dataLastUpdatedDate,
 }: AppHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuPanelId = useId();
   const menuCloseRef = useRef<HTMLButtonElement>(null);
   const draftsLinkYear = clampDraftYear(yearRange[1]);
-  const draftsBoardTitle = `Open the ${draftsLinkYear} draft board (every pick). Choose a different year on that page.`;
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -131,7 +130,6 @@ export function AppHeader({
           menuPanelId={menuPanelId}
           menuCloseRef={menuCloseRef}
           draftsLinkYear={draftsLinkYear}
-          draftsBoardTitle={draftsBoardTitle}
           handleTeamRankings={handleTeamRankings}
           handleAbout={handleAbout}
           positionBrowseSearch={positionBrowseSearch}
@@ -397,7 +395,6 @@ const MenuSection = ({
   menuPanelId,
   menuCloseRef,
   draftsLinkYear,
-  draftsBoardTitle,
   handleTeamRankings,
   handleAbout,
   positionBrowseSearch,
@@ -407,11 +404,10 @@ const MenuSection = ({
   menuPanelId: string;
   menuCloseRef: React.RefObject<HTMLButtonElement | null>;
   draftsLinkYear: number;
-  draftsBoardTitle: string;
   handleTeamRankings: () => void;
   handleAbout: () => void;
   positionBrowseSearch: string;
-  dataLastUpdatedDate: string | null;
+  dataLastUpdatedDate: string;
 }) => {
   return (
     <>
@@ -469,7 +465,7 @@ const MenuSection = ({
                 <Link
                   to={`/year/${draftsLinkYear}`}
                   className="app-header__menu-item"
-                  title={draftsBoardTitle}
+                  title={`Open the ${draftsLinkYear} draft board (every pick). Choose a different year on that page.`}
                   onClick={closeMenu}
                 >
                   Drafts
@@ -496,20 +492,10 @@ const MenuSection = ({
                 >
                   About
                 </button>
-                {dataLastUpdatedDate ? (
-                  <>
-                    <hr
-                      className="app-header__menu-footer-divider"
-                      aria-hidden
-                    />
-                    <p
-                      className="app-header__menu-data-updated"
-                      aria-live="polite"
-                    >
-                      Data last updated: {dataLastUpdatedDate}
-                    </p>
-                  </>
-                ) : null}
+                <hr className="app-header__menu-footer-divider" aria-hidden />
+                <p className="app-header__menu-data-updated" aria-live="polite">
+                  Data last updated: {dataLastUpdatedDate}
+                </p>
               </li>
             </ul>
           </nav>
