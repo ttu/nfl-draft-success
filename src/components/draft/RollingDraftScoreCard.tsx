@@ -1,4 +1,6 @@
 import type { RollingDraftScore } from '../../lib/getRollingDraftScore';
+import { pluralizeSeasons } from '../../lib/formatting';
+import { hasNoScoredPicks } from '../../lib/rollingScoreDisplay';
 
 export interface TeamRanking {
   teamId: string;
@@ -18,10 +20,6 @@ export interface RollingDraftScoreCardProps {
   onShowRankings?: () => void;
 }
 
-function seasonsLabel(count: number): string {
-  return `${count} season${count === 1 ? '' : 's'}`;
-}
-
 export function RollingDraftScoreCard({
   score,
   yearCount,
@@ -37,19 +35,19 @@ export function RollingDraftScoreCard({
   } = score;
 
   const metaId = 'draft-score-meta';
-  const hasNoScoredPicks = totalPicks > 0 && scoredPickCount === 0;
+  const noScoredPicks = hasNoScoredPicks(totalPicks, scoredPickCount);
 
   return (
     <article aria-labelledby="draft-score-title" aria-describedby={metaId}>
       <h3 id="draft-score-title">Rolling draft score</h3>
       <p id={metaId} className="draft-score__meta">
-        {seasonsLabel(yearCount)}
+        {pluralizeSeasons(yearCount)}
       </p>
       <dl>
         <dt>Score</dt>
         <dd className="draft-score__value">
           <span className="draft-score__number">
-            {hasNoScoredPicks ? '—' : value.toFixed(2)}
+            {noScoredPicks ? '—' : value.toFixed(2)}
           </span>
           {rank && rank.rank > 0 && (
             <button
@@ -69,12 +67,10 @@ export function RollingDraftScoreCard({
         </dd>
         <dt>Core Starter %</dt>
         <dd>
-          {hasNoScoredPicks ? '—' : `${(coreStarterRate * 100).toFixed(1)}%`}
+          {noScoredPicks ? '—' : `${(coreStarterRate * 100).toFixed(1)}%`}
         </dd>
         <dt>Retention %</dt>
-        <dd>
-          {hasNoScoredPicks ? '—' : `${(retentionRate * 100).toFixed(1)}%`}
-        </dd>
+        <dd>{noScoredPicks ? '—' : `${(retentionRate * 100).toFixed(1)}%`}</dd>
         <dt className="app-score__total-label">Total picks</dt>
         <dd className="app-score__total-value">{totalPicks}</dd>
       </dl>

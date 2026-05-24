@@ -1,15 +1,15 @@
 import { Link } from 'react-router-dom';
 import { PlayerList } from '../../draft/PlayerList';
-import type { DraftClass, DraftPick } from '../../../types';
+import {
+  sortPicksByOverall,
+  allPicksAwaitingSeasonData,
+} from '../../../lib/pickSort';
+import type { DraftClass } from '../../../types';
 
 export interface YearDraftViewProps {
   draftClass: DraftClass;
   draftingTeamOnly: boolean;
   onShowRankings: () => void;
-}
-
-function sortPicksByOverall(picks: DraftPick[]): DraftPick[] {
-  return [...picks].sort((a, b) => a.overallPick - b.overallPick);
 }
 
 export function YearDraftView({
@@ -20,7 +20,7 @@ export function YearDraftView({
   const year = draftClass.year;
   const sorted = sortPicksByOverall(draftClass.picks);
   const picks = sorted.map((pick) => ({ pick, draftYear: year }));
-  const noSeasonDataYet = sorted.every((p) => p.seasons.length === 0);
+  const noSeasonDataYet = allPicksAwaitingSeasonData(sorted);
 
   return (
     <>

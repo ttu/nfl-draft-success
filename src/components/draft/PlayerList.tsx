@@ -1,5 +1,5 @@
 import { useId, useState, type CSSProperties, type KeyboardEvent } from 'react';
-import type { DraftPick, Role, Season } from '../../types';
+import type { DraftPick, Role } from '../../types';
 import { getPlayerRole } from '../../lib/getPlayerRole';
 import { classifyRole } from '../../lib/classifyRole';
 import {
@@ -7,128 +7,25 @@ import {
   seasonLoadDisplayShare,
 } from '../../lib/snapShareForTier';
 import { TEAM_COLORS, getTeamLogoUrl } from '../../data/teamColors';
-
-function getLatestSeason(pick: DraftPick): Season | undefined {
-  return [...pick.seasons].sort((a, b) => b.year - a.year)[0];
-}
-
-function isDeparted(pick: DraftPick): boolean {
-  return getLatestSeason(pick)?.retained === false;
-}
-
-function getCurrentTeam(pick: DraftPick): string | undefined {
-  return getLatestSeason(pick)?.currentTeam;
-}
-
-interface TeamStint {
-  team: string;
-  role: Role;
-}
-
-function getTeamJourney(pick: DraftPick): TeamStint[] {
-  const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
-  const stints: { team: string; seasons: Season[] }[] = [];
-  for (const season of sortedSeasons) {
-    const team = season.retained ? pick.teamId : (season.currentTeam ?? 'FA');
-    const last = stints[stints.length - 1];
-    if (last && last.team === team) {
-      last.seasons.push(season);
-    } else {
-      stints.push({ team, seasons: [season] });
-    }
-  }
-  return stints.map(({ team, seasons }) => {
-    let bestRole: Role = 'non_contributor';
-    for (const s of seasons) {
-      const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
-      const role = classifyRole(
-        snapShareForRoleTier(s, pick.position),
-        gps,
-        s.gamesPlayed,
-        pick.position,
-      );
-      if (ROLE_ORDER.indexOf(role) > ROLE_ORDER.indexOf(bestRole))
-        bestRole = role;
-    }
-    return { team, role: bestRole };
-  });
-}
-
-const ROLE_ORDER: Role[] = [
-  'non_contributor',
-  'depth',
-  'contributor',
-  'significant_contributor',
-  'starter_when_healthy',
-  'core_starter',
-];
-
-const ROLE_COLORS: Record<Role, { bg: string; text: string }> = {
-  core_starter: { bg: '#16a34a', text: '#fff' },
-  starter_when_healthy: { bg: '#15803d', text: '#fff' },
-  significant_contributor: { bg: '#0369a1', text: '#fff' },
-  contributor: { bg: '#b45309', text: '#fff' },
-  depth: { bg: '#a16207', text: '#fff' },
-  non_contributor: { bg: '#6b7280', text: '#fff' },
-};
-
-function formatRole(role: Role): string {
-  return role
-    .split('_')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
-}
-
-const ROLE_ABBREV: Record<Role, string> = {
-  core_starter: 'CS',
-  starter_when_healthy: 'SH',
-  significant_contributor: 'SC',
-  contributor: 'Ct',
-  depth: 'D',
-  non_contributor: 'NC',
-};
-
-function getInitials(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((p) => p[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-/** PFR career page; omit for placeholder IDs when nflverse has not matched a player yet */
-function getPfrUrl(playerId: string, playerName: string): string | null {
-  if (!playerId || playerId.startsWith('unknown-')) return null;
-  const last = playerName.split(/\s+/).pop() || '';
-  const letter = (last[0] || 'X').toUpperCase();
-  return `https://www.pro-football-reference.com/players/${letter}/${playerId}.htm`;
-}
-
-function seasonTeamAbbrev(season: Season, pick: DraftPick): string {
-  if (season.retained) return pick.teamId;
-  return season.currentTeam ?? 'FA';
-}
-
-function isFaSeason(season: Season, pick: DraftPick): boolean {
-  return seasonTeamAbbrev(season, pick) === 'FA';
-}
-
-/** Trailing items matching `isFa` are collapsed to a single leading item of that run (earliest year / first in list order). */
-function collapseTrailingFaRun<T>(items: T[], isFa: (item: T) => boolean): T[] {
-  const n = items.length;
-  if (n < 2) return items;
-  let i = n - 1;
-  while (i >= 0 && isFa(items[i])) i -= 1;
-  const runStart = i + 1;
-  const runLen = n - runStart;
-  if (runLen <= 1) return items;
-  return items.slice(0, runStart + 1);
-}
-
-function formatSnapPct(share: number): string {
-  return `${Math.round(share * 1000) / 10}%`;
-}
+import {
+  ROLE_COLORS,
+  ROLE_ABBREV,
+  formatRoleLabel,
+} from '../../lib/roleDisplay';
+import { getNameInitials, formatSnapPercent } from '../../lib/formatting';
+import {
+  getCurrentTeam,
+  getSeasonTeamAbbreviation,
+  isDeparted,
+  isFreeAgentSeason,
+  getJourneyAfterDraft,
+  collapseTrailingFaRun,
+} from '../../lib/playerJourney';
+import {
+  getPfrUrl,
+  getPlayerDisplayAccent,
+  getPlayerDisplayLogo,
+} from '../../lib/playerDisplay';
 
 export interface PlayerWithDraftYear {
   pick: DraftPick;
@@ -175,35 +72,22 @@ function PlayerCard({
   const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
   const departed = isDeparted(pick);
   const currentTeam = departed ? getCurrentTeam(pick) : undefined;
-  const isFa = departed && !currentTeam;
-  const displayAccent = yearDraftBoard
-    ? accentColor
-    : isFa
-      ? '#6b7280'
-      : departed && currentTeam
-        ? (TEAM_COLORS[currentTeam] ?? accentColor)
-        : accentColor;
-  const displayLogo = yearDraftBoard
-    ? logoUrl
-    : isFa
-      ? ''
-      : departed && currentTeam
-        ? getTeamLogoUrl(currentTeam)
-        : logoUrl;
+  const displayContext = {
+    accentColor,
+    logoUrl,
+    departed,
+    currentTeam,
+    yearDraftBoard,
+  };
+  const displayAccent = getPlayerDisplayAccent(displayContext);
+  const displayLogo = getPlayerDisplayLogo(displayContext);
 
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
   const careerTableSeasons = collapseTrailingFaRun(sortedSeasons, (s) =>
-    isFaSeason(s, pick),
+    isFreeAgentSeason(s, pick),
   );
-  const journeyAfterDraft = (() => {
-    if (!hasCareerRows) return [];
-    const tail = getTeamJourney(pick).slice(1);
-    return tail.length > 0
-      ? tail
-      : [{ team: 'FA' as const, role: 'non_contributor' as Role }];
-  })();
   const journeyDisplay = collapseTrailingFaRun(
-    journeyAfterDraft,
+    getJourneyAfterDraft(pick),
     (st) => st.team === 'FA',
   );
 
@@ -264,7 +148,7 @@ function PlayerCard({
               loading="lazy"
             />
           ) : (
-            getInitials(pick.playerName)
+            getNameInitials(pick.playerName)
           )}
         </div>
         <div className="player-card__info">
@@ -286,7 +170,7 @@ function PlayerCard({
                     {stint.team !== 'FA' && (
                       <span
                         className="player-card__stint-role"
-                        title={formatRole(stint.role)}
+                        title={formatRoleLabel(stint.role)}
                         style={{
                           backgroundColor: ROLE_COLORS[stint.role].bg,
                           color: ROLE_COLORS[stint.role].text,
@@ -305,7 +189,7 @@ function PlayerCard({
           className="player-card__badge"
           title={
             hasCareerRows
-              ? formatRole(role)
+              ? formatRoleLabel(role)
               : 'NFL season data not available yet for this pick'
           }
           style={
@@ -322,12 +206,12 @@ function PlayerCard({
             data-awaiting-season={hasCareerRows ? undefined : 'true'}
             aria-label={
               hasCareerRows
-                ? formatRole(role)
+                ? formatRoleLabel(role)
                 : 'NFL season data not available yet'
             }
           >
             <span className="player-card__role-badge-text">
-              {hasCareerRows ? formatRole(role) : 'Awaiting data'}
+              {hasCareerRows ? formatRoleLabel(role) : 'Awaiting data'}
             </span>
           </span>
         </div>
@@ -405,7 +289,7 @@ function PlayerCard({
                   </thead>
                   <tbody>
                     {careerTableSeasons.map((s) => {
-                      const faRow = isFaSeason(s, pick);
+                      const faRow = isFreeAgentSeason(s, pick);
                       const gps =
                         s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
                       const seasonRole: Role | null = faRow
@@ -419,15 +303,17 @@ function PlayerCard({
                       return (
                         <tr key={s.year}>
                           <td>{s.year}</td>
-                          <td>{seasonTeamAbbrev(s, pick)}</td>
+                          <td>{getSeasonTeamAbbreviation(s, pick)}</td>
                           <td>
                             {faRow ? '—' : `${s.gamesPlayed}/${s.teamGames}`}
                           </td>
-                          <td>{faRow ? '—' : formatSnapPct(s.snapShare)}</td>
+                          <td>
+                            {faRow ? '—' : formatSnapPercent(s.snapShare)}
+                          </td>
                           <td>
                             {faRow
                               ? '—'
-                              : formatSnapPct(seasonLoadDisplayShare(s))}
+                              : formatSnapPercent(seasonLoadDisplayShare(s))}
                           </td>
                           <td>
                             {faRow ? (
@@ -439,7 +325,7 @@ function PlayerCard({
                                   backgroundColor: ROLE_COLORS[seasonRole!].bg,
                                   color: ROLE_COLORS[seasonRole!].text,
                                 }}
-                                title={formatRole(seasonRole!)}
+                                title={formatRoleLabel(seasonRole!)}
                               >
                                 {ROLE_ABBREV[seasonRole!]}
                               </span>

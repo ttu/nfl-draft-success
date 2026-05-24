@@ -1,13 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Role } from '../../types';
 import { ALL_ROLES } from '../../lib/roleFilter';
-
-function formatRoleLabel(role: Role): string {
-  return role
-    .split('_')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
-}
+import { formatRoleLabel } from '../../lib/roleDisplay';
+import { pluralizeRoles } from '../../lib/formatting';
 
 export interface RoleFilterProps {
   value: Set<Role>;
@@ -51,9 +46,7 @@ export function RoleFilter({ value, onChange }: RoleFilterProps) {
 
   const count = value.size;
   const label =
-    count === ALL_ROLES.length
-      ? 'All roles'
-      : `${count} role${count === 1 ? '' : 's'}`;
+    count === ALL_ROLES.length ? 'All roles' : pluralizeRoles(count);
 
   return (
     <div className="role-filter">

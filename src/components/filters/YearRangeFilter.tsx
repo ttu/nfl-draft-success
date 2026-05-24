@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { parseFromYear, parseToYear } from '../../lib/yearRange';
 
 export interface YearRangeFilterProps {
   min: number;
@@ -23,20 +24,14 @@ export function YearRangeFilter({
 
   const commitFrom = (v: string) => {
     setFromFocused(false);
-    const parsed = parseInt(v, 10);
-    if (!Number.isNaN(parsed)) {
-      const from = Math.min(Math.max(parsed, min), maxYear);
-      onChange([from, maxYear]);
-    }
+    const from = parseFromYear(v, min, maxYear);
+    if (from != null) onChange([from, maxYear]);
   };
 
   const commitTo = (v: string) => {
     setToFocused(false);
-    const parsed = parseInt(v, 10);
-    if (!Number.isNaN(parsed)) {
-      const to = Math.max(Math.min(parsed, max), minYear);
-      onChange([minYear, to]);
-    }
+    const to = parseToYear(v, max, minYear);
+    if (to != null) onChange([minYear, to]);
   };
 
   const fromDisplay = fromFocused ? fromInput : String(minYear);

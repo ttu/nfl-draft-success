@@ -2,7 +2,11 @@ import { DraftClassCard } from '../../draft/DraftClassCard';
 import { RollingDraftScoreCard } from '../../draft/RollingDraftScoreCard';
 import { PlayerList } from '../../draft/PlayerList';
 import { RoleFilter } from '../../filters/RoleFilter';
-import { getDraftClassMetrics } from '../../../lib/getDraftClassMetrics';
+import {
+  buildDraftClassMetricsRows,
+  findLatestYearWithAwaitingData,
+  shouldHideRosterYearHeading,
+} from '../../../lib/draftClassDisplay';
 import type { DraftClass, DraftPick, Role } from '../../../types';
 import type { TeamRanking } from '../../draft/RollingDraftScoreCard';
 import type { RollingDraftScore } from '../../../lib/getRollingDraftScore';
@@ -43,11 +47,16 @@ export function TeamDetailContent({
   showDeparted,
   setShowDeparted,
 }: TeamDetailContentProps) {
-  const hideRosterYearHeading =
-    yearCount === 1 &&
-    draftClasses.length === 1 &&
-    rosterByDraftYear.length === 1 &&
-    rosterByDraftYear[0].year === draftClasses[0].year;
+  const hideRosterYearHeading = shouldHideRosterYearHeading({
+    yearCount,
+    draftClassesLength: draftClasses.length,
+    rosterByDraftYear,
+    draftClassYear: draftClasses[0]?.year,
+  });
+  const metricsRows = buildDraftClassMetricsRows(draftClasses, selectedTeam, {
+    draftingTeamOnly,
+  });
+  const latestYearWithAwaiting = findLatestYearWithAwaitingData(metricsRows);
 
   return (
     <>
@@ -64,32 +73,17 @@ export function TeamDetailContent({
         className="app-draft-cards"
         aria-label="Draft class metrics by year"
       >
-        {(() => {
-          const rows = draftClasses.map((dc) => ({
-            dc,
-            metrics: getDraftClassMetrics(dc, selectedTeam, {
-              draftingTeamOnly,
-            }),
-          }));
-          const latestYearWithAwaiting = rows.reduce<number | null>(
-            (max, { dc, metrics }) => {
-              if (metrics.awaitingDataCount <= 0) return max;
-              return max == null || dc.year > max ? dc.year : max;
-            },
-            null,
-          );
-          return rows.map(({ dc, metrics }) => (
-            <DraftClassCard
-              key={dc.year}
-              year={dc.year}
-              metrics={metrics}
-              showAwaitingDataNote={
-                latestYearWithAwaiting != null &&
-                dc.year === latestYearWithAwaiting
-              }
-            />
-          ));
-        })()}
+        {metricsRows.map(({ dc, metrics }) => (
+          <DraftClassCard
+            key={dc.year}
+            year={dc.year}
+            metrics={metrics}
+            showAwaitingDataNote={
+              latestYearWithAwaiting != null &&
+              dc.year === latestYearWithAwaiting
+            }
+          />
+        ))}
       </section>
 
       <section className="app-players" aria-label="Current roster draft picks">

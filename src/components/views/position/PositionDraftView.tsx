@@ -6,6 +6,8 @@ import {
   groupPicksByDraftYear,
 } from '../../../lib/positionDraft';
 import { getPositionDisplayName } from '../../../lib/positionDisplayName';
+import { formatDraftRangeSuffix } from '../../../lib/formatting';
+import { shouldHidePositionYearBanner } from '../../../lib/pickSort';
 import type { DraftClass } from '../../../types';
 
 export interface PositionDraftViewProps {
@@ -32,9 +34,7 @@ export function PositionDraftView({
 
   const positionTitle = getPositionDisplayName(position);
   const singleCalendarYear = yearFrom === yearTo;
-  const titleDraftRange = singleCalendarYear
-    ? ` · ${yearFrom}`
-    : ` — drafts ${yearFrom}–${yearTo}`;
+  const titleDraftRange = formatDraftRangeSuffix(yearFrom, yearTo);
 
   return (
     <>
@@ -76,8 +76,12 @@ export function PositionDraftView({
         </p>
       ) : (
         groups.map(({ year, picks }) => {
-          const hideYearBanner =
-            singleCalendarYear && groups.length === 1 && year === yearFrom;
+          const hideYearBanner = shouldHidePositionYearBanner({
+            yearFrom,
+            yearTo,
+            groupCount: groups.length,
+            groupYear: year,
+          });
           return (
             <section
               key={year}

@@ -55,6 +55,16 @@ import {
   type Role,
   ActiveView,
 } from './types';
+import {
+  resolveYearRange,
+  clampYear,
+  generateYearArray,
+} from './lib/yearRange';
+import {
+  parsePositionParam,
+  determineActiveView,
+  isRouteYearValid,
+} from './lib/viewRouter';
 import './App.css';
 
 import type { TeamRanking } from './components/draft/RollingDraftScoreCard';
@@ -104,40 +114,25 @@ function useResolvedYearRange(
   searchParams: URLSearchParams,
   setSearchParams: (params: Record<string, string>) => void,
 ): { startYear: number; endYear: number } {
-  const from = parseInt(searchParams.get('from') ?? '', 10);
-  const to = parseInt(searchParams.get('to') ?? '', 10);
-  const valid =
-    Number.isInteger(from) &&
-    Number.isInteger(to) &&
-    from >= yearBounds.min &&
-    to <= yearBounds.max &&
-    from <= to;
+  const { range, needsCorrection } = resolveYearRange(
+    searchParams.get('from'),
+    searchParams.get('to'),
+    forcedSingleYear,
+    yearBounds,
+    { startYear: DEFAULT_YEAR_MIN, endYear: YEAR_MAX },
+  );
 
   const correctedRef = useRef(false);
   useEffect(() => {
-    if (forcedSingleYear != null) {
-      return;
-    }
-    if (!valid && !correctedRef.current) {
-      correctedRef.current = true;
-      setSearchParams({
-        from: String(DEFAULT_YEAR_MIN),
-        to: String(YEAR_MAX),
-      });
-    }
-  }, [valid, setSearchParams, forcedSingleYear]);
+    if (!needsCorrection || correctedRef.current) return;
+    correctedRef.current = true;
+    setSearchParams({
+      from: String(DEFAULT_YEAR_MIN),
+      to: String(YEAR_MAX),
+    });
+  }, [needsCorrection, setSearchParams]);
 
-  if (
-    forcedSingleYear != null &&
-    forcedSingleYear >= yearBounds.min &&
-    forcedSingleYear <= yearBounds.max
-  ) {
-    return { startYear: forcedSingleYear, endYear: forcedSingleYear };
-  }
-
-  return valid
-    ? { startYear: from, endYear: to }
-    : { startYear: DEFAULT_YEAR_MIN, endYear: YEAR_MAX };
+  return range;
 }
 
 /** Path params from `/:teamId` and `/year/:draftYear` in this file’s `Routes`. */
@@ -146,47 +141,23 @@ type AppRouteParams = {
   draftYear?: string;
 };
 
-/**
- * Resolves `/position/:position` from `useMatch` — decodes the segment for display/routing.
- */
-function getPositionParam(match: { params: { position?: string } } | null): {
-  isPositionView: boolean;
-  positionParam: string | undefined;
-} {
-  if (match == null) {
-    return { isPositionView: false, positionParam: undefined };
-  }
-  const raw = match.params.position;
-  return {
-    isPositionView: true,
-    positionParam: raw != null ? decodeURIComponent(raw) : undefined,
-  };
-}
-
 function AppContent() {
   const { teamId, draftYear: draftYearParam } = useParams<AppRouteParams>();
   const positionMatch = useMatch('/position/:position');
-  const { isPositionView, positionParam } = getPositionParam(positionMatch);
+  const { isPositionView, positionParam } = parsePositionParam(positionMatch);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const parsedRouteYear =
-    draftYearParam != null ? parseInt(draftYearParam, 10) : NaN;
-  const routeYearValid =
-    Number.isInteger(parsedRouteYear) &&
-    parsedRouteYear >= YEAR_MIN &&
-    parsedRouteYear <= YEAR_MAX;
+  const routeYearValid = isRouteYearValid(draftYearParam, yearBounds);
   const isYearView = draftYearParam !== undefined && routeYearValid;
-  const forcedSingleYear = isYearView ? parsedRouteYear : null;
+  const forcedSingleYear = isYearView ? parseInt(draftYearParam, 10) : null;
 
   const selectedTeam = teamId && validTeamIds.has(teamId) ? teamId : null;
 
-  const activeView = isYearView
-    ? ActiveView.DraftYears
-    : isPositionView
-      ? ActiveView.Position
-      : selectedTeam
-        ? ActiveView.TeamDetail
-        : ActiveView.TeamRankings;
+  const activeView = determineActiveView({
+    isYearView,
+    isPositionView,
+    hasSelectedTeam: selectedTeam != null,
+  });
 
   useLayoutEffect(() => {
     if (draftYearParam !== undefined && !routeYearValid) {
@@ -299,9 +270,9 @@ function AppContent() {
     setSearchParams({ from: String(range[0]), to: String(range[1]) });
   };
 
-  const draftPickYear = Math.min(
-    YEAR_MAX,
-    Math.max(YEAR_MIN, isYearView ? parsedRouteYear : endYear),
+  const draftPickYear = clampYear(
+    isYearView ? (forcedSingleYear as number) : endYear,
+    yearBounds,
   );
 
   const handleDraftPickYear = (year: number) => {
@@ -350,10 +321,7 @@ function AppContent() {
         setLoading(true);
       }
     }, delayBeforeShowMs);
-    const years = Array.from(
-      { length: endYear - startYear + 1 },
-      (_, i) => startYear + i,
-    );
+    const years = generateYearArray(startYear, endYear);
     loadDataForYears(years)
       .then((data) => {
         if (!cancelled) setDraftClasses(data);
