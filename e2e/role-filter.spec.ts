@@ -5,70 +5,75 @@ test.describe('Role filter', () => {
     await page.goto('/DET?from=2021&to=2025');
     await page.evaluate(() => localStorage.clear());
     await page.reload();
-    await expect(
-      page.locator('[aria-label="Current roster draft picks"]'),
-    ).toBeVisible();
+    await expect(page.locator('.team-hero')).toBeVisible();
   });
 
-  test('role filter opens and shows all roles', async ({ page }) => {
-    await page.locator('[aria-label="Filter by role"]').click();
-    const dialog = page.locator('[role="dialog"]');
-    await expect(dialog).toBeVisible();
-    const checkboxes = dialog.locator('.role-filter__checkbox');
-    await expect(checkboxes).toHaveCount(6);
-  });
-
-  test('selecting Starters preset filters to starter roles only', async ({
-    page,
-  }) => {
-    const playerCountBefore = await page.locator('.player-card').count();
-
-    await page.locator('[aria-label="Filter by role"]').click();
-    await page.locator('.role-filter__preset', { hasText: 'Starters' }).click();
-    await page.locator('[aria-label="Close"]').click();
-
-    const playerCountAfter = await page.locator('.player-card').count();
-    expect(playerCountAfter).toBeLessThanOrEqual(playerCountBefore);
-
-    const badges = page.locator('[data-testid="role-badge"]');
-    const roles = await badges.evaluateAll((els) =>
-      els.map((el) => el.getAttribute('data-role')),
-    );
-    for (const role of roles) {
-      expect(['core_starter', 'starter_when_healthy']).toContain(role);
+  test('renders all six role pills, enabled by default', async ({ page }) => {
+    const group = page.locator('[aria-label="Filter by role"]');
+    await expect(group).toBeVisible();
+    const pills = group.locator('.role-pill');
+    await expect(pills).toHaveCount(6);
+    for (let i = 0; i < 6; i++) {
+      await expect(pills.nth(i)).toHaveAttribute('aria-pressed', 'true');
     }
   });
 
-  test('filter state persists after team navigation', async ({ page }) => {
-    await page.locator('[aria-label="Filter by role"]').click();
-    await page.locator('.role-filter__preset', { hasText: 'Starters' }).click();
-    await page.locator('[aria-label="Close"]').click();
+  test('toggling a role off removes those player rows', async ({ page }) => {
+    const coreChips = page.locator('.roster-table .role-chip', {
+      hasText: /^Core Starter$/,
+    });
+    const coreCountBefore = await coreChips.count();
+    expect(coreCountBefore).toBeGreaterThan(0);
 
-    const selector = page.locator('[aria-label="Select team"]');
-    await selector.selectOption('KC');
-    await expect(
-      page.locator('[aria-label="Current roster draft picks"]'),
-    ).toBeVisible();
+    const totalBefore = await page.locator('.roster-table tbody tr').count();
 
-    await expect(page.locator('[aria-label="Filter by role"]')).toHaveText(
-      '2 roles',
-    );
+    const corePill = page
+      .locator('.role-pill')
+      .filter({ hasText: /^Core Starter$/ });
+    await corePill.click();
+    await expect(corePill).toHaveAttribute('aria-pressed', 'false');
+
+    await expect(coreChips).toHaveCount(0);
+    const totalAfter = await page.locator('.roster-table tbody tr').count();
+    expect(totalAfter).toBe(totalBefore - coreCountBefore);
   });
 
-  test('selecting All preset shows all players', async ({ page }) => {
-    await page.locator('[aria-label="Filter by role"]').click();
-    await page.locator('.role-filter__preset', { hasText: 'Starters' }).click();
-    await page.locator('[aria-label="Close"]').click();
-    const restrictedCount = await page.locator('.player-card').count();
+  test('filter state persists after navigating to another team', async ({
+    page,
+  }) => {
+    const corePill = page
+      .locator('.role-pill')
+      .filter({ hasText: /^Core Starter$/ });
+    await corePill.click();
+    await expect(corePill).toHaveAttribute('aria-pressed', 'false');
 
-    await page.locator('[aria-label="Filter by role"]').click();
-    await page.locator('.role-filter__preset', { hasText: 'All' }).click();
-    await page.locator('[aria-label="Close"]').click();
-    const allCount = await page.locator('.player-card').count();
+    await page.locator('.subbar__crumb', { hasText: 'Rankings' }).click();
+    const kcRow = page.locator('.rankings-table tbody tr', {
+      has: page.locator('.team-row__id', { hasText: /^KC$/ }),
+    });
+    await kcRow.click();
+    await expect(page.locator('.team-hero')).toBeVisible();
 
-    expect(allCount).toBeGreaterThanOrEqual(restrictedCount);
-    await expect(page.locator('[aria-label="Filter by role"]')).toHaveText(
-      'All roles',
+    await expect(
+      page.locator('.role-pill').filter({ hasText: /^Core Starter$/ }),
+    ).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('re-enabling a role restores its player rows', async ({ page }) => {
+    const totalBefore = await page.locator('.roster-table tbody tr').count();
+    const corePill = page
+      .locator('.role-pill')
+      .filter({ hasText: /^Core Starter$/ });
+
+    await corePill.click();
+    await expect(corePill).toHaveAttribute('aria-pressed', 'false');
+    const restricted = await page.locator('.roster-table tbody tr').count();
+    expect(restricted).toBeLessThan(totalBefore);
+
+    await corePill.click();
+    await expect(corePill).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.roster-table tbody tr')).toHaveCount(
+      totalBefore,
     );
   });
 });

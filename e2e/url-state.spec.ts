@@ -5,14 +5,9 @@ test.describe('URL state management', () => {
     page,
   }) => {
     await page.goto('/SF?from=2020&to=2023');
-    await expect(
-      page.locator('[aria-label="Current roster draft picks"]'),
-    ).toBeVisible();
-    await expect(page.locator('.draft-score__number')).not.toBeEmpty();
-    const cards = page.locator(
-      '[aria-label="Draft class metrics by year"] > *',
-    );
-    await expect(cards).toHaveCount(4);
+    await expect(page.locator('.team-hero')).toBeVisible();
+    await expect(page.locator('.team-hero__score')).not.toBeEmpty();
+    await expect(page.locator('.class-grid .class-card')).toHaveCount(4);
   });
 
   test('browser back/forward navigates between views', async ({ page }) => {
@@ -21,10 +16,8 @@ test.describe('URL state management', () => {
       page.locator('[aria-label="Team draft rankings"]'),
     ).toBeVisible();
 
-    await page.locator('.team-rankings-view__item').first().click();
-    await expect(
-      page.locator('[aria-label="Current roster draft picks"]'),
-    ).toBeVisible();
+    await page.locator('.rankings-table tbody tr').first().click();
+    await expect(page.locator('.team-hero')).toBeVisible();
 
     await page.goBack();
     await expect(
@@ -32,21 +25,20 @@ test.describe('URL state management', () => {
     ).toBeVisible();
 
     await page.goForward();
-    await expect(
-      page.locator('[aria-label="Current roster draft picks"]'),
-    ).toBeVisible();
+    await expect(page.locator('.team-hero')).toBeVisible();
   });
 
-  test('changing team updates URL without full reload', async ({ page }) => {
+  test('navigating between teams updates the URL', async ({ page }) => {
     await page.goto('/DET?from=2021&to=2025');
-    await expect(
-      page.locator('[aria-label="Current roster draft picks"]'),
-    ).toBeVisible();
+    await expect(page.locator('.team-hero__abbrev')).toHaveText('DET');
 
-    const selector = page.locator('[aria-label="Select team"]');
-    await selector.selectOption('BUF');
+    await page.locator('.subbar__crumb', { hasText: 'Rankings' }).click();
+    const bufRow = page.locator('.rankings-table tbody tr', {
+      has: page.locator('.team-row__id', { hasText: /^BUF$/ }),
+    });
+    await bufRow.click();
     await expect(page).toHaveURL(/\/BUF\?/);
-    await expect(page.locator('.draft-score__number')).toBeVisible();
+    await expect(page.locator('.team-hero__abbrev')).toHaveText('BUF');
   });
 
   test('URL with only from param still works', async ({ page }) => {

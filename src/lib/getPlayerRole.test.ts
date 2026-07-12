@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { getPlayerAverageScoreWeight, getPlayerRole } from './getPlayerRole';
+import {
+  getPlayerAverageScoreWeight,
+  getPlayerDraftScore,
+  getPlayerRole,
+} from './getPlayerRole';
 import type { DraftPick } from '../types';
 
 describe('getPlayerRole', () => {
@@ -181,5 +185,105 @@ describe('getPlayerRole', () => {
       ],
     };
     expect(getPlayerRole(pick)).toBe('depth');
+  });
+});
+
+const seasonScore = (snap: number, gp: number, tg: number) =>
+  (0.7 * snap + 0.3 * (gp / tg)) * 100;
+
+function pickWith(seasons: DraftPick['seasons']): DraftPick {
+  return {
+    playerId: 'p',
+    playerName: 'Player',
+    position: 'QB',
+    round: 1,
+    overallPick: 5,
+    teamId: 'KC',
+    seasons,
+  };
+}
+
+describe('getPlayerDraftScore', () => {
+  it('does not saturate: two core starters are separated by real usage', () => {
+    const fullTime = pickWith([
+      {
+        year: 2021,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 1,
+        retained: true,
+      },
+      {
+        year: 2022,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 1,
+        retained: true,
+      },
+    ]);
+    const heavyButNotMax = pickWith([
+      {
+        year: 2021,
+        gamesPlayed: 14,
+        teamGames: 17,
+        snapShare: 0.7,
+        retained: true,
+      },
+      {
+        year: 2022,
+        gamesPlayed: 14,
+        teamGames: 17,
+        snapShare: 0.7,
+        retained: true,
+      },
+    ]);
+    // Both classify as core_starter (would both be 100 under the old formula)…
+    expect(getPlayerRole(fullTime)).toBe('core_starter');
+    expect(getPlayerRole(heavyButNotMax)).toBe('core_starter');
+    // …but the snap-based score separates them.
+    expect(getPlayerDraftScore(fullTime)).toBeCloseTo(100);
+    expect(getPlayerDraftScore(fullTime)).toBeGreaterThan(
+      getPlayerDraftScore(heavyButNotMax),
+    );
+  });
+
+  it('reflects snap share and availability on a 0–100 scale', () => {
+    const pick = pickWith([
+      {
+        year: 2023,
+        gamesPlayed: 8,
+        teamGames: 17,
+        snapShare: 0.5,
+        retained: true,
+      },
+    ]);
+    expect(getPlayerDraftScore(pick)).toBeCloseTo(seasonScore(0.5, 8, 17));
+  });
+
+  it('draftingTeamOnly excludes non-retained seasons', () => {
+    const pick = pickWith([
+      {
+        year: 2021,
+        gamesPlayed: 2,
+        teamGames: 17,
+        snapShare: 0.1,
+        retained: false,
+      },
+      {
+        year: 2022,
+        gamesPlayed: 16,
+        teamGames: 17,
+        snapShare: 0.9,
+        retained: true,
+      },
+    ]);
+    const full = getPlayerDraftScore(pick);
+    const draftingOnly = getPlayerDraftScore(pick, { draftingTeamOnly: true });
+    expect(draftingOnly).toBeGreaterThan(full);
+    expect(draftingOnly).toBeCloseTo(seasonScore(0.9, 16, 17));
+  });
+
+  it('returns 0 for picks with no season rows', () => {
+    expect(getPlayerDraftScore(pickWith([]))).toBe(0);
   });
 });

@@ -107,6 +107,45 @@ export function getPlayerAverageScoreWeight(
   return sum / seasons.length;
 }
 
+/** Draft-score weights: snap share is the heavier signal (see Info modal). */
+const SNAP_WEIGHT = 0.7;
+const AVAILABILITY_WEIGHT = 0.3;
+
+function clamp01(v: number): number {
+  return v < 0 ? 0 : v > 1 ? 1 : v;
+}
+
+/**
+ * Continuous per-pick draft score on a 0–100 scale:
+ *
+ *   score(season) = clamp(0.7·snapShare + 0.3·availability, 0, 1) × 100
+ *   score(pick)   = mean(score(season) for tracked seasons)
+ *
+ * where `snapShare` is the role-tier snap value (position-adjusted, so
+ * specialists are handled like their role classification) and `availability`
+ * is games played ÷ team games. Unlike {@link getPlayerAverageScoreWeight}
+ * (discrete 0–4 role weights, used for role badges), this does not saturate —
+ * it separates a full-snap starter from a part-time one. Drives the numeric
+ * "Score" shown in the position, draft-year, and team-ranking views.
+ */
+export function getPlayerDraftScore(
+  pick: DraftPick,
+  options?: GetPlayerRoleOptions,
+): number {
+  const seasons = getFilteredSeasons(pick, options?.draftingTeamOnly);
+  if (seasons.length === 0) return 0;
+
+  let sum = 0;
+  for (const s of seasons) {
+    const snap = clamp01(snapShareForRoleTier(s, pick.position));
+    const availability =
+      s.teamGames > 0 ? clamp01(s.gamesPlayed / s.teamGames) : 0;
+    sum +=
+      clamp01(SNAP_WEIGHT * snap + AVAILABILITY_WEIGHT * availability) * 100;
+  }
+  return sum / seasons.length;
+}
+
 /**
  * Representative overall role from **average** seasonal value (badges, filters,
  * draft-class bucket counts). Uses peak role only to label the top tier

@@ -1,22 +1,25 @@
 export function Footer() {
   return (
     <footer className="app-footer">
-      <p>
-        NFLDraftSuccess.com is an independent analytics site and is not
-        affiliated with, endorsed by, or sponsored by the National Football
-        League or any NFL team.
-      </p>
-      <p>
-        Team logos courtesy of{' '}
+      <span>Independent analytics · not affiliated with the NFL</span>
+      <span>
+        Data via{' '}
         <a
-          href="https://www.sportslogos.net/"
+          href="https://github.com/nflverse"
           target="_blank"
           rel="noopener noreferrer"
         >
-          SportsLogos.net
+          nflverse
+        </a>{' '}
+        · Source on{' '}
+        <a
+          href="https://github.com/ttu/nfl-draft-success"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
         </a>
-        . Used for educational purposes only.
-      </p>
+      </span>
     </footer>
   );
 }

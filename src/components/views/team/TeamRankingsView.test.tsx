@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TeamRankingsView } from './TeamRankingsView';
-import type { TeamRanking } from '../../draft/RollingDraftScoreCard';
+import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 
 const sample: TeamRanking[] = [
   { teamId: 'KC', teamName: 'Chiefs', score: 1.2, rank: 1 },
@@ -9,7 +9,7 @@ const sample: TeamRanking[] = [
 ];
 
 describe('TeamRankingsView', () => {
-  it('uses a short title and a subtitle for the year window', () => {
+  it('renders the ranking headline and the year-window subtitle', () => {
     render(
       <TeamRankingsView
         rankings={sample}
@@ -18,10 +18,10 @@ describe('TeamRankingsView', () => {
       />,
     );
     expect(
-      screen.getByRole('heading', { name: 'Team rankings' }),
+      screen.getByRole('heading', { name: /which teams draft well/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Rolling draft score · 3 seasons in window/),
+      screen.getByText(/Draft success score · 3 seasons in window/),
     ).toBeInTheDocument();
   });
 });

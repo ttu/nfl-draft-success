@@ -45,23 +45,39 @@ const draftClass: DraftClass = {
 };
 
 describe('YearDraftView', () => {
-  it('renders title and pick order (all teams)', () => {
+  it('renders the year headline and picks in draft order', () => {
     render(
       <MemoryRouter>
-        <YearDraftView
-          draftClass={draftClass}
-          draftingTeamOnly
-          onShowRankings={() => {}}
-        />
+        <YearDraftView draftClass={draftClass} draftingTeamOnly />
       </MemoryRouter>,
     );
+    expect(screen.getByRole('heading', { name: '2020' })).toBeInTheDocument();
+    expect(screen.getByText('The Class Of')).toBeInTheDocument();
+
+    const burrow = screen.getByText('Joe Burrow');
+    const young = screen.getByText('Chase Young');
+    expect(burrow).toBeInTheDocument();
+    expect(young).toBeInTheDocument();
+    // Pick 1 (Burrow) is rendered before pick 2 (Young)
     expect(
-      screen.getByRole('heading', { name: /2020 NFL Draft — all picks/i }),
-    ).toBeInTheDocument();
-    const list = screen.getByRole('list', { name: /draft picks/i });
-    const items = screen.getAllByRole('listitem');
-    expect(items[0]).toHaveTextContent(/Joe Burrow/);
-    expect(items[1]).toHaveTextContent(/Chase Young/);
-    expect(list).toBeInTheDocument();
+      burrow.compareDocumentPosition(young) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it('renders the whole-class summary tiles', () => {
+    render(
+      <MemoryRouter>
+        <YearDraftView draftClass={draftClass} draftingTeamOnly />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('Avg. score')).toBeInTheDocument();
+    expect(screen.getByText('Core starters')).toBeInTheDocument();
+    expect(screen.getByText('Misses')).toBeInTheDocument();
+    // One QB (Burrow), no WRs in the fixture.
+    expect(screen.getByText('QBs taken')).toBeInTheDocument();
+    expect(screen.getByText('WRs taken')).toBeInTheDocument();
+    expect(screen.getByText('Retention')).toBeInTheDocument();
+    // Both fixture picks are retained → 100%.
+    expect(screen.getByText('100%')).toBeInTheDocument();
   });
 });

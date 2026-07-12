@@ -1,6 +1,6 @@
 import type { DraftClass } from '../types';
 import { isDraftPickRetainedLatest } from './draftPickLatestSeason';
-import { getPlayerRole } from './getPlayerRole';
+import { getPlayerDraftScore, getPlayerRole } from './getPlayerRole';
 
 export interface DraftClassMetrics {
   totalPicks: number;
@@ -17,6 +17,8 @@ export interface DraftClassMetrics {
   coreStarterRate: number;
   contributorRate: number;
   retentionRate: number;
+  /** Mean continuous per-pick draft score (0–100) across scored picks. */
+  draftScore: number;
 }
 
 export interface GetDraftClassMetricsOptions {
@@ -44,6 +46,7 @@ export function getDraftClassMetrics(
   let nonContributorCount = 0;
   let contributorCount = 0;
   let retentionCount = 0;
+  let draftScoreSum = 0;
 
   const draftingTeamOnly = options?.draftingTeamOnly === true;
   for (const pick of picks) {
@@ -51,6 +54,7 @@ export function getDraftClassMetrics(
       awaitingDataCount += 1;
       continue;
     }
+    draftScoreSum += getPlayerDraftScore(pick, { draftingTeamOnly });
     const role = getPlayerRole(pick, { draftingTeamOnly });
     switch (role) {
       case 'core_starter':
@@ -99,5 +103,6 @@ export function getDraftClassMetrics(
     contributorRate:
       scoredPickCount > 0 ? contributorCount / scoredPickCount : 0,
     retentionRate: scoredPickCount > 0 ? retentionCount / scoredPickCount : 0,
+    draftScore: scoredPickCount > 0 ? draftScoreSum / scoredPickCount : 0,
   };
 }

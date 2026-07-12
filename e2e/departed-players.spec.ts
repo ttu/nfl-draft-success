@@ -5,9 +5,7 @@ test.describe('Departed players toggle', () => {
     await page.goto('/DET?from=2021&to=2025');
     await page.evaluate(() => localStorage.clear());
     await page.reload();
-    await expect(
-      page.locator('[aria-label="Current roster draft picks"]'),
-    ).toBeVisible();
+    await expect(page.locator('.team-hero')).toBeVisible();
   });
 
   test('toggle is unchecked by default', async ({ page }) => {
@@ -15,31 +13,34 @@ test.describe('Departed players toggle', () => {
     await expect(toggle).not.toBeChecked();
   });
 
-  test('no departed player cards shown by default', async ({ page }) => {
-    const departed = page.locator('.player-card--departed');
-    await expect(departed).toHaveCount(0);
+  test('no departed player rows shown by default', async ({ page }) => {
+    await expect(page.locator('.roster-table .role-chip.gone')).toHaveCount(0);
   });
 
-  test('enabling toggle shows departed players with distinct styling', async ({
-    page,
-  }) => {
+  test('enabling the toggle reveals departed players', async ({ page }) => {
+    const totalBefore = await page.locator('.roster-table tbody tr').count();
+
     await page.locator('[aria-label="Show departed players"]').check();
-    const allCards = await page.locator('.player-card').count();
-    const departedCards = await page.locator('.player-card--departed').count();
-    expect(departedCards).toBeGreaterThan(0);
-    expect(allCards).toBeGreaterThan(departedCards);
+
+    const departedRows = page.locator('.roster-table tbody tr', {
+      has: page.locator('.role-chip.gone'),
+    });
+    expect(await departedRows.count()).toBeGreaterThan(0);
+
+    const totalAfter = await page.locator('.roster-table tbody tr').count();
+    expect(totalAfter).toBeGreaterThan(totalBefore);
   });
 
-  test('departed player cards show current team info', async ({ page }) => {
+  test('departed player rows show the current team', async ({ page }) => {
     await page.locator('[aria-label="Show departed players"]').check();
-    const departedMeta = page.locator(
-      '.player-card--departed .player-card__departed-team',
-    );
-    const count = await departedMeta.count();
+    const departedRows = page.locator('.roster-table tbody tr', {
+      has: page.locator('.role-chip.gone'),
+    });
+    const count = await departedRows.count();
     expect(count).toBeGreaterThan(0);
-    const texts = await departedMeta.allTextContents();
-    for (const text of texts) {
-      expect(text).toMatch(/→\s*\w+/);
-    }
+    // A departed player only shows a "→ TEAM" marker when they landed on a new
+    // roster; players out of the league show none. At least one should have it.
+    const texts = await departedRows.allTextContents();
+    expect(texts.some((t) => /→\s*\w+/.test(t))).toBe(true);
   });
 });

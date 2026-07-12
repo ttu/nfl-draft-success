@@ -36,7 +36,7 @@ const classes: DraftClass[] = [
 ];
 
 describe('PositionDraftView', () => {
-  it('uses a compact title when from and to are the same year', () => {
+  it('shows a compact single-year window in the kicker', () => {
     render(
       <MemoryRouter>
         <PositionDraftView
@@ -45,21 +45,17 @@ describe('PositionDraftView', () => {
           yearTo={2021}
           draftClasses={[classes[1]]}
           draftingTeamOnly
-          onShowRankings={() => {}}
         />
       </MemoryRouter>,
     );
     expect(
-      screen.getByRole('heading', {
-        name: /Tight end \(TE\) · 2021/i,
-      }),
+      screen.getByRole('heading', { name: /Tight end, ranked by/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: '2021', level: 3 }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByText(/Position File · TE · 2021/)).toBeInTheDocument();
+    expect(screen.queryByText(/2020–2021/)).not.toBeInTheDocument();
   });
 
-  it('renders year sections and picks in draft order', () => {
+  it('renders a year range and ranks picks in one table', () => {
     render(
       <MemoryRouter>
         <PositionDraftView
@@ -68,19 +64,23 @@ describe('PositionDraftView', () => {
           yearTo={2021}
           draftClasses={classes}
           draftingTeamOnly
-          onShowRankings={() => {}}
         />
       </MemoryRouter>,
     );
     expect(
-      screen.getByRole('heading', {
-        name: /Tight end \(TE\) — drafts 2020–2021/i,
-      }),
+      screen.getByRole('heading', { name: /Tight end, ranked by/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '2020' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '2021' })).toBeInTheDocument();
-    const items = screen.getAllByRole('listitem');
-    expect(items[0]).toHaveTextContent(/Alpha/);
-    expect(items[1]).toHaveTextContent(/Beta/);
+    expect(
+      screen.getByText(/Position File · TE · 2020–2021/),
+    ).toBeInTheDocument();
+
+    const alpha = screen.getByText('Alpha');
+    const beta = screen.getByText('Beta');
+    expect(alpha).toBeInTheDocument();
+    expect(beta).toBeInTheDocument();
+    // Equal-score picks keep draft order: 2020 (Alpha) before 2021 (Beta)
+    expect(
+      alpha.compareDocumentPosition(beta) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 });

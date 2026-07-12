@@ -1,36 +1,17 @@
 import { test, expect, type Page } from '@playwright/test';
 
-/** Slide-over menu panel */
-function headerMenu(page: Page) {
-  return page.getByRole('dialog', { name: /^menu$/i });
+/** Masthead primary-nav tab by label. */
+function navTab(page: Page, name: string | RegExp) {
+  return page.locator('.mast__nav').getByRole('button', { name });
 }
 
-function headerRegion(page: Page) {
-  return page.locator('header.app-header');
-}
-
-/** `getMainContent` → TeamRankingsView: ranked team rows must render. */
+/** `renderMainContent` → TeamRankingsView: 32 ranked team rows must render. */
 async function expectTeamRankingsMainContent(page: Page) {
   const section = page.locator('[aria-label="Team draft rankings"]');
   await expect(section).toBeVisible();
-  const rows = section.locator('.team-rankings-view__item');
+  const rows = section.locator('.rankings-table tbody tr');
   await expect(rows.first()).toBeVisible();
   expect(await rows.count()).toBe(32);
-}
-
-/**
- * `getMainContent` → TeamDetailContent | PositionDraftView | YearDraftView:
- * each renders one or more PlayerList (`role="list"` name Draft picks) with cards.
- */
-async function expectMainContentHasPlayerLists(page: Page) {
-  const main = page.locator('main.app');
-  await expect(main).toBeVisible();
-  const lists = main.getByRole('list', { name: /^Draft picks$/ });
-  await expect(lists.first()).toBeVisible();
-  expect(await lists.count()).toBeGreaterThan(0);
-  const cards = main.locator('.player-card');
-  await expect(cards.first()).toBeVisible();
-  expect(await cards.count()).toBeGreaterThan(0);
 }
 
 test.describe('Full navigation flow', () => {
@@ -44,279 +25,122 @@ test.describe('Full navigation flow', () => {
     });
   });
 
-  test('rankings → team → rankings → position → drafts with filters and copy', async ({
+  test('rankings → team → rankings → position → draft year with filters', async ({
     page,
   }) => {
-    await test.step('Rankings: year range filters + titles', async () => {
+    await test.step('Rankings: hero, year-range inputs, footer', async () => {
       await page.goto('/');
 
-      await expect(
-        page.locator('[aria-label="Team draft rankings"]'),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('heading', { name: /^Team rankings$/ }),
-      ).toBeVisible();
-      await expect(page.locator('.team-rankings-view__subtitle')).toContainText(
-        'Rolling draft score',
+      await expectTeamRankingsMainContent(page);
+      await expect(page.locator('.page-hero__headline')).toContainText(
+        /Which teams draft/i,
       );
-      await expect(page.locator('.team-rankings-view__subtitle')).toContainText(
-        'seasons in window',
-      );
-
-      const header = headerRegion(page);
       await expect(
-        header.getByText('Draft years', { exact: true }),
-      ).toBeVisible();
-      await expect(
-        header.getByText(/Classes in this window feed team scores/i),
-      ).toBeVisible();
-
-      await expect(
-        page.getByRole('group', {
-          name: /Years included in team scores and rankings below/i,
-        }),
+        page.getByText(/Draft success score · 5 seasons in window/i),
       ).toBeVisible();
 
       const startYear = page.locator('[aria-label="Start year"]');
       const endYear = page.locator('[aria-label="End year"]');
       await startYear.fill('2022');
       await startYear.press('Enter');
+      // Wait for the first commit to land in the URL before editing the second
+      // field: the End input's commit reads the current `from`, so editing it
+      // before the re-render would commit a stale start year and clobber it.
+      await expect(page).toHaveURL(/from=2022/);
       await endYear.fill('2024');
       await endYear.press('Enter');
 
-      await expect(page).toHaveURL(/from=2022/);
       await expect(page).toHaveURL(/to=2024/);
-      await expect(page.locator('.team-rankings-view__subtitle')).toContainText(
-        '3 seasons',
-      );
-
-      await expectTeamRankingsMainContent(page);
+      await expect(page).toHaveURL(/from=2022/);
+      await expect(
+        page.getByText(/Draft success score · 3 seasons in window/i),
+      ).toBeVisible();
 
       await expect(
-        page.getByText(
-          /NFLDraftSuccess\.com is an independent analytics site/i,
-        ),
+        page.getByText(/independent analytics · not affiliated with the NFL/i),
       ).toBeVisible();
     });
 
-    await test.step('Team detail: header filters, score copy, roster, role filter', async () => {
-      await page.locator('.team-rankings-view__item').first().click();
-      await expect(
-        page.locator('[aria-label="Current roster draft picks"]'),
-      ).toBeVisible();
+    await test.step('Team detail: hero stats, class grid, roster, role pill', async () => {
+      await page.locator('.rankings-table tbody tr').first().click();
+      await expect(page.locator('.team-hero')).toBeVisible();
       expect(page.url()).toMatch(/\/[A-Z]{2,3}\?/);
       expect(page.url()).toContain('from=2022');
       expect(page.url()).toContain('to=2024');
 
-      await expectMainContentHasPlayerLists(page);
+      const hero = page.locator('.team-hero');
+      await expect(hero.getByText('League Rank')).toBeVisible();
+      await expect(hero.getByText('Core Starter Rate')).toBeVisible();
+      await expect(hero.getByText('Retention', { exact: true })).toBeVisible();
+      await expect(hero.getByText('Total Picks')).toBeVisible();
 
-      const header = headerRegion(page);
-      await expect(
-        header.getByRole('group', { name: /Team navigation/i }),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('combobox', { name: /^Select team$/i }),
-      ).toBeVisible();
+      await expect(page.locator('.class-grid .class-card')).toHaveCount(3);
 
       await expect(
-        header.getByText('Draft years', { exact: true }),
-      ).toBeVisible();
-      await expect(
-        header.getByText(
-          /Rolling score, draft cards, and roster use this window/i,
-        ),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('group', {
-          name: /Years included in rolling score, draft cards, and roster below/i,
-        }),
-      ).toBeVisible();
-
-      const scoreArticle = page.locator(
-        '[aria-labelledby="draft-score-title"]',
-      );
-      await expect(
-        scoreArticle.getByRole('heading', { name: /^Rolling draft score$/ }),
-      ).toBeVisible();
-      await expect(
-        scoreArticle.locator('dt', { hasText: /^Score$/ }),
-      ).toBeVisible();
-      await expect(
-        scoreArticle.locator('dt', { hasText: /^Core Starter %$/ }),
-      ).toBeVisible();
-      await expect(
-        scoreArticle.locator('dt', { hasText: /^Retention %$/ }),
-      ).toBeVisible();
-      await expect(
-        scoreArticle.locator('dt', { hasText: /^Total picks$/ }),
-      ).toBeVisible();
-
-      await expect(
-        page.locator('[aria-label="Draft class metrics by year"]'),
-      ).toBeVisible();
-
-      await expect(
-        page.getByRole('heading', { name: /^Current roster$/ }),
+        page.getByRole('heading', { name: /^Current roster/ }),
       ).toBeVisible();
       await expect(
         page.getByRole('checkbox', { name: /Show departed players/i }),
       ).toBeVisible();
-      await expect(page.getByText('Show departed')).toBeVisible();
 
-      await expect(page.locator('[aria-label="Filter by role"]')).toHaveText(
-        /All roles|\d+ roles/,
-      );
+      const pills = page.locator('[aria-label="Filter by role"] .role-pill');
+      await expect(pills).toHaveCount(6);
+      const nonPill = pills.filter({ hasText: /^Non Contributor$/ });
+      await nonPill.click();
+      await expect(nonPill).toHaveAttribute('aria-pressed', 'false');
 
-      await page.locator('[aria-label="Filter by role"]').click();
-      const roleDialog = page.getByRole('dialog', { name: /Show roles/i });
-      await expect(roleDialog).toBeVisible();
-      await expect(roleDialog.locator('.role-filter__checkbox')).toHaveCount(6);
-      await roleDialog
-        .locator('.role-filter__preset', { hasText: 'Starters' })
-        .click();
-      await roleDialog.getByRole('button', { name: /^Close$/ }).click();
-
-      await expect(page.locator('[aria-label="Filter by role"]')).toHaveText(
-        '2 roles',
-      );
-      const badges = page.locator('[data-testid="role-badge"]');
-      const roleAttrs = await badges.evaluateAll((els) =>
-        els.map((el) => el.getAttribute('data-role')),
-      );
-      for (const role of roleAttrs) {
-        expect(['core_starter', 'starter_when_healthy']).toContain(role);
-      }
-
-      const endInHeader = headerRegion(page).locator('[aria-label="End year"]');
-      await endInHeader.fill('2025');
-      await endInHeader.press('Enter');
+      const endInSubbar = page.locator('[aria-label="End year"]');
+      await endInSubbar.fill('2025');
+      await endInSubbar.press('Enter');
       await expect(page).toHaveURL(/to=2025/);
+      await expect(page).toHaveURL(/from=2022/);
     });
 
-    await test.step('Menu → Team rankings (year params preserved)', async () => {
-      await page.getByRole('button', { name: /open menu/i }).click();
-      await headerMenu(page)
-        .getByRole('button', { name: /^Team rankings$/i })
-        .click();
-
-      await expect(
-        page.locator('[aria-label="Team draft rankings"]'),
-      ).toBeVisible();
+    await test.step('Back to rankings (year params preserved)', async () => {
+      await page.locator('.subbar__crumb', { hasText: 'Rankings' }).click();
+      await expectTeamRankingsMainContent(page);
       await expect(page).toHaveURL(/from=2022/);
       await expect(page).toHaveURL(/to=2025/);
-
-      await expectTeamRankingsMainContent(page);
     });
 
-    await test.step('Menu → By position: year range, intro copy, position filter', async () => {
-      await page.getByRole('button', { name: /open menu/i }).click();
-      await headerMenu(page)
-        .getByRole('link', { name: /^By position$/i })
-        .click();
+    await test.step('Position: headline, year range, tab switch', async () => {
+      await navTab(page, /^Position$/).click();
 
       await expect(page).toHaveURL(/\/position\/QB/);
       await expect(page).toHaveURL(/from=2022/);
       await expect(page).toHaveURL(/to=2025/);
 
       await expect(
-        page.getByRole('heading', {
-          name: /Quarterback \(QB\).*2022.*2025/i,
-        }),
+        page.getByText(/Position File · QB · 2022.2025/i),
       ).toBeVisible();
-      await expectMainContentHasPlayerLists(page);
-
-      await expect(
-        page.getByText(/All quarterback \(QB\) picks in this range/i),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('button', { name: /^team rankings$/i }),
-      ).toBeVisible();
-
-      await expect(
-        page.getByRole('group', {
-          name: /Years shown for player lists below \(same window as team scores\)/i,
-        }),
-      ).toBeVisible();
-      await expect(
-        headerRegion(page).getByText('Player lists below use this range.', {
-          exact: true,
-        }),
-      ).toBeVisible();
-
-      const posSelect = page.getByRole('combobox', {
-        name: /^Select position$/i,
-      });
-      await expect(posSelect).toBeVisible();
-      await posSelect.selectOption('WR');
-      await expect(page).toHaveURL(/\/position\/WR/);
-      await expect(
-        page.getByRole('heading', {
-          name: /Wide receiver \(WR\).*2022.*2025/i,
-        }),
-      ).toBeVisible();
-
-      const startInHeader = headerRegion(page).locator(
-        '[aria-label="Start year"]',
+      await expect(page.locator('.pos-headline')).toContainText(/Quarterback/i);
+      expect(await page.locator('.pos-table tbody tr').count()).toBeGreaterThan(
+        0,
       );
-      await startInHeader.fill('2023');
-      await startInHeader.press('Enter');
-      await expect(page).toHaveURL(/from=2023/);
-      await expect(
-        page.getByRole('heading', {
-          name: /Wide receiver \(WR\).*2023.*2025/i,
-        }),
-      ).toBeVisible();
-
-      await expectMainContentHasPlayerLists(page);
-    });
-
-    await test.step('Menu → Drafts: which-draft header, year picker, intro copy', async () => {
-      await page.getByRole('button', { name: /open menu/i }).click();
-      await headerMenu(page)
-        .getByRole('link', { name: /^Drafts$/i })
-        .click();
-
-      await expect(page).toHaveURL(/\/year\/2025$/);
-      await expect(
-        page.getByRole('heading', { name: /2025 NFL Draft — all picks/i }),
-      ).toBeVisible();
-      await expectMainContentHasPlayerLists(page);
-
-      await expect(
-        page.getByText(/Every pick in draft order \(all teams\)/i),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('button', { name: /^team rankings$/i }),
-      ).toBeVisible();
-
-      await expect(
-        headerRegion(page).getByText('Which draft', { exact: true }),
-      ).toBeVisible();
-      await expect(
-        headerRegion(page).getByText(
-          /Pick a year to load that draft's full pick list/i,
-        ),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('combobox', {
-          name: /draft year \(all picks in that draft\)/i,
-        }),
-      ).toBeVisible();
 
       await page
-        .getByRole('combobox', {
-          name: /draft year \(all picks in that draft\)/i,
-        })
-        .selectOption('2020');
-      await expect(page).toHaveURL(/\/year\/2020$/);
-      await expect(
-        page.getByRole('heading', { name: /2020 NFL Draft — all picks/i }),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('region', { name: /2020 NFL draft — all picks/i }),
-      ).toBeVisible();
+        .locator('.pos-tabstrip [role="tab"]')
+        .filter({ hasText: /^WR$/ })
+        .click();
+      await expect(page).toHaveURL(/\/position\/WR/);
+      await expect(page.locator('.pos-headline')).toContainText(
+        /Wide receiver/i,
+      );
 
-      await expectMainContentHasPlayerLists(page);
+      const startInSubbar = page.locator('[aria-label="Start year"]');
+      await startInSubbar.fill('2023');
+      await startInSubbar.press('Enter');
+      await expect(page).toHaveURL(/from=2023/);
+      await expect(
+        page.getByText(/Position File · WR · 2023.2025/i),
+      ).toBeVisible();
+    });
+
+    await test.step('Draft Year: year view + pick ledger', async () => {
+      await navTab(page, /^Draft Year$/).click();
+      await expect(page).toHaveURL(/\/year\/2025(?:\?|$)/);
+      await expect(page.locator('.year-numeral')).toHaveText('2025');
+      expect(await page.locator('.pick-ledger-row').count()).toBeGreaterThan(0);
     });
   });
 });

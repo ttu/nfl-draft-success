@@ -1,8 +1,67 @@
 import { describe, it, expect } from 'vitest';
 import { getDraftClassMetrics } from './getDraftClassMetrics';
+import { getPlayerDraftScore } from './getPlayerRole';
 import type { DraftClass } from '../types';
 
 describe('getDraftClassMetrics', () => {
+  it('reports draftScore as the mean per-pick draft score across scored picks (ignoring awaiting-data picks)', () => {
+    const draft: DraftClass = {
+      year: 2023,
+      picks: [
+        {
+          playerId: 'p1',
+          playerName: 'Starter',
+          position: 'QB',
+          round: 1,
+          overallPick: 5,
+          teamId: 'KC',
+          seasons: [
+            {
+              year: 2023,
+              gamesPlayed: 16,
+              teamGames: 17,
+              snapShare: 0.9,
+              retained: true,
+            },
+          ],
+        },
+        {
+          playerId: 'p2',
+          playerName: 'Depth',
+          position: 'WR',
+          round: 5,
+          overallPick: 150,
+          teamId: 'KC',
+          seasons: [
+            {
+              year: 2023,
+              gamesPlayed: 4,
+              teamGames: 17,
+              snapShare: 0.2,
+              retained: true,
+            },
+          ],
+        },
+        {
+          playerId: 'rook',
+          playerName: 'Awaiting data',
+          position: 'RB',
+          round: 3,
+          overallPick: 90,
+          teamId: 'KC',
+          seasons: [],
+        },
+      ],
+    };
+
+    const scored = draft.picks.filter((p) => p.seasons.length > 0);
+    const expected =
+      scored.reduce((sum, p) => sum + getPlayerDraftScore(p), 0) /
+      scored.length;
+
+    expect(getDraftClassMetrics(draft, 'KC').draftScore).toBeCloseTo(expected);
+  });
+
   it('returns total picks, core starter count, contributor count, retention count, rates', () => {
     const draft: DraftClass = {
       year: 2023,

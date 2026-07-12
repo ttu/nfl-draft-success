@@ -1,12 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { SiteIntroContent } from '../../content/siteIntro';
+import { RoleChip } from '../design/Primitives';
 
 const GITHUB_URL = 'https://github.com/ttu/nfl-draft-success';
-const CONTACT_EMAIL = 'contact@nfldraftsuccess.com';
 
 export interface InfoViewProps {
   onClose: () => void;
-  /** Formatted like "30 April 2026" (set from App after loading `data-meta.json`) */
   dataLastUpdatedDate?: string | null;
 }
 
@@ -30,251 +28,255 @@ export function InfoView({
   }, [onClose]);
 
   return (
-    <div
-      className="info-view__overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="info-view-title"
-    >
-      <div className="info-view__backdrop" onClick={onClose} aria-hidden />
-      <div className="info-view__popup">
-        <div className="info-view__header">
-          <h2 id="info-view-title">About NFL Draft Success</h2>
+    <>
+      <div
+        className="info-backdrop"
+        role="presentation"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div
+        className="info-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="info-sheet-title"
+      >
+        <header className="info-sheet__head">
+          <div>
+            <div className="kicker" style={{ marginBottom: 6 }}>
+              Methodology · Glossary · Data
+            </div>
+            <h1 id="info-sheet-title" className="info-sheet__title">
+              How the Index is built.
+            </h1>
+          </div>
           <button
             ref={closeRef}
             type="button"
+            className="info-sheet__close"
             onClick={onClose}
-            className="info-view__close"
-            aria-label="Close"
+            aria-label="Close methodology"
           >
-            ×
+            CLOSE ✕
           </button>
-        </div>
-        <div className="info-view__body">
-          <section
-            className="info-view__intro"
-            aria-labelledby="info-view-intro-title"
-          >
-            <h3 id="info-view-intro-title">What this site is</h3>
-            <SiteIntroContent />
-          </section>
+        </header>
+        <div className="info-sheet__body">
+          <div className="info-grid">
+            <div>
+              <h2 className="info-section-title">The signals we use</h2>
+              <p
+                style={{
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  color: 'var(--ink-2)',
+                  maxWidth: 640,
+                }}
+              >
+                Three honest measures: <b>snap share</b> (how often a drafted
+                player is on the field), <b>games played</b> (availability), and{' '}
+                <b>retention</b> (whether the player is still on the roster).
+                Snap share and games played combine into the draft success score
+                — impact on a 0–100 scale. Retention is reported alongside it as
+                its own number, so keeping your draftees stays a separate,
+                visible signal rather than being folded in.
+              </p>
 
-          <section>
-            <h3>Open Source</h3>
-            <p>
-              This is an open source project. You can contribute code, report
-              bugs, or request new features on GitHub.
-            </p>
-            <p>
-              <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-                {GITHUB_URL}
-              </a>
-            </p>
-            <p>
-              You can also contact us via email at{' '}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-            </p>
-          </section>
+              <h2 className="info-section-title" style={{ marginTop: 32 }}>
+                Role classification
+              </h2>
+              <table className="info-role-table">
+                <thead>
+                  <tr>
+                    <th>Role</th>
+                    <th className="right">Snap %</th>
+                    <th className="right">Games</th>
+                    <th>Meaning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <RoleRow
+                    role="core"
+                    snap="≥ 65%"
+                    games="≥ 50% of team"
+                    desc="Full-time, healthy"
+                  />
+                  <RoleRow
+                    role="shw"
+                    snap="≥ 65%"
+                    games="< 50% of team"
+                    desc="Starter role, missed time"
+                  />
+                  <RoleRow
+                    role="sig"
+                    snap="≥ 35%"
+                    games="any"
+                    desc="Rotation / package player"
+                  />
+                  <RoleRow
+                    role="dep"
+                    snap="10–35%"
+                    games="any"
+                    desc="Backup / special teams"
+                  />
+                  <RoleRow
+                    role="non"
+                    snap="< 10%"
+                    games="any"
+                    desc="Inactive most weeks"
+                  />
+                </tbody>
+              </table>
 
-          <section>
-            <h3>How the Calculation Works</h3>
-            <h4>Role classification</h4>
-            <p>
-              Each season row in a player&apos;s career table has two snap
-              columns:
-            </p>
-            <ul>
-              <li>
-                <strong>Avg snap</strong> — Average <em>role share</em> in games
-                where you had at least one snap: each week we take the higher of
-                offensive or defensive snap percentage (and for kickers,
-                punters, and long snappers, the max includes special teams). We
-                average those weekly values. This reads like &ldquo;when you
-                played, how big was your role?&rdquo;
-              </li>
-              <li>
-                <strong>Load</strong> — <em>Season snap load</em>: your season
-                scrimmage snaps (ST included for specialists) divided by your
-                primary team&apos;s <strong>full-season</strong> snap capacity
-                (every game that team played). Weeks you don&apos;t play add no
-                snaps to the numerator but the full schedule stays in the
-                denominator, so part-time seasons read lower than playing every
-                week. Weeks on the official injury report can reduce that
-                denominator (up to games you missed), so injury absences
-                don&apos;t hurt Load as much as healthy scratches. If you were
-                traded mid-season, the script uses a games-played-only ratio
-                instead. <strong>Role tiers</strong> use Load (capped at Avg
-                snap when Load would exceed it), except kickers, punters, and
-                long snappers — for them tiers use <strong>Avg snap</strong>{' '}
-                because Load vs the entire team&apos;s snap pool is not
-                comparable to these bands.
-              </li>
-            </ul>
-            <p>
-              Kickers, punters, and long snappers include special teams in those
-              calculations so their usage is measured fairly; other positions do
-              not use ST-only weeks to inflate offense/defense role share.
-            </p>
-            <p>
-              Each player is classified into one of six roles using the same
-              percentage thresholds: for most positions the input is season
-              Load; for K/P/LS it is Avg snap. Games played still apply (e.g.
-              Core Starter needs half the team schedule).
-            </p>
-            <ul>
-              <li>
-                <strong>Core Starter</strong> – Effective share ≥65% and played
-                in ≥50% of team games
-              </li>
-              <li>
-                <strong>Starter when healthy</strong> – Effective share ≥65% but
-                played in &lt;50% of team games (e.g., injured)
-              </li>
-              <li>
-                <strong>Significant Contributor</strong> – Effective share ≥35%
-                (≥32% for kickers, punters, long snappers) and played in at
-                least 2 games (single-game samples map to Contributor or lower)
-              </li>
-              <li>
-                <strong>Contributor</strong> – Effective share at least 20% and
-                below the SC threshold (rotation / primary backup usage)
-              </li>
-              <li>
-                <strong>Depth</strong> – Effective share at least 10% and below
-                20%
-              </li>
-              <li>
-                <strong>Non Contributor</strong> – Effective share &lt;10%
-              </li>
-            </ul>
-            <p>
-              Overall role comes from the <strong>average</strong> of each
-              season&apos;s role weight (0–4). Strong years and weak or inactive
-              years blend together, so a pick that was a star for several
-              seasons but missed a full year will land below a steady starter.
-              Core Starter % uses the same representative role (mean-based), not
-              a separate peak-only tally.
-            </p>
+              <h2 className="info-section-title" style={{ marginTop: 32 }}>
+                The score, formally
+              </h2>
+              <pre className="info-formula">{`score(pick)   = clamp( w_s · snapShare + w_a · availability, 0, 1 ) × 100
+score(class)  = mean( score(pick) for pick in class )
+score(team)   = mean( score(pick) for pick in range )
+retention     = retained_players / picks_in_range   (reported separately)
+weights       = w_s 0.7, w_a 0.3   (snap share is the heavier signal)`}</pre>
 
-            <h4>Role weights &amp; score</h4>
-            <table className="info-view__table">
-              <thead>
-                <tr>
-                  <th>Role</th>
-                  <th>Weight</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Core Starter</td>
-                  <td>4</td>
-                </tr>
-                <tr>
-                  <td>Starter when healthy</td>
-                  <td>4</td>
-                </tr>
-                <tr>
-                  <td>Significant Contributor</td>
-                  <td>3</td>
-                </tr>
-                <tr>
-                  <td>Contributor</td>
-                  <td>2</td>
-                </tr>
-                <tr>
-                  <td>Depth</td>
-                  <td>1</td>
-                </tr>
-                <tr>
-                  <td>Non Contributor</td>
-                  <td>0</td>
-                </tr>
-              </tbody>
-            </table>
-            <p>
-              <strong>Rolling draft score</strong> (over your selected season
-              span) = (sum of player role weights) ÷ (total picks). Core Starter
-              % and Retention % are computed as the share of picks that reached
-              that status.
-            </p>
-            <p>
-              <strong>Retention</strong> means the player is still on the
-              drafting team (same franchise). Relocations (STL→LAR, SD→LAC,
-              OAK→LV) are handled.
-            </p>
-          </section>
+              <h2 className="info-section-title" style={{ marginTop: 32 }}>
+                Caveats
+              </h2>
+              <ul
+                style={{
+                  paddingLeft: 18,
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  color: 'var(--ink-2)',
+                }}
+              >
+                <li>
+                  Players are credited to the team that <em>drafted</em> them —
+                  trades don't change accounting.
+                </li>
+                <li>
+                  Quarterbacks behind a healthy starter score lower on snap
+                  share. The index measures <em>what happened</em>, not what
+                  might.
+                </li>
+                <li>
+                  The current season is partial; figures update as the schedule
+                  progresses.
+                </li>
+                <li>
+                  <em>Load</em> excuses injury absences: games missed while on
+                  the injury report are dropped from the denominator, so a
+                  starter who plays every snap when healthy keeps a high Load
+                  despite missing time.
+                </li>
+              </ul>
+            </div>
 
-          <section>
-            <h3>Data Sources</h3>
-            <p>
-              All draft and player data comes from{' '}
+            <aside>
+              <h2 className="info-section-title">Data sources</h2>
+              <div
+                style={{
+                  background: 'var(--card)',
+                  border: '1px solid var(--rule)',
+                  padding: '16px 18px',
+                  borderRadius: 2,
+                }}
+              >
+                <Source
+                  name="nflverse-data"
+                  desc="Draft picks, snap counts, weekly games"
+                />
+                <Source name="rosters" desc="Active roster status" />
+                <Source name="injuries" desc="Weekly injury report" />
+              </div>
+
+              <h2 className="info-section-title" style={{ marginTop: 28 }}>
+                Coverage
+              </h2>
+              <div className="info-kv">
+                <span>Teams</span>
+                <span>32 / 32</span>
+              </div>
+              <div className="info-kv">
+                <span>Years</span>
+                <span>2018 – 2026</span>
+              </div>
+              {dataLastUpdatedDate && (
+                <div className="info-kv">
+                  <span>Last updated</span>
+                  <span>{dataLastUpdatedDate}</span>
+                </div>
+              )}
+
+              <h2 className="info-section-title" style={{ marginTop: 28 }}>
+                Source
+              </h2>
               <a
-                href="https://github.com/nflverse/nflverse-data"
+                className="fab-link"
+                href={GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{ width: '100%', justifyContent: 'space-between' }}
               >
-                nflverse
+                <span>↗ GitHub · ttu/nfl-draft-success</span>
+                <span>Open</span>
               </a>
-              , an open NFL data project.
-            </p>
-            <ul>
-              <li>
-                <strong>Draft picks</strong> – Who was drafted, when, and by
-                which team
-              </li>
-              <li>
-                <strong>Snap counts</strong> – Games played and snap share
-                (offense, defense, special teams) per player per season
-              </li>
-              <li>
-                <strong>Injury reports</strong> – Used to infer team affiliation
-                when a player has no snaps (e.g., season-long injury)
-              </li>
-              <li>
-                <strong>Player headshots</strong> – Embedded in nflverse players
-                dataset
-              </li>
-            </ul>
-            <p>
-              Data is pre-processed and stored as JSON in{' '}
-              <code>public/data/draft-&#123;year&#125;.json</code>. Run{' '}
-              <code>npm run update-data</code> to regenerate from nflverse.
-            </p>
-            {dataLastUpdatedDate && (
-              <p>
-                <strong>Data last updated:</strong> {dataLastUpdatedDate}
-              </p>
-            )}
-            <h4>Images</h4>
-            <ul>
-              <li>
-                <strong>Team logos</strong> – Courtesy of{' '}
-                <a
-                  href="https://www.sportslogos.net/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  SportsLogos.net
-                </a>
-              </li>
-              <li>
-                <strong>Player headshots</strong> – URLs from nflverse players
-                dataset (hosted by nflverse/source providers)
-              </li>
-              <li>
-                <strong>Depth chart link</strong> – Links to ESPN.com depth
-                chart for the selected team
-              </li>
-            </ul>
-            <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
-              Team logos are the property of their respective owners. We do not
-              own these logos and use them under a fair use argument: small
-              resolution images for educational purposes only, which do not
-              impact the economic viability of the logos for their owners. This
-              is not legal advice.
-            </p>
-          </section>
+            </aside>
+          </div>
         </div>
+      </div>
+    </>
+  );
+}
+
+function RoleRow({
+  role,
+  snap,
+  games,
+  desc,
+}: {
+  role: 'core' | 'shw' | 'sig' | 'dep' | 'non' | 'gone';
+  snap: string;
+  games: string;
+  desc: string;
+}) {
+  const mappedRole =
+    role === 'core'
+      ? 'core_starter'
+      : role === 'shw'
+        ? 'starter_when_healthy'
+        : role === 'sig'
+          ? 'significant_contributor'
+          : role === 'dep'
+            ? 'depth'
+            : role === 'non'
+              ? 'non_contributor'
+              : 'gone';
+  return (
+    <tr>
+      <td>
+        <RoleChip role={mappedRole} />
+      </td>
+      <td className="right">{snap}</td>
+      <td className="right">{games}</td>
+      <td>{desc}</td>
+    </tr>
+  );
+}
+
+function Source({ name, desc }: { name: string; desc: string }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '8px 0',
+        borderBottom: '1px dotted var(--rule-2)',
+        fontSize: 12,
+      }}
+    >
+      <div>
+        <div className="mono" style={{ fontWeight: 700 }}>
+          {name}
+        </div>
+        <div style={{ color: 'var(--ink-3)', fontSize: 11 }}>{desc}</div>
       </div>
     </div>
   );

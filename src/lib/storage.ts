@@ -41,53 +41,47 @@ export function saveRoleFilter(roleFilter: string[]): void {
   }
 }
 
-const SHOW_DEPARTED_KEY = 'nfl-draft-success-show-departed';
-
 /**
- * Load persisted showDeparted toggle. Returns false if not stored or invalid.
+ * Builds a load/save pair for a boolean flag persisted under `key`. Loading
+ * returns `false` when nothing is stored or the value is not strictly `true`
+ * (including parse errors); saving swallows quota / private-mode errors.
  */
-export function loadShowDeparted(): boolean {
-  try {
-    const raw = localStorage.getItem(SHOW_DEPARTED_KEY);
-    if (raw === null) return false;
-    const parsed = JSON.parse(raw) as unknown;
-    return parsed === true;
-  } catch {
-    return false;
-  }
+function boolFlag(key: string): {
+  load: () => boolean;
+  save: (value: boolean) => void;
+} {
+  return {
+    load: () => {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) return false;
+        return (JSON.parse(raw) as unknown) === true;
+      } catch {
+        return false;
+      }
+    },
+    save: (value: boolean) => {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch {
+        // ignore quota / private mode errors
+      }
+    },
+  };
 }
 
-/**
- * Persist showDeparted toggle.
- */
-export function saveShowDeparted(value: boolean): void {
-  try {
-    localStorage.setItem(SHOW_DEPARTED_KEY, JSON.stringify(value));
-  } catch {
-    // ignore quota / private mode errors
-  }
-}
+/** Persisted "show departed players" toggle. Defaults to false. */
+export const { load: loadShowDeparted, save: saveShowDeparted } = boolFlag(
+  'nfl-draft-success-show-departed',
+);
 
-const LANDING_INTRO_DISMISSED_KEY = 'nfl-draft-success-landing-intro-dismissed';
+/** Whether the user closed the landing-page site intro banner. Defaults to false. */
+export const {
+  load: loadLandingIntroDismissed,
+  save: saveLandingIntroDismissed,
+} = boolFlag('nfl-draft-success-landing-intro-dismissed');
 
-/**
- * Whether the user closed the landing-page site intro banner (persisted).
- */
-export function loadLandingIntroDismissed(): boolean {
-  try {
-    const raw = localStorage.getItem(LANDING_INTRO_DISMISSED_KEY);
-    if (raw === null) return false;
-    const parsed = JSON.parse(raw) as unknown;
-    return parsed === true;
-  } catch {
-    return false;
-  }
-}
-
-export function saveLandingIntroDismissed(value: boolean): void {
-  try {
-    localStorage.setItem(LANDING_INTRO_DISMISSED_KEY, JSON.stringify(value));
-  } catch {
-    // ignore quota / private mode errors
-  }
-}
+/** Persisted dark-mode preference. Defaults to false. */
+export const { load: loadDarkMode, save: saveDarkMode } = boolFlag(
+  'nfl-draft-success-dark-mode',
+);
