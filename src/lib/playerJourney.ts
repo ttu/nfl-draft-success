@@ -23,6 +23,16 @@ export function getCurrentTeam(pick: DraftPick): string | undefined {
   return getLatestSeason(pick)?.currentTeam;
 }
 
+/**
+ * Current-team indicator for the player hero: `null` when the player is still
+ * with their drafting team, otherwise the team they are now on ('FA' when a
+ * free agent).
+ */
+export function getCurrentTeamIndicator(pick: DraftPick): string | null {
+  if (!isDeparted(pick)) return null;
+  return getCurrentTeam(pick) ?? 'FA';
+}
+
 /** Team a season was played for: drafting team if retained, otherwise currentTeam or 'FA'. */
 export function getSeasonTeamAbbreviation(
   season: Season,

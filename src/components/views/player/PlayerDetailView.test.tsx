@@ -61,6 +61,52 @@ describe('PlayerDetailView specialist role classification', () => {
   });
 });
 
+describe('PlayerDetailView current-team indicator', () => {
+  it('shows "now with" the current team when the player has departed', () => {
+    const departed: DraftPick = {
+      ...kicker,
+      seasons: [
+        {
+          year: 2024,
+          gamesPlayed: 16,
+          teamGames: 17,
+          snapShare: 0.5,
+          retained: true,
+        },
+        {
+          year: 2025,
+          gamesPlayed: 16,
+          teamGames: 17,
+          snapShare: 0.5,
+          retained: false,
+          currentTeam: 'ATL',
+        },
+      ],
+    };
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={departed}
+          draftYear={2024}
+          draftClasses={[{ year: 2024, picks: [departed] }]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/drafted by MIN/i)).toBeInTheDocument();
+    // The hero pill names the current team (ATL also appears in the career
+    // table's latest season row, so scope the assertion to the pill).
+    const nowPill = screen.getByText(/now with/i).closest('.player-hero__now');
+    expect(nowPill).toHaveTextContent('ATL');
+  });
+
+  it('does not show a current-team indicator when still with the drafting team', () => {
+    renderView();
+    expect(screen.queryByText(/now with/i)).toBeNull();
+    expect(screen.queryByText(/now a free agent/i)).toBeNull();
+  });
+});
+
 describe('PlayerDetailView Pro Football Reference link', () => {
   it('links to the PFR career page for a matched player id', () => {
     renderView();

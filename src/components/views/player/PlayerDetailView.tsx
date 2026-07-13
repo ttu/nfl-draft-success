@@ -15,6 +15,7 @@ import { getPlayerRole } from '../../../lib/getPlayerRole';
 import { classifyRole } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
+import { getCurrentTeamIndicator } from '../../../lib/playerJourney';
 import { getPfrUrl } from '../../../lib/playerDisplay';
 import {
   getPositionCohort,
@@ -42,6 +43,7 @@ export function PlayerDetailView({
   const color = teamColor(pick.teamId);
   const fg = teamFg(color);
   const role = getPlayerRole(pick, { draftingTeamOnly });
+  const currentTeam = getCurrentTeamIndicator(pick);
   const roleCls = roleDesignClass(role);
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
   const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
@@ -96,6 +98,18 @@ export function PlayerDetailView({
               >
                 {team?.name} · drafted by {pick.teamId}
               </span>
+              {currentTeam &&
+                (currentTeam === 'FA' ? (
+                  <span className="player-hero__now">now a free agent</span>
+                ) : (
+                  <span className="player-hero__now">
+                    now with
+                    <TeamLogo teamId={currentTeam} size={16} ring={false} />
+                    <span className="mono" style={{ fontWeight: 700 }}>
+                      {currentTeam}
+                    </span>
+                  </span>
+                ))}
             </div>
           </div>
           <div className="player-hero__role-col">

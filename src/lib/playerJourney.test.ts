@@ -4,6 +4,7 @@ import {
   getLatestSeason,
   isDeparted,
   getCurrentTeam,
+  getCurrentTeamIndicator,
   getSeasonTeamAbbreviation,
   isFreeAgentSeason,
   getTeamJourney,
@@ -63,6 +64,29 @@ describe('isDeparted / getCurrentTeam', () => {
     const p = pick([season(2023)]);
     expect(isDeparted(p)).toBe(false);
     expect(getCurrentTeam(p)).toBeUndefined();
+  });
+});
+
+describe('getCurrentTeamIndicator', () => {
+  it('returns null when the player is still with the drafting team', () => {
+    expect(getCurrentTeamIndicator(pick([season(2023)]))).toBeNull();
+  });
+
+  it('returns the current team when departed to a new team', () => {
+    const p = pick([
+      season(2022),
+      season(2023, { retained: false, currentTeam: 'ATL' }),
+    ]);
+    expect(getCurrentTeamIndicator(p)).toBe('ATL');
+  });
+
+  it('returns "FA" when departed without a current team', () => {
+    const p = pick([season(2023, { retained: false })]);
+    expect(getCurrentTeamIndicator(p)).toBe('FA');
+  });
+
+  it('returns null when there are no seasons', () => {
+    expect(getCurrentTeamIndicator(pick([]))).toBeNull();
   });
 });
 
