@@ -714,6 +714,18 @@ button {
   font-weight: 400;
 }
 
+.trend-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.trend-cell__range {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: var(--ink-4);
+  white-space: nowrap;
+}
+
 .score-big {
   font-family: var(--f-mono);
   font-size: 17px;
@@ -1990,6 +2002,10 @@ button {
   .rankings-table td.hide-md {
     display: none;
   }
+  /* Collapse the hidden columns' reserved width so remaining columns fill. */
+  .rankings-table col.col-hide-md {
+    width: 0 !important;
+  }
   .rankings-foot {
     padding: 16px 24px 24px;
   }
@@ -2190,6 +2206,9 @@ button {
   .rankings-table th.hide-mobile,
   .rankings-table td.hide-mobile {
     display: none;
+  }
+  .rankings-table col.col-hide-mobile {
+    width: 0 !important;
   }
   .rankings-foot {
     padding: 16px;

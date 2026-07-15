@@ -1,18 +1,19 @@
 import { TEAMS } from '../../../data/teams';
-import {
-  TeamLogo,
-  Sparkline,
-  HeatRow,
-  Delta,
-  teamColor,
-} from '../../design/Primitives';
+import { TeamLogo, Sparkline, Delta, teamColor } from '../../design/Primitives';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 
 export interface TeamRankingsViewProps {
   rankings: TeamRanking[];
   yearCount: number;
+  startYear: number;
+  endYear: number;
   onTeamSelect: (teamId: string) => void;
   onBack?: () => void;
+}
+
+/** Two-digit season suffix, e.g. 2021 → "'21". */
+function seasonTag(year: number): string {
+  return `'${String(year % 100).padStart(2, '0')}`;
 }
 
 interface ExtendedRanking extends TeamRanking {
@@ -26,6 +27,8 @@ interface ExtendedRanking extends TeamRanking {
 export function TeamRankingsView({
   rankings,
   yearCount,
+  startYear,
+  endYear,
   onTeamSelect,
 }: TeamRankingsViewProps) {
   const top = rankings[0] as ExtendedRanking | undefined;
@@ -97,11 +100,10 @@ export function TeamRankingsView({
             <col style={{ width: 38 }} />
             <col />
             <col style={{ width: 90 }} />
-            <col style={{ width: 70 }} />
-            <col style={{ width: 130 }} />
-            <col style={{ width: 70 }} />
-            <col style={{ width: 70 }} />
-            <col style={{ width: 110 }} />
+            <col className="col-hide-md" style={{ width: 70 }} />
+            <col className="col-hide-mobile" style={{ width: 190 }} />
+            <col className="col-hide-mobile" style={{ width: 80 }} />
+            <col className="col-hide-mobile" style={{ width: 80 }} />
           </colgroup>
           <thead>
             <tr>
@@ -110,10 +112,11 @@ export function TeamRankingsView({
               <th>Team</th>
               <th className="right">Score</th>
               <th className="right hide-md">Picks</th>
-              <th className="hide-mobile">Trend</th>
+              <th className="hide-mobile">
+                Score · {seasonTag(startYear)} → {seasonTag(endYear)}
+              </th>
               <th className="right hide-mobile">Core %</th>
               <th className="right hide-mobile">Retained</th>
-              <th className="right hide-md">Heat</th>
             </tr>
           </thead>
           <tbody>
@@ -216,7 +219,12 @@ function RankRow({
       </td>
       <td className="hide-mobile">
         {trend ? (
-          <Sparkline values={trend} width={92} height={22} stroke={color} />
+          <div className="trend-cell">
+            <Sparkline values={trend} width={92} height={22} stroke={color} />
+            <span className="trend-cell__range mono tnum">
+              {Math.round(trend[0])}→{Math.round(trend[trend.length - 1])}
+            </span>
+          </div>
         ) : (
           <span style={{ color: 'var(--ink-4)' }}>—</span>
         )}
@@ -232,11 +240,6 @@ function RankRow({
             ? `${(r.retentionRate * 100).toFixed(0)}%`
             : '—'}
         </span>
-      </td>
-      <td className="right hide-md">
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {trend ? <HeatRow values={trend} width={92} height={14} /> : null}
-        </div>
       </td>
     </tr>
   );

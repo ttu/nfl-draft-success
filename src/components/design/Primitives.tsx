@@ -351,48 +351,6 @@ export function Sparkline({
   );
 }
 
-interface HeatRowProps {
-  values: number[];
-  width?: number;
-  height?: number;
-  max?: number;
-}
-
-export function HeatRow({
-  values,
-  width = 88,
-  height = 14,
-  max = 100,
-}: HeatRowProps) {
-  const n = values.length;
-  if (n === 0) return null;
-  const cellW = width / n;
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      style={{ display: 'block' }}
-    >
-      {values.map((v, i) => {
-        const t = Math.max(0, Math.min(1, v / max));
-        const lightness = 0.94 - t * 0.5;
-        const chroma = 0.02 + t * 0.13;
-        return (
-          <rect
-            key={i}
-            x={i * cellW + 0.5}
-            y={0.5}
-            width={cellW - 1}
-            height={height - 1}
-            fill={`oklch(${lightness} ${chroma} 22)`}
-          />
-        );
-      })}
-    </svg>
-  );
-}
-
 export function Delta({ value }: { value: number | null | undefined }) {
   if (value == null || value === 0) {
     return <span className="delta delta--zero">—</span>;

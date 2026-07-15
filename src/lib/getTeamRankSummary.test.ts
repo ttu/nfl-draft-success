@@ -132,3 +132,93 @@ describe('getTeamRankSummary', () => {
     expect(s!.total).toBe(3);
   });
 });
+
+/** A single scored pick for a team in a season. */
+function scoredPick(
+  teamId: string,
+  id: string,
+  snapShare: number,
+  year: number,
+) {
+  return {
+    playerId: id,
+    playerName: id,
+    position: 'QB',
+    round: 1,
+    overallPick: 1,
+    teamId,
+    seasons: [
+      { year, gamesPlayed: 17, teamGames: 17, snapShare, retained: true },
+    ],
+  };
+}
+
+describe('getTeamRankSummary extended per-team stats', () => {
+  const twoTeams: Team[] = teamsStub.slice(0, 2); // A, B
+
+  /**
+   * Two-year window where the ordering flips between years:
+   *   2021 → B strong, A weak    2022 → A strong, B weak
+   * Full-window means are symmetric (A and B tie), but the prior window
+   * (2021 only) ranks B above A, so A moves up when 2022 is added.
+   */
+  function flipDraftClasses(): DraftClass[] {
+    return [
+      {
+        year: 2021,
+        picks: [
+          scoredPick('A', 'a21', 0.3, 2021),
+          scoredPick('B', 'b21', 0.95, 2021),
+        ],
+      },
+      {
+        year: 2022,
+        picks: [
+          scoredPick('A', 'a22', 0.95, 2022),
+          scoredPick('B', 'b22', 0.3, 2022),
+        ],
+      },
+    ];
+  }
+
+  it('populates picks, coreRate and retentionRate for each team', () => {
+    const s = getTeamRankSummary(flipDraftClasses(), twoTeams, 'A', {
+      draftingTeamOnly: true,
+    });
+    const a = s!.rankings.find((r) => r.teamId === 'A')!;
+    expect(a.picks).toBe(2);
+    expect(a.coreRate).toBeGreaterThanOrEqual(0);
+    expect(a.coreRate).toBeLessThanOrEqual(1);
+    expect(a.retentionRate).toBe(1);
+  });
+
+  it('builds a per-year trend, oldest to newest, over years with scored picks', () => {
+    const s = getTeamRankSummary(flipDraftClasses(), twoTeams, 'A', {
+      draftingTeamOnly: true,
+    });
+    const a = s!.rankings.find((r) => r.teamId === 'A')!;
+    expect(a.trend).toHaveLength(2);
+    // A improved from 2021 (0.3 snaps) to 2022 (0.95 snaps)
+    expect(a.trend[1]).toBeGreaterThan(a.trend[0]);
+  });
+
+  it('computes YoY change vs the prior window (dropping the most recent year)', () => {
+    const s = getTeamRankSummary(flipDraftClasses(), twoTeams, 'A', {
+      draftingTeamOnly: true,
+    });
+    const a = s!.rankings.find((r) => r.teamId === 'A')!;
+    const b = s!.rankings.find((r) => r.teamId === 'B')!;
+    // Prior (2021 only): B rank 1, A rank 2. Full window: A and B tie at rank 1.
+    expect(a.change).toBe(1); // A moved up one spot
+    expect(b.change).toBe(0);
+  });
+
+  it('leaves change undefined when there is no prior window (single year)', () => {
+    const s = getTeamRankSummary(minimalDraftClasses(), teamsStub, 'A', {
+      draftingTeamOnly: true,
+    });
+    for (const r of s!.rankings) {
+      expect(r.change).toBeUndefined();
+    }
+  });
+});

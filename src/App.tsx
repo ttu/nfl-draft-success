@@ -769,6 +769,8 @@ function renderMainContent(a: RenderMainArgs) {
       <TeamRankingsView
         rankings={a.defaultRankings.rankings}
         yearCount={a.yearCount}
+        startYear={a.startYear}
+        endYear={a.endYear}
         onTeamSelect={a.handleTeamSelect}
         onBack={a.selectedTeam ? a.handleShowRankings : undefined}
       />
@@ -783,6 +785,8 @@ function renderMainContent(a: RenderMainArgs) {
       <TeamRankingsView
         rankings={a.teamRank.rankings}
         yearCount={a.yearCount}
+        startYear={a.startYear}
+        endYear={a.endYear}
         onTeamSelect={a.handleTeamSelect}
         onBack={a.selectedTeam ? a.handleShowRankings : undefined}
       />
