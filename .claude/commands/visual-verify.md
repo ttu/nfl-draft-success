@@ -1,6 +1,6 @@
 ---
 description: Run visual verification loop — takes screenshots, analyzes UI/UX, fixes issues autonomously
-allowed-tools: Bash(npm:*), Bash(npx:*), Bash(kill:*), Bash(mkdir:*), Bash(lsof:*), Read, Write, Edit, Glob, Grep, mcp__playwright__*
+allowed-tools: Bash(pnpm:*), Bash(npm:*), Bash(npx:*), Bash(kill:*), Bash(mkdir:*), Bash(lsof:*), Read, Write, Edit, Glob, Grep, mcp__playwright__*
 ---
 
 # Visual Verification Loop
@@ -10,21 +10,21 @@ You MUST follow this procedure exactly. Zero tolerance — every issue found mus
 ## Prerequisites
 
 - Playwright MCP server is configured in `.claude/settings.json`
-- The app can be started with `npm run dev`
+- The app can be started with `pnpm dev`
 
 ## Procedure
 
 ### Phase 0: Setup
 
 1. Create a session folder: `verification-sessions/YYYYMMDD-HHMMSS-{context}/` where `{context}` is a short description of what's being verified (e.g. `homepage`, `team-page`, `post-refactor`)
-2. Start the Vite dev server in background: `npm run dev` (record PID)
+2. Start the Vite dev server in background: `pnpm dev` (record PID)
 3. Write a `session.md` file in the session folder documenting: start time, what's being verified, services started with PIDs
 
 ### Phase 1: Homepage & Navigation Verification
 
 **Repeat up to 2 times or until clean:**
 
-1. Navigate to `http://localhost:5173/` using `browser_navigate`
+1. Navigate to `http://localhost:3273/` using `browser_navigate`
 2. Wait for page to fully load
 3. Take a full-page screenshot → save to session folder as `phase1-homepage-{attempt}.png`
 4. Read and analyze the screenshot for:

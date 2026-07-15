@@ -2,16 +2,16 @@
 set -e
 
 # Format and lint staged files
-npx lint-staged
+pnpm exec lint-staged
 
 # Type-check all files
-npm run type-check
+pnpm run type-check
 
 # Run tests
-npm test
+pnpm run test
 
 # Build check
-npm run build
+pnpm run build
 
 # E2E tests (requires build above)
-npm run test:e2e
+pnpm run test:e2e

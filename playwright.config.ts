@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  * Use `E2E_BASE_URL=http://localhost:4173` (or `npm run test:e2e:preview`) to test `dist/` via `vite preview`.
  * Remote example: `https://www.nfldraftsuccess.com`
  */
-const LOCAL_DEV = 'http://localhost:3000';
+const LOCAL_DEV = 'http://localhost:3273';
 const LOCAL_PREVIEW = 'http://localhost:4173';
 const baseURL = process.env.E2E_BASE_URL?.trim() || LOCAL_DEV;
 
@@ -19,8 +19,7 @@ function isLocalBaseURL(url: string): boolean {
 }
 
 function localWebServer():
-  | { command: string; url: string; reuseExistingServer: boolean }
-  | undefined {
+  { command: string; url: string; reuseExistingServer: boolean } | undefined {
   if (!isLocalBaseURL(baseURL)) return undefined;
   let u: URL;
   try {
@@ -32,15 +31,15 @@ function localWebServer():
 
   if (port === '4173') {
     return {
-      command: 'npm run preview',
+      command: 'pnpm run preview',
       url: LOCAL_PREVIEW,
       reuseExistingServer: !process.env.CI,
     };
   }
 
-  if (port === '3000') {
+  if (port === '3273') {
     return {
-      command: 'npm run dev',
+      command: 'pnpm run dev',
       url: LOCAL_DEV,
       reuseExistingServer: !process.env.CI,
     };

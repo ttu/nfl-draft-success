@@ -5,13 +5,13 @@
 ### Prerequisites
 
 - Node.js 20+
-- npm
+- [pnpm](https://pnpm.io/) 10+ (version pinned in `package.json` / `.tool-versions`; run `corepack enable pnpm` or install via your version manager)
 
 ### Create Project
 
 ```bash
-npm create vite@latest . -- --template react-ts
-npm install
+pnpm create vite@latest . --template react-ts
+pnpm install
 ```
 
 ### Install Dependencies
@@ -24,33 +24,33 @@ See [architecture.md](architecture.md) for full dev dependency list. Key additio
 
 ## Scripts
 
-| Command                | Description                  |
-| ---------------------- | ---------------------------- |
-| `npm run dev`          | Start dev server             |
-| `npm run build`        | Production build             |
-| `npm run preview`      | Preview production build     |
-| `npm run lint`         | ESLint (zero warnings)       |
-| `npm run lint:fix`     | Fix ESLint issues            |
-| `npm run format`       | Format with Prettier         |
-| `npm run format:check` | Check formatting             |
-| `npm run type-check`   | TypeScript check             |
-| `npm test`             | Run Vitest                   |
-| `npm run test:watch`   | Vitest watch mode            |
-| `npm run validate`     | Format + lint + test + build |
-| `npm run update-data`  | Update JSON from nflverse    |
+| Command             | Description                  |
+| ------------------- | ---------------------------- |
+| `pnpm dev`          | Start dev server             |
+| `pnpm build`        | Production build             |
+| `pnpm preview`      | Preview production build     |
+| `pnpm lint`         | ESLint (zero warnings)       |
+| `pnpm lint:fix`     | Fix ESLint issues            |
+| `pnpm format`       | Format with Prettier         |
+| `pnpm format:check` | Check formatting             |
+| `pnpm type-check`   | TypeScript check             |
+| `pnpm test`         | Run Vitest                   |
+| `pnpm test:watch`   | Vitest watch mode            |
+| `pnpm validate`     | Format + lint + test + build |
+| `pnpm update-data`  | Update JSON from nflverse    |
 
 ## Data Updates
 
-Run `npm run update-data` to fetch nflverse data and regenerate `public/data/draft-{year}.json`. See [data model](datamodel.md) and plan for schema.
+Run `pnpm update-data` to fetch nflverse data and regenerate `public/data/draft-{year}.json`. See [data model](datamodel.md) and plan for schema.
 
 ## Git Hooks
 
 - **Pre-commit:** lint-staged, type-check, test, build
 - **Pre-push:** Rebase-on-main check
 
-Run `npm install` to install Husky hooks.
+Run `pnpm install` to install Husky hooks.
 
 ## Debugging
 
-- Dev server: `http://localhost:5173`
-- Vitest: `npm run test:watch` for TDD
+- Dev server: `http://localhost:3273`
+- Vitest: `pnpm test:watch` for TDD

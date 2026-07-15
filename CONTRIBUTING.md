@@ -5,18 +5,18 @@ Thanks for your interest in contributing. This guide explains how to get started
 ## Prerequisites
 
 - Node.js 20+
-- npm
+- [pnpm](https://pnpm.io/) 10+ (`corepack enable pnpm`, or install via your version manager — the version is pinned in `package.json` / `.tool-versions`)
 
 ## Getting Started
 
 1. **Fork and clone** the repository.
 2. **Install dependencies:**
    ```bash
-   npm install
+   pnpm install
    ```
 3. **Run the validation suite** to confirm the environment works:
    ```bash
-   npm run validate
+   pnpm validate
    ```
    This runs format check, type-check, lint, tests, and build.
 
@@ -25,29 +25,29 @@ Thanks for your interest in contributing. This guide explains how to get started
 ### Start the dev server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
-Open http://localhost:5173
+Open http://localhost:3273
 
 ### Useful commands
 
-| Command               | Description                  |
-| --------------------- | ---------------------------- |
-| `npm run dev`         | Start dev server             |
-| `npm run build`       | Production build             |
-| `npm test`            | Run unit tests               |
-| `npm run test:watch`  | Tests in watch mode (TDD)    |
-| `npm run lint`        | ESLint                       |
-| `npm run lint:fix`    | ESLint with auto-fix         |
-| `npm run format`      | Format with Prettier         |
-| `npm run type-check`  | TypeScript check             |
-| `npm run validate`    | Format + lint + test + build |
-| `npm run update-data` | Regenerate draft JSON        |
+| Command            | Description                  |
+| ------------------ | ---------------------------- |
+| `pnpm dev`         | Start dev server             |
+| `pnpm build`       | Production build             |
+| `pnpm test`        | Run unit tests               |
+| `pnpm test:watch`  | Tests in watch mode (TDD)    |
+| `pnpm lint`        | ESLint                       |
+| `pnpm lint:fix`    | ESLint with auto-fix         |
+| `pnpm format`      | Format with Prettier         |
+| `pnpm type-check`  | TypeScript check             |
+| `pnpm validate`    | Format + lint + test + build |
+| `pnpm update-data` | Regenerate draft JSON        |
 
 ### Git hooks
 
-Husky runs pre-commit checks (lint-staged, type-check, test, build). Run `npm install` to install hooks. **Do not use `--no-verify`** to skip them.
+Husky runs pre-commit checks (lint-staged, type-check, test, build). Run `pnpm install` to install hooks. **Do not use `--no-verify`** to skip them.
 
 ## Project Structure
 
@@ -103,7 +103,7 @@ Example: `feat: add role filter to player list`
 ## Pull Requests
 
 1. Create a branch from `main`.
-2. Make changes; run `npm run validate` before pushing.
+2. Make changes; run `pnpm validate` before pushing.
 3. Open a PR with a clear title and description.
 4. Address review feedback.
 
@@ -123,7 +123,7 @@ Example: `feat: add role filter to player list`
 To regenerate `public/data/draft-{year}.json` from [nflverse](https://github.com/nflverse/nflverse-data):
 
 ```bash
-npm run update-data
+pnpm update-data
 ```
 
 See [docs/datamodel.md](docs/datamodel.md) and [docs/calculations.md](docs/calculations.md) for schema and calculation details.

@@ -5,11 +5,11 @@ A static site that evaluates NFL draft success by team using snap share, games p
 ## Quick Start
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
-Open http://localhost:5173
+Open http://localhost:3273
 
 ## Features
 
@@ -22,21 +22,21 @@ Open http://localhost:5173
 
 ## Scripts
 
-| Script                | Description                         |
-| --------------------- | ----------------------------------- |
-| `npm run dev`         | Start dev server                    |
-| `npm run build`       | Production build                    |
-| `npm test`            | Run unit tests                      |
-| `npm run lint`        | Lint with ESLint                    |
-| `npm run validate`    | Lint, type-check, test, build       |
-| `npm run update-data` | Regenerate draft JSON from nflverse |
+| Script             | Description                         |
+| ------------------ | ----------------------------------- |
+| `pnpm dev`         | Start dev server                    |
+| `pnpm build`       | Production build                    |
+| `pnpm test`        | Run unit tests                      |
+| `pnpm lint`        | Lint with ESLint                    |
+| `pnpm validate`    | Lint, type-check, test, build       |
+| `pnpm update-data` | Regenerate draft JSON from nflverse |
 
 ## Data
 
 Draft data lives in `public/data/draft-{year}.json`. Regenerate from [nflverse](https://github.com/nflverse/nflverse-data):
 
 ```bash
-npm run update-data
+pnpm update-data
 ```
 
 ## Deploy
@@ -50,8 +50,8 @@ npm run update-data
 ### Local preview
 
 ```bash
-npm run build
-npm run preview
+pnpm build
+pnpm preview
 ```
 
 ## Contributing

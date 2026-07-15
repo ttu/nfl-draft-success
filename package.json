@@ -3,9 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate-og-image && npm run generate-rankings && npm run generate-sitemap && tsc -b && vite build",
+    "build": "pnpm run generate-og-image && pnpm run generate-rankings && pnpm run generate-sitemap && tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -18,12 +19,12 @@
     "generate-rankings": "tsx scripts/generate-default-rankings.ts",
     "generate-sitemap": "tsx scripts/generate-sitemap.ts",
     "generate-og-image": "tsx scripts/generate-og-image.ts",
-    "validate": "npm run format:check && npm run type-check && npm run lint && npm test && npm run build",
+    "validate": "pnpm run format:check && pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build",
     "preview": "vite preview",
-    "test:e2e": "npx playwright test",
-    "test:e2e:preview": "E2E_BASE_URL=http://localhost:4173 npx playwright test",
-    "test:e2e:prod": "E2E_BASE_URL=https://www.nfldraftsuccess.com npx playwright test",
-    "test:e2e:ui": "npx playwright test --ui"
+    "test:e2e": "pnpm exec playwright test",
+    "test:e2e:preview": "E2E_BASE_URL=http://localhost:4173 pnpm exec playwright test",
+    "test:e2e:prod": "E2E_BASE_URL=https://www.nfldraftsuccess.com pnpm exec playwright test",
+    "test:e2e:ui": "pnpm exec playwright test --ui"
   },
   "dependencies": {
     "react": "^19.2.0",

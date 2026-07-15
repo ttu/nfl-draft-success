@@ -1,7 +1,7 @@
 ---
 name: verify-all
 description: Run full verification suite including E2E tests. Use this agent when comprehensive testing is needed, especially before merging PRs or after significant changes.
-tools: Bash(npm:*), Bash(npx:*)
+tools: Bash(pnpm:*), Bash(npm:*), Bash(npx:*)
 model: haiku
 ---
 
@@ -14,7 +14,7 @@ Run comprehensive verification including E2E tests.
 Run the full validation suite with a single command:
 
 ```bash
-npm run validate
+pnpm validate
 ```
 
 This runs: format check → type check → lint → unit tests → build

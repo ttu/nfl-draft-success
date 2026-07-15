@@ -6,7 +6,7 @@ export default defineConfig({
   base: process.env.BASE_PATH || '/',
   plugins: [react()],
   server: {
-    port: 3000,
+    port: 3273,
   },
   test: {
     globals: true,
