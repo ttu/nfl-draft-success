@@ -1,5 +1,6 @@
 import type { DraftPick, Role } from '../types';
 import { classifyRole } from './classifyRole';
+import { getSeasonScore } from './getSeasonScore';
 import { ROLE_SCORE_WEIGHTS } from './roleWeights';
 import { snapShareForRoleTier } from './snapShareForTier';
 
@@ -107,26 +108,16 @@ export function getPlayerAverageScoreWeight(
   return sum / seasons.length;
 }
 
-/** Draft-score weights: snap share is the heavier signal (see Info modal). */
-const SNAP_WEIGHT = 0.7;
-const AVAILABILITY_WEIGHT = 0.3;
-
-function clamp01(v: number): number {
-  return v < 0 ? 0 : v > 1 ? 1 : v;
-}
-
 /**
  * Continuous per-pick draft score on a 0–100 scale:
  *
- *   score(season) = clamp(0.7·snapShare + 0.3·availability, 0, 1) × 100
- *   score(pick)   = mean(score(season) for tracked seasons)
+ *   score(pick) = mean(getSeasonScore(season) for tracked seasons)
  *
- * where `snapShare` is the role-tier snap value (position-adjusted, so
- * specialists are handled like their role classification) and `availability`
- * is games played ÷ team games. Unlike {@link getPlayerAverageScoreWeight}
- * (discrete 0–4 role weights, used for role badges), this does not saturate —
- * it separates a full-snap starter from a part-time one. Drives the numeric
- * "Score" shown in the position, draft-year, and team-ranking views.
+ * where each season term is the position-adjusted, availability-weighted
+ * {@link getSeasonScore}. Unlike {@link getPlayerAverageScoreWeight} (discrete
+ * 0–4 role weights, used for role badges), this does not saturate — it
+ * separates a full-snap starter from a part-time one. Drives the numeric
+ * "Score" shown in the player, position, draft-year, and team-ranking views.
  */
 export function getPlayerDraftScore(
   pick: DraftPick,
@@ -137,11 +128,7 @@ export function getPlayerDraftScore(
 
   let sum = 0;
   for (const s of seasons) {
-    const snap = clamp01(snapShareForRoleTier(s, pick.position));
-    const availability =
-      s.teamGames > 0 ? clamp01(s.gamesPlayed / s.teamGames) : 0;
-    sum +=
-      clamp01(SNAP_WEIGHT * snap + AVAILABILITY_WEIGHT * availability) * 100;
+    sum += getSeasonScore(s, pick.position);
   }
   return sum / seasons.length;
 }

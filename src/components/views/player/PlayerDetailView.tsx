@@ -11,7 +11,8 @@ import {
 } from '../../design/Primitives';
 import { CareerChart } from '../../design/CareerChart';
 import { TEAMS } from '../../../data/teams';
-import { getPlayerRole } from '../../../lib/getPlayerRole';
+import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
+import { getSeasonScore } from '../../../lib/getSeasonScore';
 import { classifyRole } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
@@ -43,6 +44,9 @@ export function PlayerDetailView({
   const color = teamColor(pick.teamId);
   const fg = teamFg(color);
   const role = getPlayerRole(pick, { draftingTeamOnly });
+  const overallScore = Math.round(
+    getPlayerDraftScore(pick, { draftingTeamOnly }),
+  );
   const currentTeam = getCurrentTeamIndicator(pick);
   const roleCls = roleDesignClass(role);
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
@@ -113,6 +117,15 @@ export function PlayerDetailView({
             </div>
           </div>
           <div className="player-hero__role-col">
+            <div className="player-hero__score">
+              <span className="player-hero__score-label kicker">Score</span>
+              <span
+                className="player-hero__score-value tnum"
+                data-testid="player-overall-score"
+              >
+                {overallScore}
+              </span>
+            </div>
             <div
               className={`player-hero__role-badge player-hero__role-badge--${roleCls}`}
             >
@@ -174,6 +187,7 @@ export function PlayerDetailView({
                 <col />
                 <col />
                 <col style={{ width: 130 }} />
+                <col style={{ width: 60 }} />
                 <col style={{ width: 70 }} />
               </colgroup>
               <thead>
@@ -184,6 +198,7 @@ export function PlayerDetailView({
                   <th className="right">Avg snap</th>
                   <th className="right">Load</th>
                   <th>Role</th>
+                  <th className="right">Score</th>
                   <th className="right hide-mobile">IR wks</th>
                 </tr>
               </thead>
@@ -287,6 +302,9 @@ function SeasonRow({
       </td>
       <td>
         <RoleChip role={seasonRole} />
+      </td>
+      <td className="right mono tnum player-career__score">
+        {Math.round(getSeasonScore(s, position))}
       </td>
       <td className="right mono tnum hide-mobile">
         {s.injuryReportWeeks ?? 0}

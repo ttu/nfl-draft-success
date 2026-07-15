@@ -1585,7 +1585,26 @@ button {
 .player-hero__role-col {
   padding: 32px 40px;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.player-hero__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.player-hero__score-label {
+  color: var(--ink-3);
+}
+.player-hero__score-value {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--ink);
 }
 .player-hero__role-badge {
   background: var(--positive);
@@ -1716,6 +1735,10 @@ button {
   font-weight: 600;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
+}
+.player-career__score {
+  font-weight: 700;
+  color: var(--ink);
 }
 .snap-bar {
   display: inline-flex;
@@ -2397,20 +2420,29 @@ button {
     padding: 8px 5px;
     font-size: 11px;
   }
+  /* Match the compact header padding so all columns — including Score — fit the
+     viewport instead of pushing the rightmost column past the fold. */
+  .player-career td {
+    padding: 12px 5px;
+  }
   /* The IR-weeks column is decorative on mobile; hide it (the class had no
      display:none rule scoped to this table, unlike rankings/pos tables). */
   .player-career th.hide-mobile,
   .player-career td.hide-mobile {
     display: none;
   }
-  /* Fit the career table to the viewport instead of scrolling horizontally:
-     relax the desktop min-width, drop the snap bars for the number alone, and
-     compact the role chips — mirrors the pos-table mobile treatment. */
+  /* Compact the career table for mobile: drop the snap bars for the number
+     alone and shrink the role chips. With the Score column the seven data
+     columns no longer fit a phone width, so the wrapper scrolls horizontally
+     (rather than clipping the rightmost column) and the table sizes to its
+     compact content. */
   .player-career__scroll {
-    overflow-x: visible;
+    overflow-x: auto;
   }
   .player-career table {
-    min-width: 0;
+    /* Size to compact content and let the wrapper scroll when it exceeds the
+       viewport, so columns stay readable instead of crushing. */
+    min-width: max-content;
   }
   /* The desktop colgroup pins wide fixed column widths (inline styles that sum
      past the viewport); let content size the columns on mobile instead. */

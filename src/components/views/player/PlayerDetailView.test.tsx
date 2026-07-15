@@ -107,6 +107,63 @@ describe('PlayerDetailView current-team indicator', () => {
   });
 });
 
+describe('PlayerDetailView draft score', () => {
+  // QB with two clean seasons so the scores are round numbers:
+  //   2024: 0.7·1.0 + 0.3·(17/17) = 1.00 → 100
+  //   2025: 0.7·0.5 + 0.3·(17/17) = 0.65 →  65
+  //   overall = mean(100, 65) = 82.5 → 83
+  const scorer: DraftPick = {
+    playerId: 'qb-scorer',
+    playerName: 'Sample Scorer',
+    position: 'QB',
+    round: 1,
+    overallPick: 1,
+    teamId: 'MIN',
+    seasons: [
+      {
+        year: 2024,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 1,
+        retained: true,
+      },
+      {
+        year: 2025,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 0.5,
+        retained: true,
+      },
+    ],
+  };
+
+  function renderScorer() {
+    return render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={scorer}
+          draftYear={2024}
+          draftClasses={[{ year: 2024, picks: [scorer] }]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+  }
+
+  it('shows the overall draft score in the hero', () => {
+    renderScorer();
+    const score = screen.getByTestId('player-overall-score');
+    expect(score).toHaveTextContent('83');
+  });
+
+  it('shows each season score in the career table', () => {
+    renderScorer();
+    const table = screen.getByRole('table');
+    expect(within(table).getByText('100')).toBeInTheDocument();
+    expect(within(table).getByText('65')).toBeInTheDocument();
+  });
+});
+
 describe('PlayerDetailView Pro Football Reference link', () => {
   it('links to the PFR career page for a matched player id', () => {
     renderView();
