@@ -2,6 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { getRollingDraftScore } from './getRollingDraftScore';
 import type { DraftClass } from '../types';
 
+// Fixtures use the unknown position `ZZ` (baseline 1.0) so these aggregation
+// tests are unaffected by position-adjusted snap scoring, which is covered in
+// snapShareForTier.test.ts and getSeasonScore.test.ts.
+//
 // Continuous per-season score used by the snap-based formula:
 // clamp(0.7·snapShare + 0.3·availability, 0, 1) × 100.
 const seasonScore = (snap: number, gp: number, tg: number) =>
@@ -15,7 +19,7 @@ const coreStarterPick = (year: number): DraftClass => ({
     {
       playerId: 'p1',
       playerName: 'Starter',
-      position: 'QB',
+      position: 'ZZ',
       round: 1,
       overallPick: 5,
       teamId: 'KC',
@@ -38,7 +42,7 @@ const nonRetainedCorePick = (year: number): DraftClass => ({
     {
       playerId: 'p3',
       playerName: 'Left in FA',
-      position: 'QB',
+      position: 'ZZ',
       round: 1,
       overallPick: 8,
       teamId: 'KC',
@@ -61,7 +65,7 @@ const depthPick = (year: number): DraftClass => ({
     {
       playerId: 'p2',
       playerName: 'Depth',
-      position: 'WR',
+      position: 'ZZ',
       round: 5,
       overallPick: 150,
       teamId: 'KC',
@@ -118,7 +122,7 @@ describe('getRollingDraftScore', () => {
         {
           playerId: 'p1',
           playerName: 'Mixed tenure',
-          position: 'WR',
+          position: 'ZZ',
           round: 5,
           overallPick: 150,
           teamId: 'KC',
@@ -177,7 +181,7 @@ describe('getRollingDraftScore', () => {
           {
             playerId: 'rook',
             playerName: 'Rookie',
-            position: 'WR',
+            position: 'ZZ',
             round: 1,
             overallPick: 1,
             teamId: 'KC',
@@ -199,7 +203,7 @@ describe('getRollingDraftScore', () => {
         {
           playerId: 'gone',
           playerName: 'Traded out',
-          position: 'DE',
+          position: 'ZZ',
           round: 4,
           overallPick: 134,
           teamId: 'MIN',

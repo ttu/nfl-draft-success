@@ -94,13 +94,14 @@ cumulativeSnapShare = sum(playerNum) / teamSeasonDen
 **Primary team:** Team for which the player accumulated the most snaps in that season. Derived from `teamSnaps` in snap data (or injury report team when no snap data exists).
 
 **Franchise normalization:**
+
 | Old ID | Current ID |
-|--------|------------|
-| STL | LAR |
-| LA | LAR |
-| SD | LAC |
-| OAK | LV |
-| LVR | LV |
+| ------ | ---------- |
+| STL    | LAR        |
+| LA     | LAR        |
+| SD     | LAC        |
+| OAK    | LV         |
+| LVR    | LV         |
 
 **Logic:**
 
@@ -124,9 +125,32 @@ gamesPlayedShare = gamesPlayed / teamGames
 
 ---
 
+## 2.5 Position-Adjusted Snap Share
+
+**Purpose:** Snap share is not comparable across positions. A full-time offensive lineman plays ~100% of snaps; a lead running back rotates at ~50–65%; a rotational defensive tackle who is unambiguously a starter plays ~45–60%. Applying one absolute Core Starter bar (65%) to all of them made that bar sit at roughly the **15th percentile for QBs** and the **90th percentile for RBs** — about six times harder to clear depending on where a player lines up. To fix this, the effective tier share is divided by a **per-position baseline** before classification and scoring.
+
+**Baseline:** For each position, the snap share of a clearly full-time starter — the **p90** of "qualifying" seasons (those with `gamesPlayed / teamGames >= 0.5`, so we measure role size rather than injury absence). Baselines are derived from the actual draft dataset by `scripts/derive-position-baselines.ts` and stored in `src/data/position-baselines.json` (a committed, refreshable artifact regenerated during `pnpm update-data`, before the rankings).
+
+```
+normalizedShare = min( snapShareForRoleTier(season, position) / BASELINE[position], 1 )
+```
+
+The result is "share of a full-time starter's workload at this position," clamped to 1. It replaces the raw share everywhere role classification (§3) and the continuous 0–100 season score (`getSeasonScore`, §7) consume it — both funnel through `snapShareForRoleTier`, the single choke point that applies the division.
+
+**Exemptions (baseline = 1, i.e. no rescaling):**
+
+- **Kickers, punters, long snappers.** Snap share is measured against a scrimmage-shaped denominator and does not describe speciakload at all, so normalizing it would be meaningless. They keep raw shares and their existing Significant Contributor carve-out (§3, SCmin = 0.32).list wor
+- **Unknown positions** and any position with fewer than 25 qualifying seasons in the dataset. These fall back to a baseline of 1.0, reproducing the pre-adjustment behaviour.
+
+**Effect on interior OL and QB:** their baselines are ~0.99–1.0, so their scores are essentially unchanged. The correction lifts under-credited rotational positions (DT, DL, RB, DE, TE) without moving the positions the old absolute bars already fit.
+
+**Derivation parameters** live in `src/lib/positionBaseline.ts` (`BASELINE_PERCENTILE`, `QUALIFYING_GAMES_SHARE`, `MIN_QUALIFYING_SEASONS`, `BASELINE_FLOOR`) and are shared by the derivation script. See `docs/superpowers/specs/2026-07-17-position-adjusted-snap-scoring-research.md` for the full analysis, the measured per-team ranking shifts, and the open questions this design settled.
+
+---
+
 ## 3. Role Classification (per season)
 
-**Function:** `classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?)` in `src/lib/classifyRole.ts`. The first argument is **`snapShareForRoleTier(season, position)`** (stored season load when appropriate, else average share for legacy JSON; kickers/punters/long snappers use `snapShare`). Optional **`position`** selects the Significant Contributor floor: **0.35** by default, **0.32** for K/P/LS. The **`gamesPlayed`** argument is retained for call-site compatibility and is not used in classification.
+**Function:** `classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?)` in `src/lib/classifyRole.ts`. The first argument is **`snapShareForRoleTier(season, position)`** (stored season load when appropriate, else average share for legacy JSON; kickers/punters/long snappers use `snapShare`), **position-adjusted** by dividing by the per-position baseline (§2.5) for non-exempt positions. Optional **`position`** selects the Significant Contributor floor: **0.35** by default, **0.32** for K/P/LS. The **`gamesPlayed`** argument is retained for call-site compatibility and is not used in classification.
 
 Classification uses a **first-match-wins** order. All thresholds use `>=` (inclusive).
 

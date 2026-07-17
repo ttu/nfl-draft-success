@@ -89,7 +89,7 @@ export function TeamRankingsView({
           <b>Score</b> · mean of weighted snaps + availability (0–100)
         </span>
         <span>
-          <b>Core %</b> · share of picks playing 65%+ snaps
+          <b>Core %</b> · share of picks with a full-time starter's snap load
         </span>
         <span>
           <b>Retention</b> · still on roster (any year drafted)
@@ -139,9 +139,10 @@ export function TeamRankingsView({
 
       <div className="rankings-foot">
         <div className="rankings-foot__text">
-          Data sourced from nflverse · classifications computed on snap-share
-          thresholds of 65% (Core) / 40% (Significant) / 20% (Depth). Players
-          are credited to the team that drafted them.
+          Data sourced from nflverse · classifications computed on
+          position-adjusted snap share (65% Core / 35% Significant / 10% Depth
+          of a full-time starter's workload at each position). Players are
+          credited to the team that drafted them.
         </div>
       </div>
     </section>

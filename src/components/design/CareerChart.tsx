@@ -1,16 +1,33 @@
 import type { Season } from '../../types';
+import {
+  getPositionTierThresholds,
+  isBaselineExemptPosition,
+} from '../../lib/positionBaseline';
 
 /**
  * Season-by-season load (cumulative snap share) area chart with the raw snap
- * share overlaid as a dashed line and a 65% "core starter" reference band.
+ * share overlaid as a dashed line and a "core starter" reference line. The
+ * chart plots raw snap %, so the Core line sits at the position's raw Core
+ * threshold (`baseline × CORE_TIER_THRESHOLD`) — e.g. ~56% for a WR, ~65% for
+ * an offensive lineman — matching position-adjusted classification.
+ *
+ * Kickers, punters and long snappers get **no** Core line: their snap share is
+ * measured against a scrimmage+ST denominator, so a full-time specialist sits
+ * near ~10–40% and can never reach the 65% bar — a reference line there would
+ * imply an unreachable threshold rather than a meaningful one.
  */
 export function CareerChart({
   seasons,
   color,
+  position,
 }: {
   seasons: Season[];
   color: string;
+  position: string;
 }) {
+  const showCoreLine = !isBaselineExemptPosition(position);
+  const coreFrac = getPositionTierThresholds(position).core;
+  const corePct = Math.round(coreFrac * 100);
   const w = 560;
   const h = 200;
   const padL = 36;
@@ -72,26 +89,30 @@ export function CareerChart({
           </text>
         </g>
       ))}
-      <line
-        x1={padL}
-        x2={w - padR}
-        y1={padT + innerH * 0.35}
-        y2={padT + innerH * 0.35}
-        stroke="var(--positive)"
-        strokeOpacity="0.3"
-        strokeDasharray="3 3"
-      />
-      <text
-        x={w - padR - 4}
-        y={padT + innerH * 0.35 - 3}
-        fontSize="8.5"
-        textAnchor="end"
-        fill="var(--positive)"
-        fontFamily="var(--f-mono)"
-        letterSpacing="0.08em"
-      >
-        CORE 65%
-      </text>
+      {showCoreLine && (
+        <>
+          <line
+            x1={padL}
+            x2={w - padR}
+            y1={padT + innerH * (1 - coreFrac)}
+            y2={padT + innerH * (1 - coreFrac)}
+            stroke="var(--positive)"
+            strokeOpacity="0.3"
+            strokeDasharray="3 3"
+          />
+          <text
+            x={w - padR - 4}
+            y={padT + innerH * (1 - coreFrac) - 3}
+            fontSize="8.5"
+            textAnchor="end"
+            fill="var(--positive)"
+            fontFamily="var(--f-mono)"
+            letterSpacing="0.08em"
+          >
+            CORE {corePct}%
+          </text>
+        </>
+      )}
       <path
         d={`${loadPath} L ${xs[xs.length - 1]} ${padT + innerH} L ${xs[0]} ${padT + innerH} Z`}
         fill={color}

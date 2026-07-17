@@ -71,6 +71,15 @@ export interface DefaultRankingsData {
   }>;
 }
 
+export interface PositionBaselinesData {
+  /** UTC calendar date `YYYY-MM-DD` when baselines were derived. */
+  generatedAt: string;
+  /** Human-readable description of the derivation method. */
+  method: string;
+  /** Full-time-starter snap share per draft position label (0–1]. */
+  baselines: Record<string, number>;
+}
+
 export const ActiveView = {
   TeamDetail: 'teamDetail',
   TeamRankings: 'teamRankings',

@@ -7,6 +7,8 @@ const teams: Team[] = [
   { id: 'B', name: 'Team B', abbreviation: 'B' },
 ];
 
+// Fixtures use the unknown position `ZZ` (baseline 1.0), so scores are not
+// position-adjusted here; that behaviour lives in snapShareForTier.test.ts.
 /** Single-season pick producing a deterministic 0–100 score. */
 function pick(
   overrides: Partial<DraftPick> & {
@@ -28,7 +30,7 @@ function pick(
   return {
     playerId: `${rest.teamId}-${rest.overallPick}`,
     playerName: `Player ${rest.overallPick}`,
-    position: 'WR',
+    position: 'ZZ',
     seasons: [season],
     ...rest,
   };
@@ -39,7 +41,7 @@ function awaitingPick(teamId: string, overallPick: number): DraftPick {
   return {
     playerId: `${teamId}-await-${overallPick}`,
     playerName: 'Await',
-    position: 'WR',
+    position: 'ZZ',
     round: 1,
     overallPick,
     teamId,

@@ -2170,6 +2170,28 @@ button {
   color: var(--ink);
   font-weight: 600;
 }
+.info-role-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.info-role-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.info-role-picker select {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
 .info-role-table {
   width: 100%;
   border-collapse: collapse;

@@ -13,8 +13,12 @@ import { CareerChart } from '../../design/CareerChart';
 import { TEAMS } from '../../../data/teams';
 import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
-import { classifyRole } from '../../../lib/classifyRole';
+import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
+import {
+  getPositionBaseline,
+  isBaselineExemptPosition,
+} from '../../../lib/positionBaseline';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
 import { getCurrentTeamIndicator } from '../../../lib/playerJourney';
 import { getPfrUrl } from '../../../lib/playerDisplay';
@@ -48,6 +52,12 @@ export function PlayerDetailView({
     getPlayerDraftScore(pick, { draftingTeamOnly }),
   );
   const currentTeam = getCurrentTeamIndicator(pick);
+  const positionExempt = isBaselineExemptPosition(pick.position);
+  const positionBaseline = getPositionBaseline(pick.position);
+  const fullTimeBarPct = Math.round(positionBaseline * 100);
+  const coreStarterPct = Math.round(
+    positionBaseline * CORE_TIER_THRESHOLD * 100,
+  );
   const roleCls = roleDesignClass(role);
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
   const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
@@ -146,6 +156,22 @@ export function PlayerDetailView({
             </dd>
             <dt>Role</dt>
             <dd>derived from Load (kickers/punters use Avg snap)</dd>
+            <dt>Position bar</dt>
+            <dd>
+              {positionExempt ? (
+                <>
+                  {pick.position} is scored on raw snaps — snap share doesn't
+                  capture specialist workload.
+                </>
+              ) : (
+                <>
+                  Snap % is measured against a full-time starter's workload at{' '}
+                  {pick.position} (~{fullTimeBarPct}% of team snaps), so Role
+                  and Score compare fairly across positions. At {pick.position},
+                  a Core Starter plays ~{coreStarterPct}%+ of snaps.
+                </>
+              )}
+            </dd>
           </dl>
         </div>
       </section>
@@ -223,7 +249,11 @@ export function PlayerDetailView({
           <div className="hero-chart__head">
             <div className="kicker">Snap share & load · by season</div>
           </div>
-          <CareerChart seasons={sortedSeasons} color={color} />
+          <CareerChart
+            seasons={sortedSeasons}
+            color={color}
+            position={pick.position}
+          />
         </section>
         <section className="hero-chart">
           <div className="hero-chart__head">

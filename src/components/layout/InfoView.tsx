@@ -1,5 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RoleChip } from '../design/Primitives';
+import {
+  baselinePositions,
+  getPositionTierThresholds,
+} from '../../lib/positionBaseline';
+import { getPositionDisplayName } from '../../lib/positionDisplayName';
 
 const GITHUB_URL = 'https://github.com/ttu/nfl-draft-success';
 
@@ -13,6 +18,10 @@ export function InfoView({
   dataLastUpdatedDate = null,
 }: InfoViewProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  // Empty string = the generic, position-neutral rule (65% / 35% / 10%).
+  const [rolePos, setRolePos] = useState('');
+  const th = getPositionTierThresholds(rolePos || undefined);
+  const asPct = (v: number) => `${Math.round(v * 100)}%`;
 
   useEffect(() => {
     const onEscape = (e: KeyboardEvent) => {
@@ -81,14 +90,31 @@ export function InfoView({
                 visible signal rather than being folded in.
               </p>
 
-              <h2 className="info-section-title" style={{ marginTop: 32 }}>
-                Role classification
-              </h2>
+              <div className="info-role-head">
+                <h2 className="info-section-title" style={{ marginTop: 32 }}>
+                  Role classification
+                </h2>
+                <label className="info-role-picker">
+                  <span className="kicker">Snap % for</span>
+                  <select
+                    value={rolePos}
+                    onChange={(e) => setRolePos(e.target.value)}
+                    aria-label="Show snap thresholds for position"
+                  >
+                    <option value="">Any position (generic)</option>
+                    {baselinePositions().map((p) => (
+                      <option key={p} value={p}>
+                        {getPositionDisplayName(p)} ({p})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
               <table className="info-role-table">
                 <thead>
                   <tr>
                     <th>Role</th>
-                    <th className="right">Snap %</th>
+                    <th className="right">Snap %*</th>
                     <th className="right">Games</th>
                     <th>Meaning</th>
                   </tr>
@@ -96,41 +122,66 @@ export function InfoView({
                 <tbody>
                   <RoleRow
                     role="core"
-                    snap="≥ 65%"
+                    snap={`≥ ${asPct(th.core)}`}
                     games="≥ 50% of team"
                     desc="Full-time, healthy"
                   />
                   <RoleRow
                     role="shw"
-                    snap="≥ 65%"
+                    snap={`≥ ${asPct(th.core)}`}
                     games="< 50% of team"
                     desc="Starter role, missed time"
                   />
                   <RoleRow
                     role="sig"
-                    snap="≥ 35%"
+                    snap={`≥ ${asPct(th.significant)}`}
                     games="any"
                     desc="Rotation / package player"
                   />
                   <RoleRow
                     role="dep"
-                    snap="10–35%"
+                    snap={`${asPct(th.depth)}–${asPct(th.significant)}`}
                     games="any"
                     desc="Backup / special teams"
                   />
                   <RoleRow
                     role="non"
-                    snap="< 10%"
+                    snap={`< ${asPct(th.depth)}`}
                     games="any"
                     desc="Inactive most weeks"
                   />
                 </tbody>
               </table>
+              <p
+                style={{
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  color: 'var(--ink-2)',
+                  maxWidth: 640,
+                  marginTop: 12,
+                }}
+              >
+                <b>* Snap % is position-adjusted.</b> Positions don't play the
+                same amount: a starting offensive lineman takes nearly every
+                snap, while a lead running back rotates at ~60% and a starting
+                defensive tackle at ~50%. So we measure snaps as a{' '}
+                <em>
+                  share of a full-time starter's workload at that position
+                </em>{' '}
+                — the thresholds are relative to each position's own full-time
+                bar, not one flat number. Pick a position above to see its real
+                thresholds: a running back is a Core Starter at ~42% of team
+                snaps; an offensive lineman needs ~65%. Baselines come from the
+                snap data itself. (Kickers, punters and long snappers are
+                measured on raw snaps — snap share doesn't capture specialist
+                workload.)
+              </p>
 
               <h2 className="info-section-title" style={{ marginTop: 32 }}>
                 The score, formally
               </h2>
-              <pre className="info-formula">{`score(pick)   = clamp( w_s · snapShare + w_a · availability, 0, 1 ) × 100
+              <pre className="info-formula">{`snapShare_adj = min( snapShare / positionBaseline, 1 )   (K/P/LS: unadjusted)
+score(pick)   = clamp( w_s · snapShare_adj + w_a · availability, 0, 1 ) × 100
 score(class)  = mean( score(pick) for pick in class )
 score(team)   = mean( score(pick) for pick in range )
 retention     = retained_players / picks_in_range   (reported separately)

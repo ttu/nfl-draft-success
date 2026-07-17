@@ -191,11 +191,14 @@ describe('getPlayerRole', () => {
 const seasonScore = (snap: number, gp: number, tg: number) =>
   (0.7 * snap + 0.3 * (gp / tg)) * 100;
 
+// `ZZ` is an unknown position → baseline 1.0, so these tests exercise the
+// draft-score formula without position adjustment. Position-adjustment behaviour
+// is covered in snapShareForTier.test.ts and getSeasonScore.test.ts.
 function pickWith(seasons: DraftPick['seasons']): DraftPick {
   return {
     playerId: 'p',
     playerName: 'Player',
-    position: 'QB',
+    position: 'ZZ',
     round: 1,
     overallPick: 5,
     teamId: 'KC',

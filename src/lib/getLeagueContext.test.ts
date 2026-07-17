@@ -8,6 +8,8 @@ const teams: Team[] = [
   { id: 'C', name: 'Team C', abbreviation: 'C' },
 ];
 
+// Fixtures use the unknown position `ZZ` (baseline 1.0), so scores are not
+// position-adjusted here; that behaviour lives in snapShareForTier.test.ts.
 /** Single-season pick producing a deterministic role/score. */
 function pick(
   teamId: string,
@@ -24,7 +26,7 @@ function pick(
   return {
     playerId: `${teamId}-p`,
     playerName: 'P',
-    position: 'WR',
+    position: 'ZZ',
     round: 1,
     overallPick: 1,
     teamId,
@@ -37,7 +39,7 @@ function awaitingPick(teamId: string): DraftPick {
   return {
     playerId: `${teamId}-await`,
     playerName: 'P',
-    position: 'WR',
+    position: 'ZZ',
     round: 1,
     overallPick: 1,
     teamId,
