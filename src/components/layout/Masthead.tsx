@@ -65,7 +65,7 @@ export function Masthead({
         onClick={goRankings}
         aria-label="NFL Draft Success — home"
       >
-        <div className="mast__mark">ND</div>
+        <div className="mast__mark">DS</div>
         <div>
           <div className="mast__name">
             NFL Draft <em>Success</em>
