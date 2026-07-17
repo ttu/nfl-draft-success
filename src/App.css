@@ -606,6 +606,87 @@ button {
   letter-spacing: 0.04em;
 }
 
+/* ─── League context strip ────────────────────────────────── */
+.league-context {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 2fr;
+  gap: 40px;
+  align-items: center;
+  padding: 24px 48px 28px;
+  border-bottom: 1px solid var(--rule);
+}
+.league-context__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.league-context__dist {
+  min-width: 0;
+}
+.league-context__bar {
+  display: flex;
+  width: 100%;
+  height: 14px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--paper-3);
+}
+.league-context__seg {
+  height: 100%;
+}
+.league-context__seg--core {
+  background: var(--role-core);
+}
+.league-context__seg--contrib {
+  background: var(--role-sig);
+}
+.league-context__seg--non {
+  background: var(--role-non);
+}
+.league-context__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.league-context__legend b {
+  font-weight: 600;
+  color: var(--ink);
+}
+.league-context__dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 7px;
+  vertical-align: baseline;
+}
+.league-context__dot--core {
+  background: var(--role-core);
+}
+.league-context__dot--contrib {
+  background: var(--role-sig);
+}
+.league-context__dot--non {
+  background: var(--role-non);
+}
+.league-context__caption {
+  margin-top: 8px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+@media (max-width: 760px) {
+  .league-context {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 20px 24px 24px;
+  }
+}
+
 /* ─── Rankings ────────────────────────────────────────────── */
 .rankings-legend {
   display: flex;

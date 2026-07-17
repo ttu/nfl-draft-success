@@ -1,12 +1,15 @@
 import { TEAMS } from '../../../data/teams';
 import { TeamLogo, Sparkline, Delta, teamColor } from '../../design/Primitives';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
+import type { LeagueContext } from '../../../lib/getLeagueContext';
 
 export interface TeamRankingsViewProps {
   rankings: TeamRanking[];
   yearCount: number;
   startYear: number;
   endYear: number;
+  /** League-wide baseline strip; omitted in the pre-load state. */
+  leagueContext?: LeagueContext;
   onTeamSelect: (teamId: string) => void;
   onBack?: () => void;
 }
@@ -29,6 +32,7 @@ export function TeamRankingsView({
   yearCount,
   startYear,
   endYear,
+  leagueContext,
   onTeamSelect,
 }: TeamRankingsViewProps) {
   const top = rankings[0] as ExtendedRanking | undefined;
@@ -74,6 +78,8 @@ export function TeamRankingsView({
           />
         </div>
       </section>
+
+      {leagueContext && <LeagueContextBand context={leagueContext} />}
 
       <div className="divider-em" />
 
@@ -165,6 +171,96 @@ function StatBlock({
       </div>
       {sub && <div className="statblock__sub">{sub}</div>}
     </div>
+  );
+}
+
+/** Rounded whole-percent for a 0–1 share. */
+function pct(share: number): number {
+  return Math.round(share * 100);
+}
+
+/**
+ * League baseline strip: average score, best-vs-worst spread, and a 3-segment
+ * bar showing where every scored pick in the window ended up.
+ */
+function LeagueContextBand({ context }: { context: LeagueContext }) {
+  const { avgScore, spread, roleDistribution: rd } = context;
+  const hasPicks = rd.total > 0;
+
+  return (
+    <section className="league-context" aria-label="League context">
+      <div className="league-context__stats">
+        <StatBlock
+          label="League average"
+          value={hasPicks ? avgScore.toFixed(1) : '—'}
+          sub="draft success score"
+        />
+        <StatBlock
+          label="Score spread"
+          value={spread ? spread.gap.toFixed(1) : '—'}
+          sub={
+            spread ? `${spread.topId} → ${spread.bottomId}` : 'need 2+ teams'
+          }
+        />
+      </div>
+
+      <div className="league-context__dist">
+        <div
+          className="league-context__bar"
+          role="img"
+          aria-label={
+            hasPicks
+              ? `Role distribution: ${pct(rd.corePct)}% core starters, ${pct(
+                  rd.contributorPct,
+                )}% contributors, ${pct(rd.nonContributorPct)}% non-contributors`
+              : 'No scored picks in this window yet'
+          }
+        >
+          {hasPicks && (
+            <>
+              <span
+                className="league-context__seg league-context__seg--core"
+                style={{ width: `${rd.corePct * 100}%` }}
+              />
+              <span
+                className="league-context__seg league-context__seg--contrib"
+                style={{ width: `${rd.contributorPct * 100}%` }}
+              />
+              <span
+                className="league-context__seg league-context__seg--non"
+                style={{ width: `${rd.nonContributorPct * 100}%` }}
+              />
+            </>
+          )}
+        </div>
+        {hasPicks ? (
+          <>
+            <div className="league-context__legend">
+              <span>
+                <i className="league-context__dot league-context__dot--core" />
+                Core <b className="tnum">{pct(rd.corePct)}%</b>
+              </span>
+              <span>
+                <i className="league-context__dot league-context__dot--contrib" />
+                Contributor <b className="tnum">{pct(rd.contributorPct)}%</b>
+              </span>
+              <span>
+                <i className="league-context__dot league-context__dot--non" />
+                Non-contributor{' '}
+                <b className="tnum">{pct(rd.nonContributorPct)}%</b>
+              </span>
+            </div>
+            <div className="league-context__caption">
+              Where every drafted pick in this window ended up.
+            </div>
+          </>
+        ) : (
+          <div className="league-context__caption">
+            No scored picks in this window yet.
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 

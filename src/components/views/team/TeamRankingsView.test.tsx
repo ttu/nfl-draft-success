@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TeamRankingsView } from './TeamRankingsView';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
+import type { LeagueContext } from '../../../lib/getLeagueContext';
 
 const sample: TeamRanking[] = [
   { teamId: 'KC', teamName: 'Chiefs', score: 1.2, rank: 1 },
@@ -69,5 +70,86 @@ describe('TeamRankingsView', () => {
     expect(screen.getByText('42%')).toBeInTheDocument(); // core rate
     expect(screen.getByText('85%')).toBeInTheDocument(); // retention
     expect(screen.getByText('58→76')).toBeInTheDocument(); // trend range
+  });
+
+  it('omits the league context band when no context is provided', () => {
+    const { container } = render(
+      <TeamRankingsView
+        rankings={sample}
+        yearCount={3}
+        startYear={2021}
+        endYear={2025}
+        onTeamSelect={() => {}}
+      />,
+    );
+    expect(container.querySelector('.league-context')).toBeNull();
+  });
+
+  it('renders the league context band: average, spread and role distribution', () => {
+    const leagueContext: LeagueContext = {
+      avgScore: 58.2,
+      spread: {
+        topId: 'KC',
+        topScore: 92,
+        bottomId: 'CHI',
+        bottomScore: 49.9,
+        gap: 42.1,
+      },
+      roleDistribution: {
+        coreCount: 18,
+        contributorCount: 44,
+        nonContributorCount: 38,
+        total: 100,
+        corePct: 0.18,
+        contributorPct: 0.44,
+        nonContributorPct: 0.38,
+      },
+    };
+    render(
+      <TeamRankingsView
+        rankings={sample}
+        yearCount={5}
+        startYear={2021}
+        endYear={2025}
+        leagueContext={leagueContext}
+        onTeamSelect={() => {}}
+      />,
+    );
+    expect(screen.getByText('58.2')).toBeInTheDocument(); // league average
+    expect(screen.getByText('42.1')).toBeInTheDocument(); // spread gap
+    expect(screen.getByText('KC → CHI')).toBeInTheDocument();
+    expect(screen.getByText('18%')).toBeInTheDocument(); // core share
+    expect(screen.getByText('44%')).toBeInTheDocument(); // contributor share
+    expect(screen.getByText('38%')).toBeInTheDocument(); // non-contributor share
+  });
+
+  it('shows an empty state in the band when the window has no scored picks', () => {
+    const leagueContext: LeagueContext = {
+      avgScore: 0,
+      spread: null,
+      roleDistribution: {
+        coreCount: 0,
+        contributorCount: 0,
+        nonContributorCount: 0,
+        total: 0,
+        corePct: 0,
+        contributorPct: 0,
+        nonContributorPct: 0,
+      },
+    };
+    render(
+      <TeamRankingsView
+        rankings={sample}
+        yearCount={1}
+        startYear={2026}
+        endYear={2026}
+        leagueContext={leagueContext}
+        onTeamSelect={() => {}}
+      />,
+    );
+    expect(
+      screen.getByText(/no scored picks in this window yet/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText('need 2+ teams')).toBeInTheDocument();
   });
 });

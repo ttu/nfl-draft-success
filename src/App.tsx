@@ -28,6 +28,7 @@ import {
 import { formatDataLastUpdatedDate } from './lib/formatDataLastUpdated';
 import { getRosterByDraftYear } from './lib/getRosterByDraftYear';
 import { getTeamRankSummary } from './lib/getTeamRankSummary';
+import { getLeagueContext, type LeagueContext } from './lib/getLeagueContext';
 import {
   getRollingDraftScore,
   type RollingDraftScore,
@@ -465,6 +466,11 @@ function AppContent() {
     draftingTeamOnly,
   });
 
+  const leagueContext =
+    draftClasses.length > 0
+      ? getLeagueContext(draftClasses, TEAMS, { draftingTeamOnly })
+      : undefined;
+
   const rosterByDraftYear = getRosterByDraftYear(
     draftClasses,
     selectedTeam,
@@ -546,6 +552,7 @@ function AppContent() {
           handleTeamSelect,
           handleShowRankings,
           teamRank,
+          leagueContext,
           rollingDraftScore,
           draftClasses,
           playerLookupClasses,
@@ -724,6 +731,7 @@ interface RenderMainArgs {
   handleTeamSelect: (team: string) => void;
   handleShowRankings: () => void;
   teamRank: { rank: number; total: number; rankings: TeamRanking[] } | null;
+  leagueContext: LeagueContext | undefined;
   rollingDraftScore: RollingDraftScore | null;
   draftClasses: DraftClass[];
   // Classes the player pick was resolved from — spans all years when the player
@@ -787,6 +795,7 @@ function renderMainContent(a: RenderMainArgs) {
         yearCount={a.yearCount}
         startYear={a.startYear}
         endYear={a.endYear}
+        leagueContext={a.leagueContext}
         onTeamSelect={a.handleTeamSelect}
         onBack={a.selectedTeam ? a.handleShowRankings : undefined}
       />
