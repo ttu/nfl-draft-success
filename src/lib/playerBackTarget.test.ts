@@ -68,6 +68,15 @@ describe('resolvePlayerBackTarget', () => {
     });
   });
 
+  it('returns Highlights for a highlights origin', () => {
+    expect(
+      resolvePlayerBackTarget('/highlights?from=2021&to=2026', teams, fallback),
+    ).toEqual({
+      label: 'Highlights',
+      to: '/highlights?from=2021&to=2026',
+    });
+  });
+
   it('returns Rankings pointing at the origin for the rankings landing', () => {
     expect(
       resolvePlayerBackTarget('/?from=2021&to=2026', teams, fallback),
@@ -102,6 +111,12 @@ describe('resolvePlayerOriginTab', () => {
     expect(
       resolvePlayerOriginTab('/position/QB?from=2021&to=2026', teams),
     ).toBe('pos');
+  });
+
+  it('returns the highlights tab for a highlights origin', () => {
+    expect(resolvePlayerOriginTab('/highlights?from=2021&to=2026', teams)).toBe(
+      'highlights',
+    );
   });
 
   it('returns the rankings tab for the rankings landing origin', () => {

@@ -76,6 +76,7 @@ export const ActiveView = {
   TeamRankings: 'teamRankings',
   DraftYears: 'draftYears',
   Position: 'position',
+  Highlights: 'highlights',
 } as const;
 
 export type ActiveView = (typeof ActiveView)[keyof typeof ActiveView];

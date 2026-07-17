@@ -30,6 +30,10 @@ import { getRosterByDraftYear } from './lib/getRosterByDraftYear';
 import { getTeamRankSummary } from './lib/getTeamRankSummary';
 import { getLeagueContext, type LeagueContext } from './lib/getLeagueContext';
 import {
+  getLeagueHighlights,
+  type LeagueHighlights,
+} from './lib/getLeagueHighlights';
+import {
   getRollingDraftScore,
   type RollingDraftScore,
 } from './lib/getRollingDraftScore';
@@ -103,6 +107,11 @@ const PlayerDetailView = lazy(() =>
     default: m.PlayerDetailView,
   })),
 );
+const HighlightsView = lazy(() =>
+  import('./components/views/highlights/HighlightsView').then((m) => ({
+    default: m.HighlightsView,
+  })),
+);
 
 const YEAR_MIN = 2018;
 const YEAR_MAX = 2026;
@@ -121,6 +130,7 @@ const ACTIVE_VIEW_TAB: Record<ActiveView, MastheadTab> = {
   [ActiveView.TeamDetail]: 'team',
   [ActiveView.DraftYears]: 'year',
   [ActiveView.Position]: 'pos',
+  [ActiveView.Highlights]: 'highlights',
 };
 
 function useResolvedYearRange(
@@ -282,6 +292,7 @@ function AppContent() {
   const { isPositionView, positionParam } = parsePositionParam(positionMatch);
   const playerMatch = useMatch('/player/:playerId');
   const isPlayerView = !!playerMatch && !!playerId;
+  const isHighlightsView = !!useMatch('/highlights');
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const routeYearValid = isRouteYearValid(draftYearParam, yearBounds);
@@ -293,6 +304,7 @@ function AppContent() {
   const activeView = determineActiveView({
     isYearView,
     isPositionView,
+    isHighlightsView,
     hasSelectedTeam: selectedTeam != null,
   });
 
@@ -471,6 +483,11 @@ function AppContent() {
       ? getLeagueContext(draftClasses, TEAMS, { draftingTeamOnly })
       : undefined;
 
+  const leagueHighlights =
+    activeView === ActiveView.Highlights && draftClasses.length > 0
+      ? getLeagueHighlights(draftClasses, TEAMS, { draftingTeamOnly })
+      : null;
+
   const rosterByDraftYear = getRosterByDraftYear(
     draftClasses,
     selectedTeam,
@@ -553,6 +570,7 @@ function AppContent() {
           handleShowRankings,
           teamRank,
           leagueContext,
+          leagueHighlights,
           rollingDraftScore,
           draftClasses,
           playerLookupClasses,
@@ -653,6 +671,26 @@ function renderSubbar(a: SubbarArgs) {
       </Subbar>
     );
   }
+  if (activeView === ActiveView.Highlights) {
+    return (
+      <Subbar>
+        <button className="subbar__crumb" onClick={onShowRankings}>
+          ← Rankings
+        </button>
+        <span className="subbar__slash">/</span>
+        <span className="subbar__crumb-active">Highlights</span>
+        <span className="subbar__sp" />
+        <YearRangeChips
+          from={from}
+          to={to}
+          min={min}
+          max={max}
+          latestCompletedYear={LATEST_COMPLETED_YEAR}
+          onChange={onRangeChange}
+        />
+      </Subbar>
+    );
+  }
   if (activeView === ActiveView.TeamDetail) {
     return (
       <Subbar>
@@ -732,6 +770,7 @@ interface RenderMainArgs {
   handleShowRankings: () => void;
   teamRank: { rank: number; total: number; rankings: TeamRanking[] } | null;
   leagueContext: LeagueContext | undefined;
+  leagueHighlights: LeagueHighlights | null;
   rollingDraftScore: RollingDraftScore | null;
   draftClasses: DraftClass[];
   // Classes the player pick was resolved from — spans all years when the player
@@ -837,6 +876,21 @@ function renderMainContent(a: RenderMainArgs) {
       </Suspense>
     );
   }
+  if (a.activeView === ActiveView.Highlights) {
+    if (a.leagueHighlights == null) {
+      return <LoadingSpinner message="Loading draft data…" />;
+    }
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <HighlightsView
+          highlights={a.leagueHighlights}
+          startYear={a.startYear}
+          endYear={a.endYear}
+          onTeamSelect={a.handleTeamSelect}
+        />
+      </Suspense>
+    );
+  }
   if (
     a.activeView === ActiveView.Position &&
     a.canonicalPosition &&
@@ -865,6 +919,7 @@ function App() {
       <Route path="/" element={<AppContent />} />
       <Route path="/position/:position" element={<AppContent />} />
       <Route path="/year/:draftYear" element={<AppContent />} />
+      <Route path="/highlights" element={<AppContent />} />
       <Route path="/player/:playerId" element={<AppContent />} />
       <Route path="/:teamId" element={<AppContent />} />
     </Routes>

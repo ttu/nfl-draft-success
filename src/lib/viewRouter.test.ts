@@ -51,6 +51,34 @@ describe('determineActiveView', () => {
       }),
     ).toBe(ActiveView.Position);
   });
+  it('prefers Highlights over TeamDetail/Rankings', () => {
+    expect(
+      determineActiveView({
+        isYearView: false,
+        isPositionView: false,
+        isHighlightsView: true,
+        hasSelectedTeam: false,
+      }),
+    ).toBe(ActiveView.Highlights);
+  });
+  it('prefers Position and DraftYears over Highlights', () => {
+    expect(
+      determineActiveView({
+        isYearView: true,
+        isPositionView: false,
+        isHighlightsView: true,
+        hasSelectedTeam: false,
+      }),
+    ).toBe(ActiveView.DraftYears);
+    expect(
+      determineActiveView({
+        isYearView: false,
+        isPositionView: true,
+        isHighlightsView: true,
+        hasSelectedTeam: false,
+      }),
+    ).toBe(ActiveView.Position);
+  });
   it('returns TeamDetail when only team is selected', () => {
     expect(
       determineActiveView({

@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams, useMatch } from 'react-router-dom';
 
-export type MastheadTab = 'rankings' | 'team' | 'year' | 'pos';
+export type MastheadTab = 'rankings' | 'team' | 'year' | 'pos' | 'highlights';
 
 interface MastheadProps {
   active: MastheadTab;
@@ -43,6 +43,7 @@ export function Masthead({
     navigate({ pathname: `/year/${y}`, search });
   };
   const goPos = () => navigate({ pathname: '/position/QB', search });
+  const goHighlights = () => navigate({ pathname: '/highlights', search });
 
   const tabs: Array<{ id: MastheadTab; label: string; onClick: () => void }> = [
     { id: 'rankings', label: 'Rankings', onClick: goRankings },
@@ -53,6 +54,7 @@ export function Masthead({
       : []),
     { id: 'year', label: 'Draft Year', onClick: goYear },
     { id: 'pos', label: 'Position', onClick: goPos },
+    { id: 'highlights', label: 'Highlights', onClick: goHighlights },
   ];
 
   return (

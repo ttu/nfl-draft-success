@@ -20,13 +20,15 @@ export function buildPlayerHref(playerId: string, ref?: string | null): string {
 }
 
 /** Primary-nav tab that owns the player detail view, based on its origin. */
-export type PlayerOriginTab = 'rankings' | 'team' | 'year' | 'pos';
+export type PlayerOriginTab =
+  'rankings' | 'team' | 'year' | 'pos' | 'highlights';
 
 /** Classified origin of a player detail `ref`, before team-id validation. */
 type RefOrigin =
   | { kind: 'landing' }
   | { kind: 'year' }
   | { kind: 'position' }
+  | { kind: 'highlights' }
   | { kind: 'team'; teamId: string }
   | { kind: 'unknown' };
 
@@ -42,6 +44,7 @@ function classifyRefOrigin(ref: string): RefOrigin {
   if (segments.length === 0) return { kind: 'landing' };
   if (segments[0] === 'year') return { kind: 'year' };
   if (segments[0] === 'position') return { kind: 'position' };
+  if (segments[0] === 'highlights') return { kind: 'highlights' };
   if (segments.length === 1) return { kind: 'team', teamId: segments[0] };
   return { kind: 'unknown' };
 }
@@ -64,6 +67,8 @@ export function resolvePlayerOriginTab(
       return 'year';
     case 'position':
       return 'pos';
+    case 'highlights':
+      return 'highlights';
     case 'team':
       return teams.some((t) => t.id === origin.teamId) ? 'team' : 'rankings';
     default:
@@ -96,6 +101,8 @@ export function resolvePlayerBackTarget(
       return { label: 'Draft Year', to: ref };
     case 'position':
       return { label: 'Position', to: ref };
+    case 'highlights':
+      return { label: 'Highlights', to: ref };
     case 'team': {
       const team = teams.find((t) => t.id === origin.teamId);
       if (team) return { label: team.name, to: ref };
