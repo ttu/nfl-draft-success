@@ -41,43 +41,12 @@ export function TeamRankingsView({
 
   return (
     <section className="rankings-view" aria-label="Team draft rankings">
-      <section className="page-hero">
-        <div className="page-hero__grid">
-          <div>
-            <div className="kicker" style={{ marginBottom: 12 }}>
-              Draft success score · {yearCount} season
-              {yearCount === 1 ? '' : 's'} in window
-            </div>
-            <h1 className="page-hero__headline">
-              Which teams draft <em>well</em> — and which don't.
-            </h1>
-            <p className="page-hero__lede">
-              Every team on three signals — snap share, games played, and
-              retention. Not wins or box-score stats, just how much the players
-              they drafted actually get on the field.
-            </p>
-          </div>
-
-          <StatBlock
-            label="Top of class"
-            value={top?.teamId ?? '—'}
-            sub={top ? `${top.score.toFixed(1)} · draft success score` : ''}
-            accent
-          />
-          <StatBlock
-            label="Coldest streak"
-            value={bottom?.teamId ?? '—'}
-            sub={
-              bottom ? `${bottom.score.toFixed(1)} · draft success score` : ''
-            }
-          />
-          <StatBlock
-            label="Teams ranked"
-            value={String(total)}
-            sub={`across ${yearCount} ${yearCount === 1 ? 'season' : 'seasons'}`}
-          />
-        </div>
-      </section>
+      <RankingsHero
+        yearCount={yearCount}
+        top={top}
+        bottom={bottom}
+        total={total}
+      />
 
       {leagueContext && <LeagueContextBand context={leagueContext} />}
 
@@ -101,30 +70,8 @@ export function TeamRankingsView({
 
       <div className="rankings-table-wrap">
         <table className="rankings-table">
-          <colgroup>
-            <col style={{ width: 56 }} />
-            <col style={{ width: 38 }} />
-            <col />
-            <col style={{ width: 90 }} />
-            <col className="col-hide-md" style={{ width: 70 }} />
-            <col className="col-hide-mobile" style={{ width: 190 }} />
-            <col className="col-hide-mobile" style={{ width: 80 }} />
-            <col className="col-hide-mobile" style={{ width: 80 }} />
-          </colgroup>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>YoY</th>
-              <th>Team</th>
-              <th className="right">Score</th>
-              <th className="right hide-md">Picks</th>
-              <th className="hide-mobile">
-                Score · {seasonTag(startYear)} → {seasonTag(endYear)}
-              </th>
-              <th className="right hide-mobile">Core %</th>
-              <th className="right hide-mobile">Retained</th>
-            </tr>
-          </thead>
+          <RankingsTableColgroup />
+          <RankingsTableHead startYear={startYear} endYear={endYear} />
           <tbody>
             {rankings.map((r) => (
               <RankRow
@@ -146,6 +93,96 @@ export function TeamRankingsView({
         </div>
       </div>
     </section>
+  );
+}
+
+function RankingsHero({
+  yearCount,
+  top,
+  bottom,
+  total,
+}: {
+  yearCount: number;
+  top?: ExtendedRanking;
+  bottom?: ExtendedRanking;
+  total: number;
+}) {
+  const seasonWord = yearCount === 1 ? 'season' : 'seasons';
+  return (
+    <section className="page-hero">
+      <div className="page-hero__grid">
+        <div>
+          <div className="kicker" style={{ marginBottom: 12 }}>
+            Draft success score · {yearCount} {seasonWord} in window
+          </div>
+          <h1 className="page-hero__headline">
+            Which teams draft <em>well</em> — and which don't.
+          </h1>
+          <p className="page-hero__lede">
+            Every team on three signals — snap share, games played, and
+            retention. Not wins or box-score stats, just how much the players
+            they drafted actually get on the field.
+          </p>
+        </div>
+
+        <StatBlock
+          label="Top of class"
+          value={top?.teamId ?? '—'}
+          sub={top ? `${top.score.toFixed(1)} · draft success score` : ''}
+          accent
+        />
+        <StatBlock
+          label="Coldest streak"
+          value={bottom?.teamId ?? '—'}
+          sub={bottom ? `${bottom.score.toFixed(1)} · draft success score` : ''}
+        />
+        <StatBlock
+          label="Teams ranked"
+          value={String(total)}
+          sub={`across ${yearCount} ${seasonWord}`}
+        />
+      </div>
+    </section>
+  );
+}
+
+function RankingsTableColgroup() {
+  return (
+    <colgroup>
+      <col style={{ width: 56 }} />
+      <col style={{ width: 38 }} />
+      <col />
+      <col style={{ width: 90 }} />
+      <col className="col-hide-md" style={{ width: 70 }} />
+      <col className="col-hide-mobile" style={{ width: 190 }} />
+      <col className="col-hide-mobile" style={{ width: 80 }} />
+      <col className="col-hide-mobile" style={{ width: 80 }} />
+    </colgroup>
+  );
+}
+
+function RankingsTableHead({
+  startYear,
+  endYear,
+}: {
+  startYear: number;
+  endYear: number;
+}) {
+  return (
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>YoY</th>
+        <th>Team</th>
+        <th className="right">Score</th>
+        <th className="right hide-md">Picks</th>
+        <th className="hide-mobile">
+          Score · {seasonTag(startYear)} → {seasonTag(endYear)}
+        </th>
+        <th className="right hide-mobile">Core %</th>
+        <th className="right hide-mobile">Retained</th>
+      </tr>
+    </thead>
   );
 }
 

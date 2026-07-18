@@ -41,9 +41,8 @@ export default defineConfig([
       // are genuinely ambiguous in JSX text.
       'react/no-unescaped-entities': ['error', { forbid: ['>', '}'] }],
 
-      // Deeply nested JSX is a signal to extract a component. The codebase
-      // sits at <= 5, so this holds the line rather than allowing more drift.
-      'react/jsx-max-depth': ['error', { max: 5 }],
+      // Deeply nested JSX is a signal to extract a component.
+      'react/jsx-max-depth': ['error', { max: 4 }],
 
       // Consistent, low-noise JSX.
       'react/self-closing-comp': 'error',

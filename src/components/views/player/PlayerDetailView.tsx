@@ -27,7 +27,7 @@ import {
   getPositionCohort,
   type CohortMember,
 } from '../../../lib/getPositionCohort';
-import type { DraftClass, DraftPick, Season } from '../../../types';
+import type { DraftClass, DraftPick, Role, Season } from '../../../types';
 
 export interface PlayerDetailViewProps {
   pick: DraftPick;
@@ -87,62 +87,17 @@ export function PlayerDetailView({
           <div className="player-hero__round">
             <div className="player-hero__round-label">Round {pick.round}</div>
           </div>
-          <div className="player-hero__band">
-            <div className="player-hero__band-logo">
-              <TeamLogo teamId={pick.teamId} size={56} ring={false} />
-            </div>
-            <div className="player-hero__band-headshot">
-              <PlayerAvatar
-                teamId={pick.teamId}
-                name={pick.playerName}
-                src={pick.headshotUrl}
-                size={104}
-              />
-            </div>
-          </div>
-          <div className="player-hero__name-col">
-            <h1 className="player-hero__name">{pick.playerName}</h1>
-            <div className="player-hero__meta">
-              <span className="pos-chip">{pick.position}</span>
-              <span>·</span>
-              <span>Pick {pick.overallPick} overall</span>
-              <span style={{ color: 'var(--ink-4)' }}>·</span>
-              <span
-                className="mono"
-                style={{ color: 'var(--ink-3)', fontSize: 12 }}
-              >
-                {team?.name} · drafted by {pick.teamId}
-              </span>
-              {currentTeam &&
-                (currentTeam === 'FA' ? (
-                  <span className="player-hero__now">now a free agent</span>
-                ) : (
-                  <span className="player-hero__now">
-                    now with
-                    <TeamLogo teamId={currentTeam} size={16} ring={false} />
-                    <span className="mono" style={{ fontWeight: 700 }}>
-                      {currentTeam}
-                    </span>
-                  </span>
-                ))}
-            </div>
-          </div>
-          <div className="player-hero__role-col">
-            <div className="player-hero__score">
-              <span className="player-hero__score-label kicker">Score</span>
-              <span
-                className="player-hero__score-value tnum"
-                data-testid="player-overall-score"
-              >
-                {overallScore}
-              </span>
-            </div>
-            <div
-              className={`player-hero__role-badge player-hero__role-badge--${roleCls}`}
-            >
-              {roleLabel(role)}
-            </div>
-          </div>
+          <PlayerHeroBand pick={pick} />
+          <PlayerHeroIdentity
+            pick={pick}
+            teamName={team?.name}
+            currentTeam={currentTeam}
+          />
+          <PlayerHeroVerdict
+            overallScore={overallScore}
+            role={role}
+            roleCls={roleCls}
+          />
         </div>
         <div className="player-glossary">
           <span className="kicker player-glossary__title">Glossary</span>
@@ -295,6 +250,94 @@ export function PlayerDetailView({
         </section>
       </div>
     </section>
+  );
+}
+
+function PlayerHeroBand({ pick }: { pick: DraftPick }) {
+  return (
+    <div className="player-hero__band">
+      <div className="player-hero__band-logo">
+        <TeamLogo teamId={pick.teamId} size={56} ring={false} />
+      </div>
+      <div className="player-hero__band-headshot">
+        <PlayerAvatar
+          teamId={pick.teamId}
+          name={pick.playerName}
+          src={pick.headshotUrl}
+          size={104}
+        />
+      </div>
+    </div>
+  );
+}
+
+function PlayerHeroIdentity({
+  pick,
+  teamName,
+  currentTeam,
+}: {
+  pick: DraftPick;
+  teamName?: string;
+  currentTeam?: string | null;
+}) {
+  return (
+    <div className="player-hero__name-col">
+      <h1 className="player-hero__name">{pick.playerName}</h1>
+      <div className="player-hero__meta">
+        <span className="pos-chip">{pick.position}</span>
+        <span>·</span>
+        <span>Pick {pick.overallPick} overall</span>
+        <span style={{ color: 'var(--ink-4)' }}>·</span>
+        <span className="mono" style={{ color: 'var(--ink-3)', fontSize: 12 }}>
+          {teamName} · drafted by {pick.teamId}
+        </span>
+        {currentTeam && <PlayerHeroCurrentTeam currentTeam={currentTeam} />}
+      </div>
+    </div>
+  );
+}
+
+function PlayerHeroCurrentTeam({ currentTeam }: { currentTeam: string }) {
+  if (currentTeam === 'FA') {
+    return <span className="player-hero__now">now a free agent</span>;
+  }
+  return (
+    <span className="player-hero__now">
+      now with
+      <TeamLogo teamId={currentTeam} size={16} ring={false} />
+      <span className="mono" style={{ fontWeight: 700 }}>
+        {currentTeam}
+      </span>
+    </span>
+  );
+}
+
+function PlayerHeroVerdict({
+  overallScore,
+  role,
+  roleCls,
+}: {
+  overallScore: number;
+  role: Role;
+  roleCls: string;
+}) {
+  return (
+    <div className="player-hero__role-col">
+      <div className="player-hero__score">
+        <span className="player-hero__score-label kicker">Score</span>
+        <span
+          className="player-hero__score-value tnum"
+          data-testid="player-overall-score"
+        >
+          {overallScore}
+        </span>
+      </div>
+      <div
+        className={`player-hero__role-badge player-hero__role-badge--${roleCls}`}
+      >
+        {roleLabel(role)}
+      </div>
+    </div>
   );
 }
 

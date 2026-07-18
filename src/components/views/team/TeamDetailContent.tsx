@@ -180,17 +180,7 @@ function TeamHero({
             <span className="team-hero__score">
               {rollingDraftScore.score.toFixed(1)}
             </span>
-            <div style={{ lineHeight: 1.1 }}>
-              <div className="team-hero__kicker" style={{ marginBottom: 0 }}>
-                Draft Success Score
-              </div>
-              <div
-                className="mono"
-                style={{ fontSize: 11, opacity: 0.7, marginTop: 4 }}
-              >
-                {yearCount} season{yearCount === 1 ? '' : 's'}
-              </div>
-            </div>
+            <TeamHeroScoreCaption yearCount={yearCount} />
           </div>
         </div>
 
@@ -241,6 +231,22 @@ function TeamHero({
         </div>
       </div>
     </section>
+  );
+}
+
+function TeamHeroScoreCaption({ yearCount }: { yearCount: number }) {
+  return (
+    <div style={{ lineHeight: 1.1 }}>
+      <div className="team-hero__kicker" style={{ marginBottom: 0 }}>
+        Draft Success Score
+      </div>
+      <div
+        className="mono"
+        style={{ fontSize: 11, opacity: 0.7, marginTop: 4 }}
+      >
+        {yearCount} season{yearCount === 1 ? '' : 's'}
+      </div>
+    </div>
   );
 }
 
