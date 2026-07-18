@@ -67,29 +67,40 @@ export function YearRangeChips({
 
   const [fromInput, setFromInput] = useState(String(from));
   const [toInput, setToInput] = useState(String(to));
-  // Re-sync the editable inputs when the committed range changes. Adjusting
-  // state during render (tracking the previous prop) avoids the cascading
-  // renders an effect would cause.
-  const [prevFrom, setPrevFrom] = useState(from);
-  if (from !== prevFrom) {
-    setPrevFrom(from);
-    setFromInput(String(from));
-  }
-  const [prevTo, setPrevTo] = useState(to);
-  if (to !== prevTo) {
-    setPrevTo(to);
-    setToInput(String(to));
+  /**
+   * The range as last agreed with the parent — the props once they arrive, or
+   * the value already handed up through `onChange` while they are still in
+   * flight. `onChange` routes the range through the URL, so the re-render
+   * carrying it back down can lag the next commit; clamping against the props
+   * directly would let one field clobber a value the user just committed in
+   * the other.
+   */
+  const [committed, setCommitted] = useState({ from, to });
+
+  // Re-sync the editable inputs and the committed range when the props change.
+  // Adjusting state during render (tracking the previous props) avoids the
+  // cascading renders an effect would cause.
+  const [prevProps, setPrevProps] = useState({ from, to });
+  if (from !== prevProps.from || to !== prevProps.to) {
+    if (from !== prevProps.from) setFromInput(String(from));
+    if (to !== prevProps.to) setToInput(String(to));
+    setPrevProps({ from, to });
+    setCommitted({ from, to });
   }
 
+  const commitRange = (next: [number, number]) => {
+    setCommitted({ from: next[0], to: next[1] });
+    onChange(next);
+  };
   const commitFrom = (raw: string) => {
-    const v = parseFromYear(raw, min, to);
-    if (v != null && v !== from) onChange([v, to]);
-    else setFromInput(String(from));
+    const v = parseFromYear(raw, min, committed.to);
+    if (v != null && v !== committed.from) commitRange([v, committed.to]);
+    else setFromInput(String(committed.from));
   };
   const commitTo = (raw: string) => {
-    const v = parseToYear(raw, max, from);
-    if (v != null && v !== to) onChange([from, v]);
-    else setToInput(String(to));
+    const v = parseToYear(raw, max, committed.from);
+    if (v != null && v !== committed.to) commitRange([committed.from, v]);
+    else setToInput(String(committed.to));
   };
 
   return (
@@ -98,8 +109,8 @@ export function YearRangeChips({
       {presets.map((p) => (
         <Chip
           key={p.label}
-          on={p.from === from && p.to === to}
-          onClick={() => onChange([p.from, p.to])}
+          on={p.from === committed.from && p.to === committed.to}
+          onClick={() => commitRange([p.from, p.to])}
         >
           {p.label}
         </Chip>

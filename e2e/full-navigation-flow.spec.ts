@@ -43,9 +43,8 @@ test.describe('Full navigation flow', () => {
       const endYear = page.locator('[aria-label="End year"]');
       await startYear.fill('2022');
       await startYear.press('Enter');
-      // Wait for the first commit to land in the URL before editing the second
-      // field: the End input's commit reads the current `from`, so editing it
-      // before the re-render would commit a stale start year and clobber it.
+      // Sync point: the start year must reach the URL before the end year is
+      // edited, so the two commits are asserted in a known order.
       await expect(page).toHaveURL(/from=2022/);
       await endYear.fill('2024');
       await endYear.press('Enter');

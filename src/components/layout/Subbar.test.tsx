@@ -43,4 +43,29 @@ describe('YearRangeChips', () => {
     const chip = screen.getByRole('button', { name: 'Last 3 yr' });
     expect(chip).toHaveAttribute('aria-pressed', 'true');
   });
+
+  it('committing "To" keeps a just-committed "From" even when the props have not caught up', () => {
+    const onChange = vi.fn();
+    render(
+      <YearRangeChips
+        {...baseProps}
+        from={2021}
+        to={2025}
+        onChange={onChange}
+      />,
+    );
+
+    const start = screen.getByLabelText('Start year');
+    fireEvent.change(start, { target: { value: '2022' } });
+    fireEvent.blur(start);
+    expect(onChange).toHaveBeenLastCalledWith([2022, 2025]);
+
+    // `onChange` routes through the URL, so the re-render carrying `from=2022`
+    // back down can lag this second commit. Re-render deliberately omitted.
+    const end = screen.getByLabelText('End year');
+    fireEvent.change(end, { target: { value: '2024' } });
+    fireEvent.blur(end);
+
+    expect(onChange).toHaveBeenLastCalledWith([2022, 2024]);
+  });
 });

@@ -52,6 +52,15 @@ const webServer = localWebServer();
 
 export default defineConfig({
   testDir: './e2e',
+  // A cold Vite dev server compiles on first request, and `fullyParallel` has
+  // several workers racing for that first response. On an idle machine a test
+  // takes ~2s, but under load the default 30s budget has proven too thin — a
+  // genuine hang still fails the run, just later.
+  timeout: 60_000,
+  expect: {
+    // Range changes re-fetch draft-class JSON before the UI settles.
+    timeout: 10_000,
+  },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
