@@ -87,6 +87,18 @@ describe('PlayerList', () => {
     expect(screen.getAllByRole('row')).toHaveLength(2);
   });
 
+  it('shows a per-pick draft score for each row', () => {
+    const { container } = render(<PlayerList picks={mockPicks} teamId="KC" />);
+
+    const scores = container.querySelectorAll('.roster-table__score');
+    expect(scores).toHaveLength(2);
+    // A full-snap, ever-present starter scores well above a zero-snap backup.
+    const mahomes = Number(scores[0].textContent);
+    const backup = Number(scores[1].textContent);
+    expect(backup).toBe(0);
+    expect(mahomes).toBeGreaterThan(backup);
+  });
+
   it('renders an empty-state message when there are no picks', () => {
     render(<PlayerList picks={[]} teamId="KC" />);
     expect(screen.getByText('No picks to show.')).toBeInTheDocument();

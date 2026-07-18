@@ -1,14 +1,15 @@
 import type { CSSProperties } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { DraftPick } from '../../types';
-import { getPlayerRole } from '../../lib/getPlayerRole';
+import { getPlayerRole, getPlayerDraftScore } from '../../lib/getPlayerRole';
 import { buildPlayerHref } from '../../lib/playerBackTarget';
 import {
-  TeamLogo,
   PlayerAvatar,
   RoleChip,
+  scoreTierClass,
   teamColor,
 } from '../design/Primitives';
+import { cx } from '../../lib/cx';
 import { isDeparted, getCurrentTeam } from '../../lib/playerJourney';
 
 export interface PlayerWithDraftYear {
@@ -53,6 +54,9 @@ export function PlayerList({
         {picks.map(({ pick, draftYear }) => {
           const brandTeam = brandByDraftingTeam ? pick.teamId : teamId;
           const role = getPlayerRole(pick, { draftingTeamOnly });
+          const score = Math.round(
+            getPlayerDraftScore(pick, { draftingTeamOnly }),
+          );
           const departed = isDeparted(pick);
           // For departed players, surface the role they held for the drafting
           // team (retained seasons only) alongside the "Departed" marker.
@@ -101,13 +105,15 @@ export function PlayerList({
                 )}
               </td>
               <td
-                style={{
-                  width: 36,
-                  textAlign: 'right',
-                  paddingRight: 6,
-                }}
+                className={cx(
+                  'roster-table__score',
+                  scoreTierClass(score, {
+                    high: 'roster-table__score--top',
+                    low: 'roster-table__score--low',
+                  }),
+                )}
               >
-                <TeamLogo teamId={brandTeam} size={20} ring={false} />
+                {score}
               </td>
               <td style={{ width: 170, textAlign: 'right' }}>
                 {departed ? (
