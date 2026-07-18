@@ -13,5 +13,5 @@ pnpm run test
 # Build check
 pnpm run build
 
-# E2E tests (requires build above)
-pnpm run test:e2e
+# E2E tests against the build above (vite preview serves dist/)
+pnpm run test:e2e:preview
