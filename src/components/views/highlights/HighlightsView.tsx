@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   PlayerAvatar,
@@ -6,10 +7,11 @@ import {
   scoreTierClass,
 } from '../../design/Primitives';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
-import type {
-  LeagueHighlights,
-  PlayerHighlight,
-  TeamHighlight,
+import {
+  HIGHLIGHT_LIST_SIZE,
+  type LeagueHighlights,
+  type PlayerHighlight,
+  type TeamHighlight,
 } from '../../../lib/getLeagueHighlights';
 
 export interface HighlightsViewProps {
@@ -91,6 +93,11 @@ function PlayerList({
   items: PlayerHighlight[];
   emptyLabel: string;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  const canExpand = items.length > HIGHLIGHT_LIST_SIZE;
+  const visible =
+    expanded || !canExpand ? items : items.slice(0, HIGHLIGHT_LIST_SIZE);
+
   return (
     <article className={`highlight-list highlight-list--${accent}`}>
       <div className="highlight-list__head">
@@ -100,16 +107,28 @@ function PlayerList({
       {items.length === 0 ? (
         <div className="highlight-list__empty">{emptyLabel}</div>
       ) : (
-        <ol className="highlight-list__rows">
-          {items.map((h, i) => (
-            <PlayerRow
-              key={h.pick.playerId}
-              rank={i + 1}
-              highlight={h}
-              accent={accent}
-            />
-          ))}
-        </ol>
+        <>
+          <ol className="highlight-list__rows">
+            {visible.map((h, i) => (
+              <PlayerRow
+                key={h.pick.playerId}
+                rank={i + 1}
+                highlight={h}
+                accent={accent}
+              />
+            ))}
+          </ol>
+          {canExpand && (
+            <button
+              type="button"
+              className="highlight-list__more"
+              aria-expanded={expanded}
+              onClick={() => setExpanded((v) => !v)}
+            >
+              {expanded ? 'Show less' : `Show top ${items.length}`}
+            </button>
+          )}
+        </>
       )}
     </article>
   );

@@ -730,6 +730,30 @@ button {
   color: var(--ink-3);
   line-height: 1.5;
 }
+.highlight-list__more {
+  margin-top: auto;
+  padding: 12px 18px;
+  border: none;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-2);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+.highlight-list__more:hover {
+  background: color-mix(in oklch, var(--ox) 8%, transparent);
+  color: var(--ink);
+}
+.highlight-list__more:focus-visible {
+  outline: 2px solid var(--ox);
+  outline-offset: -2px;
+}
 .highlight-row {
   display: flex;
   align-items: center;
@@ -2447,6 +2471,22 @@ button {
   }
   .app-footer {
     padding: 16px 24px;
+  }
+}
+
+/* On phones the kicker + term + definition columns squeeze the definitions
+   into a ~200px ribbon; stack them so the text gets the full width. */
+@media (max-width: 560px) {
+  .player-glossary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .player-glossary__list {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .player-glossary__list dd:not(:last-child) {
+    margin-bottom: 8px;
   }
 }
 

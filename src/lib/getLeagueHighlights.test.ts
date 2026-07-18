@@ -77,19 +77,21 @@ describe('getLeagueHighlights', () => {
     expect(h.steals[0].score).toBeCloseTo(93, 3);
   });
 
-  it('caps the steals list at three players', () => {
+  it('caps the steals list at twenty players', () => {
     const classes: DraftClass[] = [
       {
         year: 2021,
-        picks: [
-          pick({ teamId: 'A', round: 4, overallPick: 110, snapShare: 0.9 }),
-          pick({ teamId: 'A', round: 4, overallPick: 111, snapShare: 0.8 }),
-          pick({ teamId: 'B', round: 4, overallPick: 112, snapShare: 0.7 }),
-          pick({ teamId: 'B', round: 4, overallPick: 113, snapShare: 0.6 }),
-        ],
+        picks: Array.from({ length: 25 }, (_, i) =>
+          pick({
+            teamId: i % 2 === 0 ? 'A' : 'B',
+            round: 4,
+            overallPick: 110 + i,
+            snapShare: 0.9 - i * 0.02,
+          }),
+        ),
       },
     ];
-    expect(getLeagueHighlights(classes, teams, opts).steals).toHaveLength(3);
+    expect(getLeagueHighlights(classes, teams, opts).steals).toHaveLength(20);
   });
 
   it('ignores rounds 1–3 for the steals list', () => {

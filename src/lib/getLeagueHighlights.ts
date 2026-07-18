@@ -23,8 +23,11 @@ export interface TeamHighlight {
   count: number;
 }
 
-/** How many players each ranked list (steals, busts) holds. */
+/** How many players each ranked list (steals, busts) shows before expanding. */
 export const HIGHLIGHT_LIST_SIZE = 3;
+
+/** Full length of each ranked list once expanded (the top-20 view). */
+export const HIGHLIGHT_LIST_MAX = 20;
 
 /** Human-interest highlights across the loaded draft window. */
 export interface LeagueHighlights {
@@ -41,7 +44,7 @@ export interface LeagueHighlights {
  * human-interest highlights: the top round-4-or-later steals, the top round-1
  * busts, and the team that produced the most core starters. Only picks with
  * season data ({@link pickHasSeasonSnapData}) are eligible. The steals/busts
- * lists hold up to {@link HIGHLIGHT_LIST_SIZE} players and are empty when no
+ * lists hold up to {@link HIGHLIGHT_LIST_MAX} players and are empty when no
  * eligible pick exists; `mostCoreStarters` is `null` when no team has one.
  */
 export function getLeagueHighlights(
@@ -80,8 +83,8 @@ export function getLeagueHighlights(
   }
 
   return {
-    steals: stealCandidates.sort(compareSteal).slice(0, HIGHLIGHT_LIST_SIZE),
-    busts: bustCandidates.sort(compareBust).slice(0, HIGHLIGHT_LIST_SIZE),
+    steals: stealCandidates.sort(compareSteal).slice(0, HIGHLIGHT_LIST_MAX),
+    busts: bustCandidates.sort(compareBust).slice(0, HIGHLIGHT_LIST_MAX),
     mostCoreStarters: pickCoreLeader(coreCount, scoredCount, teamById),
   };
 }
