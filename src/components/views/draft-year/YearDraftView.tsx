@@ -13,6 +13,7 @@ import { sortPicksByOverall } from '../../../lib/pickSort';
 import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { getDraftClassSummary } from '../../../lib/getDraftClassSummary';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
+import { activateOnKey } from '../../../lib/activateOnKey';
 import type { DraftClass, DraftPick } from '../../../types';
 
 export interface YearDraftViewProps {
@@ -150,15 +151,19 @@ function PickLedgerRow({
     high: 'pick-ledger-row__score--top',
     low: 'pick-ledger-row__score--low',
   });
+  const openPlayer = () =>
+    navigate(
+      buildPlayerHref(pick.playerId, location.pathname + location.search),
+    );
   return (
     <div
       className="pick-ledger-row"
       style={{ ['--team' as never]: color } as CSSProperties}
-      onClick={() =>
-        navigate(
-          buildPlayerHref(pick.playerId, location.pathname + location.search),
-        )
-      }
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${pick.playerName}`}
+      onClick={openPlayer}
+      onKeyDown={activateOnKey(openPlayer)}
     >
       <div>
         <div className="pick-ledger-row__pick-label">Pick</div>

@@ -15,6 +15,7 @@ import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
 import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
+import { activateOnKey } from '../../../lib/activateOnKey';
 import {
   getPositionBaseline,
   isBaselineExemptPosition,
@@ -399,7 +400,15 @@ function ClassmateRow({
         borderBottom: isLast ? 0 : '1px solid var(--rule-2)',
         cursor: isSelf ? 'default' : 'pointer',
       }}
-      onClick={() => !isSelf && onSelect()}
+      {...(isSelf
+        ? {}
+        : {
+            role: 'button',
+            tabIndex: 0,
+            'aria-label': `View ${pick.playerName}`,
+            onClick: onSelect,
+            onKeyDown: activateOnKey(onSelect),
+          })}
     >
       <span
         className="mono tnum"

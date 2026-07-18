@@ -762,12 +762,26 @@ button {
   cursor: pointer;
   border-top: 1px solid var(--rule-2);
   transition: background 0.12s ease;
+  /* Rendered as a <button> so rows are reachable by keyboard. */
+  width: 100%;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
 }
-.highlight-row:first-child {
+.highlight-list__rows li:first-child .highlight-row {
   border-top: none;
 }
 .highlight-row:hover {
   background: color-mix(in oklch, var(--ox) 8%, transparent);
+}
+.highlight-row:focus-visible {
+  outline: 2px solid var(--ox);
+  outline-offset: -2px;
 }
 .highlight-row__rank {
   font-family: var(--f-serif);
@@ -840,6 +854,10 @@ button {
 .highlight-leader:hover {
   border-color: var(--ink-3);
   transform: translateY(-2px);
+}
+.highlight-leader:focus-visible {
+  outline: 2px solid var(--ox);
+  outline-offset: 2px;
 }
 .highlight-leader--empty {
   display: block;
@@ -1569,6 +1587,10 @@ button {
 .pick-ledger-row:hover {
   background: var(--paper-2);
 }
+.pick-ledger-row:focus-visible {
+  outline: 2px solid var(--ox);
+  outline-offset: -2px;
+}
 /* Keep the pick number / score clear of the centre divider while the outer
    edges stay flush with the section header and right margin. Odd children are
    the left column, even children the right column. */
@@ -2091,6 +2113,10 @@ button {
   gap: 8px;
   align-items: center;
   padding: 10px 0;
+}
+.classmate-row:focus-visible {
+  outline: 2px solid var(--ox);
+  outline-offset: -2px;
 }
 .classmate-row--self {
   background: color-mix(in oklch, var(--ox) 8%, transparent);
@@ -2838,6 +2864,36 @@ button {
   .info-grid {
     grid-template-columns: 1fr;
     gap: 18px;
+  }
+  /* Four columns plus a nowrap role chip overflow the sheet on a phone. Trim
+     the cell padding and compact the chip, as .pos-table and .player-career
+     already do, so the table fits instead of pushing the sheet sideways. */
+  .info-role-table th,
+  .info-role-table td {
+    padding: 8px 6px;
+  }
+  .info-role-table th:first-child,
+  .info-role-table td:first-child {
+    padding-left: 0;
+  }
+  .info-role-table th:last-child,
+  .info-role-table td:last-child {
+    padding-right: 0;
+  }
+  /* The snap threshold is short enough to hold one line; wrapping it after the
+     comparator ("≥" / "65%") reads as two separate values. */
+  .info-role-table th:nth-child(2),
+  .info-role-table td:nth-child(2) {
+    white-space: nowrap;
+  }
+  .info-role-table .role-chip {
+    font-size: 8px;
+    letter-spacing: 0.03em;
+    padding: 3px 4px;
+    gap: 3px;
+  }
+  .info-role-table .role-chip::before {
+    display: none;
   }
   .app-footer {
     padding: 14px 16px;

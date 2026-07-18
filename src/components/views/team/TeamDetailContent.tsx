@@ -16,6 +16,7 @@ import {
   findLatestYearWithAwaitingData,
   shouldHideRosterYearHeading,
 } from '../../../lib/draftClassDisplay';
+import { activateOnKey } from '../../../lib/activateOnKey';
 import type { DraftClass, DraftPick, Role } from '../../../types';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type { RollingDraftScore } from '../../../lib/getRollingDraftScore';
@@ -275,19 +276,14 @@ function ClassGrid({
             latestYearWithAwaiting != null &&
             dc.year === latestYearWithAwaiting;
           return (
-            <article
+            <div
               key={dc.year}
               className="class-card"
               role="button"
               tabIndex={0}
               aria-label={`Jump to the ${dc.year} draft class in the roster below`}
               onClick={() => onSelectYear(dc.year)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectYear(dc.year);
-                }
-              }}
+              onKeyDown={activateOnKey(() => onSelectYear(dc.year))}
             >
               <div className="class-card__bar" />
               <div className="class-card__head">
@@ -329,7 +325,7 @@ function ClassGrid({
                   Awaiting season data
                 </div>
               )}
-            </article>
+            </div>
           );
         })}
       </div>

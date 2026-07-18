@@ -7,6 +7,7 @@ import {
   scoreTierClass,
 } from '../../design/Primitives';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
+import { activateOnKey } from '../../../lib/activateOnKey';
 import {
   HIGHLIGHT_LIST_SIZE,
   type LeagueHighlights,
@@ -151,37 +152,41 @@ function PlayerRow({
     high: 'highlight-row__score--high',
     low: 'highlight-row__score--low',
   });
+  const openPlayer = () =>
+    navigate(
+      buildPlayerHref(pick.playerId, location.pathname + location.search),
+    );
 
   return (
-    <li
-      className="highlight-row"
-      onClick={() =>
-        navigate(
-          buildPlayerHref(pick.playerId, location.pathname + location.search),
-        )
-      }
-    >
-      <span className={`highlight-row__rank highlight-row__rank--${accent}`}>
-        {rank}
-      </span>
-      <PlayerAvatar
-        teamId={pick.teamId}
-        name={pick.playerName}
-        src={pick.headshotUrl}
-        size={44}
-      />
-      <div className="highlight-row__id">
-        <div className="highlight-row__name">{pick.playerName}</div>
-        <div className="highlight-row__meta mono">
-          {pick.position} · {seasonTag(draftYear)} · R{pick.round} #
-          {pick.overallPick}
-          <TeamLogo teamId={pick.teamId} size={14} ring={false} />
-          {team?.abbreviation ?? pick.teamId}
+    <li>
+      <button
+        type="button"
+        className="highlight-row"
+        aria-label={`View ${pick.playerName}`}
+        onClick={openPlayer}
+      >
+        <span className={`highlight-row__rank highlight-row__rank--${accent}`}>
+          {rank}
+        </span>
+        <PlayerAvatar
+          teamId={pick.teamId}
+          name={pick.playerName}
+          src={pick.headshotUrl}
+          size={44}
+        />
+        <div className="highlight-row__id">
+          <div className="highlight-row__name">{pick.playerName}</div>
+          <div className="highlight-row__meta mono">
+            {pick.position} · {seasonTag(draftYear)} · R{pick.round} #
+            {pick.overallPick}
+            <TeamLogo teamId={pick.teamId} size={14} ring={false} />
+            {team?.abbreviation ?? pick.teamId}
+          </div>
         </div>
-      </div>
-      <div className={`highlight-row__score ${scoreClass} tnum`}>
-        {score.toFixed(0)}
-      </div>
+        <div className={`highlight-row__score ${scoreClass} tnum`}>
+          {score.toFixed(0)}
+        </div>
+      </button>
     </li>
   );
 }
@@ -209,7 +214,14 @@ function TeamLeader({
   const { teamId, team, count } = highlight;
 
   return (
-    <article className="highlight-leader" onClick={() => onTeamSelect(teamId)}>
+    <div
+      className="highlight-leader"
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${team?.name ?? teamId}`}
+      onClick={() => onTeamSelect(teamId)}
+      onKeyDown={activateOnKey(() => onTeamSelect(teamId))}
+    >
       <div
         className="highlight-leader__bar"
         style={{ background: teamColor(teamId) }}
@@ -226,6 +238,6 @@ function TeamLeader({
           core starters produced
         </span>
       </div>
-    </article>
+    </div>
   );
 }
