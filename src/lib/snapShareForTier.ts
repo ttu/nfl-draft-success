@@ -22,12 +22,26 @@ import { normalizeSnapShareForPosition } from './positionBaseline';
  * baseline normalization for the same reason.
  */
 export function snapShareForRoleTier(s: Season, position?: string): number {
+  const raw = rawSnapShareForRoleTier(s, position);
+  if (isSpecialTeamsSpecialistPosition(undefined, position)) return raw;
+  return normalizeSnapShareForPosition(raw, position);
+}
+
+/**
+ * The same season load reading **before** position adjustment: cumulative load
+ * preferred, capped at avg snap, specialists taking avg share directly.
+ *
+ * This is what baseline derivation must consume. Deriving from the normalized
+ * reading is self-referential — it divides by the baselines it is about to
+ * overwrite, so a position's p90 lands on its own p90 (i.e. 1.0) and position
+ * adjustment silently turns into a no-op. See `deriveBaselines.ts`.
+ */
+export function rawSnapShareForRoleTier(s: Season, position?: string): number {
   const load = s.cumulativeSnapShare ?? s.snapShare;
   if (isSpecialTeamsSpecialistPosition(undefined, position)) {
     return s.snapShare > 0 ? s.snapShare : load;
   }
-  const raw = s.snapShare > 0 && load > s.snapShare ? s.snapShare : load;
-  return normalizeSnapShareForPosition(raw, position);
+  return s.snapShare > 0 && load > s.snapShare ? s.snapShare : load;
 }
 
 /** Stored season load (vs full team capacity) for tables; specialists’ role tiers use `snapShareForRoleTier` instead. */

@@ -129,13 +129,16 @@ gamesPlayedShare = gamesPlayed / teamGames
 
 **Purpose:** Snap share is not comparable across positions. A full-time offensive lineman plays ~100% of snaps; a lead running back rotates at ~50–65%; a rotational defensive tackle who is unambiguously a starter plays ~45–60%. Applying one absolute Core Starter bar (65%) to all of them made that bar sit at roughly the **15th percentile for QBs** and the **90th percentile for RBs** — about six times harder to clear depending on where a player lines up. To fix this, the effective tier share is divided by a **per-position baseline** before classification and scoring.
 
-**Baseline:** For each position, the snap share of a clearly full-time starter — the **p90** of "qualifying" seasons (those with `gamesPlayed / teamGames >= 0.5`, so we measure role size rather than injury absence). Baselines are derived from the actual draft dataset by `scripts/derive-position-baselines.ts` and stored in `src/data/position-baselines.json` (a committed, refreshable artifact regenerated during `pnpm update-data`, before the rankings).
+**Baseline:** For each position, the snap share of a clearly full-time starter — the **p90** of "qualifying" seasons (those with `gamesPlayed / teamGames >= 0.5`, so we measure role size rather than injury absence). Baselines are derived from the actual draft dataset by `scripts/derive-position-baselines.ts` (logic in `src/lib/deriveBaselines.ts`) and stored in `src/data/position-baselines.json` (a committed, refreshable artifact regenerated during `pnpm update-data`, before the rankings).
 
 ```
-normalizedShare = min( snapShareForRoleTier(season, position) / BASELINE[position], 1 )
+rawShare        = rawSnapShareForRoleTier(season, position)   // pre-adjustment
+normalizedShare = min( rawShare / BASELINE[position], 1 )     // = snapShareForRoleTier(...)
 ```
 
 The result is "share of a full-time starter's workload at this position," clamped to 1. It replaces the raw share everywhere role classification (§3) and the continuous 0–100 season score (`getSeasonScore`, §7) consume it — both funnel through `snapShareForRoleTier`, the single choke point that applies the division.
+
+**Derivation reads `rawSnapShareForRoleTier`, never `snapShareForRoleTier`.** The latter divides by the very baselines the script writes, so deriving through it is self-referential: each position's p90 is measured against itself and lands on 1.0, which silently turns position adjustment into a no-op on the next `pnpm update-data`. This collapse happens in a **single** run, not gradually, and the resulting all-1.0 file looks plausible. `src/lib/deriveBaselines.test.ts` pins the invariant.
 
 **Exemptions (baseline = 1, i.e. no rescaling):**
 

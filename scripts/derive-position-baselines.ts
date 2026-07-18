@@ -10,6 +10,11 @@
  * thing at every position; see docs/calculations.md and
  * docs/superpowers/specs/2026-07-17-position-adjusted-snap-scoring-research.md.
  *
+ * The derivation logic lives in `src/lib/deriveBaselines.ts`; this file is the
+ * I/O wrapper. Note that it reads RAW snap shares — reading them through
+ * `snapShareForRoleTier` would divide by the baselines being rewritten here and
+ * collapse every position to 1.0 in one run.
+ *
  * Kickers, punters and long snappers are deliberately EXCLUDED: snap share does
  * not measure specialist workload at all (their share is measured against a
  * scrimmage-shaped denominator), so normalizing it would be meaningless.
@@ -21,97 +26,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { DraftClass } from '../src/types';
-import { snapShareForRoleTier } from '../src/lib/snapShareForTier';
+import { deriveBaselinesFromClasses } from '../src/lib/deriveBaselines';
 import {
-  BASELINE_FLOOR,
   BASELINE_PERCENTILE,
   MIN_QUALIFYING_SEASONS,
   QUALIFYING_GAMES_SHARE,
-  isBaselineExemptPosition,
 } from '../src/lib/positionBaseline';
 import type { PositionBaselinesData } from '../src/types';
-
-/** Linear-interpolated percentile of an unsorted sample. */
-function percentile(values: number[], p: number): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const idx = (sorted.length - 1) * p;
-  const lo = Math.floor(idx);
-  const hi = Math.ceil(idx);
-  return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
-}
-
-/**
- * Tier snap share for each of a pick's seasons that clears the availability
- * bar. A season with no team games recorded cannot be judged either way.
- */
-function qualifyingSeasonShares(pick: DraftClass['picks'][number]): number[] {
-  const shares: number[] = [];
-
-  for (const season of pick.seasons) {
-    if (season.teamGames <= 0) continue;
-    if (season.gamesPlayed / season.teamGames < QUALIFYING_GAMES_SHARE) {
-      continue;
-    }
-    shares.push(snapShareForRoleTier(season, pick.position));
-  }
-
-  return shares;
-}
-
-/**
- * Collect the tier snap share of every qualifying season, grouped by the draft
- * position label — the same vocabulary scoring looks baselines up by. Seasons
- * below {@link QUALIFYING_GAMES_SHARE} availability are too small a sample to
- * describe what a position's snap load looks like.
- */
-function collectSharesByPosition(
-  dataDir: string,
-  files: string[],
-): Map<string, number[]> {
-  const sharesByPosition = new Map<string, number[]>();
-
-  for (const file of files) {
-    const draftClass: DraftClass = JSON.parse(
-      fs.readFileSync(path.join(dataDir, file), 'utf-8'),
-    );
-    for (const pick of draftClass.picks) {
-      if (isBaselineExemptPosition(pick.position)) continue;
-      const shares = qualifyingSeasonShares(pick);
-      if (shares.length === 0) continue;
-      const list = sharesByPosition.get(pick.position);
-      if (list) list.push(...shares);
-      else sharesByPosition.set(pick.position, shares);
-    }
-  }
-
-  return sharesByPosition;
-}
-
-/**
- * Reduce each position's samples to a single baseline. Positions with too few
- * qualifying seasons are reported as `skipped` rather than given a baseline
- * derived from noise.
- */
-function deriveBaselines(sharesByPosition: Map<string, number[]>): {
-  baselines: Record<string, number>;
-  skipped: string[];
-} {
-  const baselines: Record<string, number> = {};
-  const skipped: string[] = [];
-
-  for (const [position, shares] of [...sharesByPosition].sort()) {
-    if (shares.length < MIN_QUALIFYING_SEASONS) {
-      skipped.push(`${position} (n=${shares.length})`);
-      continue;
-    }
-    const raw = percentile(shares, BASELINE_PERCENTILE);
-    // Round to 3dp for a readable, diff-friendly artifact.
-    baselines[position] =
-      Math.round(Math.max(raw, BASELINE_FLOOR) * 1000) / 1000;
-  }
-
-  return { baselines, skipped };
-}
 
 function main() {
   const dataDir = path.join(process.cwd(), 'public', 'data');
@@ -123,9 +44,11 @@ function main() {
     throw new Error(`No draft-{year}.json files found in ${dataDir}`);
   }
 
-  const { baselines, skipped } = deriveBaselines(
-    collectSharesByPosition(dataDir, files),
+  const classes: DraftClass[] = files.map((file) =>
+    JSON.parse(fs.readFileSync(path.join(dataDir, file), 'utf-8')),
   );
+
+  const { baselines, skipped } = deriveBaselinesFromClasses(classes);
 
   const output: PositionBaselinesData = {
     generatedAt: new Date().toISOString().slice(0, 10),
