@@ -139,7 +139,7 @@ The result is "share of a full-time starter's workload at this position," clampe
 
 **Exemptions (baseline = 1, i.e. no rescaling):**
 
-- **Kickers, punters, long snappers.** Snap share is measured against a scrimmage-shaped denominator and does not describe speciakload at all, so normalizing it would be meaningless. They keep raw shares and their existing Significant Contributor carve-out (§3, SCmin = 0.32).list wor
+- **Kickers, punters, long snappers.** Snap share is measured against a scrimmage-shaped denominator and does not describe specialist workload at all, so normalizing it would be meaningless. They keep raw shares and their existing Significant Contributor carve-out (§3, SCmin = 0.32).
 - **Unknown positions** and any position with fewer than 25 qualifying seasons in the dataset. These fall back to a baseline of 1.0, reproducing the pre-adjustment behaviour.
 
 **Effect on interior OL and QB:** their baselines are ~0.99–1.0, so their scores are essentially unchanged. The correction lifts under-credited rotational positions (DT, DL, RB, DE, TE) without moving the positions the old absolute bars already fit.

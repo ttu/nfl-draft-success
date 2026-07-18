@@ -147,28 +147,38 @@ export function PlayerDetailView({
           <span className="kicker player-glossary__title">Glossary</span>
           <dl className="player-glossary__list">
             <dt>Avg snap</dt>
-            <dd>weekly max of off/def snap %, averaged across games played</dd>
+            <dd>
+              In the games he played, the share of his team's plays he was on
+              the field for — offensive plays for an offensive player, defensive
+              plays for a defender — averaged across those games.
+            </dd>
             <dt>Load</dt>
             <dd>
-              season snaps vs. drafting team's full-season snap capacity. Games
-              missed while on the injury report are excused from the
-              denominator, so injury absences don't lower Load.
+              How much of a full season he played for the team that drafted him.
+              Weeks spent on the injury report don't count against him, so
+              getting hurt doesn't drag Load down.
             </dd>
             <dt>Role</dt>
-            <dd>derived from Load (kickers/punters use Avg snap)</dd>
+            <dd>
+              His job that season — Core Starter, Significant Contributor, and
+              so on. Based on Load, not Avg snap (kickers and punters are the
+              exception).
+            </dd>
             <dt>Position bar</dt>
             <dd>
               {positionExempt ? (
                 <>
-                  {pick.position} is scored on raw snaps — snap share doesn't
-                  capture specialist workload.
+                  Snap share can't describe what a {pick.position} does, so he's
+                  scored on raw snaps instead of against a position bar.
                 </>
               ) : (
                 <>
-                  Snap % is measured against a full-time starter's workload at{' '}
-                  {pick.position} (~{fullTimeBarPct}% of team snaps), so Role
-                  and Score compare fairly across positions. At {pick.position},
-                  a Core Starter plays ~{coreStarterPct}%+ of snaps.
+                  Starters play different amounts at different positions, so
+                  everyone is measured against a full-time starter at their own
+                  — ~{fullTimeBarPct}% of team snaps at {pick.position}. That's
+                  what lets Role and Score mean the same thing everywhere. A{' '}
+                  {pick.position} needs ~{coreStarterPct}%+ of snaps to count as
+                  a Core Starter.
                 </>
               )}
             </dd>

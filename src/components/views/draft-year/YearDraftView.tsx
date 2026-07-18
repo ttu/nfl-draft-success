@@ -65,7 +65,7 @@ export function YearDraftView({
             variant="year"
             label="Avg. score"
             value={String(Math.round(summary.avgScore))}
-            sub="picks tracked"
+            sub="out of 100"
           />
           <StatBlock
             variant="year"
@@ -78,7 +78,7 @@ export function YearDraftView({
             variant="year"
             label="Misses"
             value={String(summary.misses)}
-            sub="non-contrib"
+            sub="non-contributors"
           />
           <StatBlock
             variant="year"

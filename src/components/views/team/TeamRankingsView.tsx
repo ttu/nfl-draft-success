@@ -86,13 +86,13 @@ export function TeamRankingsView({
       <div className="rankings-legend">
         <span className="kicker">Glossary</span>
         <span>
-          <b>Score</b> · mean of weighted snaps + availability (0–100)
+          <b>Score</b> · how much a team's picks play, 0–100
         </span>
         <span>
-          <b>Core %</b> · share of picks with a full-time starter's snap load
+          <b>Core %</b> · share of picks carrying a full-time starter's workload
         </span>
         <span>
-          <b>Retention</b> · still on roster (any year drafted)
+          <b>Retention</b> · share still on the roster
         </span>
         <span style={{ marginLeft: 'auto' }} className="mono">
           click any team for the deep cut →
@@ -139,9 +139,9 @@ export function TeamRankingsView({
 
       <div className="rankings-foot">
         <div className="rankings-foot__text">
-          Data sourced from nflverse · classifications computed on
-          position-adjusted snap share (65% Core / 35% Significant / 10% Depth
-          of a full-time starter's workload at each position). Players are
+          Data from nflverse · Roles are set by how much of a full-time
+          starter's workload a player carries at his own position — 65% for Core
+          Starter, 35% for Significant Contributor, 10% for Depth. Players are
           credited to the team that drafted them.
         </div>
       </div>

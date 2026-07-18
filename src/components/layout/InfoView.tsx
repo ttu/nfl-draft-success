@@ -56,7 +56,7 @@ export function InfoView({
               Methodology · Glossary · Data
             </div>
             <h1 id="info-sheet-title" className="info-sheet__title">
-              How the Index is built.
+              How the score is built.
             </h1>
           </div>
           <button
@@ -124,31 +124,31 @@ export function InfoView({
                     role="core"
                     snap={`≥ ${asPct(th.core)}`}
                     games="≥ 50% of team"
-                    desc="Full-time, healthy"
+                    desc="On the field full-time, all season"
                   />
                   <RoleRow
                     role="shw"
                     snap={`≥ ${asPct(th.core)}`}
                     games="< 50% of team"
-                    desc="Starter role, missed time"
+                    desc="A starter's workload, but missed games"
                   />
                   <RoleRow
                     role="sig"
                     snap={`≥ ${asPct(th.significant)}`}
                     games="any"
-                    desc="Rotation / package player"
+                    desc="In the rotation, not a starter"
                   />
                   <RoleRow
                     role="dep"
                     snap={`${asPct(th.depth)}–${asPct(th.significant)}`}
                     games="any"
-                    desc="Backup / special teams"
+                    desc="Backup or special teams only"
                   />
                   <RoleRow
                     role="non"
                     snap={`< ${asPct(th.depth)}`}
                     games="any"
-                    desc="Inactive most weeks"
+                    desc="Rarely on the field"
                   />
                 </tbody>
               </table>
@@ -162,19 +162,22 @@ export function InfoView({
                 }}
               >
                 <b>* Snap % is position-adjusted.</b> Positions don't play the
-                same amount: a starting offensive lineman takes nearly every
-                snap, while a lead running back rotates at ~60% and a starting
-                defensive tackle at ~50%. So we measure snaps as a{' '}
-                <em>
-                  share of a full-time starter's workload at that position
-                </em>{' '}
-                — the thresholds are relative to each position's own full-time
-                bar, not one flat number. Pick a position above to see its real
-                thresholds: a running back is a Core Starter at ~42% of team
-                snaps; an offensive lineman needs ~65%. Baselines come from the
-                snap data itself. (Kickers, punters and long snappers are
-                measured on raw snaps — snap share doesn't capture specialist
-                workload.)
+                same amount, even when every one of them is a starter. A
+                full-time offensive lineman is on the field for nearly every
+                snap; a full-time running back for about two thirds of them, and
+                a full-time defensive tackle for about seven in ten. Judging
+                them all against one flat number would just rank positions
+                instead of players.
+                <br />
+                <br />
+                So each player is measured against a full-time starter{' '}
+                <em>at his own position</em>, and the thresholds above shift to
+                match. A running back counts as a Core Starter at ~42% of team
+                snaps; an offensive lineman has to reach ~65%. Pick a position
+                above to see its real numbers. The full-time bar for each
+                position is derived from the snap data itself, not set by hand.
+                (Kickers, punters and long snappers are measured on raw snaps —
+                snap share can't describe what they do.)
               </p>
 
               <h2 className="info-section-title" style={{ marginTop: 32 }}>
@@ -203,19 +206,19 @@ weights       = w_s 0.7, w_a 0.3   (snap share is the heavier signal)`}</pre>
                   trades don't change accounting.
                 </li>
                 <li>
-                  Quarterbacks behind a healthy starter score lower on snap
-                  share. The index measures <em>what happened</em>, not what
-                  might.
+                  Quarterbacks sitting behind a healthy starter score low on
+                  snap share. The score measures <em>what happened</em>, not
+                  what might have.
                 </li>
                 <li>
                   The current season is partial; figures update as the schedule
                   progresses.
                 </li>
                 <li>
-                  <em>Load</em> excuses injury absences: games missed while on
-                  the injury report are dropped from the denominator, so a
-                  starter who plays every snap when healthy keeps a high Load
-                  despite missing time.
+                  <em>Load</em> forgives injuries: weeks a player spent on the
+                  injury report aren't counted against him, so a starter who
+                  plays every snap when healthy keeps a high Load even if he
+                  missed part of the season.
                 </li>
               </ul>
             </div>

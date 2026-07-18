@@ -56,7 +56,7 @@ test.describe('Landing page', () => {
   test('info sheet opens from the masthead Info button', async ({ page }) => {
     await page.getByRole('button', { name: /methodology/i }).click();
     await expect(
-      page.getByRole('dialog', { name: /How the Index is built/i }),
+      page.getByRole('dialog', { name: /How the score is built/i }),
     ).toBeVisible();
   });
 
@@ -65,7 +65,7 @@ test.describe('Landing page', () => {
   }) => {
     await page.getByRole('button', { name: /methodology/i }).click();
     const dialog = page.getByRole('dialog', {
-      name: /How the Index is built/i,
+      name: /How the score is built/i,
     });
     await expect(dialog).toBeVisible();
     const lastUpdated = dialog.locator('.info-kv', { hasText: 'Last updated' });

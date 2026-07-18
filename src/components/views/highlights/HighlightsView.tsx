@@ -72,9 +72,10 @@ export function HighlightsView({
       <TeamLeader highlight={mostCoreStarters} onTeamSelect={onTeamSelect} />
 
       <div className="highlights-foot">
-        Draft success score (0–100) weights snap share and availability. Steals
-        come from round 4 or later; busts from round 1. Players are credited to
-        the team that drafted them.
+        The draft success score (0–100) combines how much a player is on the
+        field with how available he stays. Steals are picks from round 4 or
+        later; busts are round 1. Players are credited to the team that drafted
+        them.
       </div>
     </section>
   );
