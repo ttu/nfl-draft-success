@@ -15,6 +15,7 @@ import {
   useNavigate,
   useMatch,
   type SetURLSearchParams,
+  type NavigateFunction,
 } from 'react-router-dom';
 import { Masthead, type MastheadTab } from './components/layout/Masthead';
 import { Subbar, Chip, YearRangeChips } from './components/layout/Subbar';
@@ -132,6 +133,124 @@ const ACTIVE_VIEW_TAB: Record<ActiveView, MastheadTab> = {
   [ActiveView.Position]: 'pos',
   [ActiveView.Highlights]: 'highlights',
 };
+
+/**
+ * Keeps `/position/:position` on a position that actually exists in the loaded
+ * draft classes: an empty param goes home, an unrecognised one falls back to QB
+ * (or the first available position), preserving the current year range.
+ *
+ * Waits for data — until classes are loaded there is nothing to validate
+ * against, and redirecting early would bounce a legitimate deep link.
+ */
+function usePositionRedirect({
+  isPositionView,
+  loading,
+  draftClassCount,
+  positionParam,
+  positionOptions,
+  canonicalPosition,
+  navigate,
+  searchParams,
+}: {
+  isPositionView: boolean;
+  loading: boolean;
+  draftClassCount: number;
+  positionParam: string | null | undefined;
+  positionOptions: string[];
+  canonicalPosition: string | null;
+  navigate: NavigateFunction;
+  searchParams: URLSearchParams;
+}): void {
+  useLayoutEffect(() => {
+    if (!isPositionView || loading || draftClassCount === 0) return;
+    if (positionParam == null || positionParam.trim() === '') {
+      navigate('/', { replace: true });
+      return;
+    }
+    if (positionOptions.length === 0) return;
+    if (canonicalPosition != null) return;
+
+    const fallback = positionOptions.includes('QB') ? 'QB' : positionOptions[0];
+    navigate(
+      {
+        pathname: `/position/${encodeURIComponent(fallback)}`,
+        search: searchParams.toString(),
+      },
+      { replace: true },
+    );
+  }, [
+    isPositionView,
+    loading,
+    draftClassCount,
+    positionParam,
+    positionOptions,
+    canonicalPosition,
+    navigate,
+    searchParams,
+  ]);
+}
+
+/**
+ * A pick is always credited to the team that drafted it, never to a later team
+ * the player was traded to.
+ */
+const DRAFTING_TEAM_ONLY = true;
+
+/**
+ * Everything derived from the loaded draft classes. Each value needs classes to
+ * be present, and league highlights are only computed for the view that shows
+ * them — the whole-league pass is the most expensive of these.
+ */
+function useDraftAnalytics({
+  draftClasses,
+  selectedTeam,
+  activeView,
+  showDeparted,
+  roleFilter,
+}: {
+  draftClasses: DraftClass[];
+  selectedTeam: string | null;
+  activeView: ActiveView;
+  showDeparted: boolean;
+  roleFilter: Set<Role>;
+}) {
+  const draftingTeamOnly = DRAFTING_TEAM_ONLY;
+  const hasClasses = draftClasses.length > 0;
+
+  const rollingDraftScore =
+    hasClasses && selectedTeam
+      ? getRollingDraftScore(draftClasses, selectedTeam, { draftingTeamOnly })
+      : null;
+
+  const teamRank = getTeamRankSummary(draftClasses, TEAMS, selectedTeam, {
+    draftingTeamOnly,
+  });
+
+  const leagueContext = hasClasses
+    ? getLeagueContext(draftClasses, TEAMS, { draftingTeamOnly })
+    : undefined;
+
+  const leagueHighlights =
+    activeView === ActiveView.Highlights && hasClasses
+      ? getLeagueHighlights(draftClasses, TEAMS, { draftingTeamOnly })
+      : null;
+
+  const rosterByDraftYear = getRosterByDraftYear(
+    draftClasses,
+    selectedTeam,
+    showDeparted,
+    roleFilter,
+    draftingTeamOnly,
+  );
+
+  return {
+    rollingDraftScore,
+    teamRank,
+    leagueContext,
+    leagueHighlights,
+    rosterByDraftYear,
+  };
+}
 
 function useResolvedYearRange(
   forcedSingleYear: number | null,
@@ -360,32 +479,16 @@ function AppContent() {
       ? resolveCanonicalPosition(positionOptions, positionParam)
       : null;
 
-  useLayoutEffect(() => {
-    if (!isPositionView || loading || draftClasses.length === 0) return;
-    if (positionParam == null || positionParam.trim() === '') {
-      navigate('/', { replace: true });
-      return;
-    }
-    if (positionOptions.length === 0) return;
-    if (canonicalPosition != null) return;
-    const fallback = positionOptions.includes('QB') ? 'QB' : positionOptions[0];
-    navigate(
-      {
-        pathname: `/position/${encodeURIComponent(fallback)}`,
-        search: searchParams.toString(),
-      },
-      { replace: true },
-    );
-  }, [
+  usePositionRedirect({
     isPositionView,
     loading,
-    draftClasses.length,
+    draftClassCount: draftClasses.length,
     positionParam,
     positionOptions,
     canonicalPosition,
     navigate,
     searchParams,
-  ]);
+  });
 
   useEffect(() => {
     saveRoleFilter(Array.from(roleFilter));
@@ -468,33 +571,19 @@ function AppContent() {
     });
   };
 
-  const draftingTeamOnly = true;
-  const rollingDraftScore =
-    draftClasses.length > 0 && selectedTeam
-      ? getRollingDraftScore(draftClasses, selectedTeam, { draftingTeamOnly })
-      : null;
-
-  const teamRank = getTeamRankSummary(draftClasses, TEAMS, selectedTeam, {
-    draftingTeamOnly,
-  });
-
-  const leagueContext =
-    draftClasses.length > 0
-      ? getLeagueContext(draftClasses, TEAMS, { draftingTeamOnly })
-      : undefined;
-
-  const leagueHighlights =
-    activeView === ActiveView.Highlights && draftClasses.length > 0
-      ? getLeagueHighlights(draftClasses, TEAMS, { draftingTeamOnly })
-      : null;
-
-  const rosterByDraftYear = getRosterByDraftYear(
+  const {
+    rollingDraftScore,
+    teamRank,
+    leagueContext,
+    leagueHighlights,
+    rosterByDraftYear,
+  } = useDraftAnalytics({
     draftClasses,
     selectedTeam,
+    activeView,
     showDeparted,
     roleFilter,
-    draftingTeamOnly,
-  );
+  });
 
   const selectedTeamData = selectedTeam
     ? TEAMS.find((t) => t.id === selectedTeam)
@@ -574,7 +663,7 @@ function AppContent() {
           rollingDraftScore,
           draftClasses,
           playerLookupClasses,
-          draftingTeamOnly,
+          draftingTeamOnly: DRAFTING_TEAM_ONLY,
           roleFilter,
           setRoleFilter,
           rosterByDraftYear,
@@ -791,54 +880,56 @@ interface RenderMainArgs {
   playerInfo: { pick: DraftPick; draftYear: number } | null;
 }
 
+function renderPlayerView(a: RenderMainArgs) {
+  if (!a.playerInfo) {
+    return <LoadingSpinner message="Loading player…" />;
+  }
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <PlayerDetailView
+        pick={a.playerInfo.pick}
+        draftYear={a.playerInfo.draftYear}
+        draftClasses={a.playerLookupClasses}
+        draftingTeamOnly={a.draftingTeamOnly}
+      />
+    </Suspense>
+  );
+}
+
+/**
+ * The rankings table, showing pre-generated rankings while the real classes
+ * load so the page has content immediately. League context only accompanies
+ * the computed rankings — it is not part of the pre-generated payload.
+ *
+ * Null when neither source is ready, so the caller falls through to the next
+ * view.
+ */
+function renderTeamRankings(a: RenderMainArgs) {
+  const rankings = a.loading
+    ? a.defaultRankings?.rankings
+    : a.teamRank?.rankings;
+  if (!rankings) return null;
+
+  return (
+    <TeamRankingsView
+      rankings={rankings}
+      yearCount={a.yearCount}
+      startYear={a.startYear}
+      endYear={a.endYear}
+      leagueContext={a.loading ? undefined : a.leagueContext}
+      onTeamSelect={a.handleTeamSelect}
+      onBack={a.selectedTeam ? a.handleShowRankings : undefined}
+    />
+  );
+}
+
 function renderMainContent(a: RenderMainArgs) {
   if (a.isPlayerView) {
-    if (!a.playerInfo) {
-      return <LoadingSpinner message="Loading player…" />;
-    }
-    return (
-      <Suspense fallback={<LoadingSpinner />}>
-        <PlayerDetailView
-          pick={a.playerInfo.pick}
-          draftYear={a.playerInfo.draftYear}
-          draftClasses={a.playerLookupClasses}
-          draftingTeamOnly={a.draftingTeamOnly}
-        />
-      </Suspense>
-    );
+    return renderPlayerView(a);
   }
-  if (
-    a.activeView === ActiveView.TeamRankings &&
-    a.loading &&
-    a.defaultRankings
-  ) {
-    return (
-      <TeamRankingsView
-        rankings={a.defaultRankings.rankings}
-        yearCount={a.yearCount}
-        startYear={a.startYear}
-        endYear={a.endYear}
-        onTeamSelect={a.handleTeamSelect}
-        onBack={a.selectedTeam ? a.handleShowRankings : undefined}
-      />
-    );
-  }
-  if (
-    a.activeView === ActiveView.TeamRankings &&
-    !a.loading &&
-    a.teamRank?.rankings
-  ) {
-    return (
-      <TeamRankingsView
-        rankings={a.teamRank.rankings}
-        yearCount={a.yearCount}
-        startYear={a.startYear}
-        endYear={a.endYear}
-        leagueContext={a.leagueContext}
-        onTeamSelect={a.handleTeamSelect}
-        onBack={a.selectedTeam ? a.handleShowRankings : undefined}
-      />
-    );
+  if (a.activeView === ActiveView.TeamRankings) {
+    const rankingsView = renderTeamRankings(a);
+    if (rankingsView) return rankingsView;
   }
   if (
     a.activeView === ActiveView.TeamDetail &&

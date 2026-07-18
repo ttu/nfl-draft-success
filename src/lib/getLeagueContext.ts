@@ -40,6 +40,64 @@ export interface LeagueContext {
   roleDistribution: LeagueRoleDistribution;
 }
 
+/** A team's rolling score, carried alongside its id for ranking. */
+interface ScoredTeam {
+  teamId: string;
+  score: number;
+}
+
+/** Best/worst teams by score. Null when fewer than two teams have scored picks. */
+function getSpread(scoredTeams: ScoredTeam[]): LeagueSpread | null {
+  if (scoredTeams.length < 2) return null;
+
+  let top = scoredTeams[0];
+  let bottom = scoredTeams[0];
+  for (const t of scoredTeams) {
+    if (t.score > top.score) top = t;
+    if (t.score < bottom.score) bottom = t;
+  }
+
+  return {
+    topId: top.teamId,
+    topScore: top.score,
+    bottomId: bottom.teamId,
+    bottomScore: bottom.score,
+    gap: top.score - bottom.score,
+  };
+}
+
+/** Tally every scored pick across all classes and teams into role buckets. */
+function getRoleDistribution(
+  draftClasses: DraftClass[],
+  teams: readonly Team[],
+  options?: GetRollingDraftScoreOptions,
+): LeagueRoleDistribution {
+  let coreCount = 0;
+  let contributorCount = 0;
+  let nonContributorCount = 0;
+
+  for (const draft of draftClasses) {
+    for (const team of teams) {
+      const m = getDraftClassMetrics(draft, team.id, options);
+      coreCount += m.coreStarterCount + m.starterWhenHealthyCount;
+      contributorCount +=
+        m.significantContributorCount + m.contributorRoleCount + m.depthCount;
+      nonContributorCount += m.nonContributorCount;
+    }
+  }
+
+  const total = coreCount + contributorCount + nonContributorCount;
+  return {
+    coreCount,
+    contributorCount,
+    nonContributorCount,
+    total,
+    corePct: total > 0 ? coreCount / total : 0,
+    contributorPct: total > 0 ? contributorCount / total : 0,
+    nonContributorPct: total > 0 ? nonContributorCount / total : 0,
+  };
+}
+
 /**
  * Aggregate league-wide context over the loaded draft classes: the average
  * rolling draft score, the spread between the best and worst teams, and the
@@ -67,48 +125,9 @@ export function getLeagueContext(
       ? scoredTeams.reduce((sum, t) => sum + t.score, 0) / scoredTeams.length
       : 0;
 
-  let spread: LeagueSpread | null = null;
-  if (scoredTeams.length >= 2) {
-    let top = scoredTeams[0];
-    let bottom = scoredTeams[0];
-    for (const t of scoredTeams) {
-      if (t.score > top.score) top = t;
-      if (t.score < bottom.score) bottom = t;
-    }
-    spread = {
-      topId: top.teamId,
-      topScore: top.score,
-      bottomId: bottom.teamId,
-      bottomScore: bottom.score,
-      gap: top.score - bottom.score,
-    };
-  }
-
-  let coreCount = 0;
-  let contributorCount = 0;
-  let nonContributorCount = 0;
-  for (const draft of draftClasses) {
-    for (const team of teams) {
-      const m = getDraftClassMetrics(draft, team.id, options);
-      coreCount += m.coreStarterCount + m.starterWhenHealthyCount;
-      contributorCount +=
-        m.significantContributorCount + m.contributorRoleCount + m.depthCount;
-      nonContributorCount += m.nonContributorCount;
-    }
-  }
-  const total = coreCount + contributorCount + nonContributorCount;
-
   return {
     avgScore,
-    spread,
-    roleDistribution: {
-      coreCount,
-      contributorCount,
-      nonContributorCount,
-      total,
-      corePct: total > 0 ? coreCount / total : 0,
-      contributorPct: total > 0 ? contributorCount / total : 0,
-      nonContributorPct: total > 0 ? nonContributorCount / total : 0,
-    },
+    spread: getSpread(scoredTeams),
+    roleDistribution: getRoleDistribution(draftClasses, teams, options),
   };
 }

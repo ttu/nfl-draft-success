@@ -40,40 +40,65 @@ function percentile(values: number[], p: number): number {
   return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
 }
 
-function main() {
-  const dataDir = path.join(process.cwd(), 'public', 'data');
-  const files = fs
-    .readdirSync(dataDir)
-    .filter((f) => /^draft-\d{4}\.json$/.test(f));
+/**
+ * Tier snap share for each of a pick's seasons that clears the availability
+ * bar. A season with no team games recorded cannot be judged either way.
+ */
+function qualifyingSeasonShares(pick: DraftClass['picks'][number]): number[] {
+  const shares: number[] = [];
 
-  if (files.length === 0) {
-    throw new Error(`No draft-{year}.json files found in ${dataDir}`);
+  for (const season of pick.seasons) {
+    if (season.teamGames <= 0) continue;
+    if (season.gamesPlayed / season.teamGames < QUALIFYING_GAMES_SHARE) {
+      continue;
+    }
+    shares.push(snapShareForRoleTier(season, pick.position));
   }
 
-  // Collect the tier snap share of every qualifying season, grouped by the
-  // draft position label — the same vocabulary scoring looks baselines up by.
+  return shares;
+}
+
+/**
+ * Collect the tier snap share of every qualifying season, grouped by the draft
+ * position label — the same vocabulary scoring looks baselines up by. Seasons
+ * below {@link QUALIFYING_GAMES_SHARE} availability are too small a sample to
+ * describe what a position's snap load looks like.
+ */
+function collectSharesByPosition(
+  dataDir: string,
+  files: string[],
+): Map<string, number[]> {
   const sharesByPosition = new Map<string, number[]>();
+
   for (const file of files) {
     const draftClass: DraftClass = JSON.parse(
       fs.readFileSync(path.join(dataDir, file), 'utf-8'),
     );
     for (const pick of draftClass.picks) {
       if (isBaselineExemptPosition(pick.position)) continue;
-      for (const season of pick.seasons) {
-        if (season.teamGames <= 0) continue;
-        if (season.gamesPlayed / season.teamGames < QUALIFYING_GAMES_SHARE) {
-          continue;
-        }
-        const share = snapShareForRoleTier(season, pick.position);
-        const list = sharesByPosition.get(pick.position);
-        if (list) list.push(share);
-        else sharesByPosition.set(pick.position, [share]);
-      }
+      const shares = qualifyingSeasonShares(pick);
+      if (shares.length === 0) continue;
+      const list = sharesByPosition.get(pick.position);
+      if (list) list.push(...shares);
+      else sharesByPosition.set(pick.position, shares);
     }
   }
 
+  return sharesByPosition;
+}
+
+/**
+ * Reduce each position's samples to a single baseline. Positions with too few
+ * qualifying seasons are reported as `skipped` rather than given a baseline
+ * derived from noise.
+ */
+function deriveBaselines(sharesByPosition: Map<string, number[]>): {
+  baselines: Record<string, number>;
+  skipped: string[];
+} {
   const baselines: Record<string, number> = {};
   const skipped: string[] = [];
+
   for (const [position, shares] of [...sharesByPosition].sort()) {
     if (shares.length < MIN_QUALIFYING_SEASONS) {
       skipped.push(`${position} (n=${shares.length})`);
@@ -84,6 +109,23 @@ function main() {
     baselines[position] =
       Math.round(Math.max(raw, BASELINE_FLOOR) * 1000) / 1000;
   }
+
+  return { baselines, skipped };
+}
+
+function main() {
+  const dataDir = path.join(process.cwd(), 'public', 'data');
+  const files = fs
+    .readdirSync(dataDir)
+    .filter((f) => /^draft-\d{4}\.json$/.test(f));
+
+  if (files.length === 0) {
+    throw new Error(`No draft-{year}.json files found in ${dataDir}`);
+  }
+
+  const { baselines, skipped } = deriveBaselines(
+    collectSharesByPosition(dataDir, files),
+  );
 
   const output: PositionBaselinesData = {
     generatedAt: new Date().toISOString().slice(0, 10),
