@@ -14,6 +14,7 @@ import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { getDraftClassSummary } from '../../../lib/getDraftClassSummary';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
 import { activateOnKey } from '../../../lib/activateOnKey';
+import { cx } from '../../../lib/cx';
 import type { DraftClass, DraftPick } from '../../../types';
 
 export interface YearDraftViewProps {
@@ -188,11 +189,7 @@ function PickLedgerRow({
           <div className="pick-ledger-row__name">{pick.playerName}</div>
         </div>
       </div>
-      <div
-        className={`pick-ledger-row__score${scoreClass ? ` ${scoreClass}` : ''}`}
-      >
-        {score}
-      </div>
+      <div className={cx('pick-ledger-row__score', scoreClass)}>{score}</div>
     </div>
   );
 }

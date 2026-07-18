@@ -6,7 +6,7 @@ const SNAP_WEIGHT = 0.7;
 const AVAILABILITY_WEIGHT = 0.3;
 
 function clamp01(v: number): number {
-  return v < 0 ? 0 : v > 1 ? 1 : v;
+  return Math.min(1, Math.max(0, v));
 }
 
 /**

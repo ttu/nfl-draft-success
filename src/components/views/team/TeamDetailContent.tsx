@@ -402,6 +402,17 @@ function RosterSection({
   );
 }
 
+/** Plain-language read on how often a team's picks reach core-starter snaps. */
+function coreStarterRateSummary(coreStarterRate: number): string {
+  if (coreStarterRate > 0.4) {
+    return 'A strong run — this team is producing starters at an above-average clip.';
+  }
+  if (coreStarterRate > 0.25) {
+    return 'A steady, unspectacular run. Retention remains the strength.';
+  }
+  return 'A lean stretch. Few picks have settled into starter-level snaps.';
+}
+
 function SideRail({
   teamRank,
   rollingDraftScore,
@@ -427,11 +438,7 @@ function SideRail({
             color: 'var(--ink-2)',
           }}
         >
-          {rollingDraftScore.coreStarterRate > 0.4
-            ? 'A strong run — this team is producing starters at an above-average clip.'
-            : rollingDraftScore.coreStarterRate > 0.25
-              ? 'A steady, unspectacular run. Retention remains the strength.'
-              : 'A lean stretch. Few picks have settled into starter-level snaps.'}
+          {coreStarterRateSummary(rollingDraftScore.coreStarterRate)}
         </p>
       </SideCard>
     </aside>

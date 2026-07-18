@@ -4,6 +4,7 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import sonarjs from 'eslint-plugin-sonarjs';
 import tseslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import { defineConfig, globalIgnores } from 'eslint/config';
@@ -20,6 +21,7 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
       jsxA11y.flatConfigs.recommended,
+      sonarjs.configs.recommended,
       eslintConfigPrettier,
     ],
     languageOptions: {
@@ -62,6 +64,15 @@ export default defineConfig([
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+    },
+  },
+  {
+    files: ['**/*.test.{ts,tsx}', 'e2e/**/*.ts'],
+    rules: {
+      // Aimed at `===` on computed floats. Our float assertions are exact
+      // pass-through cases (the function returns its input unchanged), where
+      // `toBe` is the point of the test — a tolerance range would weaken it.
+      'sonarjs/no-floating-point-equality': 'off',
     },
   },
 ]);

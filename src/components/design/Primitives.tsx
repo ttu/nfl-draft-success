@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { TEAM_COLORS, getTeamLogoUrl } from '../../data/teamColors';
 import { TEAMS } from '../../data/teams';
 import type { Role } from '../../types';
+import { cx } from '../../lib/cx';
 
 // Pure design helpers colocated with the primitives that use them; the
 // fast-refresh rule only concerns component exports.
@@ -49,7 +50,7 @@ export function StatBlock({
       <div className="kicker" style={{ marginBottom: 6 }}>
         {label}
       </div>
-      <div className={`${valueClass}${accent ? ` ${valueClass}--accent` : ''}`}>
+      <div className={cx(valueClass, accent && `${valueClass}--accent`)}>
         {value}
       </div>
       {sub && <div className={subClass}>{sub}</div>}
@@ -76,6 +77,12 @@ export function scoreTierClass(
   if (score < SCORE_TIER_LOW) return classes.low;
   return '';
 }
+
+/**
+ * A canonical role, the `gone` sentinel, or a raw role string straight from
+ * the data files (which may not yet be a known role).
+ */
+type RoleLike = Role | 'gone' | string;
 
 /** Map internal role string to design class. */
 const ROLE_TO_DESIGN: Record<
@@ -111,23 +118,23 @@ const SHORT_ROLE_LABEL: Record<string, string> = {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function roleDesignClass(role: Role | 'gone' | string): string {
+export function roleDesignClass(role: RoleLike): string {
   return (ROLE_TO_DESIGN as Record<string, string>)[role] ?? 'dep';
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function roleLabel(role: Role | 'gone' | string): string {
+export function roleLabel(role: RoleLike): string {
   const cls = roleDesignClass(role);
   return ROLE_LABEL[cls] ?? cls;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function shortRoleLabel(role: Role | 'gone' | string): string {
+export function shortRoleLabel(role: RoleLike): string {
   const cls = roleDesignClass(role);
   return SHORT_ROLE_LABEL[cls] ?? cls;
 }
 
-export function RoleChip({ role }: { role: Role | 'gone' | string }) {
+export function RoleChip({ role }: { role: RoleLike }) {
   const cls = roleDesignClass(role);
   return <span className={`role-chip ${cls}`}>{ROLE_LABEL[cls]}</span>;
 }

@@ -12,6 +12,7 @@ import { getPositionDisplayName } from '../../../lib/positionDisplayName';
 import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { TEAMS } from '../../../data/teams';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
+import { cx } from '../../../lib/cx';
 import type { DraftClass, DraftPick } from '../../../types';
 
 export interface PositionDraftViewProps {
@@ -294,7 +295,7 @@ function PosRow({ r, i }: { r: PickRow; i: number }) {
         <div className="score-bar">
           <div className="score-bar__track">
             <div
-              className={`score-bar__fill${fillClass ? ` ${fillClass}` : ''}`}
+              className={cx('score-bar__fill', fillClass)}
               style={{ width: `${Math.min(100, r.score)}%` }}
             />
           </div>

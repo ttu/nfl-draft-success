@@ -291,29 +291,30 @@ function DataColumn({
   );
 }
 
+/** Shorthand used by the role table below, mapped to the canonical role ids. */
+type RoleAbbrev = 'core' | 'shw' | 'sig' | 'dep' | 'non' | 'gone';
+
+const ROLE_BY_ABBREV: Record<RoleAbbrev, string> = {
+  core: 'core_starter',
+  shw: 'starter_when_healthy',
+  sig: 'significant_contributor',
+  dep: 'depth',
+  non: 'non_contributor',
+  gone: 'gone',
+};
+
 function RoleRow({
   role,
   snap,
   games,
   desc,
 }: {
-  role: 'core' | 'shw' | 'sig' | 'dep' | 'non' | 'gone';
+  role: RoleAbbrev;
   snap: string;
   games: string;
   desc: string;
 }) {
-  const mappedRole =
-    role === 'core'
-      ? 'core_starter'
-      : role === 'shw'
-        ? 'starter_when_healthy'
-        : role === 'sig'
-          ? 'significant_contributor'
-          : role === 'dep'
-            ? 'depth'
-            : role === 'non'
-              ? 'non_contributor'
-              : 'gone';
+  const mappedRole = ROLE_BY_ABBREV[role];
   return (
     <tr>
       <td>

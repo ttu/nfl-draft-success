@@ -11,7 +11,7 @@ async function expectTeamRankingsMainContent(page: Page) {
   await expect(section).toBeVisible();
   const rows = section.locator('.rankings-table tbody tr');
   await expect(rows.first()).toBeVisible();
-  expect(await rows.count()).toBe(32);
+  await expect(rows).toHaveCount(32);
 }
 
 test.describe('Full navigation flow', () => {
