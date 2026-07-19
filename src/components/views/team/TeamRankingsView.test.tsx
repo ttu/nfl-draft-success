@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { TeamRankingsView } from './TeamRankingsView';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type { LeagueContext } from '../../../lib/getLeagueContext';
@@ -25,13 +26,15 @@ const extendedRow = {
 describe('TeamRankingsView', () => {
   it('renders the ranking headline and the year-window subtitle', () => {
     render(
-      <TeamRankingsView
-        rankings={sample}
-        yearCount={3}
-        startYear={2021}
-        endYear={2025}
-        onTeamSelect={() => {}}
-      />,
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={3}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
     );
     expect(
       screen.getByRole('heading', { name: /which teams draft well/i }),
@@ -41,15 +44,56 @@ describe('TeamRankingsView', () => {
     ).toBeInTheDocument();
   });
 
+  it('links each team name to that team, carrying the year window', () => {
+    render(
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={5}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('link', { name: /Chiefs/ })).toHaveAttribute(
+      'href',
+      '/KC?from=2021&to=2025',
+    );
+    expect(screen.getByRole('link', { name: /Eagles/ })).toHaveAttribute(
+      'href',
+      '/PHI?from=2021&to=2025',
+    );
+  });
+
+  it('does not double-navigate when the team link inside a clickable row is used', () => {
+    const onTeamSelect = vi.fn();
+    render(
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={5}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={onTeamSelect}
+        />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole('link', { name: /Chiefs/ }));
+    expect(onTeamSelect).not.toHaveBeenCalled();
+  });
+
   it('labels the trend column with the two-digit season range', () => {
     render(
-      <TeamRankingsView
-        rankings={sample}
-        yearCount={5}
-        startYear={2021}
-        endYear={2025}
-        onTeamSelect={() => {}}
-      />,
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={5}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
     );
     expect(
       screen.getByRole('columnheader', { name: /Score · '21 → '25/ }),
@@ -58,13 +102,15 @@ describe('TeamRankingsView', () => {
 
   it('renders the extended per-team stats: picks, core %, retained and the trend range', () => {
     render(
-      <TeamRankingsView
-        rankings={[extendedRow]}
-        yearCount={5}
-        startYear={2021}
-        endYear={2025}
-        onTeamSelect={() => {}}
-      />,
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={[extendedRow]}
+          yearCount={5}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
     );
     expect(screen.getByText('39')).toBeInTheDocument(); // picks
     expect(screen.getByText('42%')).toBeInTheDocument(); // core rate
@@ -74,13 +120,15 @@ describe('TeamRankingsView', () => {
 
   it('omits the league context band when no context is provided', () => {
     const { container } = render(
-      <TeamRankingsView
-        rankings={sample}
-        yearCount={3}
-        startYear={2021}
-        endYear={2025}
-        onTeamSelect={() => {}}
-      />,
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={3}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
     );
     expect(container.querySelector('.league-context')).toBeNull();
   });
@@ -106,14 +154,16 @@ describe('TeamRankingsView', () => {
       },
     };
     render(
-      <TeamRankingsView
-        rankings={sample}
-        yearCount={5}
-        startYear={2021}
-        endYear={2025}
-        leagueContext={leagueContext}
-        onTeamSelect={() => {}}
-      />,
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={5}
+          startYear={2021}
+          endYear={2025}
+          leagueContext={leagueContext}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
     );
     expect(screen.getByText('58.2')).toBeInTheDocument(); // league average
     expect(screen.getByText('42.1')).toBeInTheDocument(); // spread gap
@@ -138,14 +188,16 @@ describe('TeamRankingsView', () => {
       },
     };
     render(
-      <TeamRankingsView
-        rankings={sample}
-        yearCount={1}
-        startYear={2026}
-        endYear={2026}
-        leagueContext={leagueContext}
-        onTeamSelect={() => {}}
-      />,
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={1}
+          startYear={2026}
+          endYear={2026}
+          leagueContext={leagueContext}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
     );
     expect(
       screen.getByText(/no scored picks in this window yet/i),

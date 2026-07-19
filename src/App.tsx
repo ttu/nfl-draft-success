@@ -75,6 +75,7 @@ import {
   resolvePlayerBackTarget,
   resolvePlayerOriginTab,
 } from './lib/playerBackTarget';
+import { buildTeamHref } from './lib/teamHref';
 import './App.css';
 
 import type { TeamRanking } from './lib/getRollingDraftScore';
@@ -541,7 +542,7 @@ function AppContent() {
   };
 
   const handleTeamSelect = (team: string) => {
-    navigate(`/${team}?from=${startYear}&to=${endYear}`);
+    navigate(buildTeamHref(team, { from: startYear, to: endYear }));
   };
 
   const handleShowRankings = () => {

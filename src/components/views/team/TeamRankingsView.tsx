@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import { TEAMS } from '../../../data/teams';
 import { TeamLogo, Sparkline, Delta, teamColor } from '../../design/Primitives';
+import { buildTeamHref } from '../../../lib/teamHref';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type { LeagueContext } from '../../../lib/getLeagueContext';
 
@@ -77,6 +79,7 @@ export function TeamRankingsView({
               <RankRow
                 key={r.teamId}
                 r={r as ExtendedRanking}
+                yearWindow={{ from: startYear, to: endYear }}
                 onSelect={onTeamSelect}
               />
             ))}
@@ -304,9 +307,11 @@ function LeagueContextBand({ context }: { context: LeagueContext }) {
 
 function RankRow({
   r,
+  yearWindow,
   onSelect,
 }: {
   r: ExtendedRanking;
+  yearWindow: { from: number; to: number };
   onSelect: (teamId: string) => void;
 }) {
   const team = TEAMS.find((t) => t.id === r.teamId);
@@ -333,10 +338,17 @@ function RankRow({
             style={{ background: color, width: 5 }}
           />
           <TeamLogo teamId={r.teamId} size={30} ring={false} />
-          <div style={{ lineHeight: 1.15 }}>
+          {/* The whole row is clickable, but the name is a real link so the
+              team page is keyboard-reachable and can be opened in a new tab.
+              Stop propagation so the row handler doesn't navigate twice. */}
+          <Link
+            className="team-row__link"
+            to={buildTeamHref(r.teamId, yearWindow)}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="team-row__id">{r.teamId}</div>
             <div className="team-row__name">{team?.name ?? r.teamName}</div>
-          </div>
+          </Link>
         </div>
       </td>
       <td className="right">
