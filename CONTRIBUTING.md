@@ -32,18 +32,19 @@ Open http://localhost:3273
 
 ### Useful commands
 
-| Command            | Description                  |
-| ------------------ | ---------------------------- |
-| `pnpm dev`         | Start dev server             |
-| `pnpm build`       | Production build             |
-| `pnpm test`        | Run unit tests               |
-| `pnpm test:watch`  | Tests in watch mode (TDD)    |
-| `pnpm lint`        | ESLint                       |
-| `pnpm lint:fix`    | ESLint with auto-fix         |
-| `pnpm format`      | Format with Prettier         |
-| `pnpm type-check`  | TypeScript check             |
-| `pnpm validate`    | Format + lint + test + build |
-| `pnpm update-data` | Regenerate draft JSON        |
+| Command                 | Description                  |
+| ----------------------- | ---------------------------- |
+| `pnpm dev`              | Start dev server             |
+| `pnpm build`            | Production build             |
+| `pnpm test`             | Run unit tests               |
+| `pnpm test:watch`       | Tests in watch mode (TDD)    |
+| `pnpm lint`             | ESLint                       |
+| `pnpm lint:fix`         | ESLint with auto-fix         |
+| `pnpm lint:duplication` | jscpd copy-paste check       |
+| `pnpm format`           | Format with Prettier         |
+| `pnpm type-check`       | TypeScript check             |
+| `pnpm validate`         | Format + lint + test + build |
+| `pnpm update-data`      | Regenerate draft JSON        |
 
 ### Git hooks
 

@@ -1,0 +1,10 @@
+{
+  "path": ["src", "scripts"],
+  "format": ["typescript", "tsx", "css"],
+  "ignore": ["**/*.test.ts", "**/*.test.tsx", "**/*.d.ts"],
+  "minLines": 5,
+  "minTokens": 50,
+  "threshold": 2,
+  "reporters": ["consoleFull"],
+  "gitignore": true
+}

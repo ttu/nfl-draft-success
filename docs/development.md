@@ -24,20 +24,21 @@ See [architecture.md](architecture.md) for full dev dependency list. Key additio
 
 ## Scripts
 
-| Command             | Description                  |
-| ------------------- | ---------------------------- |
-| `pnpm dev`          | Start dev server             |
-| `pnpm build`        | Production build             |
-| `pnpm preview`      | Preview production build     |
-| `pnpm lint`         | ESLint (zero warnings)       |
-| `pnpm lint:fix`     | Fix ESLint issues            |
-| `pnpm format`       | Format with Prettier         |
-| `pnpm format:check` | Check formatting             |
-| `pnpm type-check`   | TypeScript check             |
-| `pnpm test`         | Run Vitest                   |
-| `pnpm test:watch`   | Vitest watch mode            |
-| `pnpm validate`     | Format + lint + test + build |
-| `pnpm update-data`  | Update JSON from nflverse    |
+| Command                 | Description                  |
+| ----------------------- | ---------------------------- |
+| `pnpm dev`              | Start dev server             |
+| `pnpm build`            | Production build             |
+| `pnpm preview`          | Preview production build     |
+| `pnpm lint`             | ESLint (zero warnings)       |
+| `pnpm lint:fix`         | Fix ESLint issues            |
+| `pnpm lint:duplication` | jscpd copy-paste check       |
+| `pnpm format`           | Format with Prettier         |
+| `pnpm format:check`     | Check formatting             |
+| `pnpm type-check`       | TypeScript check             |
+| `pnpm test`             | Run Vitest                   |
+| `pnpm test:watch`       | Vitest watch mode            |
+| `pnpm validate`         | Format + lint + test + build |
+| `pnpm update-data`      | Update JSON from nflverse    |
 
 ## Data Updates
 
