@@ -52,7 +52,59 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    env:
+      # `deploy-pages` reports the custom domain once one is configured. The
+      # literal is a fallback only; the `env` context is not available here, so
+      # it cannot be hoisted to a workflow-level variable.
+      E2E_BASE_URL: ${{ needs.deploy.outputs.page_url || 'https://www.nfldraftsuccess.com' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      # Pages reports the deployment as live before the CDN has finished
+      # propagating it, so give the origin a moment to answer before asserting.
+      - name: Wait for the deployment to respond
+        run: |
+          for attempt in $(seq 1 12); do
+            if curl -fsS -o /dev/null "$E2E_BASE_URL"; then
+              echo "Site responded on attempt $attempt."
+              exit 0
+            fi
+            echo "No response yet (attempt $attempt); retrying in 10s."
+            sleep 10
+          done
+          echo "::error::$E2E_BASE_URL did not respond within 120s."
+          exit 1
+
+      - name: Run smoke tests against the deployment
+        run: pnpm run test:e2e:smoke
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-playwright-report
+          path: playwright-report/
+          retention-days: 7
