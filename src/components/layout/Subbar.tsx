@@ -63,6 +63,11 @@ export function YearRangeChips({
       from: latestCompletedYear - 2,
       to: latestCompletedYear,
     },
+    {
+      label: `Last yr`,
+      from: latestCompletedYear,
+      to: latestCompletedYear,
+    },
   ];
 
   const [fromInput, setFromInput] = useState(String(from));

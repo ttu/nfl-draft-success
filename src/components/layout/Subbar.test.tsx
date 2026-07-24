@@ -37,6 +37,23 @@ describe('YearRangeChips', () => {
     expect(onChange).toHaveBeenCalledWith([2023, 2025]);
   });
 
+  it('"Last yr" selects only the most recent completed season', () => {
+    const onChange = vi.fn();
+    render(<YearRangeChips {...baseProps} onChange={onChange} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Last yr' }));
+
+    // latestCompletedYear = 2025, so the window is the single year 2025.
+    expect(onChange).toHaveBeenCalledWith([2025, 2025]);
+  });
+
+  it('marks "Last yr" active when the current range is the single latest completed season', () => {
+    render(<YearRangeChips {...baseProps} from={2025} to={2025} />);
+
+    const chip = screen.getByRole('button', { name: 'Last yr' });
+    expect(chip).toHaveAttribute('aria-pressed', 'true');
+  });
+
   it('marks "Last 3 yr" active when the current range matches the completed-year window', () => {
     render(<YearRangeChips {...baseProps} from={2023} to={2025} />);
 
