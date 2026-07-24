@@ -704,6 +704,7 @@ button {
 .highlights-lists {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: start;
   gap: 20px;
   padding: 28px 48px 0;
 }
