@@ -56,10 +56,10 @@ describe('percentileRank', () => {
 
 describe('buildCorrelation', () => {
   const scores: ScoreEntry[] = [
-    { teamId: 'AAA', score: 80 },
-    { teamId: 'BBB', score: 60 },
-    { teamId: 'CCC', score: 40 },
-    { teamId: 'DDD', score: 20 },
+    { teamId: 'AAA', score: 80, overSlot: 12 },
+    { teamId: 'BBB', score: 60, overSlot: 4 },
+    { teamId: 'CCC', score: 40, overSlot: -4 },
+    { teamId: 'DDD', score: 20, overSlot: -12 },
   ];
   const successes: TeamSuccess[] = [
     success('AAA', 0.8, 5, 1, 1),
@@ -68,7 +68,7 @@ describe('buildCorrelation', () => {
     success('DDD', 0.2, 0),
   ];
 
-  it('joins teams present in both inputs and sorts by score descending', () => {
+  it('joins teams present in both inputs and sorts by over slot descending', () => {
     const result = buildCorrelation(scores, successes);
     expect(result.rows.map((r) => r.teamId)).toEqual([
       'AAA',
@@ -80,24 +80,39 @@ describe('buildCorrelation', () => {
 
   it('drops teams missing from either input', () => {
     const result = buildCorrelation(
-      [...scores, { teamId: 'ZZZ', score: 99 }],
+      [...scores, { teamId: 'ZZZ', score: 99, overSlot: 30 }],
       successes,
     );
     expect(result.rows.map((r) => r.teamId)).not.toContain('ZZZ');
   });
 
-  it('carries per-team score and win-rate percentiles', () => {
+  it('carries per-team score, over-slot and win-rate percentiles', () => {
     const top = buildCorrelation(scores, successes).rows[0];
     expect(top.scorePercentile).toBe(100);
+    expect(top.overSlotPercentile).toBe(100);
     expect(top.winPctPercentile).toBe(100);
   });
 
-  it('measures the score-to-win-rate correlation', () => {
-    // These inputs move together perfectly.
-    expect(buildCorrelation(scores, successes).pearsonR).toBeCloseTo(1, 5);
+  it('measures both the raw-score→win and over-slot→win correlations', () => {
+    const result = buildCorrelation(scores, successes);
+    expect(result.pearsonR).toBeCloseTo(1, 5); // raw score vs win
+    expect(result.skillPearsonR).toBeCloseTo(1, 5); // over slot vs win
   });
 
-  it('reports how many top-5 index teams made the playoffs 3+ years', () => {
+  it('computes the two correlations independently', () => {
+    // Raw score is flat (no signal) while over slot tracks winning perfectly.
+    const flatRaw: ScoreEntry[] = [
+      { teamId: 'AAA', score: 50, overSlot: 12 },
+      { teamId: 'BBB', score: 50, overSlot: 4 },
+      { teamId: 'CCC', score: 50, overSlot: -4 },
+      { teamId: 'DDD', score: 50, overSlot: -12 },
+    ];
+    const result = buildCorrelation(flatRaw, successes);
+    expect(result.pearsonR).toBe(0); // flat raw score → no linear relationship
+    expect(result.skillPearsonR).toBeCloseTo(1, 5); // over slot still tracks wins
+  });
+
+  it('reports how many top-5 over-slot teams made the playoffs 3+ years', () => {
     const ratio = buildCorrelation(scores, successes).topIndexPlayoffRatio;
     // Of the 4 teams (fewer than 5), AAA (5) and BBB (3) clear the 3+ bar.
     expect(ratio).toEqual({ made: 2, of: 4 });
@@ -105,10 +120,11 @@ describe('buildCorrelation', () => {
 });
 
 describe('teamStory', () => {
-  const row = (scorePct: number, winPctPct: number) => ({
+  const row = (overSlotPct: number, winPctPct: number) => ({
     teamId: 'X',
     seasons: 5,
     score: 0,
+    overSlot: 0,
     wins: 0,
     losses: 0,
     ties: 0,
@@ -116,11 +132,12 @@ describe('teamStory', () => {
     playoffApps: 0,
     sbApps: 0,
     sbWins: 0,
-    scorePercentile: scorePct,
+    scorePercentile: 0,
+    overSlotPercentile: overSlotPct,
     winPctPercentile: winPctPct,
   });
 
-  it('says drafting outpaces winning when the score percentile is well ahead', () => {
+  it('says drafting outpaces winning when the over-slot percentile is well ahead', () => {
     expect(teamStory(row(90, 40))).toMatch(/draft/i);
     expect(teamStory(row(90, 40))).not.toEqual(teamStory(row(50, 50)));
   });

@@ -1,16 +1,22 @@
 import type { TeamSuccess } from './teamSuccess';
 
-/** A team's draft-success score, as carried in the pre-computed rankings. */
+/** A team's draft scores, as carried in the pre-computed rankings. */
 export interface ScoreEntry {
   teamId: string;
+  /** Raw draft-success score (how much the team's picks played, 0–100). */
   score: number;
+  /** Over slot: draft value above what each pick's slot predicted (skill). */
+  overSlot: number;
 }
 
-/** One team joined across the draft score and its real on-field outcomes. */
+/** One team joined across the draft scores and its real on-field outcomes. */
 export interface CorrelationRow extends TeamSuccess {
   score: number;
-  /** Percentile of this team's draft score among all joined teams (0–100). */
+  overSlot: number;
+  /** Percentile of this team's raw draft score among all joined teams (0–100). */
   scorePercentile: number;
+  /** Percentile of this team's over slot among all joined teams (0–100). */
+  overSlotPercentile: number;
   /** Percentile of this team's win rate among all joined teams (0–100). */
   winPctPercentile: number;
 }
@@ -22,10 +28,12 @@ export interface TopIndexPlayoffRatio {
 }
 
 export interface CorrelationResult {
-  /** One row per team present in both inputs, highest draft score first. */
+  /** One row per team present in both inputs, highest over slot first. */
   rows: CorrelationRow[];
-  /** Pearson r between draft score and regular-season win rate. */
+  /** Pearson r between raw draft score and regular-season win rate (the contrast). */
   pearsonR: number;
+  /** Pearson r between over slot and regular-season win rate (the headline). */
+  skillPearsonR: number;
   topIndexPlayoffRatio: TopIndexPlayoffRatio;
 }
 
@@ -52,22 +60,31 @@ export function buildCorrelation(
 
   const successById = new Map(success.map((s) => [s.teamId, s]));
   const joined = scores
-    .map((s) => ({ score: s.score, outcome: successById.get(s.teamId) }))
+    .map((s) => ({
+      score: s.score,
+      overSlot: s.overSlot,
+      outcome: successById.get(s.teamId),
+    }))
     .filter(
-      (j): j is { score: number; outcome: TeamSuccess } => j.outcome != null,
+      (j): j is { score: number; overSlot: number; outcome: TeamSuccess } =>
+        j.outcome != null,
     );
 
   const scoreValues = joined.map((j) => j.score);
+  const overSlotValues = joined.map((j) => j.overSlot);
   const winPctValues = joined.map((j) => j.outcome.winPct);
 
   const rows: CorrelationRow[] = joined
     .map((j) => ({
       ...j.outcome,
       score: j.score,
+      overSlot: j.overSlot,
       scorePercentile: percentileRank(scoreValues, j.score),
+      overSlotPercentile: percentileRank(overSlotValues, j.overSlot),
       winPctPercentile: percentileRank(winPctValues, j.outcome.winPct),
     }))
-    .sort((a, b) => b.score - a.score);
+    // Over slot is the headline drafting-skill signal, so rank by it.
+    .sort((a, b) => b.overSlot - a.overSlot);
 
   const topTeams = rows.slice(0, topN);
   const topIndexPlayoffRatio: TopIndexPlayoffRatio = {
@@ -78,6 +95,7 @@ export function buildCorrelation(
   return {
     rows,
     pearsonR: pearson(scoreValues, winPctValues),
+    skillPearsonR: pearson(overSlotValues, winPctValues),
     topIndexPlayoffRatio,
   };
 }
@@ -85,11 +103,12 @@ export function buildCorrelation(
 /**
  * A one-line, plain-language read on a single team's row: whether its drafting
  * is running ahead of its record, the other way round, or roughly in step. The
- * gap is between the draft-score and win-rate percentiles, so a team is only
- * ever compared with the rest of the league, not against an absolute bar.
+ * gap is between the over-slot (drafting-skill) and win-rate percentiles, so a
+ * team is only ever compared with the rest of the league, not against an
+ * absolute bar.
  */
 export function teamStory(row: CorrelationRow): string {
-  const gap = row.scorePercentile - row.winPctPercentile;
+  const gap = row.overSlotPercentile - row.winPctPercentile;
   if (gap > 15) {
     return 'This team is drafting better than its record shows — the wins have not caught up yet.';
   }

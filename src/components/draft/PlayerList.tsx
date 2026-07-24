@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { DraftPick } from '../../types';
 import { getPlayerRole, getPlayerDraftScore } from '../../lib/getPlayerRole';
+import { getPlayerDraftSkill } from '../../lib/draftSlotBaseline';
+import { formatOverSlot } from '../../lib/formatOverSlot';
 import { buildPlayerHref } from '../../lib/playerBackTarget';
 import {
   PlayerAvatar,
@@ -57,6 +59,7 @@ export function PlayerList({
           const score = Math.round(
             getPlayerDraftScore(pick, { draftingTeamOnly }),
           );
+          const overSlot = getPlayerDraftSkill(pick, { draftingTeamOnly });
           const departed = isDeparted(pick);
           // For departed players, surface the role they held for the drafting
           // team (retained seasons only) alongside the "Departed" marker.
@@ -114,6 +117,19 @@ export function PlayerList({
                 )}
               >
                 {score}
+              </td>
+              <td
+                className="roster-table__overslot mono tnum"
+                style={{
+                  width: 52,
+                  textAlign: 'right',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: overSlot >= 0 ? 'var(--positive)' : 'var(--negative)',
+                }}
+                title="Draft value over slot — score above what this pick position predicted"
+              >
+                {formatOverSlot(overSlot)}
               </td>
               <td style={{ width: 170, textAlign: 'right' }}>
                 {departed ? (

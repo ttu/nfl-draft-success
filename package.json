@@ -16,7 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "prepare": "husky",
-    "update-data": "tsx scripts/update-data.ts && tsx scripts/derive-position-baselines.ts && tsx scripts/generate-default-rankings.ts && tsx scripts/generate-lagged-rankings.ts && tsx scripts/generate-team-success.ts && tsx scripts/generate-sitemap.ts",
+    "update-data": "tsx scripts/update-data.ts && tsx scripts/derive-position-baselines.ts && tsx scripts/derive-draft-slot-baseline.ts && tsx scripts/generate-default-rankings.ts && tsx scripts/generate-lagged-rankings.ts && tsx scripts/generate-team-success.ts && tsx scripts/generate-sitemap.ts",
     "derive-baselines": "tsx scripts/derive-position-baselines.ts",
     "generate-rankings": "tsx scripts/generate-default-rankings.ts",
     "generate-lagged-rankings": "tsx scripts/generate-lagged-rankings.ts",

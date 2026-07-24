@@ -162,6 +162,21 @@ describe('PlayerDetailView draft score', () => {
     expect(within(table).getByText('100')).toBeInTheDocument();
     expect(within(table).getByText('65')).toBeInTheDocument();
   });
+
+  it('shows a signed over-slot value in the hero, measured against the pick slot', () => {
+    // #1 overall; expected(1) clamps to 100, so even a strong career reads as
+    // below its top-of-draft slot. Value is negative and uses a real minus.
+    renderScorer();
+    const overSlot = screen.getByTestId('player-over-slot');
+    expect(overSlot.textContent).toMatch(/^−1\d\./);
+  });
+
+  it('shows a positive over-slot for a late pick who outplays his slot', () => {
+    // Will Reichard, K #203: mid-50s score against a ~30 slot expectation.
+    renderView();
+    const overSlot = screen.getByTestId('player-over-slot');
+    expect(overSlot.textContent).toMatch(/^\+/);
+  });
 });
 
 describe('PlayerDetailView Pro Football Reference link', () => {

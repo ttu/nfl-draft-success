@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { TEAMS } from '../../../data/teams';
 import { TeamLogo, Sparkline, Delta, teamColor } from '../../design/Primitives';
 import { buildTeamHref } from '../../../lib/teamHref';
+import { formatOverSlot } from '../../../lib/formatOverSlot';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type { LeagueContext } from '../../../lib/getLeagueContext';
 
@@ -22,6 +23,8 @@ function seasonTag(year: number): string {
 }
 
 interface ExtendedRanking extends TeamRanking {
+  /** Mean pick score above draft-slot expectation; signed. */
+  overSlot?: number;
   picks?: number;
   coreRate?: number;
   retentionRate?: number;
@@ -59,6 +62,9 @@ export function TeamRankingsView({
         <span className="kicker">Glossary</span>
         <span>
           <b>Score</b> · how much a team's picks play, 0–100
+        </span>
+        <span>
+          <b>Over slot</b> · draft value above what the pick positions predicted
         </span>
         <span>
           <b>Core %</b> · share of picks carrying a full-time starter's workload
@@ -161,6 +167,7 @@ function RankingsTableColgroup() {
       <col style={{ width: 38 }} />
       <col />
       <col style={{ width: 90 }} />
+      <col className="col-hide-mobile" style={{ width: 82 }} />
       <col className="col-hide-md" style={{ width: 70 }} />
       <col className="col-hide-mobile" style={{ width: 190 }} />
       <col className="col-hide-mobile" style={{ width: 80 }} />
@@ -183,6 +190,7 @@ function RankingsTableHead({
         <th>YoY</th>
         <th>Team</th>
         <th className="right">Score</th>
+        <th className="right hide-mobile">Over slot</th>
         <th className="right hide-md">Picks</th>
         <th className="hide-mobile">
           Score · {seasonTag(startYear)} → {seasonTag(endYear)}
@@ -368,6 +376,23 @@ function RankRow({
       </td>
       <td className="right">
         <span className="score-big">{r.score.toFixed(1)}</span>
+      </td>
+      <td className="right hide-mobile">
+        {r.overSlot != null ? (
+          <span
+            className="mono tnum"
+            style={{
+              fontWeight: 600,
+              color: r.overSlot >= 0 ? 'var(--positive)' : 'var(--negative)',
+            }}
+          >
+            {formatOverSlot(r.overSlot)}
+          </span>
+        ) : (
+          <span className="mono" style={{ color: 'var(--ink-4)' }}>
+            —
+          </span>
+        )}
       </td>
       <td className="right hide-md">
         {r.picks != null ? (

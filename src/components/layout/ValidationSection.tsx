@@ -18,11 +18,11 @@ function formatCoefficient(r: number): string {
 
 /**
  * The methodology's "does the score predict winning?" panel: a real scatter of
- * every team's early-window draft-success score against its *later* win rate,
- * and an honest read of that lagged correlation. It states whatever the data
- * shows — over recent windows the relationship is essentially flat: drafting
- * well (by snaps) has not translated into winning a few years on, directly or
- * through the veteran capital those picks can be traded for.
+ * every team's early-window drafting against its *later* win rate, and an honest
+ * read of that lagged correlation. It draws the distinction the data insists on
+ * — raw playing time barely moves with winning (bad teams hand snaps to
+ * rookies), but *over slot*, which strips out draft capital, does track it. The
+ * scatter plots over slot; both coefficients are reported.
  */
 export function ValidationSection({
   correlation,
@@ -82,8 +82,8 @@ function ValidationPanel({
   correlation: CorrelationResult;
   windows: LaggedWindows;
 }) {
-  const { pearsonR, topIndexPlayoffRatio } = correlation;
-  const { relation, explanation } = relationshipCopy(pearsonR);
+  const { pearsonR, skillPearsonR, topIndexPlayoffRatio } = correlation;
+  const { relation, explanation } = relationshipCopy(skillPearsonR);
   const draftLabel = formatYearRange(windows.draftFrom, windows.draftTo);
   const winLabel = formatYearRange(windows.winFrom, windows.winTo);
 
@@ -91,12 +91,16 @@ function ValidationPanel({
     <div className="validation__panel">
       <div className="validation__figures">
         <Figure
+          value={formatCoefficient(skillPearsonR)}
+          label={`Pearson r · over slot → win ${winLabel}`}
+        />
+        <Figure
           value={formatCoefficient(pearsonR)}
-          label={`Pearson r · draft ${draftLabel} → win ${winLabel}`}
+          label={`Pearson r · raw usage → win ${winLabel}`}
         />
         <Figure
           value={`${topIndexPlayoffRatio.made} / ${topIndexPlayoffRatio.of}`}
-          label={`Top-${topIndexPlayoffRatio.of} draft teams that made the playoffs 3+ yrs since`}
+          label={`Top-${topIndexPlayoffRatio.of} over-slot teams that made the playoffs 3+ yrs since`}
         />
       </div>
 
@@ -107,9 +111,13 @@ function ValidationPanel({
       </ul>
 
       <p className="validation__prose">
-        We compare each team's <b>{draftLabel}</b> draft-success score against
-        its <b>{winLabel}</b> win rate — the seasons that followed. It shows{' '}
-        <b>{relation}</b>. {explanation}
+        We compare each team's <b>{draftLabel}</b> drafting against its{' '}
+        <b>{winLabel}</b> win rate — the seasons that followed. Raw playing time
+        barely moves with winning ({formatCoefficient(pearsonR)}): bad teams
+        hand snaps to rookies, so volume tracks losing about as much as winning.
+        But <b>over slot</b> — draft value above what each pick's position
+        predicted — shows <b>{relation}</b> ({formatCoefficient(skillPearsonR)}
+        ). {explanation}
       </p>
     </div>
   );
@@ -139,9 +147,9 @@ function CorrelationScatter({ rows }: { rows: CorrelationRow[] }) {
   const H = 260;
   const pad = { l: 42, r: 16, t: 16, b: 36 };
 
-  const scores = rows.map((r) => r.score);
+  const overSlots = rows.map((r) => r.overSlot);
   const wins = rows.map((r) => r.winPct);
-  const xDomain = paddedExtent(scores);
+  const xDomain = paddedExtent(overSlots);
   const yDomain = paddedExtent(wins, 0, 1);
 
   const x = (v: number) =>
@@ -152,7 +160,7 @@ function CorrelationScatter({ rows }: { rows: CorrelationRow[] }) {
     pad.b -
     ((v - yDomain[0]) / (yDomain[1] - yDomain[0])) * (H - pad.t - pad.b);
 
-  const trend = leastSquares(scores, wins);
+  const trend = leastSquares(overSlots, wins);
   const gridX = ticks(xDomain, 4);
   const gridY = ticks(yDomain, 4);
 
@@ -161,7 +169,7 @@ function CorrelationScatter({ rows }: { rows: CorrelationRow[] }) {
       className="validation__chart"
       viewBox={`0 0 ${W} ${H}`}
       role="img"
-      aria-label="Scatter plot of each team's draft-success score against its regular-season win rate, with a trend line."
+      aria-label="Scatter plot of each team's over-slot draft value against its regular-season win rate, with a trend line."
     >
       {/* gridlines */}
       {gridX.map((t) => (
@@ -219,14 +227,14 @@ function CorrelationScatter({ rows }: { rows: CorrelationRow[] }) {
           <circle
             key={r.teamId}
             className={`validation-dot-mark ${dotClass(r)}`}
-            cx={x(r.score)}
+            cx={x(r.overSlot)}
             cy={y(r.winPct)}
             r={dotRadius(r)}
           />
         ))}
 
       <text className="validation__axis-label" x={pad.l} y={H - 8}>
-        DRAFT SCORE →
+        OVER SLOT →
       </text>
       <text
         className="validation__axis-label"

@@ -312,6 +312,25 @@ Team drafts 10 players across 5 years:
 
 Score = (8 + 9 + 2 + 0) / 10 = **1.9**
 
+### 7.4 Over slot (draft value above draft-slot expectation)
+
+**Functions:** `getPlayerDraftSkill` / `expectedScoreForPick` in `src/lib/draftSlotBaseline.ts`; team aggregate is `skillScore` on `getRollingDraftScore`.
+
+The raw score rewards picks for playing, but playing time is largely handed out by **draft capital** (early picks are expected to play). "Over slot" removes the capital by scoring each pick against what its draft position alone predicted:
+
+```
+expected(pick)  = a + b · ln(overallPick)     (clamped to 0–100)
+overSlot(pick)  = score(pick) − expected(pick)
+overSlot(team)  = mean(overSlot(pick) for scored picks)
+```
+
+- **Positive** = the pick outplayed its slot (a steal); **negative** = it fell short (a reach).
+- The curve `{a, b}` is an OLS fit of pick score on `ln(overallPick)`, fit from **mature** draft classes only — those at least `DRAFT_SLOT_MATURITY_LAG` (3) years old, so "expected" reflects a settled career rather than one rookie season. Derived by `scripts/derive-draft-slot-baseline.ts` (runs in `pnpm update-data`) into `src/data/draft-slot-baseline.json`.
+- Fit on the same season basis as the shipped score (`draftingTeamOnly: true`), so a team's over-slot is directly comparable to its raw score.
+- Surfaced additively: the raw 0–100 score is unchanged; over slot appears as a signed value in the team roster (`PlayerList`) and as an "Over slot" column in the rankings table.
+
+**Caveat:** over slot removes capital, not luck — it is still built on the snap-based score, so it rewards a pick that _plays_ relative to its slot, not one graded on play quality.
+
 ---
 
 ## 8. Contributor Definition

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getRollingDraftScore } from './getRollingDraftScore';
+import { expectedScoreForPick } from './draftSlotBaseline';
 import type { DraftClass } from '../types';
 
 // Fixtures use the unknown position `ZZ` (baseline 1.0) so these aggregation
@@ -89,6 +90,15 @@ describe('getRollingDraftScore', () => {
     expect(result.totalPicks).toBe(2);
     expect(result.scoredPickCount).toBe(2);
     expect(result.score).toBeCloseTo((CORE_PICK + DEPTH_PICK) / 2);
+  });
+
+  it('skillScore = mean pick score above the draft-slot expectation', () => {
+    // coreStarterPick is overall #5, depthPick is overall #150.
+    const drafts: DraftClass[] = [coreStarterPick(2023), depthPick(2023)];
+    const result = getRollingDraftScore(drafts, 'KC');
+    const meanExpected =
+      (expectedScoreForPick(5) + expectedScoreForPick(150)) / 2;
+    expect(result.skillScore).toBeCloseTo(result.score - meanExpected);
   });
 
   it('does not scale the score down for un-retained picks (retention is reported, not multiplied in)', () => {

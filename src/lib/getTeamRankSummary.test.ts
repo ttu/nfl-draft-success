@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getTeamRankSummary } from './getTeamRankSummary';
+import { getRollingDraftScore } from './getRollingDraftScore';
 import type { DraftClass, Team } from '../types';
 
 const teamsStub: Team[] = [
@@ -116,6 +117,41 @@ describe('getTeamRankSummary', () => {
     expect(full!.rankings[1].rank).toBe(1);
     expect(full!.rankings[2].rank).toBe(3);
     expect(full!.rank).toBe(3);
+  });
+
+  it('carries each team’s over-slot (skill) score onto its row', () => {
+    const dc: DraftClass[] = [
+      {
+        year: 2021,
+        picks: [
+          {
+            playerId: 'steal',
+            playerName: 'Late steal',
+            position: 'QB',
+            round: 7,
+            overallPick: 230,
+            teamId: 'A',
+            seasons: [
+              {
+                year: 2021,
+                gamesPlayed: 17,
+                teamGames: 17,
+                snapShare: 0.95,
+                retained: true,
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const opts = { draftingTeamOnly: true } as const;
+    const summary = getTeamRankSummary(dc, [teamsStub[0]], 'A', opts);
+    const row = summary!.rankings.find((r) => r.teamId === 'A')!;
+    expect(row.overSlot).toBeCloseTo(
+      getRollingDraftScore(dc, 'A', opts).skillScore,
+    );
+    // A 7th-round pick playing like a starter beats its slot handily.
+    expect(row.overSlot).toBeGreaterThan(0);
   });
 
   it('sets selected rank to 0 when selectedTeam is null', () => {

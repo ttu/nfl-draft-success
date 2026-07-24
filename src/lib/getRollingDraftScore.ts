@@ -4,10 +4,17 @@ import {
   getPlayerRole,
   pickHasSeasonSnapData,
 } from './getPlayerRole';
+import { expectedScoreForPick } from './draftSlotBaseline';
 import { isDraftPickRetainedLatest } from './draftPickLatestSeason';
 
 export interface RollingDraftScore {
   score: number;
+  /**
+   * Mean pick score *above its draft-slot expectation* ("over slot"): drafting
+   * value with draft capital removed. Positive means the team's picks outplayed
+   * their draft positions on average. See {@link expectedScoreForPick}.
+   */
+  skillScore: number;
   /** Team picks in the loaded draft span (includes picks with no season rows yet). */
   totalPicks: number;
   /** Picks with at least one season row in the data (excludes only classes with no `seasons` yet). */
@@ -47,34 +54,33 @@ export function getRollingDraftScore(
   teamId: string,
   options?: GetRollingDraftScoreOptions,
 ): RollingDraftScore {
-  let totalPicks = 0;
-  let scoredPickCount = 0;
+  const opts = { draftingTeamOnly: options?.draftingTeamOnly === true };
+
+  const teamPicks = draftClasses.flatMap((d) =>
+    d.picks.filter((p) => p.teamId === teamId),
+  );
+  const scoredPicks = teamPicks.filter(pickHasSeasonSnapData);
+
   let scoreSum = 0;
+  let skillSum = 0;
   let coreStarterCount = 0;
   let retentionCount = 0;
-
-  const draftingTeamOnly = options?.draftingTeamOnly === true;
-  const opts = { draftingTeamOnly };
-
-  for (const draft of draftClasses) {
-    const picks = draft.picks.filter((p) => p.teamId === teamId);
-    for (const pick of picks) {
-      totalPicks += 1;
-      if (!pickHasSeasonSnapData(pick)) continue;
-
-      scoredPickCount += 1;
-      scoreSum += getPlayerDraftScore(pick, opts);
-
-      if (getPlayerRole(pick, opts) === 'core_starter') coreStarterCount += 1;
-      if (isDraftPickRetainedLatest(pick)) retentionCount += 1;
-    }
+  for (const pick of scoredPicks) {
+    const pickScore = getPlayerDraftScore(pick, opts);
+    scoreSum += pickScore;
+    skillSum += pickScore - expectedScoreForPick(pick.overallPick);
+    if (getPlayerRole(pick, opts) === 'core_starter') coreStarterCount += 1;
+    if (isDraftPickRetainedLatest(pick)) retentionCount += 1;
   }
 
+  const totalPicks = teamPicks.length;
+  const scoredPickCount = scoredPicks.length;
   const retentionRate =
     scoredPickCount > 0 ? retentionCount / scoredPickCount : 0;
 
   return {
     score: scoredPickCount > 0 ? scoreSum / scoredPickCount : 0,
+    skillScore: scoredPickCount > 0 ? skillSum / scoredPickCount : 0,
     totalPicks,
     scoredPickCount,
     coreStarterRate:

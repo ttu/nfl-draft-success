@@ -12,6 +12,8 @@ import {
 import { CareerChart } from '../../design/CareerChart';
 import { TEAMS } from '../../../data/teams';
 import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
+import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
+import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
 import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
@@ -52,6 +54,7 @@ export function PlayerDetailView({
   const overallScore = Math.round(
     getPlayerDraftScore(pick, { draftingTeamOnly }),
   );
+  const overSlot = getPlayerDraftSkill(pick, { draftingTeamOnly });
   const currentTeam = getCurrentTeamIndicator(pick);
   const positionExempt = isBaselineExemptPosition(pick.position);
   const positionBaseline = getPositionBaseline(pick.position);
@@ -95,6 +98,8 @@ export function PlayerDetailView({
           />
           <PlayerHeroVerdict
             overallScore={overallScore}
+            overSlot={overSlot}
+            overallPick={pick.overallPick}
             role={role}
             roleCls={roleCls}
           />
@@ -119,6 +124,13 @@ export function PlayerDetailView({
               His job that season — Core Starter, Significant Contributor, and
               so on. Based on Load, not Avg snap (kickers and punters are the
               exception).
+            </dd>
+            <dt>Over slot</dt>
+            <dd>
+              His Score minus what his draft position alone predicted. Positive
+              means he outplayed where he was picked (a steal); negative means
+              he fell short (a reach). Early picks are expected to score high,
+              so the bar is higher the earlier he went.
             </dd>
             <dt>Position bar</dt>
             <dd>
@@ -312,12 +324,25 @@ function PlayerHeroCurrentTeam({ currentTeam }: { currentTeam: string }) {
   );
 }
 
+/** Plain-language read on how far a pick's score sits from its slot expectation. */
+function overSlotVerdict(overSlot: number): string {
+  if (overSlot >= 10) return 'well above his draft slot';
+  if (overSlot > 3) return 'above his draft slot';
+  if (overSlot >= -3) return 'right at his draft slot';
+  if (overSlot > -10) return 'below his draft slot';
+  return 'well below his draft slot';
+}
+
 function PlayerHeroVerdict({
   overallScore,
+  overSlot,
+  overallPick,
   role,
   roleCls,
 }: {
   overallScore: number;
+  overSlot: number;
+  overallPick: number;
   role: Role;
   roleCls: string;
 }) {
@@ -336,6 +361,21 @@ function PlayerHeroVerdict({
         className={`player-hero__role-badge player-hero__role-badge--${roleCls}`}
       >
         {roleLabel(role)}
+      </div>
+      <div className="player-hero__overslot">
+        <span className="player-hero__overslot-label kicker">Over slot</span>
+        <span
+          className="player-hero__overslot-value tnum"
+          data-testid="player-over-slot"
+          style={{
+            color: overSlot >= 0 ? 'var(--positive)' : 'var(--negative)',
+          }}
+        >
+          {formatOverSlot(overSlot)}
+        </span>
+        <span className="player-hero__overslot-note">
+          {overSlotVerdict(overSlot)} (pick {overallPick})
+        </span>
       </div>
     </div>
   );

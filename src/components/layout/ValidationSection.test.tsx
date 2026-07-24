@@ -35,19 +35,20 @@ function success(
   };
 }
 
-// High draft scores paired with LOW later win rates — a perfectly negative
-// relationship, so the sign-dependent copy is exercised deterministically.
+// Over slot perfectly (negatively) correlated with later win rate, while raw
+// score is flat — so the two reported coefficients differ deterministically and
+// the sign-dependent copy is exercised.
 const scores: ScoreEntry[] = [
-  { teamId: 'AAA', score: 80 },
-  { teamId: 'BBB', score: 65 },
-  { teamId: 'CCC', score: 50 },
-  { teamId: 'DDD', score: 35 },
+  { teamId: 'AAA', score: 50, overSlot: 12 },
+  { teamId: 'BBB', score: 50, overSlot: 4 },
+  { teamId: 'CCC', score: 50, overSlot: -4 },
+  { teamId: 'DDD', score: 50, overSlot: -12 },
 ];
 const successes: TeamSuccess[] = [
   success('AAA', 0.3, 0),
   success('BBB', 0.45, 1),
   success('CCC', 0.6, 3),
-  success('DDD', 0.75, 4, 1, 1), // low score, champion
+  success('DDD', 0.75, 4, 1, 1), // low over slot, champion
 ];
 
 describe('ValidationSection', () => {
@@ -58,17 +59,21 @@ describe('ValidationSection', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('reports the Pearson r and labels the lagged draft→win windows', () => {
+  it('reports both the over-slot and raw-usage coefficients for the win window', () => {
     render(
       <ValidationSection
         correlation={buildCorrelation(scores, successes)}
         windows={WINDOWS}
       />,
     );
-    // These inputs are perfectly negatively correlated → −1.00.
-    expect(screen.getByText('−1.00')).toBeInTheDocument();
+    // Over slot is perfectly negatively correlated → −1.00 (headline figure).
+    expect(screen.getAllByText('−1.00').length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/Pearson r · draft 2018–2021 → win 2022–2025/),
+      screen.getByText(/Pearson r · over slot → win 2022–2025/),
+    ).toBeInTheDocument();
+    // Flat raw score → 0.00 (the contrast figure).
+    expect(
+      screen.getByText(/Pearson r · raw usage → win 2022–2025/),
     ).toBeInTheDocument();
   });
 

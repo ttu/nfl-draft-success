@@ -29,12 +29,17 @@ function main() {
     ),
   );
 
-  const rankings = TEAMS.map((t) => ({
-    teamId: t.id,
-    teamName: t.name,
-    score: getRollingDraftScore(draftClasses, t.id, { draftingTeamOnly: true })
-      .score,
-  })).sort((a, b) => b.score - a.score);
+  const rankings = TEAMS.map((t) => {
+    const rolling = getRollingDraftScore(draftClasses, t.id, {
+      draftingTeamOnly: true,
+    });
+    return {
+      teamId: t.id,
+      teamName: t.name,
+      score: rolling.score,
+      overSlot: rolling.skillScore,
+    };
+  }).sort((a, b) => b.overSlot - a.overSlot);
 
   const output = { from: draftFrom, to: draftTo, rankings };
   const outPath = path.join(dataDir, 'lagged-draft-rankings.json');

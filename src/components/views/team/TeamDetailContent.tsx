@@ -23,6 +23,7 @@ import {
   type PositionBreakdownRow,
 } from '../../../lib/pickBreakdowns';
 import { formatOrdinal } from '../../../lib/formatOrdinal';
+import { formatOverSlot } from '../../../lib/formatOverSlot';
 import {
   teamStory,
   type CorrelationRow,
@@ -513,9 +514,9 @@ function ValidationCard({
   return (
     <SideCard title="Draft, then winning">
       <PctBar
-        label={`Draft score ${draftLabel}`}
-        value={row.score.toFixed(1)}
-        pct={row.scorePercentile}
+        label={`Over slot ${draftLabel}`}
+        value={formatOverSlot(row.overSlot)}
+        pct={row.overSlotPercentile}
         variant="team"
       />
       <PctBar

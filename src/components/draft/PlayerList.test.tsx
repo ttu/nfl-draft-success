@@ -101,6 +101,17 @@ describe('PlayerList', () => {
     expect(mahomes).toBeGreaterThan(backup);
   });
 
+  it('shows each pick’s over-slot value, signed by whether it beat its draft position', () => {
+    const { container } = render(<PlayerList picks={mockPicks} teamId="KC" />);
+
+    const cells = container.querySelectorAll('.roster-table__overslot');
+    expect(cells).toHaveLength(2);
+    // #10 pick who plays every snap outperforms its slot → positive (+).
+    expect(cells[0].textContent).toMatch(/^\+/);
+    // #245 pick who never plays falls short of its slot → negative (− U+2212).
+    expect(cells[1].textContent).toMatch(/^−/);
+  });
+
   it('renders an empty-state message when there are no picks', () => {
     render(<PlayerList picks={[]} teamId="KC" />);
     expect(screen.getByText('No picks to show.')).toBeInTheDocument();

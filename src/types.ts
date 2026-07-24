@@ -65,6 +65,8 @@ export interface DefaultRankingsData {
     teamName: string;
     score: number;
     rank: number;
+    /** Mean pick score above draft-slot expectation ("over slot"). */
+    overSlot: number;
     totalPicks: number;
     coreStarterRate: number;
     retentionRate: number;
@@ -79,6 +81,8 @@ export interface LaggedDraftRankingsData {
     teamId: string;
     teamName: string;
     score: number;
+    /** Over slot: draft value above what each pick's slot predicted. */
+    overSlot: number;
   }>;
 }
 
@@ -89,6 +93,29 @@ export interface PositionBaselinesData {
   method: string;
   /** Full-time-starter snap share per draft position label (0–1]. */
   baselines: Record<string, number>;
+}
+
+/**
+ * Coefficients of the draft-slot expectation curve `expected = a + b·ln(pick)`,
+ * fit from mature draft classes (see `scripts/derive-draft-slot-baseline.ts`).
+ * Drives the "over slot" residual — a pick's score above what its draft position
+ * predicts.
+ */
+export interface DraftSlotBaselineData {
+  /** UTC calendar date `YYYY-MM-DD` when the fit was derived. */
+  generatedAt: string;
+  /** Human-readable description of the derivation method. */
+  method: string;
+  /** Earliest mature draft year contributing to the fit. */
+  matureFrom: number;
+  /** Latest mature draft year contributing to the fit. */
+  matureTo: number;
+  /** Number of scored picks the fit was computed from. */
+  pointCount: number;
+  /** Intercept of `expected = a + b·ln(overallPick)`. */
+  a: number;
+  /** Slope on `ln(overallPick)` (negative: earlier picks are expected to score higher). */
+  b: number;
 }
 
 export const ActiveView = {

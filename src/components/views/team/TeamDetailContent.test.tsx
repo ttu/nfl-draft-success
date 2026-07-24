@@ -37,6 +37,7 @@ function renderView(overrides: Partial<TeamDetailContentProps> = {}) {
   const props: TeamDetailContentProps = {
     rollingDraftScore: {
       score: 62.5,
+      skillScore: 4.2,
       totalPicks: 2,
       scoredPickCount: 2,
       coreStarterRate: 0.5,
@@ -161,6 +162,7 @@ describe('TeamDetailContent validation card', () => {
     teamId: TEAM,
     seasons: 5,
     score: 45.2,
+    overSlot: -2.5,
     wins: 60,
     losses: 24,
     ties: 0,
@@ -168,7 +170,8 @@ describe('TeamDetailContent validation card', () => {
     playoffApps: 5,
     sbApps: 0,
     sbWins: 0,
-    scorePercentile: 6,
+    scorePercentile: 40,
+    overSlotPercentile: 6,
     winPctPercentile: 100,
   };
 
@@ -184,8 +187,8 @@ describe('TeamDetailContent validation card', () => {
       .getByText(/draft, then winning/i)
       .closest('.side-card') as HTMLElement;
     const scope = within(card);
-    expect(scope.getByText(/Draft score '18–'21/)).toBeInTheDocument();
-    expect(scope.getByText(/45\.2 · 6th pct/)).toBeInTheDocument();
+    expect(scope.getByText(/Over slot '18–'21/)).toBeInTheDocument();
+    expect(scope.getByText(/−2\.5 · 6th pct/)).toBeInTheDocument();
     expect(scope.getByText(/Win rate '22–'25/)).toBeInTheDocument();
     expect(scope.getByText(/71% · 100th pct/)).toBeInTheDocument();
     expect(scope.getByText('5/5')).toBeInTheDocument();

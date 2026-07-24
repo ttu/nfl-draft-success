@@ -35,6 +35,7 @@ function main() {
       teamId: t.id,
       teamName: t.name,
       score: rolling.score,
+      overSlot: rolling.skillScore,
       totalPicks: rolling.totalPicks,
       coreStarterRate: rolling.coreStarterRate,
       retentionRate: rolling.retentionRate,

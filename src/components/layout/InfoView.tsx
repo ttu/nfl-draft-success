@@ -212,6 +212,30 @@ retention     = retained_players / picks_in_range   (reported separately)
 weights       = w_s 0.7, w_a 0.3   (snap share is the heavier signal)`}</pre>
 
       <h2 className="info-section-title" style={{ marginTop: 32 }}>
+        Over slot: skill vs. capital
+      </h2>
+      <p
+        style={{
+          fontSize: 13,
+          lineHeight: 1.7,
+          color: 'var(--ink-2)',
+          margin: '0 0 12px',
+        }}
+      >
+        The raw score rewards picks for playing — but playing time is largely
+        handed out by <b>draft capital</b>: early picks are expected to play,
+        late picks aren't. That flatters teams who simply held early or
+        plentiful picks. <b>Over slot</b> strips the capital out: it measures a
+        pick's score against what its draft position alone predicted. Positive
+        means the pick <em>outplayed</em> where it was taken (a steal); negative
+        means it fell short (a reach). A team's Over slot is the average across
+        its picks.
+      </p>
+      <pre className="info-formula">{`expected(pick) = a + b · ln( overallPick )   (fit from mature classes)
+overSlot(pick) = score(pick) − expected(pick)
+overSlot(team) = mean( overSlot(pick) for pick in range )`}</pre>
+
+      <h2 className="info-section-title" style={{ marginTop: 32 }}>
         Caveats
       </h2>
       <ul
@@ -233,6 +257,11 @@ weights       = w_s 0.7, w_a 0.3   (snap share is the heavier signal)`}</pre>
         <li>
           The current season is partial; figures update as the schedule
           progresses.
+        </li>
+        <li>
+          <em>Over slot</em> removes draft capital, not luck: it's still built
+          on the same snap-based score, so it rewards a pick that <em>plays</em>{' '}
+          relative to its slot, not one graded on play quality.
         </li>
         <li>
           <em>Load</em> forgives injuries: weeks a player spent on the injury

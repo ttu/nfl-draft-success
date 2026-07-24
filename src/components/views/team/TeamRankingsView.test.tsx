@@ -16,6 +16,7 @@ const extendedRow = {
   teamName: 'Lions',
   score: 76.1,
   rank: 1,
+  overSlot: 7.4,
   picks: 39,
   coreRate: 0.42,
   retentionRate: 0.85,
@@ -134,9 +135,29 @@ describe('TeamRankingsView', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText('39')).toBeInTheDocument(); // picks
+    expect(screen.getByText('+7.4')).toBeInTheDocument(); // over slot (signed)
     expect(screen.getByText('42%')).toBeInTheDocument(); // core rate
     expect(screen.getByText('85%')).toBeInTheDocument(); // retention
     expect(screen.getByText('58→76')).toBeInTheDocument(); // trend range
+  });
+
+  it('shows a signed, negative over-slot value for a team that drafted below slot', () => {
+    const belowSlot = {
+      ...extendedRow,
+      overSlot: -3.2,
+    } as unknown as TeamRanking;
+    render(
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={[belowSlot]}
+          yearCount={5}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('−3.2')).toBeInTheDocument(); // U+2212 minus
   });
 
   it('omits the league context band when no context is provided', () => {

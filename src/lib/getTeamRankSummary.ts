@@ -11,6 +11,11 @@ export interface RankedTeamRow {
   teamName: string;
   score: number;
   rank: number;
+  /**
+   * Mean pick score above draft-slot expectation ("over slot"): drafting value
+   * with draft capital removed. See {@link getRollingDraftScore}.
+   */
+  overSlot: number;
   /** Total team picks in the loaded draft span (includes awaiting-data picks). */
   picks: number;
   /** Share of scored picks classified as core starters (0–1). */
@@ -95,6 +100,7 @@ export function getTeamRankSummary(
       teamId: t.id,
       teamName: t.name,
       score: rolling.score,
+      overSlot: rolling.skillScore,
       picks: rolling.totalPicks,
       coreRate: rolling.coreStarterRate,
       retentionRate: rolling.retentionRate,
