@@ -48,6 +48,7 @@ export function TeamRankingsView({
         top={top}
         bottom={bottom}
         total={total}
+        yearWindow={{ from: startYear, to: endYear }}
       />
 
       {leagueContext && <LeagueContextBand context={leagueContext} />}
@@ -104,11 +105,13 @@ function RankingsHero({
   top,
   bottom,
   total,
+  yearWindow,
 }: {
   yearCount: number;
   top?: ExtendedRanking;
   bottom?: ExtendedRanking;
   total: number;
+  yearWindow: { from: number; to: number };
 }) {
   const seasonWord = yearCount === 1 ? 'season' : 'seasons';
   return (
@@ -132,12 +135,14 @@ function RankingsHero({
           label="Top of class"
           value={top?.teamId ?? '—'}
           sub={top ? `${top.score.toFixed(1)} · draft success score` : ''}
+          href={top ? buildTeamHref(top.teamId, yearWindow) : undefined}
           accent
         />
         <StatBlock
           label="Coldest streak"
           value={bottom?.teamId ?? '—'}
           sub={bottom ? `${bottom.score.toFixed(1)} · draft success score` : ''}
+          href={bottom ? buildTeamHref(bottom.teamId, yearWindow) : undefined}
         />
         <StatBlock
           label="Teams ranked"
@@ -194,22 +199,32 @@ function StatBlock({
   value,
   sub,
   accent,
+  href,
 }: {
   label: string;
   value: string;
   sub?: string;
   accent?: boolean;
+  /** When set, the value becomes a link to that team's page. */
+  href?: string;
 }) {
+  const valueClass = `statblock__value${accent ? ' statblock__value--accent' : ''} tnum`;
   return (
     <div>
       <div className="kicker" style={{ marginBottom: 8 }}>
         {label}
       </div>
-      <div
-        className={`statblock__value${accent ? ' statblock__value--accent' : ''} tnum`}
-      >
-        {value}
-      </div>
+      {href ? (
+        <Link
+          to={href}
+          className={`${valueClass} statblock__value--link`}
+          aria-label={`${label}: view ${value}`}
+        >
+          {value}
+        </Link>
+      ) : (
+        <div className={valueClass}>{value}</div>
+      )}
       {sub && <div className="statblock__sub">{sub}</div>}
     </div>
   );

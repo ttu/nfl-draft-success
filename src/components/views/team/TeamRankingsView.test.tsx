@@ -66,6 +66,27 @@ describe('TeamRankingsView', () => {
     );
   });
 
+  it('links the top-of-class and coldest-streak hero stats to their team pages', () => {
+    render(
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={5}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('link', { name: /top of class/i })).toHaveAttribute(
+      'href',
+      '/KC?from=2021&to=2025',
+    );
+    expect(
+      screen.getByRole('link', { name: /coldest streak/i }),
+    ).toHaveAttribute('href', '/PHI?from=2021&to=2025');
+  });
+
   it('does not double-navigate when the team link inside a clickable row is used', () => {
     const onTeamSelect = vi.fn();
     render(

@@ -598,6 +598,16 @@ button {
 .statblock__value--accent {
   color: var(--ox);
 }
+.statblock__value--link {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+}
+.statblock__value--link:hover,
+.statblock__value--link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .statblock__sub {
   font-family: var(--f-mono);
   font-size: 11px;
