@@ -51,7 +51,7 @@ export function PlayerList({
   return (
     <table className="roster-table">
       <tbody>
-        {picks.map(({ pick, draftYear }) => {
+        {picks.map(({ pick }) => {
           const brandTeam = brandByDraftingTeam ? pick.teamId : teamId;
           const role = getPlayerRole(pick, { draftingTeamOnly });
           const score = Math.round(
@@ -75,8 +75,8 @@ export function PlayerList({
               }
               onClick={() => navigate(buildPlayerHref(pick.playerId, origin))}
             >
-              <td className="pick-tag" style={{ width: 64 }}>
-                '{String(draftYear).slice(2)} R{pick.round}·{pick.overallPick}
+              <td className="pick-tag" style={{ width: 48 }}>
+                R{pick.round}·{pick.overallPick}
               </td>
               <td style={{ width: 40 }}>
                 <PlayerAvatar

@@ -75,9 +75,11 @@ describe('PlayerList', () => {
     // Position chips
     expect(screen.getAllByText('QB')).toHaveLength(2);
 
-    // Pick tag: 'YY R{round}·{overallPick}
-    expect(screen.getByText(/R1·10/)).toBeInTheDocument();
-    expect(screen.getByText(/R7·245/)).toBeInTheDocument();
+    // Pick tag: R{round}·{overallPick} — the draft year is redundant here
+    // because the roster is already grouped under a "Draft {year}" heading.
+    expect(screen.getByText('R1·10')).toBeInTheDocument();
+    expect(screen.getByText('R7·245')).toBeInTheDocument();
+    expect(screen.queryByText(/'1[78]/)).not.toBeInTheDocument();
 
     // Role labels derived from snap share
     expect(screen.getByText('Core Starter')).toBeInTheDocument();
