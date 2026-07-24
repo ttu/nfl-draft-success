@@ -23,6 +23,13 @@ export interface Season {
   retained: boolean;
   /** Weeks on official injury report (from nflverse injuries data) */
   injuryReportWeeks?: number;
+  /**
+   * Team games missed after the player's last snap of the season — an injury
+   * that ended his year. Present only when non-zero. A player on IR leaves the
+   * weekly injury report, so `injuryReportWeeks` misses these seasons entirely;
+   * see `src/lib/seasonEndingAbsence.ts`.
+   */
+  seasonEndingAbsenceGames?: number;
   /** Team abbreviation the player played for (set when retained === false) */
   currentTeam?: string;
 }

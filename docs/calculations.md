@@ -54,13 +54,20 @@ Franchise codes are normalized (`src/lib/nflverseFranchise.ts`). Let `teamSeason
 cumulativeSnapShare = sum(playerNum) / teamSeasonDen
 ```
 
-**Injury adjustment:** After the base load is computed, we optionally **shrink the denominator** using nflverse injury data (`injuryReportWeeks` on the season). Let `missedGames = max(0, teamGames - gamesPlayed)` and `excusedWeeks = min(injuryReportWeeks, missedGames)`. We subtract `excusedWeeks × (teamSeasonDen / gameCount)` where `gameCount` is the number of distinct games that franchise played in `snap_counts`. That approximates “weeks missed while on the injury report” without penalizing load for those absences as harshly as healthy scratches. Applied only for single-franchise seasons when merging draft output (`resolveCumulativeLoadShareWithInjury`).
+**Injury adjustment:** After the base load is computed, we optionally **shrink the denominator** for absences we treat as excused. Two signals feed it, and we take the **larger**, never the sum — both describe the same absence:
+
+- `injuryReportWeeks`: weeks on the nflverse injury report.
+- `seasonEndingAbsenceGames`: team games between a player's **last snap** and the end of their team's season, from `snap_counts` weeks (`src/lib/seasonEndingAbsence.ts`). The nflverse injury feed is the weekly practice/game-status report, and a player placed on IR leaves the 53-man roster and that report entirely — so the most severe injuries produce **zero** report weeks (Nick Bosa has no 2020 rows despite tearing his ACL in week 2). Snap data still shows the shape: present every week, then gone. Weeks are matched against the team's own schedule so byes and playoff runs count correctly, and a gap of one game is ignored (that reads as a rest day or healthy scratch, not an injury). This is a heuristic: a player cut mid-season who never signs elsewhere looks the same as one who went on IR.
+
+Let `missedGames = max(0, teamGames - gamesPlayed)` and `excusedWeeks = min(max(injuryReportWeeks, seasonEndingAbsenceGames), missedGames)`. We subtract `excusedWeeks × (teamSeasonDen / gameCount)` where `gameCount` is the number of distinct games that franchise played in `snap_counts`. That approximates “weeks missed hurt” without penalizing load for those absences as harshly as healthy scratches. Applied only for single-franchise seasons when merging draft output (`resolveCumulativeLoadShareWithInjury`) — for a traded player, absence from one team's remaining schedule is a transaction, not an injury.
+
+Note the **availability** term of the season score (`gamesPlayed / teamGames`, 30% weight) is untouched by this, so a season-ending injury still costs a player most of that component; the adjustment only stops Load from reading the missed games as bench time.
 
 **Cap vs Avg snap:** Full-season + injury math can still produce a load **above** average weekly role share. We set `cumulativeSnapShare = min(computedLoad, snapShare)` when storing JSON and in `snapShareForRoleTier`, so Load never exceeds **Avg snap** (typical usage when active).
 
 **Multi-team seasons (traded mid-year):** If the player appears on more than one franchise in `snap_counts` for that year, fall back to the **games-played** ratio: `sum(playerNum) / sum(teamDen per game row)` so we do not attribute one team’s full-season denominator to snaps earned with another club. Injury adjustment is **not** applied (no `loadMeta`).
 
-**Implementation:** `scripts/update-data.ts`, `buildTeamSeasonDenominatorTotals`, `injuryAdjustedFullSeasonDenominator`, and `resolveCumulativeLoadShareWithInjury` in `src/lib/teamSeasonDenominator.ts`; per-game helpers in `src/lib/snapCountTotals.ts`. Stored as `cumulativeSnapShare` on each `Season`.
+**Implementation:** `scripts/update-data.ts`, `buildTeamSeasonDenominatorTotals`, `injuryAdjustedFullSeasonDenominator`, and `resolveCumulativeLoadShareWithInjury` in `src/lib/teamSeasonDenominator.ts`; `seasonEndingAbsenceGames` in `src/lib/seasonEndingAbsence.ts`; per-game helpers in `src/lib/snapCountTotals.ts`. Stored as `cumulativeSnapShare` on each `Season`.
 
 **Range:** 0.0–1.0 (values above 1.0 are not expected but would clamp in display if ever needed).
 

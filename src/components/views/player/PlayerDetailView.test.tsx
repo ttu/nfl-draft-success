@@ -107,6 +107,66 @@ describe('PlayerDetailView current-team indicator', () => {
   });
 });
 
+describe('PlayerDetailView season-ending injury marker', () => {
+  // Nick Bosa 2020: ACL in week 2, straight to IR, so zero injury-report weeks.
+  // The marker is what explains a forgiven Load with an empty IR wks cell.
+  const injured: DraftPick = {
+    ...kicker,
+    position: 'DE',
+    seasons: [
+      {
+        year: 2024,
+        gamesPlayed: 2,
+        teamGames: 16,
+        snapShare: 0.435,
+        cumulativeSnapShare: 0.435,
+        retained: true,
+        seasonEndingAbsenceGames: 14,
+      },
+      {
+        year: 2025,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 0.75,
+        cumulativeSnapShare: 0.75,
+        retained: true,
+      },
+    ],
+  };
+
+  function renderInjured() {
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={injured}
+          draftYear={2024}
+          draftClasses={[{ year: 2024, picks: [injured] }]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+  }
+
+  it('marks the season an injury ended', () => {
+    renderInjured();
+    const marker = screen.getByTestId('season-ending-injury-2024');
+    expect(marker).toBeInTheDocument();
+    expect(marker).toHaveAccessibleDescription(/season ended by injury/i);
+  });
+
+  it('names the games missed so the empty IR wks cell makes sense', () => {
+    renderInjured();
+    expect(
+      screen.getByTestId('season-ending-injury-2024'),
+    ).toHaveAccessibleDescription(/14 games/i);
+  });
+
+  it('leaves seasons the player finished unmarked', () => {
+    renderInjured();
+    expect(screen.queryByTestId('season-ending-injury-2025')).toBeNull();
+  });
+});
+
 describe('PlayerDetailView draft score', () => {
   // QB with two clean seasons so the scores are round numbers:
   //   2024: 0.7·1.0 + 0.3·(17/17) = 1.00 → 100

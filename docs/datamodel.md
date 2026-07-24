@@ -30,6 +30,7 @@ erDiagram
         float cumulativeSnapShare_optional
         boolean retained
         int injuryReportWeeks_optional
+        int seasonEndingAbsenceGames_optional
     }
 ```
 
@@ -54,6 +55,8 @@ export interface Season {
   retained: boolean;
   /** Weeks on official injury report (nflverse injuries data). Optional. */
   injuryReportWeeks?: number;
+  /** Team games missed after the player's last snap — an injury that ended his season. Present only when non-zero; a player on IR leaves the injury report, so these seasons have no `injuryReportWeeks`. */
+  seasonEndingAbsenceGames?: number;
 }
 
 export interface DraftPick {

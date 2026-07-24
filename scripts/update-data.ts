@@ -5,6 +5,8 @@
  *
  * Builds per-season data: gamesPlayed, snapShare, cumulativeSnapShare, injuryReportWeeks.
  * Retention uses snap data (primary team) or injury data (team on report) when no snaps.
+ * Load excuses games missed to a season-ending absence, which is the only signal
+ * for players who went on IR and so vanished from the injury report.
  */
 
 import * as fs from 'fs';
@@ -27,6 +29,7 @@ import {
   type TeamSeasonDenominatorTotals,
 } from '../src/lib/teamSeasonDenominator';
 import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
+import { seasonEndingAbsenceGames } from '../src/lib/seasonEndingAbsence';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
@@ -57,6 +60,8 @@ interface SeasonLoadMeta {
   cumDenGamesPlayed: number;
   useFullSeason: boolean;
   gameCount: number;
+  /** Team games missed after the player disappeared for the rest of the season */
+  seasonEndingAbsenceGames: number;
 }
 
 interface SeasonSnapData {
@@ -84,6 +89,8 @@ interface PlayerSnapAccum {
   cumNum: number;
   cumDen: number;
   teamSnaps: Map<string, number>;
+  /** Weeks the player took a snap, for season-ending absence detection */
+  weeks: Set<number>;
 }
 
 /**
@@ -132,9 +139,12 @@ function accumulatePlayerSnaps(
         cumNum: 0,
         cumDen: 0,
         teamSnaps: new Map(),
+        weeks: new Set(),
       };
       playerAccum.set(pfrId, acc);
     }
+    const week = parseInt(row.week ?? '', 10);
+    if (Number.isFinite(week)) acc.weeks.add(week);
     acc.gamesPlayed += 1;
     acc.shareSum += share;
     acc.cumNum += playerSnapsForCumulativeLoad(off, def, st, isSpec);
@@ -191,6 +201,14 @@ function finalizePlayerSeason(
   const useFullSeasonDen =
     acc.teamSnaps.size <= 1 && pt !== '' && fullSeasonTeamDen > 0;
   const gameCount = totals.gameCountByTeam.get(pt) ?? 0;
+  // Only meaningful for a single-franchise season: a traded player's "absence"
+  // from one team's remaining schedule is a transaction, not an injury.
+  const absenceGames = useFullSeasonDen
+    ? seasonEndingAbsenceGames({
+        playerWeeks: acc.weeks,
+        teamWeeks: totals.weeksByTeam.get(pt) ?? new Set<number>(),
+      })
+    : 0;
 
   const baseLoad = resolveCumulativeLoadShare({
     cumNum: acc.cumNum,
@@ -212,6 +230,7 @@ function finalizePlayerSeason(
             cumDenGamesPlayed: acc.cumDen,
             useFullSeason: true,
             gameCount,
+            seasonEndingAbsenceGames: absenceGames,
           },
         }
       : {}),
@@ -462,6 +481,7 @@ function buildPickSeason(params: {
   });
   const snapShare = data?.snapShare ?? 0;
   const injuryReportWeeks = injData?.injuryReportWeeks ?? 0;
+  const absenceGames = data?.loadMeta?.seasonEndingAbsenceGames ?? 0;
 
   let cumulativeSnapShare = data?.cumulativeSnapShare ?? snapShare;
   if (data?.loadMeta?.useFullSeason) {
@@ -471,6 +491,7 @@ function buildPickSeason(params: {
       fullSeasonTeamDen: data.loadMeta.fullSeasonTeamDen,
       useFullSeasonDenominator: true,
       injuryReportWeeks,
+      seasonEndingAbsenceGames: data.loadMeta.seasonEndingAbsenceGames,
       teamGames,
       gamesPlayed,
       gameCount: data.loadMeta.gameCount,
@@ -503,6 +524,7 @@ function buildPickSeason(params: {
     cumulativeSnapShare,
     retained,
     ...(injuryReportWeeks > 0 ? { injuryReportWeeks } : {}),
+    ...(absenceGames > 0 ? { seasonEndingAbsenceGames: absenceGames } : {}),
     ...(currentTeamId ? { currentTeam: currentTeamId } : {}),
   };
 }

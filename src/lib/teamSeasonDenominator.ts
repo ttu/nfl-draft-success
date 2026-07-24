@@ -8,6 +8,7 @@ import {
 export interface SnapCountCsvRow {
   game_id?: string;
   team?: string;
+  week?: string;
   offense_snaps?: string;
   defense_snaps?: string;
   st_snaps?: string;
@@ -22,6 +23,8 @@ export interface TeamSeasonDenominatorTotals {
   fullByTeam: Map<string, number>;
   /** Distinct games (regular + postseason) per normalized franchise */
   gameCountByTeam: Map<string, number>;
+  /** Distinct weeks played per normalized franchise, for absence detection */
+  weeksByTeam: Map<string, Set<number>>;
 }
 
 /**
@@ -35,6 +38,7 @@ export function buildTeamSeasonDenominatorTotals(
   const scrimByTeam = new Map<string, number>();
   const fullByTeam = new Map<string, number>();
   const gameCountByTeam = new Map<string, number>();
+  const weeksByTeam = new Map<string, Set<number>>();
   const seenGameTeam = new Set<string>();
 
   for (const row of rows) {
@@ -60,9 +64,19 @@ export function buildTeamSeasonDenominatorTotals(
     scrimByTeam.set(nt, (scrimByTeam.get(nt) ?? 0) + scrim);
     fullByTeam.set(nt, (fullByTeam.get(nt) ?? 0) + scrim + stDen);
     gameCountByTeam.set(nt, (gameCountByTeam.get(nt) ?? 0) + 1);
+
+    const week = parseInt(row.week ?? '', 10);
+    if (Number.isFinite(week)) {
+      let weeks = weeksByTeam.get(nt);
+      if (!weeks) {
+        weeks = new Set();
+        weeksByTeam.set(nt, weeks);
+      }
+      weeks.add(week);
+    }
   }
 
-  return { scrimByTeam, fullByTeam, gameCountByTeam };
+  return { scrimByTeam, fullByTeam, gameCountByTeam, weeksByTeam };
 }
 
 /**
@@ -133,11 +147,18 @@ export function resolveCumulativeLoadShare(options: {
  * Reduce full-season denominator for weeks we treat as injury-excused absences,
  * so Load is not penalized for games missed while on the report (capped by
  * actual games missed vs `teamGames`).
+ *
+ * Two signals, whichever is stronger: weeks on the injury report, and games
+ * missed from a season-ending absence (see {@link ./seasonEndingAbsence}),
+ * which is the only signal for a player who went on IR and so vanished from the
+ * report altogether. They are not summed — both describe the same absence.
  */
 export function injuryAdjustedFullSeasonDenominator(options: {
   fullSeasonTeamDen: number;
   gameCount: number;
   injuryReportWeeks: number;
+  /** Games missed after a player disappeared for the rest of the season */
+  seasonEndingAbsenceGames?: number;
   teamGames: number;
   gamesPlayed: number;
   cumDenGamesPlayed: number;
@@ -146,13 +167,17 @@ export function injuryAdjustedFullSeasonDenominator(options: {
     fullSeasonTeamDen,
     gameCount,
     injuryReportWeeks,
+    seasonEndingAbsenceGames = 0,
     teamGames,
     gamesPlayed,
     cumDenGamesPlayed,
   } = options;
 
   const missedGames = Math.max(0, teamGames - gamesPlayed);
-  const excusedWeeks = Math.min(Math.max(0, injuryReportWeeks), missedGames);
+  const excusedWeeks = Math.min(
+    Math.max(0, injuryReportWeeks, seasonEndingAbsenceGames),
+    missedGames,
+  );
   if (excusedWeeks <= 0 || gameCount <= 0 || fullSeasonTeamDen <= 0) {
     return fullSeasonTeamDen;
   }
@@ -171,19 +196,23 @@ export function resolveCumulativeLoadShareWithInjury(options: {
   fullSeasonTeamDen: number;
   useFullSeasonDenominator: boolean;
   injuryReportWeeks: number;
+  /** Games missed after a player disappeared for the rest of the season */
+  seasonEndingAbsenceGames?: number;
   teamGames: number;
   gamesPlayed: number;
   gameCount: number;
 }): number {
+  const seasonEndingAbsenceGames = options.seasonEndingAbsenceGames ?? 0;
   const applyInjuryAdjustmentToFullSeasonDen =
     options.useFullSeasonDenominator &&
-    options.injuryReportWeeks > 0 &&
+    (options.injuryReportWeeks > 0 || seasonEndingAbsenceGames > 0) &&
     options.gameCount > 0;
   const fullDen = applyInjuryAdjustmentToFullSeasonDen
     ? injuryAdjustedFullSeasonDenominator({
         fullSeasonTeamDen: options.fullSeasonTeamDen,
         gameCount: options.gameCount,
         injuryReportWeeks: options.injuryReportWeeks,
+        seasonEndingAbsenceGames,
         teamGames: options.teamGames,
         gamesPlayed: options.gamesPlayed,
         cumDenGamesPlayed: options.cumDenGamesPlayed,

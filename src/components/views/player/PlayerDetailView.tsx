@@ -116,8 +116,9 @@ export function PlayerDetailView({
             <dt>Load</dt>
             <dd>
               How much of a full season he played for the team that drafted him.
-              Weeks spent on the injury report don't count against him, so
-              getting hurt doesn't drag Load down.
+              Weeks spent on the injury report, and games missed after an injury
+              ended his season, don't count against him — so getting hurt
+              doesn't drag Load down.
             </dd>
             <dt>Role</dt>
             <dd>
@@ -185,7 +186,8 @@ export function PlayerDetailView({
           <div className="player-career__scroll">
             <table>
               <colgroup>
-                <col style={{ width: 90 }} />
+                {/* Fits the year plus the season-ending injury marker inline */}
+                <col style={{ width: 112 }} />
                 <col style={{ width: 110 }} />
                 <col style={{ width: 70 }} />
                 <col />
@@ -406,6 +408,7 @@ function SeasonRow({
     <tr>
       <td>
         <span className="player-career__year">{s.year}</span>
+        <SeasonEndingInjuryMarker season={s} />
       </td>
       <td>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -434,6 +437,26 @@ function SeasonRow({
         {s.injuryReportWeeks ?? 0}
       </td>
     </tr>
+  );
+}
+
+/**
+ * Flags a season an injury cut short. Players placed on IR drop off the weekly
+ * injury report, so these are exactly the seasons where "IR wks" reads 0 while
+ * Load has been forgiven — without the marker that pairing looks like a bug.
+ */
+function SeasonEndingInjuryMarker({ season }: { season: Season }) {
+  const missed = season.seasonEndingAbsenceGames ?? 0;
+  if (missed <= 0) return null;
+  return (
+    <abbr
+      className="season-ending-injury"
+      data-testid={`season-ending-injury-${season.year}`}
+      aria-label="Season ended by injury"
+      title={`Season ended by injury — missed the final ${missed} ${missed === 1 ? 'game' : 'games'}`}
+    >
+      IR
+    </abbr>
   );
 }
 

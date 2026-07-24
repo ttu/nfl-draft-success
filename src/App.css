@@ -2235,6 +2235,23 @@ button {
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
+/* Flags a season cut short by injury, next to the year in the career table. */
+.season-ending-injury {
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: 4px;
+  padding: 1px 4px;
+  border: 1px solid color-mix(in oklch, var(--negative) 35%, transparent);
+  border-radius: 3px;
+  background: color-mix(in oklch, var(--negative) 10%, var(--paper));
+  color: var(--negative);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  cursor: help;
+}
 .player-career__score {
   font-weight: 700;
   color: var(--ink);
