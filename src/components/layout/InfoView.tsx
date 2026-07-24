@@ -5,17 +5,26 @@ import {
   getPositionTierThresholds,
 } from '../../lib/positionBaseline';
 import { getPositionDisplayName } from '../../lib/positionDisplayName';
+import { ValidationSection } from './ValidationSection';
+import type { CorrelationResult } from '../../lib/draftSuccessCorrelation';
+import type { LaggedWindows } from '../../lib/laggedWindow';
 
 const GITHUB_URL = 'https://github.com/ttu/nfl-draft-success';
 
 export interface InfoViewProps {
   onClose: () => void;
   dataLastUpdatedDate?: string | null;
+  /** Lagged draft-score↔win-rate correlation; omitted → section hidden. */
+  correlation?: CorrelationResult | null;
+  /** Fixed draft/win windows behind the correlation; omitted → section hidden. */
+  windows?: LaggedWindows;
 }
 
 export function InfoView({
   onClose,
   dataLastUpdatedDate = null,
+  correlation = null,
+  windows,
 }: InfoViewProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -66,6 +75,9 @@ export function InfoView({
           </button>
         </header>
         <div className="info-sheet__body">
+          {windows && (
+            <ValidationSection correlation={correlation} windows={windows} />
+          )}
           <div className="info-grid">
             <MethodologyColumn />
             <DataColumn dataLastUpdatedDate={dataLastUpdatedDate} />

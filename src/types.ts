@@ -71,6 +71,17 @@ export interface DefaultRankingsData {
   }>;
 }
 
+/** Pre-computed draft scores for the fixed lagged draft window (2018–2021). */
+export interface LaggedDraftRankingsData {
+  from: number;
+  to: number;
+  rankings: Array<{
+    teamId: string;
+    teamName: string;
+    score: number;
+  }>;
+}
+
 export interface PositionBaselinesData {
   /** UTC calendar date `YYYY-MM-DD` when baselines were derived. */
   generatedAt: string;

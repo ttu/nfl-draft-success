@@ -22,6 +22,15 @@ import {
   type UnitBreakdownRow,
   type PositionBreakdownRow,
 } from '../../../lib/pickBreakdowns';
+import { formatOrdinal } from '../../../lib/formatOrdinal';
+import {
+  teamStory,
+  type CorrelationRow,
+} from '../../../lib/draftSuccessCorrelation';
+import {
+  formatYearRangeShort,
+  type LaggedWindows,
+} from '../../../lib/laggedWindow';
 import type { DraftClass, DraftPick, Role } from '../../../types';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type { RollingDraftScore } from '../../../lib/getRollingDraftScore';
@@ -47,6 +56,11 @@ export interface TeamDetailContentProps {
   depthChartUrl: string | null;
   showDeparted: boolean;
   setShowDeparted: (value: boolean) => void;
+  /** This team's lagged draft-score↔win-rate row; null hides the card. */
+  correlationRow: CorrelationRow | null;
+  onShowMethodology: () => void;
+  /** Fixed draft/win windows behind the correlation card. */
+  windows: LaggedWindows;
 }
 
 export function TeamDetailContent({
@@ -63,6 +77,9 @@ export function TeamDetailContent({
   depthChartUrl,
   showDeparted,
   setShowDeparted,
+  correlationRow,
+  onShowMethodology,
+  windows,
 }: TeamDetailContentProps) {
   const color = teamColor(selectedTeam);
   const hideRosterYearHeading = shouldHideRosterYearHeading({
@@ -128,6 +145,9 @@ export function TeamDetailContent({
           positionBreakdown={positionBreakdown}
           rollingDraftScore={rollingDraftScore}
           depthChartUrl={depthChartUrl}
+          correlationRow={correlationRow}
+          onShowMethodology={onShowMethodology}
+          windows={windows}
         />
       </section>
     </>
@@ -438,12 +458,18 @@ function SideRail({
   positionBreakdown,
   rollingDraftScore,
   depthChartUrl,
+  correlationRow,
+  onShowMethodology,
+  windows,
 }: {
   color: string;
   unitBreakdown: UnitBreakdownRow[];
   positionBreakdown: PositionBreakdownRow[];
   rollingDraftScore: RollingDraftScore;
   depthChartUrl: string | null;
+  correlationRow: CorrelationRow | null;
+  onShowMethodology: () => void;
+  windows: LaggedWindows;
 }) {
   return (
     <aside
@@ -452,11 +478,104 @@ function SideRail({
     >
       <WherePicksWentCard rows={unitBreakdown} />
       <PicksByPositionCard rows={positionBreakdown} />
+      {correlationRow && (
+        <ValidationCard
+          row={correlationRow}
+          onShowMethodology={onShowMethodology}
+          windows={windows}
+        />
+      )}
       <SummaryCard
         rollingDraftScore={rollingDraftScore}
         depthChartUrl={depthChartUrl}
       />
     </aside>
+  );
+}
+
+/**
+ * This team's own version of the league's lagged correlation: how its early
+ * draft-success score and its later win rate each rank among the 32, and a
+ * one-line read on the gap between them. Only shown when the team has outcome
+ * data for the win window.
+ */
+function ValidationCard({
+  row,
+  onShowMethodology,
+  windows,
+}: {
+  row: CorrelationRow;
+  onShowMethodology: () => void;
+  windows: LaggedWindows;
+}) {
+  const draftLabel = formatYearRangeShort(windows.draftFrom, windows.draftTo);
+  const winLabel = formatYearRangeShort(windows.winFrom, windows.winTo);
+  return (
+    <SideCard title="Draft, then winning">
+      <PctBar
+        label={`Draft score ${draftLabel}`}
+        value={row.score.toFixed(1)}
+        pct={row.scorePercentile}
+        variant="team"
+      />
+      <PctBar
+        label={`Win rate ${winLabel}`}
+        value={`${Math.round(row.winPct * 100)}%`}
+        pct={row.winPctPercentile}
+      />
+      <div className="validation-card__counts">
+        <span>
+          Playoffs{' '}
+          <b>
+            {row.playoffApps}/{row.seasons}
+          </b>
+        </span>
+        <span>
+          SB apps <b>{row.sbApps}</b>
+        </span>
+        <span>
+          SB wins <b>{row.sbWins}</b>
+        </span>
+      </div>
+      <p className="validation-card__take">{teamStory(row)}</p>
+      <button
+        type="button"
+        className="fab-link side-card__cta"
+        onClick={onShowMethodology}
+      >
+        See all 32 teams in Methodology →
+      </button>
+    </SideCard>
+  );
+}
+
+/** A labelled percentile bar: label, value + ordinal percentile, filled track. */
+function PctBar({
+  label,
+  value,
+  pct,
+  variant,
+}: {
+  label: string;
+  value: string;
+  pct: number;
+  variant?: 'team';
+}) {
+  return (
+    <div className="pct-bar">
+      <div className="pct-bar__head">
+        <span>{label}</span>
+        <span className="mono pct-bar__value">
+          {value} · {formatOrdinal(pct)} pct
+        </span>
+      </div>
+      <div className="bar-track">
+        <div
+          className={`bar-fill${variant === 'team' ? ' bar-fill--team' : ''}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
   );
 }
 

@@ -1410,6 +1410,60 @@ button {
   margin-top: 14px;
 }
 
+/* Score vs. actual winning — percentile bars + outcome counts (side rail) */
+.pct-bar {
+  padding: 9px 0;
+}
+.pct-bar + .pct-bar {
+  border-top: 1px dotted var(--rule-2);
+}
+.pct-bar__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-bottom: 7px;
+}
+.pct-bar__value {
+  font-size: 11.5px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pct-bar .bar-track {
+  flex: none;
+  margin: 0;
+  height: 6px;
+  border-radius: 3px;
+}
+.pct-bar .bar-fill {
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.validation-card__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.validation-card__counts b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.validation-card__take {
+  margin: 12px 0 0;
+  font-family: var(--f-serif);
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
 /* ─── Roster list ─────────────────────────────────────────── */
 .roster-controls {
   display: flex;
@@ -2275,6 +2329,123 @@ button {
   grid-template-columns: 1.4fr 1fr;
   gap: 48px;
 }
+
+/* Does the score predict winning? — the correlation panel above the grid */
+.validation {
+  margin-bottom: 40px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--rule);
+}
+.validation__title {
+  margin-bottom: 22px;
+}
+.validation__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+}
+.validation__chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+.validation__gridline {
+  stroke: var(--rule-2);
+  stroke-width: 1;
+}
+.validation__axis {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.validation__trend {
+  stroke: var(--ox);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+.validation-dot-mark--sbwin {
+  fill: var(--gold);
+}
+.validation-dot-mark--sb {
+  fill: var(--ox);
+}
+.validation-dot-mark--other {
+  fill: var(--ink-4);
+  opacity: 0.5;
+}
+.validation__axis-label {
+  fill: var(--ink-4);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+.validation__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.validation__figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 34px;
+}
+.validation__figure {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.validation__stat {
+  font-family: var(--f-mono);
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.validation__figure .kicker {
+  max-width: 190px;
+}
+.validation__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+.validation__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.validation-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.validation-dot--sbwin {
+  background: var(--gold);
+}
+.validation-dot--sb {
+  background: var(--ox);
+}
+.validation-dot--other {
+  background: var(--ink-4);
+}
+.validation__prose {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 460px;
+}
 .info-section-title {
   margin: 0 0 12px;
   font-family: var(--f-serif);
@@ -2955,6 +3126,13 @@ button {
   .info-grid {
     grid-template-columns: 1fr;
     gap: 18px;
+  }
+  .validation__grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .validation__stat {
+    font-size: 30px;
   }
   /* Four columns plus a nowrap role chip overflow the sheet on a phone. Trim
      the cell padding and compact the chip, as .pos-table and .player-career

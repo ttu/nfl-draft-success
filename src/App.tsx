@@ -25,7 +25,15 @@ import {
   loadDataForYears,
   loadDefaultRankings,
   loadDataMeta,
+  loadTeamSuccess,
+  loadLaggedRankings,
 } from './lib/loadData';
+import { teamSuccessForWindow, type TeamSuccessData } from './lib/teamSuccess';
+import {
+  buildCorrelation,
+  type CorrelationResult,
+} from './lib/draftSuccessCorrelation';
+import { LAGGED_WINDOWS } from './lib/laggedWindow';
 import { formatDataLastUpdatedDate } from './lib/formatDataLastUpdated';
 import { getRosterByDraftYear } from './lib/getRosterByDraftYear';
 import { getTeamRankSummary } from './lib/getTeamRankSummary';
@@ -58,6 +66,7 @@ import {
   type DraftClass,
   type DraftPick,
   type DefaultRankingsData,
+  type LaggedDraftRankingsData,
   type Role,
   ActiveView,
 } from './types';
@@ -455,6 +464,10 @@ function AppContent() {
   );
   const [defaultRankings, setDefaultRankings] =
     useState<DefaultRankingsData | null>(null);
+  const [teamSuccessData, setTeamSuccessData] =
+    useState<TeamSuccessData | null>(null);
+  const [laggedRankings, setLaggedRankings] =
+    useState<LaggedDraftRankingsData | null>(null);
   const [showLandingIntro, setShowLandingIntro] = useState(
     () => !loadLandingIntroDismissed(),
   );
@@ -500,6 +513,16 @@ function AppContent() {
   useEffect(() => {
     loadDefaultRankings()
       .then(setDefaultRankings)
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    loadTeamSuccess()
+      .then(setTeamSuccessData)
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    loadLaggedRankings()
+      .then(setLaggedRankings)
       .catch(() => {});
   }, []);
 
@@ -586,6 +609,27 @@ function AppContent() {
     roleFilter,
   });
 
+  // Lagged draft-score↔win-rate correlation: each team's 2018–2021 draft score
+  // against its 2022–2025 win rate (the seasons that followed). Fixed windows,
+  // independent of the year selector — a draft class needs time to affect the
+  // standings, and a concurrent window is confounded. Null until both
+  // pre-computed sources load.
+  const correlation = useMemo<CorrelationResult | null>(() => {
+    if (!laggedRankings || !teamSuccessData) return null;
+    const success = teamSuccessForWindow(
+      teamSuccessData.teams,
+      LAGGED_WINDOWS.winFrom,
+      LAGGED_WINDOWS.winTo,
+    );
+    if (success.length === 0) return null;
+    return buildCorrelation(laggedRankings.rankings, success);
+  }, [laggedRankings, teamSuccessData]);
+
+  const correlationRow =
+    (selectedTeam &&
+      correlation?.rows.find((r) => r.teamId === selectedTeam)) ||
+    null;
+
   const selectedTeamData = selectedTeam
     ? TEAMS.find((t) => t.id === selectedTeam)
     : undefined;
@@ -671,6 +715,8 @@ function AppContent() {
           depthChartUrl,
           showDeparted,
           setShowDeparted,
+          correlationRow,
+          onShowMethodology: () => setShowInfoView(true),
           canonicalPosition,
           startYear,
           endYear,
@@ -685,6 +731,8 @@ function AppContent() {
           <InfoView
             onClose={() => setShowInfoView(false)}
             dataLastUpdatedDate={dataLastUpdatedDate}
+            correlation={correlation}
+            windows={LAGGED_WINDOWS}
           />
         </Suspense>
       )}
@@ -873,6 +921,8 @@ interface RenderMainArgs {
   depthChartUrl: string | null;
   showDeparted: boolean;
   setShowDeparted: (value: boolean) => void;
+  correlationRow: CorrelationResult['rows'][number] | null;
+  onShowMethodology: () => void;
   canonicalPosition: string | null;
   startYear: number;
   endYear: number;
@@ -954,6 +1004,9 @@ function renderMainContent(a: RenderMainArgs) {
           depthChartUrl={a.depthChartUrl}
           showDeparted={a.showDeparted}
           setShowDeparted={a.setShowDeparted}
+          correlationRow={a.correlationRow}
+          onShowMethodology={a.onShowMethodology}
+          windows={LAGGED_WINDOWS}
         />
       </Suspense>
     );

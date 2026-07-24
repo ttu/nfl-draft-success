@@ -1,4 +1,10 @@
-import type { DataMeta, DraftClass, DefaultRankingsData } from '../types';
+import type {
+  DataMeta,
+  DraftClass,
+  DefaultRankingsData,
+  LaggedDraftRankingsData,
+} from '../types';
+import type { TeamSuccessData } from './teamSuccess';
 
 /**
  * Load draft data for a given year from public/data/draft-{year}.json
@@ -29,6 +35,32 @@ export async function loadDefaultRankings(): Promise<DefaultRankingsData> {
   const res = await fetch(`${base}data/default-rankings.json`);
   if (!res.ok) {
     throw new Error(`Failed to load default rankings: ${res.status}`);
+  }
+  return res.json();
+}
+
+/**
+ * Load pre-computed draft scores for the fixed lagged draft window (2018–2021),
+ * joined at runtime to the later win rate for the correlation view.
+ */
+export async function loadLaggedRankings(): Promise<LaggedDraftRankingsData> {
+  const base = import.meta.env.BASE_URL;
+  const res = await fetch(`${base}data/lagged-draft-rankings.json`);
+  if (!res.ok) {
+    throw new Error(`Failed to load lagged draft rankings: ${res.status}`);
+  }
+  return res.json();
+}
+
+/**
+ * Load pre-computed team-success outcomes (real win rate, playoff and Super
+ * Bowl results per team) generated at data-update time.
+ */
+export async function loadTeamSuccess(): Promise<TeamSuccessData> {
+  const base = import.meta.env.BASE_URL;
+  const res = await fetch(`${base}data/team-success.json`);
+  if (!res.ok) {
+    throw new Error(`Failed to load team success data: ${res.status}`);
   }
   return res.json();
 }

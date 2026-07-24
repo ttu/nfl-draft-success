@@ -57,6 +57,9 @@ function renderView(overrides: Partial<TeamDetailContentProps> = {}) {
     depthChartUrl: null,
     showDeparted: false,
     setShowDeparted: () => {},
+    correlationRow: null,
+    onShowMethodology: () => {},
+    windows: { draftFrom: 2018, draftTo: 2021, winFrom: 2022, winTo: 2025 },
     ...overrides,
   };
   return render(
@@ -150,5 +153,57 @@ describe('TeamDetailContent side-rail breakdowns', () => {
       name: /open external depth chart/i,
     });
     expect(link).toHaveAttribute('href', 'https://example.com/depth');
+  });
+});
+
+describe('TeamDetailContent validation card', () => {
+  const correlationRow = {
+    teamId: TEAM,
+    seasons: 5,
+    score: 45.2,
+    wins: 60,
+    losses: 24,
+    ties: 0,
+    winPct: 0.7142857,
+    playoffApps: 5,
+    sbApps: 0,
+    sbWins: 0,
+    scorePercentile: 6,
+    winPctPercentile: 100,
+  };
+
+  it('is omitted when the team has no correlation row', () => {
+    renderView({ correlationRow: null });
+    expect(screen.queryByText(/draft, then winning/i)).not.toBeInTheDocument();
+  });
+
+  it('shows both percentile bars and the outcome counts', () => {
+    renderView({ correlationRow });
+
+    const card = screen
+      .getByText(/draft, then winning/i)
+      .closest('.side-card') as HTMLElement;
+    const scope = within(card);
+    expect(scope.getByText(/Draft score '18–'21/)).toBeInTheDocument();
+    expect(scope.getByText(/45\.2 · 6th pct/)).toBeInTheDocument();
+    expect(scope.getByText(/Win rate '22–'25/)).toBeInTheDocument();
+    expect(scope.getByText(/71% · 100th pct/)).toBeInTheDocument();
+    expect(scope.getByText('5/5')).toBeInTheDocument();
+  });
+
+  it('reads a big win-over-draft gap as winning beyond draft returns', () => {
+    renderView({ correlationRow });
+    expect(
+      screen.getByText(/winning beyond what its draft returns/i),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the methodology from the card link', () => {
+    const onShowMethodology = vi.fn();
+    renderView({ correlationRow, onShowMethodology });
+    fireEvent.click(
+      screen.getByRole('button', { name: /see all 32 teams in methodology/i }),
+    );
+    expect(onShowMethodology).toHaveBeenCalledTimes(1);
   });
 });

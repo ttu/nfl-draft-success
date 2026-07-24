@@ -79,6 +79,12 @@ vi.mock('./lib/loadData', () => ({
     ALL_CLASSES.filter((dc) => years.includes(dc.year)),
   ),
   loadDefaultRankings: vi.fn(async () => ({ rankings: [] })),
+  loadTeamSuccess: vi.fn(async () => ({ from: 2018, to: 2025, teams: [] })),
+  loadLaggedRankings: vi.fn(async () => ({
+    from: 2018,
+    to: 2021,
+    rankings: [],
+  })),
   loadDataMeta: vi.fn(async () => null),
 }));
 
