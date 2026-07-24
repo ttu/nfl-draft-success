@@ -4,7 +4,6 @@ import {
   TeamLogo,
   teamColor,
   teamFg,
-  Delta,
   StatBlock,
 } from '../../design/Primitives';
 import { ScoreByYearChart } from '../../design/ScoreByYearChart';
@@ -17,6 +16,12 @@ import {
   shouldHideRosterYearHeading,
 } from '../../../lib/draftClassDisplay';
 import { activateOnKey } from '../../../lib/activateOnKey';
+import {
+  getUnitBreakdown,
+  getPositionBreakdown,
+  type UnitBreakdownRow,
+  type PositionBreakdownRow,
+} from '../../../lib/pickBreakdowns';
 import type { DraftClass, DraftPick, Role } from '../../../types';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type { RollingDraftScore } from '../../../lib/getRollingDraftScore';
@@ -70,6 +75,14 @@ export function TeamDetailContent({
     draftingTeamOnly,
   });
 
+  // Breakdowns count every pick the team made in the window — independent of the
+  // roster's "Hide departed" toggle and role filter.
+  const allTeamPicks = draftClasses.flatMap((dc) =>
+    dc.picks.filter((p) => p.teamId === selectedTeam),
+  );
+  const unitBreakdown = getUnitBreakdown(allTeamPicks);
+  const positionBreakdown = getPositionBreakdown(allTeamPicks);
+
   // Jump from a draft-class card down to that year's picks in the roster below.
   // Falls back to the roster section when the year is filtered out of the list.
   const scrollToRosterYear = (year: number) => {
@@ -109,7 +122,13 @@ export function TeamDetailContent({
           setShowDeparted={setShowDeparted}
           hideRosterYearHeading={hideRosterYearHeading}
         />
-        <SideRail teamRank={teamRank} rollingDraftScore={rollingDraftScore} />
+        <SideRail
+          color={color}
+          unitBreakdown={unitBreakdown}
+          positionBreakdown={positionBreakdown}
+          rollingDraftScore={rollingDraftScore}
+          depthChartUrl={depthChartUrl}
+        />
       </section>
     </>
   );
@@ -414,34 +433,109 @@ function coreStarterRateSummary(coreStarterRate: number): string {
 }
 
 function SideRail({
-  teamRank,
+  color,
+  unitBreakdown,
+  positionBreakdown,
   rollingDraftScore,
+  depthChartUrl,
 }: {
-  teamRank: TeamRank;
+  color: string;
+  unitBreakdown: UnitBreakdownRow[];
+  positionBreakdown: PositionBreakdownRow[];
   rollingDraftScore: RollingDraftScore;
+  depthChartUrl: string | null;
 }) {
   return (
-    <aside className="side-rail">
-      <SideCard title="Trend overview">
-        <Delta value={teamRank ? teamRank.rank - 16 : 0} />{' '}
-        <span className="mono" style={{ fontSize: 11, color: 'var(--ink-3)' }}>
-          vs league midpoint
-        </span>
-      </SideCard>
-      <SideCard title="The verdict" muted>
-        <p
-          style={{
-            margin: 0,
-            fontFamily: 'var(--f-serif)',
-            fontSize: 15,
-            lineHeight: 1.45,
-            color: 'var(--ink-2)',
-          }}
-        >
-          {coreStarterRateSummary(rollingDraftScore.coreStarterRate)}
-        </p>
-      </SideCard>
+    <aside
+      className="side-rail"
+      style={{ ['--team' as never]: color } as CSSProperties}
+    >
+      <WherePicksWentCard rows={unitBreakdown} />
+      <PicksByPositionCard rows={positionBreakdown} />
+      <SummaryCard
+        rollingDraftScore={rollingDraftScore}
+        depthChartUrl={depthChartUrl}
+      />
     </aside>
+  );
+}
+
+/** Offense / defense / special-teams split, one full-width bar per unit. */
+function WherePicksWentCard({ rows }: { rows: UnitBreakdownRow[] }) {
+  const max = Math.max(1, ...rows.map((r) => r.count));
+  return (
+    <SideCard title="Where the picks went">
+      {rows.map((row) => (
+        <div key={row.unit} className="breakdown-row">
+          <div className="breakdown-row__head">
+            <span>{row.label}</span>
+            <span className="mono breakdown-row__count">{row.count}</span>
+          </div>
+          <div className="bar-track">
+            <div
+              className="bar-fill bar-fill--team"
+              style={{ width: `${(row.count / max) * 100}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </SideCard>
+  );
+}
+
+/** Per-position pick counts, sorted most-drafted first. */
+function PicksByPositionCard({ rows }: { rows: PositionBreakdownRow[] }) {
+  if (rows.length === 0) return null;
+  const max = Math.max(1, ...rows.map((r) => r.count));
+  return (
+    <SideCard title="Picks by position">
+      {rows.map((row) => (
+        <div key={row.position} className="pos-row">
+          <span className="mono pos-row__label">{row.position}</span>
+          <div className="bar-track">
+            <div
+              className="bar-fill"
+              style={{ width: `${(row.count / max) * 100}%` }}
+            />
+          </div>
+          <span className="mono pos-row__count">{row.count}</span>
+        </div>
+      ))}
+    </SideCard>
+  );
+}
+
+function SummaryCard({
+  rollingDraftScore,
+  depthChartUrl,
+}: {
+  rollingDraftScore: RollingDraftScore;
+  depthChartUrl: string | null;
+}) {
+  return (
+    <SideCard title="Summary" muted>
+      <p
+        style={{
+          margin: 0,
+          fontFamily: 'var(--f-serif)',
+          fontSize: 15,
+          lineHeight: 1.45,
+          color: 'var(--ink-2)',
+        }}
+      >
+        {coreStarterRateSummary(rollingDraftScore.coreStarterRate)}
+      </p>
+      {depthChartUrl && (
+        <a
+          className="fab-link side-card__cta"
+          href={depthChartUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open external depth chart ↗
+        </a>
+      )}
+    </SideCard>
   );
 }
 

@@ -1356,6 +1356,59 @@ button {
   height: 100%;
   background: var(--ink);
 }
+.bar-fill--team {
+  background: var(--team, var(--ink));
+}
+
+/* Where the picks went — one full-width bar per unit */
+.breakdown-row {
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--rule-2);
+}
+.breakdown-row:last-child {
+  border-bottom: none;
+}
+.breakdown-row__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+.breakdown-row__count {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Picks by position — label, inline bar, count */
+.pos-row {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+}
+.pos-row__label {
+  width: 40px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+.pos-row__count {
+  width: 20px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 12px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.side-card__cta {
+  display: inline-block;
+  margin-top: 14px;
+}
 
 /* ─── Roster list ─────────────────────────────────────────── */
 .roster-controls {
