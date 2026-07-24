@@ -117,12 +117,12 @@ function Plot({
           />
           <text
             x={px}
-            y={py - 16}
+            y={py - 14}
             textAnchor="middle"
             fill="var(--ink)"
             style={{
               fontFamily: 'var(--f-display)',
-              fontSize: 22,
+              fontSize: 16,
               fontWeight: 600,
               fontVariantNumeric: 'tabular-nums',
             }}
@@ -136,7 +136,7 @@ function Plot({
             fill="var(--ink-3)"
             style={{
               fontFamily: 'var(--f-display)',
-              fontSize: 24,
+              fontSize: 18,
               fontWeight: 600,
               fontVariantNumeric: 'tabular-nums',
             }}
