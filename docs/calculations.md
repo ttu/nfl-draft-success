@@ -326,17 +326,18 @@ Score = (8 + 9 + 2 + 0) / 10 = **1.9**
 The raw score rewards picks for playing, but playing time is largely handed out by **draft capital** (early picks are expected to play). "Over slot" removes the capital by scoring each pick against what its draft position alone predicted:
 
 ```
-expected(pick)  = a + b · ln(overallPick)     (clamped to 0–100)
+expected(pick)  = knotTable(overallPick)      (log-space interpolation, 0–100)
 overSlot(pick)  = score(pick) − expected(pick)
 overSlot(team)  = mean(overSlot(pick) for scored picks)
 ```
 
 - **Positive** = the pick outplayed its slot (a steal); **negative** = it fell short (a reach).
-- The curve `{a, b}` is an OLS fit of pick score on `ln(overallPick)`, fit from **mature** draft classes only — those at least `DRAFT_SLOT_MATURITY_LAG` (3) years old, so "expected" reflects a settled career rather than one rookie season. Derived by `scripts/derive-draft-slot-baseline.ts` (runs in `pnpm update-data`) into `src/data/draft-slot-baseline.json`.
+- The curve is **empirical**: a local-linear (LOESS-style) smoother of pick score over `ln(overallPick)` with bandwidth `DRAFT_SLOT_BANDWIDTH` (0.25), evaluated at `DRAFT_SLOT_KNOT_PICKS` — dense early, sparse late — then forced non-increasing (pool-adjacent-violators) so no slot is ever expected to beat one ahead of it. Fit from **mature** draft classes only — those at least `DRAFT_SLOT_MATURITY_LAG` (3) years old, so "expected" reflects a settled career rather than one rookie season. Derived by `scripts/derive-draft-slot-baseline.ts` (runs in `pnpm update-data`) into `src/data/draft-slot-baseline.json`.
+- **Why not a formula?** It was `a + b·ln(pick)` clamped to 0–100 until the shape proved wrong at both ends. The real curve is flat across the top of round 1 (pick 1 ≈ 91, picks 2–12 ≈ 83); no monotone log or logistic line fit across all 262 slots can sit that low up top and still fit the tail. The clamped fit therefore expected a perfect 100 from picks 1–5, so no top-5 pick could post a positive over slot however well it hit, while round 2 ran +10 too generous. Refitting the line in logit space or as a saturating logistic left the top-5 bias at ~15 points; the smoother cut the worst per-bucket bias from 16.9 to 4.5 and slightly improved RMSE (24.20 → 23.47).
 - Fit on the same season basis as the shipped score (`draftingTeamOnly: true`), so a team's over-slot is directly comparable to its raw score.
 - Surfaced additively: the raw 0–100 score is unchanged; over slot appears as a signed value in the team roster (`PlayerList`) and as an "Over slot" column in the rankings table.
 
-**Caveat:** over slot removes capital, not luck — it is still built on the snap-based score, so it rewards a pick that _plays_ relative to its slot, not one graded on play quality.
+**Caveats:** over slot removes capital, not luck — it is still built on the snap-based score, so it rewards a pick that _plays_ relative to its slot, not one graded on play quality. And the head of an empirical curve rests on a thin sample (~30 picks per top-10 bucket against ~390 in the late rounds), so the top-of-draft expectations move more than the tail as new classes mature.
 
 ---
 

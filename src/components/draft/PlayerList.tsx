@@ -122,9 +122,13 @@ export function PlayerList({
                 className="roster-table__overslot mono tnum"
                 style={{
                   width: 52,
+                  // Keeps a gap from the score when narrow viewports compress
+                  // the columns; a wide value like +19.1 would otherwise touch.
+                  paddingLeft: 6,
                   textAlign: 'right',
                   fontSize: 12,
                   fontWeight: 600,
+                  whiteSpace: 'nowrap',
                   color: overSlot >= 0 ? 'var(--positive)' : 'var(--negative)',
                 }}
                 title="Draft value over slot — score above what this pick position predicted"

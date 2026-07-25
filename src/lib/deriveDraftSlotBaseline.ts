@@ -1,8 +1,8 @@
 import type { DraftClass } from '../types';
 import { getPlayerDraftScore, pickHasSeasonSnapData } from './getPlayerRole';
 import {
-  fitDraftSlotBaseline,
-  type DraftSlotFit,
+  fitDraftSlotCurve,
+  type DraftSlotCurve,
   type DraftSlotPoint,
 } from './draftSlotBaseline';
 
@@ -51,7 +51,7 @@ export function collectMatureDraftSlotPoints(
 
 /** The fitted slot-expectation curve plus the span and sample it was fit from. */
 export interface DraftSlotDerivation {
-  fit: DraftSlotFit;
+  curve: DraftSlotCurve;
   pointCount: number;
   /** Earliest mature draft year contributing points, or null when none. */
   matureFrom: number | null;
@@ -59,8 +59,10 @@ export interface DraftSlotDerivation {
   matureTo: number | null;
 }
 
-/** Collect mature-class points and fit the log-linear slot-expectation curve. */
-export function deriveDraftSlotFit(classes: DraftClass[]): DraftSlotDerivation {
+/** Collect mature-class points and fit the empirical slot-expectation curve. */
+export function deriveDraftSlotCurve(
+  classes: DraftClass[],
+): DraftSlotDerivation {
   const cutoff = latestDraftYear(classes) - DRAFT_SLOT_MATURITY_LAG;
   const matureYears = classes
     .filter((c) => c.year <= cutoff && c.picks.some(pickHasSeasonSnapData))
@@ -68,7 +70,7 @@ export function deriveDraftSlotFit(classes: DraftClass[]): DraftSlotDerivation {
   const points = collectMatureDraftSlotPoints(classes);
 
   return {
-    fit: fitDraftSlotBaseline(points),
+    curve: fitDraftSlotCurve(points),
     pointCount: points.length,
     matureFrom: matureYears.length > 0 ? Math.min(...matureYears) : null,
     matureTo: matureYears.length > 0 ? Math.max(...matureYears) : null,

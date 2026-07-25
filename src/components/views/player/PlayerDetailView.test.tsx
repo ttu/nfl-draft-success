@@ -224,11 +224,11 @@ describe('PlayerDetailView draft score', () => {
   });
 
   it('shows a signed over-slot value in the hero, measured against the pick slot', () => {
-    // #1 overall; expected(1) clamps to 100, so even a strong career reads as
-    // below its top-of-draft slot. Value is negative and uses a real minus.
+    // #1 overall scoring 83 against a ~91 slot expectation: a strong career
+    // still reads as below the top of the draft. Uses a real minus sign.
     renderScorer();
     const overSlot = screen.getByTestId('player-over-slot');
-    expect(overSlot.textContent).toMatch(/^−1\d\./);
+    expect(overSlot.textContent).toMatch(/^−8\./);
   });
 
   it('shows a positive over-slot for a late pick who outplays his slot', () => {

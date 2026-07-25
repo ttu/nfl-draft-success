@@ -2,8 +2,9 @@ import { describe, it, expect } from 'vitest';
 import {
   DRAFT_SLOT_MATURITY_LAG,
   collectMatureDraftSlotPoints,
-  deriveDraftSlotFit,
+  deriveDraftSlotCurve,
 } from './deriveDraftSlotBaseline';
+import { expectedScore } from './draftSlotBaseline';
 import type { DraftClass, DraftPick, Season } from '../types';
 
 function season(overrides: Partial<Season> = {}): Season {
@@ -63,7 +64,7 @@ describe('collectMatureDraftSlotPoints', () => {
   });
 });
 
-describe('deriveDraftSlotFit', () => {
+describe('deriveDraftSlotCurve', () => {
   it('fits a decreasing curve and reports the mature span used', () => {
     // Early picks earn more snaps than late picks.
     const classes: DraftClass[] = [
@@ -79,9 +80,11 @@ describe('deriveDraftSlotFit', () => {
       { year: LATEST, picks: [pick(3, [season({ snapShare: 0.9 })])] },
     ];
 
-    const result = deriveDraftSlotFit(classes);
+    const result = deriveDraftSlotCurve(classes);
 
-    expect(result.fit.b).toBeLessThan(0);
+    expect(expectedScore(result.curve, 1)).toBeGreaterThan(
+      expectedScore(result.curve, 230),
+    );
     expect(result.pointCount).toBe(4);
     expect(result.matureFrom).toBe(MATURE);
     expect(result.matureTo).toBe(MATURE);

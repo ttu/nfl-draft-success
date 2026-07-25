@@ -103,8 +103,8 @@ export interface PositionBaselinesData {
 }
 
 /**
- * Coefficients of the draft-slot expectation curve `expected = a + b·ln(pick)`,
- * fit from mature draft classes (see `scripts/derive-draft-slot-baseline.ts`).
+ * The empirical draft-slot expectation curve, smoothed over `ln(pick)` from
+ * mature draft classes (see `scripts/derive-draft-slot-baseline.ts`).
  * Drives the "over slot" residual — a pick's score above what its draft position
  * predicts.
  */
@@ -119,10 +119,11 @@ export interface DraftSlotBaselineData {
   matureTo: number;
   /** Number of scored picks the fit was computed from. */
   pointCount: number;
-  /** Intercept of `expected = a + b·ln(overallPick)`. */
-  a: number;
-  /** Slope on `ln(overallPick)` (negative: earlier picks are expected to score higher). */
-  b: number;
+  /**
+   * The expectation curve as knots in ascending pick order, with non-increasing
+   * expected scores. Evaluated by log-space interpolation between knots.
+   */
+  knots: { overallPick: number; expected: number }[];
 }
 
 export const ActiveView = {

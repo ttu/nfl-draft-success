@@ -11,10 +11,17 @@
  *
  *   overSlot(pick) = actualScore(pick) − expectedScore(overallPick)
  *
- * The expectation curve is a log-linear least-squares fit — draft value curves
- * are roughly logarithmic in pick number — fit from mature classes by
- * `scripts/derive-draft-slot-baseline.ts` and stored in
- * `src/data/draft-slot-baseline.json`.
+ * The expectation curve is **empirical**: a local-linear smoother over
+ * `ln(overallPick)`, made non-increasing, and stored as a knot table in
+ * `src/data/draft-slot-baseline.json` by `scripts/derive-draft-slot-baseline.ts`.
+ *
+ * It used to be a single log-linear fit, `a + b·ln(pick)` clamped to 0–100, but
+ * that shape is wrong at both ends. The observed curve is *flat* across the top
+ * of round 1 (pick 1 ≈ 91, picks 2–12 ≈ 83) — no monotone log or logistic line
+ * fit across all 262 slots can sit that low up top and still fit the tail, so
+ * the clamped fit expected a perfect 100 from picks 1–5 and no top-5 pick could
+ * ever post a positive over slot. Empirically the residual bias per slot bucket
+ * fell from 16.9 points to 4.5 when this smoother replaced the line.
  */
 
 import baselineData from '../data/draft-slot-baseline.json';
@@ -24,10 +31,18 @@ import {
   type GetPlayerRoleOptions,
 } from './getPlayerRole';
 
-/** Coefficients of the fit `expected = a + b·ln(overallPick)`. */
-export interface DraftSlotFit {
-  a: number;
-  b: number;
+/** One point on the expectation curve: the score expected at this draft slot. */
+export interface DraftSlotKnot {
+  overallPick: number;
+  expected: number;
+}
+
+/**
+ * The expectation curve, as knots in ascending pick order with non-increasing
+ * expectations. Evaluated by log-space interpolation (see {@link expectedScore}).
+ */
+export interface DraftSlotCurve {
+  knots: DraftSlotKnot[];
 }
 
 /** One pick's draft slot and the score it actually earned. */
@@ -37,51 +52,146 @@ export interface DraftSlotPoint {
 }
 
 /**
- * Ordinary least squares of `score` on `ln(overallPick)`. Returns a flat line at
- * the mean score (`b = 0`) when there is no usable variance in the x values
- * (fewer than two distinct picks), so the fit degrades gracefully instead of
- * dividing by zero.
+ * Draft slots the curve is evaluated at — dense early, where a handful of picks
+ * separates a franchise quarterback from a bust, and sparse in the late rounds
+ * where slots are nearly interchangeable. Knots outside the observed pick range
+ * are dropped and replaced by the range's own endpoints (see
+ * {@link fitDraftSlotCurve}).
  */
-export function fitDraftSlotBaseline(points: DraftSlotPoint[]): DraftSlotFit {
-  const n = points.length;
-  if (n === 0) return { a: 0, b: 0 };
+export const DRAFT_SLOT_KNOT_PICKS = [
+  1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 32, 40, 50, 64, 80, 100, 125, 150,
+  180, 210, 240,
+] as const;
 
-  const xs = points.map((p) => Math.log(p.overallPick));
-  const ys = points.map((p) => p.score);
-  const meanX = xs.reduce((s, x) => s + x, 0) / n;
-  const meanY = ys.reduce((s, y) => s + y, 0) / n;
+/**
+ * Smoothing bandwidth, in units of `ln(overallPick)`. Wide enough that each knot
+ * pools several nearby slots (30-odd picks per top-10 bucket is a thin sample),
+ * narrow enough to keep the shape. Fit quality is flat across 0.15–0.5, so this
+ * is a mid-range default rather than a tuned optimum.
+ */
+export const DRAFT_SLOT_BANDWIDTH = 0.25;
 
-  let sxy = 0;
-  let sxx = 0;
-  for (let i = 0; i < n; i++) {
-    const dx = xs[i] - meanX;
-    sxy += dx * (ys[i] - meanY);
-    sxx += dx * dx;
+/**
+ * Local-linear (LOESS-style) regression evaluated at `logPick`. Local *linear*
+ * rather than a local mean because the plain weighted average is biased at the
+ * ends of the range — exactly the top-of-draft region the curve exists to get
+ * right. Falls back to the weighted mean when the local design is degenerate
+ * (all weight at a single slot).
+ */
+function localLinearAt(points: DraftSlotPoint[], logPick: number): number {
+  let sumW = 0;
+  let sumWx = 0;
+  let sumWxx = 0;
+  let sumWy = 0;
+  let sumWxy = 0;
+
+  for (const point of points) {
+    const dx = Math.log(point.overallPick) - logPick;
+    const w = Math.exp(-0.5 * (dx / DRAFT_SLOT_BANDWIDTH) ** 2);
+    sumW += w;
+    sumWx += w * dx;
+    sumWxx += w * dx * dx;
+    sumWy += w * point.score;
+    sumWxy += w * dx * point.score;
   }
 
-  if (sxx === 0) return { a: meanY, b: 0 };
-  const b = sxy / sxx;
-  return { a: meanY - b * meanX, b };
+  if (sumW === 0) return 0;
+  // Intercept of the locally weighted line, i.e. its value at `logPick`.
+  const determinant = sumW * sumWxx - sumWx * sumWx;
+  if (Math.abs(determinant) < 1e-9) return sumWy / sumW;
+  return (sumWxx * sumWy - sumWx * sumWxy) / determinant;
 }
 
 /**
- * Expected draft score for a pick at `overallPick`, clamped to the 0–100 score
- * scale so the top of the curve (which the fit can extrapolate above 100) and
- * the deepest picks stay comparable to a real pick's score.
+ * Pool-adjacent-violators, in place: replaces any rising run with its mean so
+ * the curve never expects a later pick to outscore an earlier one. Local sample
+ * noise (picks 6–10 slightly outscoring picks 2–5, on 30 picks each) would
+ * otherwise show up as a pick being "expected" to do better than the one ahead
+ * of it, which no reader would accept as an expectation.
  */
-export function expectedScore(fit: DraftSlotFit, overallPick: number): number {
-  const value = fit.a + fit.b * Math.log(overallPick);
-  if (value < 0) return 0;
-  if (value > 100) return 100;
-  return value;
+function enforceNonIncreasing(values: number[]): void {
+  for (let i = 1; i < values.length; i++) {
+    if (values[i] <= values[i - 1]) continue;
+    let sum = values[i] + values[i - 1];
+    let count = 2;
+    while (i - count >= 0 && sum / count > values[i - count]) {
+      sum += values[i - count];
+      count++;
+    }
+    values.fill(sum / count, i - count + 1, i + 1);
+  }
 }
 
-/** The shipped fit, derived by `scripts/derive-draft-slot-baseline.ts`. */
-const SHIPPED_FIT: DraftSlotFit = { a: baselineData.a, b: baselineData.b };
+/** The draft slots to place knots at, given the range the points actually cover. */
+function knotPicksFor(points: DraftSlotPoint[]): number[] {
+  const picks = points.map((p) => p.overallPick);
+  const first = Math.min(...picks);
+  const last = Math.max(...picks);
+  if (first === last) return [first];
+  return [
+    first,
+    ...DRAFT_SLOT_KNOT_PICKS.filter((k) => k > first && k < last),
+    last,
+  ];
+}
+
+/**
+ * Fit the empirical slot-expectation curve: smooth the observed scores over
+ * `ln(overallPick)`, force the result non-increasing, and clamp it to the 0–100
+ * score scale so expectations stay comparable to a real pick's score.
+ */
+export function fitDraftSlotCurve(points: DraftSlotPoint[]): DraftSlotCurve {
+  if (points.length === 0) return { knots: [] };
+
+  const knotPicks = knotPicksFor(points);
+  const expectations = knotPicks.map((overallPick) =>
+    localLinearAt(points, Math.log(overallPick)),
+  );
+  enforceNonIncreasing(expectations);
+
+  return {
+    knots: knotPicks.map((overallPick, i) => ({
+      overallPick,
+      expected: Math.min(100, Math.max(0, expectations[i])),
+    })),
+  };
+}
+
+/**
+ * Expected draft score at `overallPick`, interpolated linearly between knots in
+ * log-pick space (the space the curve was fit in) and held flat beyond the
+ * fitted range.
+ */
+export function expectedScore(
+  curve: DraftSlotCurve,
+  overallPick: number,
+): number {
+  const { knots } = curve;
+  if (knots.length === 0) return 0;
+
+  const first = knots[0];
+  const last = knots[knots.length - 1];
+  if (overallPick <= first.overallPick) return first.expected;
+  if (overallPick >= last.overallPick) return last.expected;
+
+  const logPick = Math.log(overallPick);
+  for (let i = 1; i < knots.length; i++) {
+    const high = knots[i];
+    if (logPick > Math.log(high.overallPick)) continue;
+    const low = knots[i - 1];
+    const logLow = Math.log(low.overallPick);
+    const t = (logPick - logLow) / (Math.log(high.overallPick) - logLow);
+    return low.expected + (high.expected - low.expected) * t;
+  }
+  return last.expected;
+}
+
+/** The shipped curve, derived by `scripts/derive-draft-slot-baseline.ts`. */
+const SHIPPED_CURVE: DraftSlotCurve = { knots: baselineData.knots };
 
 /** Expected draft score for the slot a pick was taken at, on the shipped curve. */
 export function expectedScoreForPick(overallPick: number): number {
-  return expectedScore(SHIPPED_FIT, overallPick);
+  return expectedScore(SHIPPED_CURVE, overallPick);
 }
 
 /**

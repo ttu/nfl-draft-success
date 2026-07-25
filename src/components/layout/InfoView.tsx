@@ -229,9 +229,12 @@ weights       = w_s 0.7, w_a 0.3   (snap share is the heavier signal)`}</pre>
         pick's score against what its draft position alone predicted. Positive
         means the pick <em>outplayed</em> where it was taken (a steal); negative
         means it fell short (a reach). A team's Over slot is the average across
-        its picks.
+        its picks. The expectation for each slot is simply what picks taken
+        there have actually averaged — smoothed across nearby slots, measured
+        only on draft classes old enough to have settled, and never allowed to
+        rise as the picks get later.
       </p>
-      <pre className="info-formula">{`expected(pick) = a + b · ln( overallPick )   (fit from mature classes)
+      <pre className="info-formula">{`expected(pick) = typical score at that draft slot
 overSlot(pick) = score(pick) − expected(pick)
 overSlot(team) = mean( overSlot(pick) for pick in range )`}</pre>
 
