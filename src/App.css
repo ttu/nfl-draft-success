@@ -2292,6 +2292,10 @@ button {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 36px;
+  /* Each card sizes to its own content. Stretching them to a shared row height
+     leaves dead space inside the card with the fixed-height chart whenever the
+     classmate list beside it runs longer, which reads as a rendering fault. */
+  align-items: start;
 }
 .classmate-row {
   display: grid;
