@@ -1,6 +1,7 @@
 import type { DraftClass } from '../types';
 import { isDraftPickRetainedLatest } from './draftPickLatestSeason';
 import { getPlayerDraftScore, getPlayerRole } from './getPlayerRole';
+import { getPicksByTeam } from './picksByTeam';
 
 export interface DraftClassMetrics {
   totalPicks: number;
@@ -34,7 +35,7 @@ export function getDraftClassMetrics(
   teamId: string,
   options?: GetDraftClassMetricsOptions,
 ): DraftClassMetrics {
-  const picks = draft.picks.filter((p) => p.teamId === teamId);
+  const picks = getPicksByTeam(draft).get(teamId) ?? [];
   const totalPicks = picks.length;
 
   let awaitingDataCount = 0;

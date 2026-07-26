@@ -1,6 +1,6 @@
 import type { DraftClass, DraftPick, Team } from '../types';
 import { isBustExcluded } from './bustExclusions';
-import { getPlayerDraftSkill } from './draftSlotBaseline';
+import { expectedScoreForPick } from './draftSlotBaseline';
 import {
   getPlayerDraftScore,
   getPlayerRole,
@@ -83,12 +83,15 @@ export function getLeagueHighlights(
     for (const pick of draft.picks) {
       if (!pickHasSeasonSnapData(pick)) continue;
 
+      // Over slot is the score minus the slot expectation, so derive it from
+      // the score already in hand rather than scoring the pick a second time.
+      const score = getPlayerDraftScore(pick, options);
       candidates.push({
         pick,
         team: teamById.get(pick.teamId),
         draftYear: draft.year,
-        score: getPlayerDraftScore(pick, options),
-        overSlot: getPlayerDraftSkill(pick, options),
+        score,
+        overSlot: score - expectedScoreForPick(pick.overallPick),
       });
 
       scoredCount.set(pick.teamId, (scoredCount.get(pick.teamId) ?? 0) + 1);

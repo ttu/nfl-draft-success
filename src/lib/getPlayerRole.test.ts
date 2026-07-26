@@ -290,3 +290,82 @@ describe('getPlayerDraftScore', () => {
     expect(getPlayerDraftScore(pickWith([]))).toBe(0);
   });
 });
+
+/**
+ * Score and role are memoized per pick. These pin the behaviour a memo can
+ * plausibly break: results must not leak between `draftingTeamOnly` settings,
+ * between distinct picks, or change when a call is repeated.
+ */
+describe('repeated evaluation', () => {
+  /** Weak drafting-team season, strong season elsewhere — the two settings differ. */
+  const splitCareer = () =>
+    pickWith([
+      {
+        year: 2021,
+        gamesPlayed: 16,
+        teamGames: 17,
+        snapShare: 0.9,
+        retained: true,
+      },
+      {
+        year: 2022,
+        gamesPlayed: 1,
+        teamGames: 17,
+        snapShare: 0.05,
+        retained: false,
+      },
+    ]);
+
+  it('keeps the two draftingTeamOnly settings independent, whichever is asked first', () => {
+    const a = splitCareer();
+    const drafting = getPlayerDraftScore(a, { draftingTeamOnly: true });
+    const full = getPlayerDraftScore(a, { draftingTeamOnly: false });
+
+    // Same pick, opposite call order: the second reading must not serve the first.
+    const b = splitCareer();
+    const fullFirst = getPlayerDraftScore(b, { draftingTeamOnly: false });
+    const draftingSecond = getPlayerDraftScore(b, { draftingTeamOnly: true });
+
+    expect(drafting).not.toBeCloseTo(full);
+    expect(fullFirst).toBeCloseTo(full);
+    expect(draftingSecond).toBeCloseTo(drafting);
+  });
+
+  it('does not confuse two picks that share a player id but differ in data', () => {
+    const weak = pickWith([
+      {
+        year: 2023,
+        gamesPlayed: 1,
+        teamGames: 17,
+        snapShare: 0.05,
+        retained: true,
+      },
+    ]);
+    const strong = pickWith([
+      {
+        year: 2023,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 1,
+        retained: true,
+      },
+    ]);
+
+    expect(getPlayerDraftScore(weak)).toBeLessThan(getPlayerDraftScore(strong));
+    expect(getPlayerRole(weak)).toBe('non_contributor');
+    expect(getPlayerRole(strong)).toBe('core_starter');
+  });
+
+  it('returns a stable answer across repeated calls', () => {
+    const pick = splitCareer();
+    const scores = [0, 1, 2].map(() =>
+      getPlayerDraftScore(pick, { draftingTeamOnly: true }),
+    );
+    const roles = [0, 1, 2].map(() =>
+      getPlayerRole(pick, { draftingTeamOnly: true }),
+    );
+
+    expect(new Set(scores).size).toBe(1);
+    expect(new Set(roles).size).toBe(1);
+  });
+});

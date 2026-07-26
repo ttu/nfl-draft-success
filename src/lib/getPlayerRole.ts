@@ -32,6 +32,34 @@ export interface GetPlayerRoleOptions {
 }
 
 /**
+ * Per-pick memo tables for the two exported hot paths, indexed by
+ * `draftingTeamOnly` (0 = false, 1 = true) so the two settings never share an
+ * entry.
+ *
+ * The league-wide aggregates each walk every pick — team rankings alone scores
+ * all of them once per team — so the same pick is scored hundreds of times per
+ * render. Keyed weakly on pick identity: entries die with the draft class, and
+ * two picks that merely share a `playerId` stay distinct.
+ *
+ * Sound only because a pick is immutable once loaded. Nothing in the app
+ * mutates one, and {@link loadData} hands out shared frozen-by-convention
+ * objects; if that ever changes, this cache goes stale.
+ */
+const scoreByPick = [
+  new WeakMap<DraftPick, number>(),
+  new WeakMap<DraftPick, number>(),
+] as const;
+const roleByPick = [
+  new WeakMap<DraftPick, Role>(),
+  new WeakMap<DraftPick, Role>(),
+] as const;
+
+// Lookups are written out at each call site rather than behind a
+// `memoized(table, pick, compute)` helper: the helper allocated a closure per
+// call, and at a few thousand calls per aggregate that cost more than the
+// recomputation it saved.
+
+/**
  * True when the pick has any season rows in the dataset.
  * Rolling score / “tracked” counts use this so picks with only non-retained
  * seasons (e.g. traded before playing for the drafting team) are not treated
@@ -123,7 +151,21 @@ export function getPlayerDraftScore(
   pick: DraftPick,
   options?: GetPlayerRoleOptions,
 ): number {
-  const seasons = getFilteredSeasons(pick, options?.draftingTeamOnly);
+  const draftingTeamOnly = options?.draftingTeamOnly === true;
+  const table = scoreByPick[draftingTeamOnly ? 1 : 0];
+  const hit = table.get(pick);
+  if (hit !== undefined) return hit;
+
+  const value = computePlayerDraftScore(pick, draftingTeamOnly);
+  table.set(pick, value);
+  return value;
+}
+
+function computePlayerDraftScore(
+  pick: DraftPick,
+  draftingTeamOnly: boolean,
+): number {
+  const seasons = getFilteredSeasons(pick, draftingTeamOnly);
   if (seasons.length === 0) return 0;
 
   let sum = 0;
@@ -142,9 +184,21 @@ export function getPlayerRole(
   pick: DraftPick,
   options?: GetPlayerRoleOptions,
 ): Role {
-  const seasons = getFilteredSeasons(pick, options?.draftingTeamOnly);
+  const draftingTeamOnly = options?.draftingTeamOnly === true;
+  const table = roleByPick[draftingTeamOnly ? 1 : 0];
+  const hit = table.get(pick);
+  if (hit !== undefined) return hit;
+
+  const value = computePlayerRole(pick, draftingTeamOnly);
+  table.set(pick, value);
+  return value;
+}
+
+function computePlayerRole(pick: DraftPick, draftingTeamOnly: boolean): Role {
+  const seasons = getFilteredSeasons(pick, draftingTeamOnly);
   if (seasons.length === 0) return 'non_contributor';
 
+  const options = { draftingTeamOnly };
   const avg = getPlayerAverageScoreWeight(pick, options);
   const peak = getPlayerPeakRole(pick, options);
   return averageScoreWeightToRole(avg, peak);

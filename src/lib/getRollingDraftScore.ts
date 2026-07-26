@@ -6,6 +6,7 @@ import {
 } from './getPlayerRole';
 import { expectedScoreForPick } from './draftSlotBaseline';
 import { isDraftPickRetainedLatest } from './draftPickLatestSeason';
+import { getTeamPicks } from './picksByTeam';
 
 export interface RollingDraftScore {
   score: number;
@@ -56,9 +57,7 @@ export function getRollingDraftScore(
 ): RollingDraftScore {
   const opts = { draftingTeamOnly: options?.draftingTeamOnly === true };
 
-  const teamPicks = draftClasses.flatMap((d) =>
-    d.picks.filter((p) => p.teamId === teamId),
-  );
+  const teamPicks = getTeamPicks(draftClasses, teamId);
   const scoredPicks = teamPicks.filter(pickHasSeasonSnapData);
 
   let scoreSum = 0;
