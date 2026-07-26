@@ -25,6 +25,69 @@
       crossorigin
       href="%BASE_URL%data/data-meta.json"
     />
+    <!--
+      Every draft class. The app needs all nine soon after load, and a deep link
+      to any year range must find its classes here. `prefetch` rather than
+      `preload` on purpose: the browser fetches these at Lowest priority once the
+      critical work is done, which is exactly the scheduling this needs — no
+      hand-rolled idle queue. Default range first, then outward from it, since
+      document order sets dispatch order within a priority band.
+      Update this list when YEAR_MIN/YEAR_MAX in src/App.tsx move.
+    -->
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2021.json"
+    />
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2022.json"
+    />
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2023.json"
+    />
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2024.json"
+    />
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2025.json"
+    />
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2026.json"
+    />
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2020.json"
+    />
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2019.json"
+    />
+    <link
+      rel="prefetch"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/draft-2018.json"
+    />
     <meta
       name="description"
       content="Compare NFL draft outcomes for all 32 teams. Pick a season span and explore snap share, retention, and rolling scores—by team, draft year, or position."
