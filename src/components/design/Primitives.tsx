@@ -187,10 +187,13 @@ export function TeamLogo({
         }}
       >
         {logoUrl ? (
+          // Deferred: list views mount hundreds of these, nearly all off-screen.
           <img
             className="team-logo__img"
             src={logoUrl}
             alt=""
+            loading="lazy"
+            decoding="async"
             referrerPolicy="no-referrer"
             style={{ padding: Math.max(1, size * 0.06) }}
             onError={(e) => {
@@ -253,7 +256,14 @@ export function PlayerAvatar({
       }
     >
       {src ? (
-        <img className="player-avatar__img" src={src} alt={name} />
+        // Deferred: list views mount hundreds of these, nearly all off-screen.
+        <img
+          className="player-avatar__img"
+          src={src}
+          alt={name}
+          loading="lazy"
+          decoding="async"
+        />
       ) : (
         <>
           <svg
