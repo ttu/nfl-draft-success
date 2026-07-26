@@ -36,6 +36,7 @@ import {
 import { LAGGED_WINDOWS } from './lib/laggedWindow';
 import { formatDataLastUpdatedDate } from './lib/formatDataLastUpdated';
 import { getRosterByDraftYear } from './lib/getRosterByDraftYear';
+import { getAnalyticsNeeds } from './lib/analyticsNeeds';
 import { getTeamRankSummary } from './lib/getTeamRankSummary';
 import { getLeagueContext, type LeagueContext } from './lib/getLeagueContext';
 import {
@@ -206,51 +207,92 @@ function usePositionRedirect({
  */
 const DRAFTING_TEAM_ONLY = true;
 
+/** Stable empty roster for views that never read one, so memo output is referentially stable. */
+const EMPTY_ROSTER: { year: number; picks: RosterPick[] }[] = [];
+
 /**
- * Everything derived from the loaded draft classes. Each value needs classes to
- * be present, and league highlights are only computed for the view that shows
- * them — the whole-league pass is the most expensive of these.
+ * Everything derived from the loaded draft classes.
+ *
+ * Every value here is a whole-league pass over each loaded pick — together
+ * tens of milliseconds — so each is both memoized (unrelated state changes,
+ * e.g. the dark-mode toggle, must not recompute them) and skipped entirely for
+ * views that never read it (see {@link getAnalyticsNeeds}).
  */
 function useDraftAnalytics({
   draftClasses,
   selectedTeam,
   activeView,
+  isPlayerView,
   showDeparted,
   roleFilter,
 }: {
   draftClasses: DraftClass[];
   selectedTeam: string | null;
   activeView: ActiveView;
+  isPlayerView: boolean;
   showDeparted: boolean;
   roleFilter: Set<Role>;
 }) {
   const draftingTeamOnly = DRAFTING_TEAM_ONLY;
   const hasClasses = draftClasses.length > 0;
+  const needs = useMemo(
+    () => getAnalyticsNeeds({ activeView, isPlayerView }),
+    [activeView, isPlayerView],
+  );
 
-  const rollingDraftScore =
-    hasClasses && selectedTeam
-      ? getRollingDraftScore(draftClasses, selectedTeam, { draftingTeamOnly })
-      : null;
+  const rollingDraftScore = useMemo(
+    () =>
+      needs.rollingDraftScore && hasClasses && selectedTeam
+        ? getRollingDraftScore(draftClasses, selectedTeam, { draftingTeamOnly })
+        : null,
+    [needs, hasClasses, draftClasses, selectedTeam, draftingTeamOnly],
+  );
 
-  const teamRank = getTeamRankSummary(draftClasses, TEAMS, selectedTeam, {
-    draftingTeamOnly,
-  });
+  const teamRank = useMemo(
+    () =>
+      needs.teamRank
+        ? getTeamRankSummary(draftClasses, TEAMS, selectedTeam, {
+            draftingTeamOnly,
+          })
+        : null,
+    [needs, draftClasses, selectedTeam, draftingTeamOnly],
+  );
 
-  const leagueContext = hasClasses
-    ? getLeagueContext(draftClasses, TEAMS, { draftingTeamOnly })
-    : undefined;
+  const leagueContext = useMemo(
+    () =>
+      needs.leagueContext && hasClasses
+        ? getLeagueContext(draftClasses, TEAMS, { draftingTeamOnly })
+        : undefined,
+    [needs, hasClasses, draftClasses, draftingTeamOnly],
+  );
 
-  const leagueHighlights =
-    activeView === ActiveView.Highlights && hasClasses
-      ? getLeagueHighlights(draftClasses, TEAMS, { draftingTeamOnly })
-      : null;
+  const leagueHighlights = useMemo(
+    () =>
+      needs.leagueHighlights && hasClasses
+        ? getLeagueHighlights(draftClasses, TEAMS, { draftingTeamOnly })
+        : null,
+    [needs, hasClasses, draftClasses, draftingTeamOnly],
+  );
 
-  const rosterByDraftYear = getRosterByDraftYear(
-    draftClasses,
-    selectedTeam,
-    showDeparted,
-    roleFilter,
-    draftingTeamOnly,
+  const rosterByDraftYear = useMemo(
+    () =>
+      needs.rosterByDraftYear
+        ? getRosterByDraftYear(
+            draftClasses,
+            selectedTeam,
+            showDeparted,
+            roleFilter,
+            draftingTeamOnly,
+          )
+        : EMPTY_ROSTER,
+    [
+      needs,
+      draftClasses,
+      selectedTeam,
+      showDeparted,
+      roleFilter,
+      draftingTeamOnly,
+    ],
   );
 
   return {
@@ -605,6 +647,7 @@ function AppContent() {
     draftClasses,
     selectedTeam,
     activeView,
+    isPlayerView,
     showDeparted,
     roleFilter,
   });
