@@ -2,6 +2,7 @@ import {
   useState,
   useEffect,
   useLayoutEffect,
+  useCallback,
   useMemo,
   useRef,
   lazy,
@@ -580,6 +581,10 @@ function AppContent() {
     };
   }, []);
 
+  // Only the handlers passed to the memoized views below are wrapped in
+  // useCallback — a fresh closure per render would defeat their prop
+  // comparison. The rest feed the subbar and masthead, which render inline
+  // and so gain nothing from a stable identity.
   const handleYearRangeChange = (range: [number, number]) => {
     if (isYearView) {
       if (range[0] === range[1]) {
@@ -606,13 +611,16 @@ function AppContent() {
     saveLandingIntroDismissed(true);
   };
 
-  const handleTeamSelect = (team: string) => {
-    navigate(buildTeamHref(team, { from: startYear, to: endYear }));
-  };
+  const handleTeamSelect = useCallback(
+    (team: string) => {
+      navigate(buildTeamHref(team, { from: startYear, to: endYear }));
+    },
+    [navigate, startYear, endYear],
+  );
 
-  const handleShowRankings = () => {
+  const handleShowRankings = useCallback(() => {
     navigate(`/?from=${startYear}&to=${endYear}`);
-  };
+  }, [navigate, startYear, endYear]);
 
   const playerBackTarget = resolvePlayerBackTarget(
     searchParams.get('ref'),
@@ -624,18 +632,26 @@ function AppContent() {
     navigate(playerBackTarget.to);
   };
 
-  const handlePositionChange = (pos: string) => {
-    const search =
-      searchParams.toString() ||
-      new URLSearchParams({
-        from: String(startYear),
-        to: String(endYear),
-      }).toString();
-    navigate({
-      pathname: `/position/${encodeURIComponent(pos)}`,
-      search,
-    });
-  };
+  const handlePositionChange = useCallback(
+    (pos: string) => {
+      const search =
+        searchParams.toString() ||
+        new URLSearchParams({
+          from: String(startYear),
+          to: String(endYear),
+        }).toString();
+      navigate({
+        pathname: `/position/${encodeURIComponent(pos)}`,
+        search,
+      });
+    },
+    [navigate, searchParams, startYear, endYear],
+  );
+
+  const handleShowMethodology = useCallback(() => {
+    setShowInfoView(true);
+  }, [setShowInfoView]);
+  const handleToggleDark = () => setDark((v) => !v);
 
   const {
     rollingDraftScore,
@@ -692,9 +708,9 @@ function AppContent() {
         active={activeTab}
         dataLastUpdatedDate={dataLastUpdatedDate}
         fallbackRange={{ from: startYear, to: endYear }}
-        onShowInfo={() => setShowInfoView(true)}
+        onShowInfo={handleShowMethodology}
         dark={dark}
-        onToggleDark={() => setDark((v) => !v)}
+        onToggleDark={handleToggleDark}
       />
 
       {renderSubbar({
@@ -759,7 +775,7 @@ function AppContent() {
           showDeparted,
           setShowDeparted,
           correlationRow,
-          onShowMethodology: () => setShowInfoView(true),
+          onShowMethodology: handleShowMethodology,
           canonicalPosition,
           startYear,
           endYear,

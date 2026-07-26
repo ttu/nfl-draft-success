@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { TEAMS } from '../../../data/teams';
 import { TeamLogo, Sparkline, Delta, teamColor } from '../../design/Primitives';
@@ -32,7 +33,7 @@ interface ExtendedRanking extends TeamRanking {
   change?: number;
 }
 
-export function TeamRankingsView({
+function TeamRankingsViewImpl({
   rankings,
   yearCount,
   startYear,
@@ -430,3 +431,11 @@ function RankRow({
     </tr>
   );
 }
+
+/**
+ * Memoized: `AppContent` re-renders on state this tree does not read (theme,
+ * the info modal, route bookkeeping). Every prop it receives is referentially
+ * stable by construction — derived values are memoized and handlers are
+ * wrapped in `useCallback` in App.tsx — so the comparison actually bails out.
+ */
+export const TeamRankingsView = memo(TeamRankingsViewImpl);

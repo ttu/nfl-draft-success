@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { memo, type CSSProperties } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   TeamLogo,
@@ -22,7 +22,7 @@ export interface YearDraftViewProps {
   draftingTeamOnly: boolean;
 }
 
-export function YearDraftView({
+function YearDraftViewImpl({
   draftClass,
   draftingTeamOnly,
 }: YearDraftViewProps) {
@@ -193,3 +193,11 @@ function PickLedgerRow({
     </div>
   );
 }
+
+/**
+ * Memoized: `AppContent` re-renders on state this tree does not read (theme,
+ * the info modal, route bookkeeping). Every prop it receives is referentially
+ * stable by construction — derived values are memoized and handlers are
+ * wrapped in `useCallback` in App.tsx — so the comparison actually bails out.
+ */
+export const YearDraftView = memo(YearDraftViewImpl);

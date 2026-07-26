@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { memo, useCallback, useMemo, type CSSProperties } from 'react';
 import { TEAMS } from '../../../data/teams';
 import {
   TeamLogo,
@@ -35,6 +35,7 @@ import {
 import type { DraftClass, DraftPick, Role } from '../../../types';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type { RollingDraftScore } from '../../../lib/getRollingDraftScore';
+import { getTeamPicks } from '../../../lib/picksByTeam';
 
 export interface RosterPick {
   pick: DraftPick;
@@ -64,7 +65,7 @@ export interface TeamDetailContentProps {
   windows: LaggedWindows;
 }
 
-export function TeamDetailContent({
+function TeamDetailContentImpl({
   rollingDraftScore,
   yearCount,
   teamRank,
@@ -89,26 +90,41 @@ export function TeamDetailContent({
     rosterByDraftYear,
     draftClassYear: draftClasses[0]?.year,
   });
-  const metricsRows = buildDraftClassMetricsRows(draftClasses, selectedTeam, {
-    draftingTeamOnly,
-  });
+  // The hero, class grid and side rail are memoized and do not depend on the
+  // roster's toggles, so everything feeding them is memoized too — otherwise
+  // flipping "show departed" would re-render the whole page instead of the
+  // roster alone.
+  const metricsRows = useMemo(
+    () =>
+      buildDraftClassMetricsRows(draftClasses, selectedTeam, {
+        draftingTeamOnly,
+      }),
+    [draftClasses, selectedTeam, draftingTeamOnly],
+  );
 
   // Breakdowns count every pick the team made in the window — independent of the
   // roster's "Hide departed" toggle and role filter.
-  const allTeamPicks = draftClasses.flatMap((dc) =>
-    dc.picks.filter((p) => p.teamId === selectedTeam),
+  const allTeamPicks = useMemo(
+    () => getTeamPicks(draftClasses, selectedTeam),
+    [draftClasses, selectedTeam],
   );
-  const unitBreakdown = getUnitBreakdown(allTeamPicks);
-  const positionBreakdown = getPositionBreakdown(allTeamPicks);
+  const unitBreakdown = useMemo(
+    () => getUnitBreakdown(allTeamPicks),
+    [allTeamPicks],
+  );
+  const positionBreakdown = useMemo(
+    () => getPositionBreakdown(allTeamPicks),
+    [allTeamPicks],
+  );
 
   // Jump from a draft-class card down to that year's picks in the roster below.
   // Falls back to the roster section when the year is filtered out of the list.
-  const scrollToRosterYear = (year: number) => {
+  const scrollToRosterYear = useCallback((year: number) => {
     const target =
       document.getElementById(`roster-year-${year}`) ??
       document.getElementById('team-roster');
     target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  }, []);
 
   return (
     <>
@@ -166,7 +182,7 @@ interface TeamHeroProps {
   depthChartUrl: string | null;
 }
 
-function TeamHero({
+const TeamHero = memo(function TeamHero({
   rollingDraftScore,
   yearCount,
   teamRank,
@@ -272,7 +288,7 @@ function TeamHero({
       </div>
     </section>
   );
-}
+});
 
 function TeamHeroScoreCaption({ yearCount }: { yearCount: number }) {
   return (
@@ -292,7 +308,7 @@ function TeamHeroScoreCaption({ yearCount }: { yearCount: number }) {
 
 type MetricsRow = ReturnType<typeof buildDraftClassMetricsRows>[number];
 
-function ClassGrid({
+const ClassGrid = memo(function ClassGrid({
   metricsRows,
   color,
   onSelectYear,
@@ -377,7 +393,7 @@ function ClassGrid({
       </div>
     </section>
   );
-}
+});
 
 interface RosterSectionProps {
   rosterByDraftYear: { year: number; picks: RosterPick[] }[];
@@ -453,7 +469,7 @@ function coreStarterRateSummary(coreStarterRate: number): string {
   return 'A lean stretch. Few picks have settled into starter-level snaps.';
 }
 
-function SideRail({
+const SideRail = memo(function SideRail({
   color,
   unitBreakdown,
   positionBreakdown,
@@ -492,7 +508,7 @@ function SideRail({
       />
     </aside>
   );
-}
+});
 
 /**
  * This team's own version of the league's lagged correlation: how its early
@@ -675,3 +691,11 @@ function SideCard({
     </section>
   );
 }
+
+/**
+ * Memoized: `AppContent` re-renders on state this tree does not read (theme,
+ * the info modal, route bookkeeping). Every prop it receives is referentially
+ * stable by construction — derived values are memoized and handlers are
+ * wrapped in `useCallback` in App.tsx — so the comparison actually bails out.
+ */
+export const TeamDetailContent = memo(TeamDetailContentImpl);

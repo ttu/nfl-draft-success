@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   TeamLogo,
@@ -32,7 +32,7 @@ interface PickRow {
   score: number;
 }
 
-export function PositionDraftView({
+function PositionDraftViewImpl({
   position,
   yearFrom,
   yearTo,
@@ -308,3 +308,11 @@ function PosRow({ r, i }: { r: PickRow; i: number }) {
     </tr>
   );
 }
+
+/**
+ * Memoized: `AppContent` re-renders on state this tree does not read (theme,
+ * the info modal, route bookkeeping). Every prop it receives is referentially
+ * stable by construction — derived values are memoized and handlers are
+ * wrapped in `useCallback` in App.tsx — so the comparison actually bails out.
+ */
+export const PositionDraftView = memo(PositionDraftViewImpl);

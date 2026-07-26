@@ -1,4 +1,4 @@
-import { useMemo, type CSSProperties } from 'react';
+import { memo, useMemo, type CSSProperties } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   TeamLogo,
@@ -38,7 +38,7 @@ export interface PlayerDetailViewProps {
   draftingTeamOnly: boolean;
 }
 
-export function PlayerDetailView({
+function PlayerDetailViewImpl({
   pick,
   draftYear,
   draftClasses,
@@ -576,3 +576,11 @@ function ClassmateRow({
     </div>
   );
 }
+
+/**
+ * Memoized: `AppContent` re-renders on state this tree does not read (theme,
+ * the info modal, route bookkeeping). Every prop it receives is referentially
+ * stable by construction — derived values are memoized and handlers are
+ * wrapped in `useCallback` in App.tsx — so the comparison actually bails out.
+ */
+export const PlayerDetailView = memo(PlayerDetailViewImpl);

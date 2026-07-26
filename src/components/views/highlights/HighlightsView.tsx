@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PlayerAvatar, TeamLogo, teamColor } from '../../design/Primitives';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
@@ -23,7 +23,7 @@ function seasonTag(year: number): string {
   return `'${String(year % 100).padStart(2, '0')}`;
 }
 
-export function HighlightsView({
+function HighlightsViewImpl({
   highlights,
   startYear,
   endYear,
@@ -268,3 +268,11 @@ function TeamLeader({
     </div>
   );
 }
+
+/**
+ * Memoized: `AppContent` re-renders on state this tree does not read (theme,
+ * the info modal, route bookkeeping). Every prop it receives is referentially
+ * stable by construction — derived values are memoized and handlers are
+ * wrapped in `useCallback` in App.tsx — so the comparison actually bails out.
+ */
+export const HighlightsView = memo(HighlightsViewImpl);
