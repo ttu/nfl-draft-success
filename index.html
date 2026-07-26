@@ -7,6 +7,24 @@
     <!-- Preconnect to font origins for faster first request -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      The rankings page paints from these before any draft class loads, so they
+      start with the document rather than after the bundle has parsed and
+      mounted. Draft classes are deliberately absent: they are range-dependent
+      and far larger, and preloading them would recreate the contention.
+    -->
+    <link
+      rel="preload"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/default-rankings.json"
+    />
+    <link
+      rel="preload"
+      as="fetch"
+      crossorigin
+      href="%BASE_URL%data/data-meta.json"
+    />
     <meta
       name="description"
       content="Compare NFL draft outcomes for all 32 teams. Pick a season span and explore snap share, retention, and rolling scores—by team, draft year, or position."

@@ -480,6 +480,10 @@ function AppContent() {
     hasSelectedTeam: selectedTeam != null,
   });
 
+  /** Team detail is the only view rendering the draft↔win correlation row. */
+  const needsCorrelation =
+    !isPlayerView && activeView === ActiveView.TeamDetail;
+
   const [dark, setDark] = useDarkMode();
 
   useLayoutEffect(() => {
@@ -558,16 +562,18 @@ function AppContent() {
       .then(setDefaultRankings)
       .catch(() => {});
   }, []);
+  // Correlation sources feed the team detail view alone. Fetching them on mount
+  // put ~28 KB in front of the draft classes on every other view — bandwidth the
+  // rankings page's first paint was competing for and never spent.
   useEffect(() => {
+    if (!needsCorrelation) return;
     loadTeamSuccess()
       .then(setTeamSuccessData)
       .catch(() => {});
-  }, []);
-  useEffect(() => {
     loadLaggedRankings()
       .then(setLaggedRankings)
       .catch(() => {});
-  }, []);
+  }, [needsCorrelation]);
 
   useEffect(() => {
     let cancelled = false;
