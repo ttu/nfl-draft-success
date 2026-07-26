@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  PlayerAvatar,
-  TeamLogo,
-  teamColor,
-  scoreTierClass,
-} from '../../design/Primitives';
+import { PlayerAvatar, TeamLogo, teamColor } from '../../design/Primitives';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
+import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { activateOnKey } from '../../../lib/activateOnKey';
 import {
   HIGHLIGHT_LIST_SIZE,
@@ -46,9 +42,9 @@ export function HighlightsView({
             The <em>steals</em>, the busts, the factories.
           </h1>
           <p className="page-hero__lede">
-            The picks and teams that stand out across the window — the best
-            late-round value, the priciest misses, and who churned out the most
-            every-down starters.
+            The picks and teams that stand out across the window — who most beat
+            what their draft slot predicted, who most fell short of it, and who
+            churned out the most every-down starters.
           </p>
         </div>
       </section>
@@ -56,17 +52,17 @@ export function HighlightsView({
       <div className="highlights-lists">
         <PlayerList
           kicker="Steals of the window"
-          note="round 4+ · best value"
+          note="best value vs draft slot"
           accent="core"
           items={steals}
-          emptyLabel="No round 4+ picks with data in this window yet."
+          emptyLabel="No picks with data in this window yet."
         />
         <PlayerList
           kicker="Biggest busts"
-          note="round 1 · priciest misses"
+          note="worst value vs draft slot"
           accent="non"
           items={busts}
-          emptyLabel="No round 1 picks with data in this window yet."
+          emptyLabel="No picks with data in this window yet."
         />
       </div>
 
@@ -74,9 +70,12 @@ export function HighlightsView({
 
       <div className="highlights-foot">
         The draft success score (0–100) combines how much a player is on the
-        field with how available he stays. Steals are picks from round 4 or
-        later; busts are round 1. Players are credited to the team that drafted
-        them.
+        field with how available he stays. These lists rank by the big number:
+        how far the score landed above or below what the draft slot predicted.
+        That is why a seventh-rounder scoring 83 outranks a fourth-rounder
+        scoring 96 — and why no round filter is needed, since early picks have
+        little room to beat their slot and late picks little room to miss.
+        Players are credited to the team that drafted them.
       </div>
     </section>
   );
@@ -136,6 +135,33 @@ function PlayerList({
   );
 }
 
+/**
+ * Position, class, pick reference, team and raw score under a player's name.
+ * Grouped so the line only ever breaks between groups — never inside a pick
+ * reference, and never between a team logo and its code.
+ */
+function PlayerMeta({
+  pick,
+  team,
+  draftYear,
+  score,
+}: Pick<PlayerHighlight, 'pick' | 'team' | 'draftYear' | 'score'>) {
+  return (
+    <div className="highlight-row__meta mono">
+      <span>
+        {pick.position} · {seasonTag(draftYear)} ·
+      </span>
+      <span className="nowrap">
+        R{pick.round} #{pick.overallPick}
+      </span>
+      <span className="nowrap">
+        <TeamLogo teamId={pick.teamId} size={14} ring={false} />
+        {team?.abbreviation ?? pick.teamId} · score {score.toFixed(0)}
+      </span>
+    </div>
+  );
+}
+
 function PlayerRow({
   rank,
   highlight,
@@ -147,11 +173,7 @@ function PlayerRow({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { pick, team, draftYear, score } = highlight;
-  const scoreClass = scoreTierClass(score, {
-    high: 'highlight-row__score--high',
-    low: 'highlight-row__score--low',
-  });
+  const { pick, team, draftYear, score, overSlot } = highlight;
   const openPlayer = () =>
     navigate(
       buildPlayerHref(pick.playerId, location.pathname + location.search),
@@ -176,15 +198,20 @@ function PlayerRow({
         />
         <div className="highlight-row__id">
           <div className="highlight-row__name">{pick.playerName}</div>
-          <div className="highlight-row__meta mono">
-            {pick.position} · {seasonTag(draftYear)} · R{pick.round} #
-            {pick.overallPick}
-            <TeamLogo teamId={pick.teamId} size={14} ring={false} />
-            {team?.abbreviation ?? pick.teamId}
-          </div>
+          <PlayerMeta
+            pick={pick}
+            team={team}
+            draftYear={draftYear}
+            score={score}
+          />
         </div>
-        <div className={`highlight-row__score ${scoreClass} tnum`}>
-          {score.toFixed(0)}
+        <div
+          className={`highlight-row__score tnum highlight-row__score--${
+            overSlot >= 0 ? 'high' : 'low'
+          }`}
+          title="Draft score above or below what this draft slot predicted"
+        >
+          {formatOverSlot(overSlot)}
         </div>
       </button>
     </li>

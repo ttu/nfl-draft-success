@@ -44,6 +44,7 @@ describe('HighlightsView', () => {
           team: { id: 'DET', name: 'Detroit Lions', abbreviation: 'DET' },
           draftYear: 2022,
           score: 88,
+          overSlot: 52.1,
         },
         {
           pick: samplePick({
@@ -55,6 +56,7 @@ describe('HighlightsView', () => {
           team: { id: 'DET', name: 'Detroit Lions', abbreviation: 'DET' },
           draftYear: 2021,
           score: 80,
+          overSlot: 37.4,
         },
       ],
       busts: [
@@ -69,6 +71,7 @@ describe('HighlightsView', () => {
           team: { id: 'CHI', name: 'Chicago Bears', abbreviation: 'CHI' },
           draftYear: 2021,
           score: 12,
+          overSlot: -71.3,
         },
       ],
       mostCoreStarters: {
@@ -82,12 +85,16 @@ describe('HighlightsView', () => {
     expect(screen.getByText('Steals of the window')).toBeInTheDocument();
     expect(screen.getByText('Sam Steal')).toBeInTheDocument();
     expect(screen.getByText('Second Steal')).toBeInTheDocument();
-    expect(screen.getByText('88')).toBeInTheDocument();
+    // Over slot leads each row; the raw score sits on the meta line.
+    expect(screen.getByText('+52.1')).toBeInTheDocument();
+    expect(screen.getByText('+37.4')).toBeInTheDocument();
     expect(screen.getByText(/R5 #150/)).toBeInTheDocument();
+    expect(screen.getByText(/score 88/)).toBeInTheDocument();
 
     expect(screen.getByText('Biggest busts')).toBeInTheDocument();
     expect(screen.getByText('Bill Bust')).toBeInTheDocument();
-    expect(screen.getByText('12')).toBeInTheDocument();
+    expect(screen.getByText('−71.3')).toBeInTheDocument();
+    expect(screen.getByText(/score 12/)).toBeInTheDocument();
 
     expect(screen.getByText('Most core starters')).toBeInTheDocument();
     expect(screen.getByText('Philadelphia Eagles')).toBeInTheDocument();
@@ -107,6 +114,7 @@ describe('HighlightsView', () => {
         team: { id: 'DET', name: 'Detroit Lions', abbreviation: 'DET' },
         draftYear: 2022,
         score: 90 - i,
+        overSlot: 50 - i,
       }),
     );
     renderView({ steals, busts: [], mostCoreStarters: null });
@@ -133,6 +141,7 @@ describe('HighlightsView', () => {
           team: { id: 'DET', name: 'Detroit Lions', abbreviation: 'DET' },
           draftYear: 2022,
           score: 88,
+          overSlot: 52.1,
         },
       ],
       busts: [],
@@ -145,10 +154,7 @@ describe('HighlightsView', () => {
 
   it('renders empty states when highlight lists are empty', () => {
     renderView({ steals: [], busts: [], mostCoreStarters: null });
-    expect(
-      screen.getByText(/no round 4\+ picks with data/i),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/no round 1 picks with data/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/no picks with data/i)).toHaveLength(2);
     expect(screen.getByText(/no core starters produced/i)).toBeInTheDocument();
   });
 });

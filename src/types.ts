@@ -126,6 +126,24 @@ export interface DraftSlotBaselineData {
   knots: { overallPick: number; expected: number }[];
 }
 
+/**
+ * Hand-maintained list of picks held off the "biggest busts" highlight because
+ * their career ended for a reason outside football. See
+ * `src/lib/bustExclusions.ts` for the scope rules.
+ */
+export interface BustExclusionsData {
+  /** Why this file exists and what belongs in it. */
+  note: string;
+  exclusions: Array<{
+    playerId: string;
+    playerName: string;
+    /** One of `BUST_EXCLUSION_REASONS`. */
+    reason: string;
+    /** One-line justification, so entries can be audited in place. */
+    detail: string;
+  }>;
+}
+
 export const ActiveView = {
   TeamDetail: 'teamDetail',
   TeamRankings: 'teamRankings',

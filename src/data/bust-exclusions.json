@@ -1,0 +1,29 @@
+{
+  "note": "Picks kept off the 'biggest busts' list because their career ended for a reason outside football. Hand-maintained: no nflverse feed carries this. Entries are limited to death and non-football medical conditions — a career derailed by a football injury, or by off-field conduct, is still a draft outcome and stays on the list.",
+  "exclusions": [
+    {
+      "playerId": "HaskDw00",
+      "playerName": "Dwayne Haskins",
+      "reason": "death",
+      "detail": "Died April 2022."
+    },
+    {
+      "playerId": "FergJa02",
+      "playerName": "Jaylon Ferguson",
+      "reason": "death",
+      "detail": "Died June 2022."
+    },
+    {
+      "playerId": "GladJe00",
+      "playerName": "Jeff Gladney",
+      "reason": "death",
+      "detail": "Died May 2022."
+    },
+    {
+      "playerId": "JackKh00",
+      "playerName": "Khyree Jackson",
+      "reason": "death",
+      "detail": "Died July 2024, before playing an NFL game."
+    }
+  ]
+}

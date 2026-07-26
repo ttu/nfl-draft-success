@@ -383,6 +383,9 @@ button {
 .mono {
   font-family: var(--f-mono);
 }
+.nowrap {
+  white-space: nowrap;
+}
 .serif {
   font-family: var(--f-serif);
 }
@@ -834,6 +837,12 @@ button {
   letter-spacing: 0.02em;
   margin-top: 3px;
 }
+/* Each group wraps as a unit; the logo rides along with its team code. */
+.highlight-row__meta > .nowrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 .highlight-row__score {
   font-family: var(--f-serif);
   font-size: 26px;
@@ -841,6 +850,8 @@ button {
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--ink);
+  /* Signed one-decimal values ("+72.4") must not wrap onto a second line. */
+  white-space: nowrap;
 }
 .highlight-row__score--high {
   color: var(--positive);
