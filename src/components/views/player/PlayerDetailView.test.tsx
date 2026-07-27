@@ -3,12 +3,13 @@ import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { PlayerDetailView } from './PlayerDetailView';
 import type { DraftClass, DraftPick } from '../../../types';
+import { makeDraftClass, makePick, makeSeason } from '../../../test/factories';
 
 // Will Reichard, K, MIN 2024: high Avg snap (~40%) but low Load (~10%) because
 // specialist load is measured against the team's full scrimmage + ST capacity.
 // Role classification must use Avg snap for specialists (per the glossary), so
 // each season should read as Significant, not Non-Contributor / Depth.
-const kicker: DraftPick = {
+const kicker: DraftPick = makePick({
   playerId: 'will-reichard',
   playerName: 'Will Reichard',
   position: 'K',
@@ -16,26 +17,25 @@ const kicker: DraftPick = {
   overallPick: 203,
   teamId: 'MIN',
   seasons: [
-    {
+    makeSeason({
       year: 2024,
       gamesPlayed: 14,
       teamGames: 18,
       snapShare: 0.4,
       cumulativeSnapShare: 0.0939,
-      retained: true,
-    },
-    {
+    }),
+    makeSeason({
       year: 2025,
       gamesPlayed: 17,
-      teamGames: 17,
       snapShare: 0.3459,
       cumulativeSnapShare: 0.109,
-      retained: true,
-    },
+    }),
   ],
-};
+});
 
-const draftClasses: DraftClass[] = [{ year: 2024, picks: [kicker] }];
+const draftClasses: DraftClass[] = [
+  makeDraftClass({ year: 2024, picks: [kicker] }),
+];
 
 function renderView() {
   return render(
@@ -66,21 +66,13 @@ describe('PlayerDetailView current-team indicator', () => {
     const departed: DraftPick = {
       ...kicker,
       seasons: [
-        {
-          year: 2024,
-          gamesPlayed: 16,
-          teamGames: 17,
-          snapShare: 0.5,
-          retained: true,
-        },
-        {
+        makeSeason({ year: 2024, snapShare: 0.5 }),
+        makeSeason({
           year: 2025,
-          gamesPlayed: 16,
-          teamGames: 17,
           snapShare: 0.5,
           retained: false,
           currentTeam: 'ATL',
-        },
+        }),
       ],
     };
     render(
@@ -88,7 +80,7 @@ describe('PlayerDetailView current-team indicator', () => {
         <PlayerDetailView
           pick={departed}
           draftYear={2024}
-          draftClasses={[{ year: 2024, picks: [departed] }]}
+          draftClasses={[makeDraftClass({ year: 2024, picks: [departed] })]}
           draftingTeamOnly={false}
         />
       </MemoryRouter>,
@@ -114,23 +106,20 @@ describe('PlayerDetailView season-ending injury marker', () => {
     ...kicker,
     position: 'DE',
     seasons: [
-      {
+      makeSeason({
         year: 2024,
         gamesPlayed: 2,
         teamGames: 16,
         snapShare: 0.435,
         cumulativeSnapShare: 0.435,
-        retained: true,
         seasonEndingAbsenceGames: 14,
-      },
-      {
+      }),
+      makeSeason({
         year: 2025,
         gamesPlayed: 17,
-        teamGames: 17,
         snapShare: 0.75,
         cumulativeSnapShare: 0.75,
-        retained: true,
-      },
+      }),
     ],
   };
 
@@ -140,7 +129,7 @@ describe('PlayerDetailView season-ending injury marker', () => {
         <PlayerDetailView
           pick={injured}
           draftYear={2024}
-          draftClasses={[{ year: 2024, picks: [injured] }]}
+          draftClasses={[makeDraftClass({ year: 2024, picks: [injured] })]}
           draftingTeamOnly={false}
         />
       </MemoryRouter>,
@@ -172,30 +161,16 @@ describe('PlayerDetailView draft score', () => {
   //   2024: 0.7·1.0 + 0.3·(17/17) = 1.00 → 100
   //   2025: 0.7·0.5 + 0.3·(17/17) = 0.65 →  65
   //   overall = mean(100, 65) = 82.5 → 83
-  const scorer: DraftPick = {
+  const scorer: DraftPick = makePick({
     playerId: 'qb-scorer',
     playerName: 'Sample Scorer',
     position: 'QB',
-    round: 1,
-    overallPick: 1,
     teamId: 'MIN',
     seasons: [
-      {
-        year: 2024,
-        gamesPlayed: 17,
-        teamGames: 17,
-        snapShare: 1,
-        retained: true,
-      },
-      {
-        year: 2025,
-        gamesPlayed: 17,
-        teamGames: 17,
-        snapShare: 0.5,
-        retained: true,
-      },
+      makeSeason({ year: 2024, gamesPlayed: 17, snapShare: 1 }),
+      makeSeason({ year: 2025, gamesPlayed: 17, snapShare: 0.5 }),
     ],
-  };
+  });
 
   function renderScorer() {
     return render(
@@ -203,7 +178,7 @@ describe('PlayerDetailView draft score', () => {
         <PlayerDetailView
           pick={scorer}
           draftYear={2024}
-          draftClasses={[{ year: 2024, picks: [scorer] }]}
+          draftClasses={[makeDraftClass({ year: 2024, picks: [scorer] })]}
           draftingTeamOnly={false}
         />
       </MemoryRouter>,
@@ -260,7 +235,7 @@ describe('PlayerDetailView Pro Football Reference link', () => {
         <PlayerDetailView
           pick={unmatched}
           draftYear={2024}
-          draftClasses={[{ year: 2024, picks: [unmatched] }]}
+          draftClasses={[makeDraftClass({ year: 2024, picks: [unmatched] })]}
           draftingTeamOnly={false}
         />
       </MemoryRouter>,

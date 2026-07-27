@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { DraftClass } from '../types';
+import { makeDraftClass, makePick } from '../test/factories';
 import {
   collectDraftPositions,
   filterPicksByPosition,
@@ -7,44 +8,24 @@ import {
   resolveCanonicalPosition,
 } from './positionDraft';
 
-const dc2020: DraftClass = {
+const dc2020: DraftClass = makeDraftClass({
   year: 2020,
   picks: [
-    {
-      playerId: 'a',
-      playerName: 'A',
-      position: 'QB',
-      round: 1,
-      overallPick: 1,
-      teamId: 'CIN',
-      seasons: [],
-    },
-    {
-      playerId: 'b',
+    makePick({ playerName: 'A', position: 'QB', teamId: 'CIN' }),
+    makePick({
       playerName: 'B',
       position: 'de',
       round: 2,
       overallPick: 33,
       teamId: 'WAS',
-      seasons: [],
-    },
+    }),
   ],
-};
+});
 
-const dc2021: DraftClass = {
+const dc2021: DraftClass = makeDraftClass({
   year: 2021,
-  picks: [
-    {
-      playerId: 'c',
-      playerName: 'C',
-      position: 'QB',
-      round: 1,
-      overallPick: 5,
-      teamId: 'KC',
-      seasons: [],
-    },
-  ],
-};
+  picks: [makePick({ playerName: 'C', position: 'QB', overallPick: 5 })],
+});
 
 describe('collectDraftPositions', () => {
   it('returns sorted unique positions with stable casing from first occurrence', () => {
@@ -54,28 +35,19 @@ describe('collectDraftPositions', () => {
   });
 
   it('merges T and OT into one OT entry via normalizeDraftPosition', () => {
-    const otPick = {
-      playerId: 'ot',
+    const otPick = makePick({
       playerName: 'OT',
       position: 'OT',
-      round: 1,
-      overallPick: 1,
       teamId: 'DAL',
-      seasons: [],
-    };
-    const tPick = {
-      playerId: 't',
+    });
+    const tPick = makePick({
       playerName: 'T',
       position: 'T',
       round: 2,
       overallPick: 40,
       teamId: 'GB',
-      seasons: [],
-    };
-    const dc: DraftClass = {
-      year: 2024,
-      picks: [otPick, tPick],
-    };
+    });
+    const dc = makeDraftClass({ year: 2024, picks: [otPick, tPick] });
     expect(collectDraftPositions([dc])).toEqual(['OT']);
   });
 });
@@ -93,16 +65,13 @@ describe('filterPicksByPosition', () => {
   });
 
   it('matches T when filtering by OT and vice versa', () => {
-    const tPick = {
-      playerId: 't',
+    const tPick = makePick({
       playerName: 'Lineman',
       position: 'T',
-      round: 1,
       overallPick: 10,
       teamId: 'NYG',
-      seasons: [],
-    };
-    const dc: DraftClass = { year: 2019, picks: [tPick] };
+    });
+    const dc = makeDraftClass({ year: 2019, picks: [tPick] });
     expect(filterPicksByPosition([dc], 'OT')).toEqual([
       { pick: tPick, draftYear: 2019 },
     ]);

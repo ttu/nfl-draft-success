@@ -6,13 +6,14 @@ import {
   loadDefaultRankings,
   resetDataCache,
 } from './loadData';
+import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
 beforeEach(() => {
   resetDataCache();
 });
 
 /** Minimal well-formed draft class for cache tests. */
-const draftClass = (year: number) => ({ year, picks: [] });
+const draftClass = (year: number) => makeDraftClass({ year });
 
 const okResponse = (body: unknown) =>
   ({ ok: true, json: () => Promise.resolve(body) }) as Response;
@@ -23,28 +24,16 @@ describe('loadData', () => {
   });
 
   it('returns DraftClass with picks for year 2023', async () => {
-    const mockDraft = {
-      year: 2023,
+    const mockDraft = makeDraftClass({
       picks: [
-        {
-          playerId: 'p1',
+        makePick({
           playerName: 'Test Player',
           position: 'WR',
-          round: 1,
           overallPick: 5,
-          teamId: 'KC',
-          seasons: [
-            {
-              year: 2023,
-              gamesPlayed: 15,
-              teamGames: 17,
-              snapShare: 0.72,
-              retained: true,
-            },
-          ],
-        },
+          seasons: [makeSeason({ gamesPlayed: 15, snapShare: 0.72 })],
+        }),
       ],
-    };
+    });
 
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,

@@ -1,65 +1,53 @@
 import { describe, it, expect } from 'vitest';
 import { getLeagueContext } from './getLeagueContext';
-import type { DraftClass, DraftPick, Season, Team } from '../types';
+import type { DraftClass, DraftPick, Team } from '../types';
+import {
+  makeDraftClass,
+  makePick,
+  makeSeason,
+  makeTeam,
+} from '../test/factories';
 
 const teams: Team[] = [
-  { id: 'A', name: 'Team A', abbreviation: 'A' },
-  { id: 'B', name: 'Team B', abbreviation: 'B' },
-  { id: 'C', name: 'Team C', abbreviation: 'C' },
+  makeTeam({ id: 'A' }),
+  makeTeam({ id: 'B' }),
+  makeTeam({ id: 'C' }),
 ];
 
-// Fixtures use the unknown position `ZZ` (baseline 1.0), so scores are not
-// position-adjusted here; that behaviour lives in snapShareForTier.test.ts.
+// Fixtures keep the factory default position `ZZ` (baseline 1.0), so scores are
+// not position-adjusted here; that behaviour lives in snapShareForTier.test.ts.
 /** Single-season pick producing a deterministic role/score. */
-function pick(
+const pick = (
   teamId: string,
   snapShare: number,
   gamesPlayed: number,
-): DraftPick {
-  const season: Season = {
-    year: 2021,
-    gamesPlayed,
-    teamGames: 16,
-    snapShare,
-    retained: true,
-  };
-  return {
+): DraftPick =>
+  makePick({
     playerId: `${teamId}-p`,
     playerName: 'P',
-    position: 'ZZ',
-    round: 1,
-    overallPick: 1,
     teamId,
-    seasons: [season],
-  };
-}
+    seasons: [
+      makeSeason({ year: 2021, gamesPlayed, teamGames: 16, snapShare }),
+    ],
+  });
 
 /** Pick with no season rows yet (awaiting NFL data). */
-function awaitingPick(teamId: string): DraftPick {
-  return {
-    playerId: `${teamId}-await`,
-    playerName: 'P',
-    position: 'ZZ',
-    round: 1,
-    overallPick: 1,
-    teamId,
-    seasons: [],
-  };
-}
+const awaitingPick = (teamId: string): DraftPick =>
+  makePick({ playerId: `${teamId}-await`, playerName: 'P', teamId });
 
 // core_starter: 0.9 load, full availability -> score 93
 // contributor:  0.25 load, full availability -> score 47.5
 // non_contributor: 0.05 load, 1/16 availability -> score ~5.375
 function classesAllThree(): DraftClass[] {
   return [
-    {
+    makeDraftClass({
       year: 2021,
       picks: [
         pick('A', 0.9, 16), // core_starter, 93
         pick('B', 0.05, 1), // non_contributor, ~5.375
         pick('C', 0.25, 16), // contributor, 47.5
       ],
-    },
+    }),
   ];
 }
 
@@ -95,7 +83,9 @@ describe('getLeagueContext', () => {
   });
 
   it('returns null spread when fewer than two teams have scored picks', () => {
-    const classes: DraftClass[] = [{ year: 2021, picks: [pick('A', 0.9, 16)] }];
+    const classes: DraftClass[] = [
+      makeDraftClass({ year: 2021, picks: [pick('A', 0.9, 16)] }),
+    ];
     const ctx = getLeagueContext(classes, teams, { draftingTeamOnly: false });
     expect(ctx.spread).toBeNull();
     expect(ctx.avgScore).toBeCloseTo(93, 3);
@@ -117,10 +107,10 @@ describe('getLeagueContext', () => {
 
   it('excludes awaiting-data picks from averages and role counts', () => {
     const classes: DraftClass[] = [
-      {
+      makeDraftClass({
         year: 2021,
         picks: [pick('A', 0.9, 16), awaitingPick('B'), awaitingPick('C')],
-      },
+      }),
     ];
     const ctx = getLeagueContext(classes, teams, { draftingTeamOnly: false });
     // Only A has a scored pick.
@@ -132,8 +122,8 @@ describe('getLeagueContext', () => {
 
   it('aggregates role counts across all provided draft years', () => {
     const classes: DraftClass[] = [
-      { year: 2020, picks: [pick('A', 0.9, 16)] },
-      { year: 2021, picks: [pick('A', 0.9, 16)] },
+      makeDraftClass({ year: 2020, picks: [pick('A', 0.9, 16)] }),
+      makeDraftClass({ year: 2021, picks: [pick('A', 0.9, 16)] }),
     ];
     const ctx = getLeagueContext(classes, teams, { draftingTeamOnly: false });
     expect(ctx.roleDistribution.coreCount).toBe(2);

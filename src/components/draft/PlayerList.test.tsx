@@ -3,7 +3,7 @@ import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { PlayerList } from './PlayerList';
-import type { DraftPick } from '../../types';
+import { makePick, makeSeason } from '../../test/factories';
 
 // PlayerList rows navigate via useNavigate, so render inside a Router. A tiny
 // location probe lets us assert where a row click sends the user.
@@ -24,43 +24,31 @@ const render = (ui: ReactElement) =>
 
 const mockPicks = [
   {
-    pick: {
+    pick: makePick({
       playerId: 'p1',
       playerName: 'Patrick Mahomes',
       position: 'QB',
-      round: 1,
       overallPick: 10,
-      teamId: 'KC',
-      seasons: [
-        {
-          year: 2018,
-          gamesPlayed: 16,
-          teamGames: 16,
-          snapShare: 0.98,
-          retained: true,
-        },
-      ],
-    } as DraftPick,
+      seasons: [makeSeason({ year: 2018, teamGames: 16, snapShare: 0.98 })],
+    }),
     draftYear: 2017,
   },
   {
-    pick: {
+    pick: makePick({
       playerId: 'p2',
       playerName: 'Backup QB',
       position: 'QB',
       round: 7,
       overallPick: 245,
-      teamId: 'KC',
       seasons: [
-        {
+        makeSeason({
           year: 2018,
           gamesPlayed: 0,
           teamGames: 16,
           snapShare: 0,
-          retained: true,
-        },
+        }),
       ],
-    } as DraftPick,
+    }),
     draftYear: 2018,
   },
 ];
@@ -127,31 +115,23 @@ describe('PlayerList', () => {
   it('marks departed players with their current team, drafting-team role, and a Departed chip', () => {
     const departedPicks = [
       {
-        pick: {
+        pick: makePick({
           playerId: 'p3',
           playerName: 'Traded Away',
           position: 'WR',
           round: 2,
           overallPick: 40,
-          teamId: 'KC',
           seasons: [
-            {
-              year: 2022,
-              gamesPlayed: 16,
-              teamGames: 17,
-              snapShare: 0.7,
-              retained: true,
-            },
-            {
+            makeSeason({ year: 2022, snapShare: 0.7 }),
+            makeSeason({
               year: 2023,
               gamesPlayed: 17,
-              teamGames: 17,
               snapShare: 0.8,
               retained: false,
               currentTeam: 'NYG',
-            },
+            }),
           ],
-        } as DraftPick,
+        }),
         draftYear: 2022,
       },
     ];
@@ -168,45 +148,27 @@ describe('PlayerList', () => {
   });
 
   it('renders every pick when brandByDraftingTeam is set', () => {
+    const halfTimeSeason = () =>
+      makeSeason({ year: 2020, teamGames: 16, snapShare: 0.5 });
     const crossConference = [
       {
-        pick: {
+        pick: makePick({
           playerId: 'buf-1',
           playerName: 'Buf Player',
           position: 'WR',
-          round: 1,
-          overallPick: 1,
           teamId: 'BUF',
-          seasons: [
-            {
-              year: 2020,
-              gamesPlayed: 16,
-              teamGames: 16,
-              snapShare: 0.5,
-              retained: true,
-            },
-          ],
-        } as DraftPick,
+          seasons: [halfTimeSeason()],
+        }),
         draftYear: 2020,
       },
       {
-        pick: {
+        pick: makePick({
           playerId: 'kc-2',
           playerName: 'KC Player',
           position: 'CB',
-          round: 1,
           overallPick: 2,
-          teamId: 'KC',
-          seasons: [
-            {
-              year: 2020,
-              gamesPlayed: 16,
-              teamGames: 16,
-              snapShare: 0.5,
-              retained: true,
-            },
-          ],
-        } as DraftPick,
+          seasons: [halfTimeSeason()],
+        }),
         draftYear: 2020,
       },
     ];

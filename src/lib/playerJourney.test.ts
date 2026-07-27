@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { DraftPick, Season } from '../types';
+import { makePick, makeSeason } from '../test/factories';
 import {
   getLatestSeason,
   isDeparted,
@@ -12,32 +13,19 @@ import {
   collapseTrailingFaRun,
 } from './playerJourney';
 
-function season(year: number, opts: Partial<Season> = {}): Season {
-  return {
-    year,
-    gamesPlayed: 16,
-    teamGames: 17,
-    snapShare: 0.7,
-    retained: true,
-    ...opts,
-  };
-}
+const season = (year: number, opts: Partial<Season> = {}): Season =>
+  makeSeason({ year, snapShare: 0.7, ...opts });
 
-function pick(
+const pick = (
   seasons: Season[],
   overrides: Partial<DraftPick> = {},
-): DraftPick {
-  return {
-    playerId: 'p1',
+): DraftPick =>
+  makePick({
     playerName: 'Test Player',
     position: 'WR',
-    round: 1,
-    overallPick: 1,
-    teamId: 'KC',
     seasons,
     ...overrides,
-  };
-}
+  });
 
 describe('getLatestSeason', () => {
   it('returns the season with the highest year', () => {

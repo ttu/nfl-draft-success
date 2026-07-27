@@ -4,24 +4,17 @@ import {
   isDraftPickRetainedLatest,
   isDraftPickRetainedForRoster,
 } from './draftPickLatestSeason';
+import { makePick, makeSeason } from '../test/factories';
 
-function pickWithSeasons(seasons: Array<{ year: number; retained: boolean }>) {
-  return {
+const pickWithSeasons = (seasons: Array<{ year: number; retained: boolean }>) =>
+  makePick({
     playerId: 'x',
     playerName: 'X',
     position: 'QB',
-    round: 1,
-    overallPick: 1,
-    teamId: 'KC',
-    seasons: seasons.map((s) => ({
-      year: s.year,
-      gamesPlayed: 1,
-      teamGames: 17,
-      snapShare: 0.5,
-      retained: s.retained,
-    })),
-  };
-}
+    seasons: seasons.map(({ year, retained }) =>
+      makeSeason({ year, gamesPlayed: 1, snapShare: 0.5, retained }),
+    ),
+  });
 
 describe('draftPickLatestSeason', () => {
   it('getLatestSeasonForPick returns highest year', () => {

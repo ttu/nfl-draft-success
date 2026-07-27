@@ -1,18 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { getUnitBreakdown, getPositionBreakdown } from './pickBreakdowns';
 import type { DraftPick } from '../types';
+import { makePick } from '../test/factories';
 
-function pick(position: string, overallPick = 1): DraftPick {
-  return {
+const pick = (position: string, overallPick = 1): DraftPick =>
+  makePick({
     playerId: `p-${position}-${overallPick}`,
-    playerName: `Player ${overallPick}`,
     position,
-    round: 1,
     overallPick,
     teamId: 'BUF',
-    seasons: [],
-  };
-}
+  });
 
 describe('getUnitBreakdown', () => {
   it('always returns the three units in offense/defense/special-teams order', () => {

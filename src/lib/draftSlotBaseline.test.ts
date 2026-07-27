@@ -8,6 +8,7 @@ import {
 } from './draftSlotBaseline';
 import { getPlayerDraftScore } from './getPlayerRole';
 import type { DraftPick, Season } from '../types';
+import { makePick, makeSeason } from '../test/factories';
 
 /** Sample a true expectation curve at every pick, `perPick` times over. */
 function samplePicks(
@@ -128,28 +129,17 @@ describe('expectedScore', () => {
   });
 });
 
-function season(overrides: Partial<Season> = {}): Season {
-  return {
-    year: 2019,
-    gamesPlayed: 16,
-    teamGames: 16,
-    snapShare: 0.9,
-    retained: true,
-    ...overrides,
-  };
-}
+const season = (overrides: Partial<Season> = {}): Season =>
+  makeSeason({ year: 2019, teamGames: 16, ...overrides });
 
-function pick(overallPick: number, seasons: Season[]): DraftPick {
-  return {
-    playerId: `p${overallPick}`,
+const pick = (overallPick: number, seasons: Season[]): DraftPick =>
+  makePick({
     playerName: `Player ${overallPick}`,
     position: 'WR',
     round: Math.ceil(overallPick / 32),
     overallPick,
-    teamId: 'KC',
     seasons,
-  };
-}
+  });
 
 describe('expectedScoreForPick (shipped curve)', () => {
   it('expects earlier picks to score higher than later picks', () => {

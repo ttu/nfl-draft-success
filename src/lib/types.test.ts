@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import type { DraftPick, Season } from '../types';
 
+// These spell out object literals on purpose: the literal *is* the assertion.
+// Building them with `src/test/factories` would only prove the factory
+// type-checks, not that the shape it stands in for still does.
+
 describe('DraftPick type', () => {
   it('has required string playerId', () => {
     const pick: DraftPick = {

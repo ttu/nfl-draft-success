@@ -5,19 +5,13 @@ import {
   shouldHidePositionYearBanner,
 } from './pickSort';
 import type { DraftPick } from '../types';
+import { makePick, makeSeason } from '../test/factories';
 
 const pick = (
   overallPick: number,
   seasons: DraftPick['seasons'] = [],
-): DraftPick => ({
-  playerId: `p${overallPick}`,
-  playerName: 'X',
-  position: 'WR',
-  round: 1,
-  overallPick,
-  teamId: 'KC',
-  seasons,
-});
+): DraftPick =>
+  makePick({ playerName: 'X', position: 'WR', overallPick, seasons });
 
 describe('sortPicksByOverall', () => {
   it('sorts ascending by overall pick', () => {
@@ -42,15 +36,7 @@ describe('allPicksAwaitingSeasonData', () => {
     expect(
       allPicksAwaitingSeasonData([
         pick(1),
-        pick(2, [
-          {
-            year: 2023,
-            gamesPlayed: 1,
-            teamGames: 17,
-            snapShare: 0.1,
-            retained: true,
-          },
-        ]),
+        pick(2, [makeSeason({ gamesPlayed: 1, snapShare: 0.1 })]),
       ]),
     ).toBe(false);
   });

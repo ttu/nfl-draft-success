@@ -3,46 +3,42 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { YearDraftView } from './YearDraftView';
 import type { DraftClass } from '../../../types';
+import { makeDraftClass, makePick, makeSeason } from '../../../test/factories';
 
-const draftClass: DraftClass = {
+const draftClass: DraftClass = makeDraftClass({
   year: 2020,
   picks: [
-    {
+    makePick({
       playerId: 'joe-burrow',
       playerName: 'Joe Burrow',
       position: 'QB',
-      round: 1,
-      overallPick: 1,
       teamId: 'CIN',
       seasons: [
-        {
+        makeSeason({
           year: 2020,
           gamesPlayed: 10,
           teamGames: 16,
           snapShare: 0.95,
-          retained: true,
-        },
+        }),
       ],
-    },
-    {
+    }),
+    makePick({
       playerId: 'chase-young',
       playerName: 'Chase Young',
       position: 'DE',
-      round: 1,
       overallPick: 2,
       teamId: 'WAS',
       seasons: [
-        {
+        makeSeason({
           year: 2020,
           gamesPlayed: 15,
           teamGames: 16,
           snapShare: 0.8,
-          retained: true,
-        },
+        }),
       ],
-    },
+    }),
   ],
-};
+});
 
 describe('YearDraftView', () => {
   it('renders the year headline and picks in draft order', () => {

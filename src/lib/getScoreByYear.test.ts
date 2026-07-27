@@ -2,38 +2,34 @@ import { describe, it, expect } from 'vitest';
 import { getScoreByYear } from './getScoreByYear';
 import { getDraftClassMetrics } from './getDraftClassMetrics';
 import type { DraftClass } from '../types';
+import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
-const scoredPick = (year: number, snapShare: number): DraftClass => ({
-  year,
-  picks: [
-    {
-      playerId: `p-${year}`,
-      playerName: `Pick ${year}`,
-      position: 'WR',
-      round: 2,
-      overallPick: 40,
-      teamId: 'KC',
-      seasons: [
-        { year, gamesPlayed: 16, teamGames: 17, snapShare, retained: true },
-      ],
-    },
-  ],
-});
+const scoredPick = (year: number, snapShare: number): DraftClass =>
+  makeDraftClass({
+    year,
+    picks: [
+      makePick({
+        playerId: `p-${year}`,
+        playerName: `Pick ${year}`,
+        position: 'WR',
+        round: 2,
+        overallPick: 40,
+        seasons: [makeSeason({ year, snapShare })],
+      }),
+    ],
+  });
 
-const emptyClass = (year: number): DraftClass => ({
-  year,
-  picks: [
-    {
-      playerId: `rook-${year}`,
-      playerName: 'Rookie',
-      position: 'QB',
-      round: 1,
-      overallPick: 1,
-      teamId: 'KC',
-      seasons: [],
-    },
-  ],
-});
+const emptyClass = (year: number): DraftClass =>
+  makeDraftClass({
+    year,
+    picks: [
+      makePick({
+        playerId: `rook-${year}`,
+        playerName: 'Rookie',
+        position: 'QB',
+      }),
+    ],
+  });
 
 describe('getScoreByYear', () => {
   it('returns one entry per class, ascending by year', () => {
@@ -66,35 +62,27 @@ describe('getScoreByYear', () => {
   });
 
   it('forwards the draftingTeamOnly option', () => {
-    const dc: DraftClass = {
+    const dc = makeDraftClass({
       year: 2021,
       picks: [
-        {
+        makePick({
           playerId: 'mixed',
           playerName: 'Mixed',
           position: 'WR',
           round: 5,
           overallPick: 150,
-          teamId: 'KC',
           seasons: [
-            {
+            makeSeason({
               year: 2021,
               gamesPlayed: 2,
-              teamGames: 17,
               snapShare: 0.05,
               retained: false,
-            },
-            {
-              year: 2022,
-              gamesPlayed: 16,
-              teamGames: 17,
-              snapShare: 0.9,
-              retained: true,
-            },
+            }),
+            makeSeason({ year: 2022 }),
           ],
-        },
+        }),
       ],
-    };
+    });
     const career = getScoreByYear([dc], 'KC')[0].score;
     const draftingOnly = getScoreByYear([dc], 'KC', {
       draftingTeamOnly: true,

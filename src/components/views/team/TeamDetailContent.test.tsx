@@ -5,32 +5,25 @@ import { TeamDetailContent } from './TeamDetailContent';
 import type { TeamDetailContentProps } from './TeamDetailContent';
 import type { DraftClass } from '../../../types';
 import { DEFAULT_ROLE_FILTER } from '../../../lib/roleFilter';
+import {
+  makeDraftClass,
+  makePick as buildPick,
+  makeSeason,
+} from '../../../test/factories';
 
-function makePick(overallPick: number, teamId: string, position = 'WR') {
-  return {
-    playerId: `p-${overallPick}`,
-    playerName: `Player ${overallPick}`,
+const makePick = (overallPick: number, teamId: string, position = 'WR') =>
+  buildPick({
     position,
-    round: 1,
     overallPick,
     teamId,
-    seasons: [
-      {
-        year: 2021,
-        gamesPlayed: 16,
-        teamGames: 17,
-        snapShare: 0.9,
-        retained: true,
-      },
-    ],
-  };
-}
+    seasons: [makeSeason({ year: 2021 })],
+  });
 
 const TEAM = 'KC';
 
 const draftClasses: DraftClass[] = [
-  { year: 2021, picks: [makePick(10, TEAM)] },
-  { year: 2022, picks: [makePick(20, TEAM)] },
+  makeDraftClass({ year: 2021, picks: [makePick(10, TEAM)] }),
+  makeDraftClass({ year: 2022, picks: [makePick(20, TEAM)] }),
 ];
 
 function renderView(overrides: Partial<TeamDetailContentProps> = {}) {
@@ -109,7 +102,7 @@ describe('TeamDetailContent class cards', () => {
 
 describe('TeamDetailContent side-rail breakdowns', () => {
   const sideRailClasses: DraftClass[] = [
-    {
+    makeDraftClass({
       year: 2021,
       picks: [
         makePick(1, TEAM, 'WR'),
@@ -118,7 +111,7 @@ describe('TeamDetailContent side-rail breakdowns', () => {
         makePick(4, TEAM, 'P'),
         makePick(5, 'SF', 'WR'), // another team — must be excluded
       ],
-    },
+    }),
   ];
 
   it('renders the "Where the picks went" unit split for team picks only', () => {

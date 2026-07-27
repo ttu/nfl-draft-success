@@ -2,40 +2,29 @@ import { describe, it, expect } from 'vitest';
 import { deriveBaselinesFromClasses, percentile } from './deriveBaselines';
 import { getPositionBaseline, BASELINE_FLOOR } from './positionBaseline';
 import type { DraftClass, DraftPick, Season } from '../types';
+import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
-function season(over: Partial<Season> = {}): Season {
-  return {
-    year: 2023,
-    gamesPlayed: 17,
-    teamGames: 17,
-    snapShare: 0.6,
-    retained: true,
-    ...over,
-  };
-}
+/** A full 17-game season at 60% snaps — comfortably above the availability bar. */
+const season = (over: Partial<Season> = {}): Season =>
+  makeSeason({ gamesPlayed: 17, snapShare: 0.6, ...over });
 
 /** One pick carrying `count` identical qualifying seasons at `snapShare`. */
-function pickWithSeasons(
+const pickWithSeasons = (
   position: string,
   count: number,
   over: Partial<Season> = {},
-): DraftPick {
-  return {
+): DraftPick =>
+  makePick({
     playerId: `${position}-1`,
     playerName: `${position} Player`,
     position,
-    round: 1,
-    overallPick: 1,
-    teamId: 'KC',
     seasons: Array.from({ length: count }, (_, i) =>
       season({ year: 2000 + i, ...over }),
     ),
-  };
-}
+  });
 
-function draftClass(picks: DraftPick[]): DraftClass {
-  return { year: 2020, picks };
-}
+const draftClass = (picks: DraftPick[]): DraftClass =>
+  makeDraftClass({ year: 2020, picks });
 
 describe('percentile', () => {
   it('interpolates linearly between neighbouring samples', () => {

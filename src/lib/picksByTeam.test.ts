@@ -1,21 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import type { DraftClass, DraftPick } from '../types';
+import { makeDraftClass, makePick } from '../test/factories';
 import { getPicksByTeam, getTeamPicks } from './picksByTeam';
 
-const pick = (playerId: string, teamId: string): DraftPick => ({
-  playerId,
-  playerName: playerId,
-  position: 'WR',
-  round: 1,
-  overallPick: 1,
-  teamId,
-  seasons: [],
-});
+const pick = (playerId: string, teamId: string): DraftPick =>
+  makePick({ playerId, playerName: playerId, position: 'WR', teamId });
 
-const draftClass = (year: number, picks: DraftPick[]): DraftClass => ({
-  year,
-  picks,
-});
+const draftClass = (year: number, picks: DraftPick[]): DraftClass =>
+  makeDraftClass({ year, picks });
 
 describe('getPicksByTeam', () => {
   it('groups a class by drafting team, preserving pick order', () => {

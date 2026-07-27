@@ -1,26 +1,26 @@
 import { describe, it, expect } from 'vitest';
 import { getPositionCohort, avgLoad } from './getPositionCohort';
 import type { DraftClass, DraftPick } from '../types';
+import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
-const pick = (id: string, position: string, loads: number[]): DraftPick => ({
-  playerId: id,
-  playerName: id.toUpperCase(),
-  position,
-  round: 2,
-  overallPick: 40,
-  teamId: 'KC',
-  seasons: loads.map((cumulativeSnapShare, i) => ({
-    year: 2021 + i,
-    gamesPlayed: 16,
-    teamGames: 17,
-    snapShare: cumulativeSnapShare,
-    cumulativeSnapShare,
-    retained: true,
-  })),
-});
+const pick = (id: string, position: string, loads: number[]): DraftPick =>
+  makePick({
+    playerId: id,
+    playerName: id.toUpperCase(),
+    position,
+    round: 2,
+    overallPick: 40,
+    seasons: loads.map((cumulativeSnapShare, i) =>
+      makeSeason({
+        year: 2021 + i,
+        snapShare: cumulativeSnapShare,
+        cumulativeSnapShare,
+      }),
+    ),
+  });
 
 const classes = (year: number, picks: DraftPick[]): DraftClass[] => [
-  { year, picks },
+  makeDraftClass({ year, picks }),
 ];
 
 describe('avgLoad', () => {
@@ -33,23 +33,14 @@ describe('avgLoad', () => {
   });
 
   it('falls back to snapShare when cumulativeSnapShare is absent', () => {
-    const p: DraftPick = {
+    const p = makePick({
       playerId: 'a',
       playerName: 'A',
       position: 'WR',
       round: 2,
       overallPick: 40,
-      teamId: 'KC',
-      seasons: [
-        {
-          year: 2021,
-          gamesPlayed: 16,
-          teamGames: 17,
-          snapShare: 0.5,
-          retained: true,
-        },
-      ],
-    };
+      seasons: [makeSeason({ year: 2021, snapShare: 0.5 })],
+    });
     expect(avgLoad(p)).toBeCloseTo(0.5);
   });
 });

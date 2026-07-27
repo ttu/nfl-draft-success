@@ -3,36 +3,32 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { PositionDraftView } from './PositionDraftView';
 import type { DraftClass } from '../../../types';
+import { makeDraftClass, makePick } from '../../../test/factories';
 
 const classes: DraftClass[] = [
-  {
+  makeDraftClass({
     year: 2020,
     picks: [
-      {
+      makePick({
         playerId: 'a',
         playerName: 'Alpha',
         position: 'TE',
-        round: 1,
-        overallPick: 1,
         teamId: 'CIN',
-        seasons: [],
-      },
+      }),
     ],
-  },
-  {
+  }),
+  makeDraftClass({
     year: 2021,
     picks: [
-      {
+      makePick({
         playerId: 'b',
         playerName: 'Beta',
         position: 'TE',
         round: 2,
         overallPick: 40,
-        teamId: 'KC',
-        seasons: [],
-      },
+      }),
     ],
-  },
+  }),
 ];
 
 describe('PositionDraftView', () => {

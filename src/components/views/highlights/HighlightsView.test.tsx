@@ -4,19 +4,20 @@ import { MemoryRouter } from 'react-router-dom';
 import { HighlightsView } from './HighlightsView';
 import type { LeagueHighlights } from '../../../lib/getLeagueHighlights';
 import type { DraftPick } from '../../../types';
+import { makePick, makeTeam } from '../../../test/factories';
 
-function samplePick(over: Partial<DraftPick>): DraftPick {
-  return {
+const samplePick = (over: Partial<DraftPick>): DraftPick =>
+  makePick({
     playerId: 'p1',
     playerName: 'Sam Steal',
     position: 'WR',
     round: 5,
     overallPick: 150,
     teamId: 'DET',
-    seasons: [],
     ...over,
-  };
-}
+  });
+
+const lions = makeTeam({ id: 'DET', name: 'Detroit Lions' });
 
 function renderView(highlights: LeagueHighlights) {
   return render(
@@ -41,7 +42,7 @@ describe('HighlightsView', () => {
             round: 5,
             overallPick: 150,
           }),
-          team: { id: 'DET', name: 'Detroit Lions', abbreviation: 'DET' },
+          team: lions,
           draftYear: 2022,
           score: 88,
           overSlot: 52.1,
@@ -53,7 +54,7 @@ describe('HighlightsView', () => {
             round: 4,
             overallPick: 120,
           }),
-          team: { id: 'DET', name: 'Detroit Lions', abbreviation: 'DET' },
+          team: lions,
           draftYear: 2021,
           score: 80,
           overSlot: 37.4,
@@ -68,7 +69,7 @@ describe('HighlightsView', () => {
             overallPick: 3,
             teamId: 'CHI',
           }),
-          team: { id: 'CHI', name: 'Chicago Bears', abbreviation: 'CHI' },
+          team: makeTeam({ id: 'CHI', name: 'Chicago Bears' }),
           draftYear: 2021,
           score: 12,
           overSlot: -71.3,
@@ -76,7 +77,7 @@ describe('HighlightsView', () => {
       ],
       mostCoreStarters: {
         teamId: 'PHI',
-        team: { id: 'PHI', name: 'Philadelphia Eagles', abbreviation: 'PHI' },
+        team: makeTeam({ id: 'PHI', name: 'Philadelphia Eagles' }),
         count: 9,
       },
     };
@@ -111,7 +112,7 @@ describe('HighlightsView', () => {
           round: 5,
           overallPick: 150 + i,
         }),
-        team: { id: 'DET', name: 'Detroit Lions', abbreviation: 'DET' },
+        team: lions,
         draftYear: 2022,
         score: 90 - i,
         overSlot: 50 - i,
@@ -138,7 +139,7 @@ describe('HighlightsView', () => {
       steals: [
         {
           pick: samplePick({ playerName: 'Only Steal' }),
-          team: { id: 'DET', name: 'Detroit Lions', abbreviation: 'DET' },
+          team: lions,
           draftYear: 2022,
           score: 88,
           overSlot: 52.1,

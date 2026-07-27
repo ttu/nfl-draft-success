@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { DraftClass } from './types';
+import { makeDraftClass, makePick, makeSeason } from './test/factories';
 
 /**
  * A single class inside the default range (2021+), enough for the rankings and
@@ -9,29 +10,26 @@ import type { DraftClass } from './types';
  * requests, not about the numbers derived from them.
  */
 const CLASSES: DraftClass[] = [
-  {
+  makeDraftClass({
     year: 2021,
     picks: [
-      {
+      makePick({
         playerId: 'greg-rousseau',
         playerName: 'Greg Rousseau',
         position: 'DE',
-        round: 1,
         overallPick: 30,
         teamId: 'BUF',
         seasons: [
-          {
+          makeSeason({
             year: 2021,
             gamesPlayed: 17,
-            teamGames: 17,
             snapShare: 0.6,
             cumulativeSnapShare: 0.6,
-            retained: true,
-          },
+          }),
         ],
-      },
+      }),
     ],
-  },
+  }),
 ];
 
 const loadDataForYears = vi.fn(async (years: number[]) =>

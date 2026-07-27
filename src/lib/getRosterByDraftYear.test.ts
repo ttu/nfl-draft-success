@@ -2,27 +2,19 @@ import { describe, it, expect } from 'vitest';
 import { DEFAULT_ROLE_FILTER } from './roleFilter';
 import { getRosterByDraftYear } from './getRosterByDraftYear';
 import type { DraftClass, DraftPick } from '../types';
+import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
-function basePick(
+const basePick = (
   overrides: Partial<DraftPick> & Pick<DraftPick, 'overallPick' | 'teamId'>,
-): DraftPick {
-  return {
-    playerId: `p${overrides.overallPick}`,
-    playerName: 'Player',
-    position: 'WR',
-    round: 1,
-    seasons: overrides.seasons ?? [],
-    ...overrides,
-  };
-}
+): DraftPick => makePick({ position: 'WR', ...overrides });
 
 describe('getRosterByDraftYear', () => {
   it('returns empty when selectedTeam is null', () => {
     const draftClasses: DraftClass[] = [
-      {
+      makeDraftClass({
         year: 2021,
         picks: [basePick({ overallPick: 1, teamId: 'BUF' })],
-      },
+      }),
     ];
     expect(
       getRosterByDraftYear(draftClasses, null, true, DEFAULT_ROLE_FILTER, true),
@@ -31,17 +23,17 @@ describe('getRosterByDraftYear', () => {
 
   it('groups picks by year and sorts by overall pick within a year', () => {
     const draftClasses: DraftClass[] = [
-      {
+      makeDraftClass({
         year: 2021,
         picks: [
           basePick({ overallPick: 10, teamId: 'BUF' }),
           basePick({ overallPick: 5, teamId: 'BUF' }),
         ],
-      },
-      {
+      }),
+      makeDraftClass({
         year: 2022,
         picks: [basePick({ overallPick: 1, teamId: 'BUF' })],
-      },
+      }),
     ];
     const result = getRosterByDraftYear(
       draftClasses,
@@ -57,8 +49,14 @@ describe('getRosterByDraftYear', () => {
 
   it('omits years with no picks for the team', () => {
     const draftClasses: DraftClass[] = [
-      { year: 2020, picks: [basePick({ overallPick: 1, teamId: 'KC' })] },
-      { year: 2021, picks: [basePick({ overallPick: 2, teamId: 'BUF' })] },
+      makeDraftClass({
+        year: 2020,
+        picks: [basePick({ overallPick: 1, teamId: 'KC' })],
+      }),
+      makeDraftClass({
+        year: 2021,
+        picks: [basePick({ overallPick: 2, teamId: 'BUF' })],
+      }),
     ];
     const result = getRosterByDraftYear(
       draftClasses,
@@ -76,20 +74,19 @@ describe('getRosterByDraftYear', () => {
       overallPick: 1,
       teamId: 'BUF',
       seasons: [
-        {
+        makeSeason({
           year: 2024,
           gamesPlayed: 1,
-          teamGames: 17,
           snapShare: 0.5,
           retained: false,
-        },
+        }),
       ],
     });
     const draftClasses: DraftClass[] = [
-      {
+      makeDraftClass({
         year: 2021,
         picks: [departed, basePick({ overallPick: 2, teamId: 'BUF' })],
-      },
+      }),
     ];
     const kept = getRosterByDraftYear(
       draftClasses,

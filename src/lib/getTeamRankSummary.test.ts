@@ -2,32 +2,51 @@ import { describe, it, expect } from 'vitest';
 import { getTeamRankSummary } from './getTeamRankSummary';
 import { getRollingDraftScore } from './getRollingDraftScore';
 import type { DraftClass, Team } from '../types';
+import {
+  makeDraftClass,
+  makePick,
+  makeSeason,
+  makeTeam,
+} from '../test/factories';
 
 const teamsStub: Team[] = [
-  { id: 'A', name: 'Team A', abbreviation: 'A' },
-  { id: 'B', name: 'Team B', abbreviation: 'B' },
-  { id: 'C', name: 'Team C', abbreviation: 'C' },
+  makeTeam({ id: 'A' }),
+  makeTeam({ id: 'B' }),
+  makeTeam({ id: 'C' }),
 ];
 
 /** Minimal draft classes so every team gets a score (may be 0). */
 function minimalDraftClasses(): DraftClass[] {
   return [
-    {
+    makeDraftClass({
       year: 2021,
-      picks: teamsStub.flatMap((t) => [
-        {
+      picks: teamsStub.map((t) =>
+        makePick({
           playerId: `${t.id}-1`,
           playerName: 'P',
           position: 'QB',
-          round: 1,
-          overallPick: 1,
           teamId: t.id,
-          seasons: [],
-        },
-      ]),
-    },
+        }),
+      ),
+    }),
   ];
 }
+
+/** A single scored pick for a team in a season. */
+const rankedPick = (
+  playerId: string,
+  teamId: string,
+  overallPick: number,
+  snapShare: number,
+) =>
+  makePick({
+    playerId,
+    playerName: playerId.toUpperCase(),
+    position: 'QB',
+    overallPick,
+    teamId,
+    seasons: [makeSeason({ year: 2021, gamesPlayed: 17, snapShare })],
+  });
 
 describe('getTeamRankSummary', () => {
   it('returns null when draftClasses is empty', () => {
@@ -38,62 +57,14 @@ describe('getTeamRankSummary', () => {
 
   it('sorts by score descending and assigns competition ranks (ties share rank)', () => {
     const dc: DraftClass[] = [
-      {
+      makeDraftClass({
         year: 2021,
         picks: [
-          {
-            playerId: 'p1',
-            playerName: 'P1',
-            position: 'QB',
-            round: 1,
-            overallPick: 1,
-            teamId: 'A',
-            seasons: [
-              {
-                year: 2021,
-                gamesPlayed: 17,
-                teamGames: 17,
-                snapShare: 0.95,
-                retained: true,
-              },
-            ],
-          },
-          {
-            playerId: 'p2',
-            playerName: 'P2',
-            position: 'QB',
-            round: 1,
-            overallPick: 2,
-            teamId: 'B',
-            seasons: [
-              {
-                year: 2021,
-                gamesPlayed: 17,
-                teamGames: 17,
-                snapShare: 0.95,
-                retained: true,
-              },
-            ],
-          },
-          {
-            playerId: 'p3',
-            playerName: 'P3',
-            position: 'QB',
-            round: 1,
-            overallPick: 3,
-            teamId: 'C',
-            seasons: [
-              {
-                year: 2021,
-                gamesPlayed: 17,
-                teamGames: 17,
-                snapShare: 0.1,
-                retained: true,
-              },
-            ],
-          },
+          rankedPick('p1', 'A', 1, 0.95),
+          rankedPick('p2', 'B', 2, 0.95),
+          rankedPick('p3', 'C', 3, 0.1),
         ],
-      },
+      }),
     ];
 
     const twoTeams: Team[] = teamsStub.slice(0, 2);
@@ -121,10 +92,10 @@ describe('getTeamRankSummary', () => {
 
   it('carries each team’s over-slot (skill) score onto its row', () => {
     const dc: DraftClass[] = [
-      {
+      makeDraftClass({
         year: 2021,
         picks: [
-          {
+          makePick({
             playerId: 'steal',
             playerName: 'Late steal',
             position: 'QB',
@@ -132,17 +103,11 @@ describe('getTeamRankSummary', () => {
             overallPick: 230,
             teamId: 'A',
             seasons: [
-              {
-                year: 2021,
-                gamesPlayed: 17,
-                teamGames: 17,
-                snapShare: 0.95,
-                retained: true,
-              },
+              makeSeason({ year: 2021, gamesPlayed: 17, snapShare: 0.95 }),
             ],
-          },
+          }),
         ],
-      },
+      }),
     ];
     const opts = { draftingTeamOnly: true } as const;
     const summary = getTeamRankSummary(dc, [teamsStub[0]], 'A', opts);
@@ -170,24 +135,19 @@ describe('getTeamRankSummary', () => {
 });
 
 /** A single scored pick for a team in a season. */
-function scoredPick(
+const scoredPick = (
   teamId: string,
   id: string,
   snapShare: number,
   year: number,
-) {
-  return {
+) =>
+  makePick({
     playerId: id,
     playerName: id,
     position: 'QB',
-    round: 1,
-    overallPick: 1,
     teamId,
-    seasons: [
-      { year, gamesPlayed: 17, teamGames: 17, snapShare, retained: true },
-    ],
-  };
-}
+    seasons: [makeSeason({ year, gamesPlayed: 17, snapShare })],
+  });
 
 describe('getTeamRankSummary extended per-team stats', () => {
   const twoTeams: Team[] = teamsStub.slice(0, 2); // A, B
@@ -200,20 +160,20 @@ describe('getTeamRankSummary extended per-team stats', () => {
    */
   function flipDraftClasses(): DraftClass[] {
     return [
-      {
+      makeDraftClass({
         year: 2021,
         picks: [
           scoredPick('A', 'a21', 0.3, 2021),
           scoredPick('B', 'b21', 0.95, 2021),
         ],
-      },
-      {
+      }),
+      makeDraftClass({
         year: 2022,
         picks: [
           scoredPick('A', 'a22', 0.95, 2022),
           scoredPick('B', 'b22', 0.3, 2022),
         ],
-      },
+      }),
     ];
   }
 

@@ -2,15 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { getLeagueHighlights } from './getLeagueHighlights';
 import { expectedScoreForPick } from './draftSlotBaseline';
 import { BUST_EXCLUSIONS } from './bustExclusions';
-import type { DraftClass, DraftPick, Season, Team } from '../types';
+import type { DraftClass, DraftPick, Team } from '../types';
+import { makePick, makeSeason, makeTeam } from '../test/factories';
 
-const teams: Team[] = [
-  { id: 'A', name: 'Team A', abbreviation: 'A' },
-  { id: 'B', name: 'Team B', abbreviation: 'B' },
-];
+const teams: Team[] = [makeTeam({ id: 'A' }), makeTeam({ id: 'B' })];
 
-// Fixtures use the unknown position `ZZ` (baseline 1.0), so scores are not
-// position-adjusted here; that behaviour lives in snapShareForTier.test.ts.
+// Fixtures use the factory default position `ZZ` (baseline 1.0), so scores are
+// not position-adjusted here; that behaviour lives in snapShareForTier.test.ts.
 /** Single-season pick producing a deterministic 0–100 score. */
 function pick(
   overrides: Partial<DraftPick> & {
@@ -22,33 +20,24 @@ function pick(
   },
 ): DraftPick {
   const { snapShare, gamesPlayed = 16, ...rest } = overrides;
-  const season: Season = {
-    year: 2021,
-    gamesPlayed,
-    teamGames: 16,
-    snapShare,
-    retained: true,
-  };
-  return {
+  return makePick({
     playerId: `${rest.teamId}-${rest.overallPick}`,
     playerName: `Player ${rest.overallPick}`,
-    position: 'ZZ',
-    seasons: [season],
+    seasons: [
+      makeSeason({ year: 2021, gamesPlayed, teamGames: 16, snapShare }),
+    ],
     ...rest,
-  };
+  });
 }
 
 /** Pick with no season rows yet (awaiting NFL data). */
 function awaitingPick(teamId: string, overallPick: number): DraftPick {
-  return {
+  return makePick({
     playerId: `${teamId}-await-${overallPick}`,
     playerName: 'Await',
-    position: 'ZZ',
-    round: 1,
     overallPick,
     teamId,
-    seasons: [],
-  };
+  });
 }
 
 const opts = { draftingTeamOnly: false };

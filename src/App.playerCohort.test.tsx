@@ -2,76 +2,69 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { DraftClass } from './types';
+import { makeDraftClass, makePick, makeSeason } from './test/factories';
 
 // Master dataset spanning the full YEAR_MIN..YEAR_MAX range. Josh Allen's 2018
 // class sits BELOW the default range (2021+), so it is only ever returned when
 // all years are requested — mirroring the real app's "search all years" fallback
 // for an out-of-range player.
 const ALL_CLASSES: DraftClass[] = [
-  {
+  makeDraftClass({
     year: 2018,
     picks: [
-      {
+      makePick({
         playerId: 'josh-allen',
         playerName: 'Josh Allen',
         position: 'QB',
-        round: 1,
         overallPick: 7,
         teamId: 'BUF',
         seasons: [
-          {
+          makeSeason({
             year: 2018,
             gamesPlayed: 12,
             teamGames: 16,
             snapShare: 0.7,
             cumulativeSnapShare: 0.6,
-            retained: true,
-          },
+          }),
         ],
-      },
-      {
+      }),
+      makePick({
         playerId: 'sam-darnold',
         playerName: 'Sam Darnold',
         position: 'QB',
-        round: 1,
         overallPick: 3,
         teamId: 'NYJ',
         seasons: [
-          {
+          makeSeason({
             year: 2018,
             gamesPlayed: 13,
             teamGames: 16,
             snapShare: 0.5,
             cumulativeSnapShare: 0.3,
-            retained: true,
-          },
+          }),
         ],
-      },
+      }),
     ],
-  },
-  {
+  }),
+  makeDraftClass({
     year: 2021,
     picks: [
-      {
+      makePick({
         playerId: 'trevor-lawrence',
         playerName: 'Trevor Lawrence',
         position: 'QB',
-        round: 1,
-        overallPick: 1,
         teamId: 'JAX',
         seasons: [
-          {
+          makeSeason({
             year: 2021,
             gamesPlayed: 17,
-            teamGames: 17,
             snapShare: 0.95,
             cumulativeSnapShare: 0.9,
-            retained: true,
-          },
+          }),
         ],
-      },
+      }),
     ],
-  },
+  }),
 ];
 
 vi.mock('./lib/loadData', () => ({

@@ -1,39 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { getDraftClassSummary } from './getDraftClassSummary';
 import { getPlayerDraftScore } from './getPlayerRole';
-import type { DraftClass, DraftPick } from '../types';
+import type { DraftClass } from '../types';
+import {
+  makeNonContributorSeason,
+  makePick as pick,
+  makeSeason,
+} from '../test/factories';
 
-function pick(overrides: Partial<DraftPick>): DraftPick {
-  return {
-    playerId: 'p',
-    playerName: 'Player',
-    position: 'RB',
-    round: 1,
-    overallPick: 1,
-    teamId: 'KC',
-    seasons: [],
-    ...overrides,
-  };
-}
-
-const coreSeason = [
-  {
-    year: 2023,
-    gamesPlayed: 16,
-    teamGames: 17,
-    snapShare: 0.95,
-    retained: true,
-  },
-];
-const nonContribSeason = [
-  {
-    year: 2023,
-    gamesPlayed: 1,
-    teamGames: 17,
-    snapShare: 0.02,
-    retained: false,
-  },
-];
+const coreSeason = [makeSeason({ snapShare: 0.95 })];
+const nonContribSeason = [makeNonContributorSeason({ retained: false })];
 
 describe('getDraftClassSummary', () => {
   it('counts QBs and WRs across all rounds, including picks awaiting data', () => {
@@ -108,20 +84,12 @@ describe('getDraftClassSummary', () => {
           playerId: 'p1',
           position: 'WR',
           seasons: [
-            {
+            makeSeason({
               year: 2022,
               gamesPlayed: 2,
-              teamGames: 17,
               snapShare: 0.05,
-              retained: true,
-            },
-            {
-              year: 2024,
-              gamesPlayed: 16,
-              teamGames: 17,
-              snapShare: 0.9,
-              retained: false,
-            },
+            }),
+            makeSeason({ year: 2024, retained: false }),
           ],
         }),
       ],

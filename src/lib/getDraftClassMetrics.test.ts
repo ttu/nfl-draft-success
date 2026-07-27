@@ -1,58 +1,34 @@
 import { describe, it, expect } from 'vitest';
 import { getDraftClassMetrics } from './getDraftClassMetrics';
 import { getPlayerDraftScore } from './getPlayerRole';
-import type { DraftClass } from '../types';
+import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
 describe('getDraftClassMetrics', () => {
   it('reports draftScore as the mean per-pick draft score across scored picks (ignoring awaiting-data picks)', () => {
-    const draft: DraftClass = {
-      year: 2023,
+    const draft = makeDraftClass({
       picks: [
-        {
-          playerId: 'p1',
+        makePick({
           playerName: 'Starter',
           position: 'QB',
-          round: 1,
           overallPick: 5,
-          teamId: 'KC',
-          seasons: [
-            {
-              year: 2023,
-              gamesPlayed: 16,
-              teamGames: 17,
-              snapShare: 0.9,
-              retained: true,
-            },
-          ],
-        },
-        {
-          playerId: 'p2',
+          seasons: [makeSeason()],
+        }),
+        makePick({
           playerName: 'Depth',
           position: 'WR',
           round: 5,
           overallPick: 150,
-          teamId: 'KC',
-          seasons: [
-            {
-              year: 2023,
-              gamesPlayed: 4,
-              teamGames: 17,
-              snapShare: 0.2,
-              retained: true,
-            },
-          ],
-        },
-        {
+          seasons: [makeSeason({ gamesPlayed: 4, snapShare: 0.2 })],
+        }),
+        makePick({
           playerId: 'rook',
           playerName: 'Awaiting data',
           position: 'RB',
           round: 3,
           overallPick: 90,
-          teamId: 'KC',
-          seasons: [],
-        },
+        }),
       ],
-    };
+    });
 
     const scored = draft.picks.filter((p) => p.seasons.length > 0);
     const expected =
@@ -63,62 +39,32 @@ describe('getDraftClassMetrics', () => {
   });
 
   it('returns total picks, core starter count, contributor count, retention count, rates', () => {
-    const draft: DraftClass = {
-      year: 2023,
+    const draft = makeDraftClass({
       picks: [
-        {
-          playerId: 'p1',
+        makePick({
           playerName: 'Starter',
           position: 'QB',
-          round: 1,
           overallPick: 5,
-          teamId: 'KC',
-          seasons: [
-            {
-              year: 2023,
-              gamesPlayed: 16,
-              teamGames: 17,
-              snapShare: 0.95,
-              retained: true,
-            },
-          ],
-        },
-        {
-          playerId: 'p2',
+          seasons: [makeSeason({ snapShare: 0.95 })],
+        }),
+        makePick({
           playerName: 'Depth',
           position: 'WR',
           round: 5,
           overallPick: 150,
-          teamId: 'KC',
-          seasons: [
-            {
-              year: 2023,
-              gamesPlayed: 3,
-              teamGames: 17,
-              snapShare: 0.15,
-              retained: true,
-            },
-          ],
-        },
-        {
-          playerId: 'p3',
+          seasons: [makeSeason({ gamesPlayed: 3, snapShare: 0.15 })],
+        }),
+        makePick({
           playerName: 'Gone',
           position: 'CB',
           round: 7,
           overallPick: 220,
-          teamId: 'KC',
           seasons: [
-            {
-              year: 2023,
-              gamesPlayed: 2,
-              teamGames: 17,
-              snapShare: 0.05,
-              retained: false,
-            },
+            makeSeason({ gamesPlayed: 2, snapShare: 0.05, retained: false }),
           ],
-        },
+        }),
       ],
-    };
+    });
 
     const metrics = getDraftClassMetrics(draft, 'KC');
 
@@ -135,29 +81,17 @@ describe('getDraftClassMetrics', () => {
   });
 
   it('filters by teamId', () => {
-    const draft: DraftClass = {
-      year: 2023,
+    const draft = makeDraftClass({
       picks: [
-        {
-          playerId: 'p1',
-          playerName: 'A',
-          position: 'QB',
-          round: 1,
-          overallPick: 5,
-          teamId: 'KC',
-          seasons: [],
-        },
-        {
-          playerId: 'p2',
+        makePick({ playerName: 'A', position: 'QB', overallPick: 5 }),
+        makePick({
           playerName: 'B',
           position: 'WR',
-          round: 1,
           overallPick: 10,
           teamId: 'BUF',
-          seasons: [],
-        },
+        }),
       ],
-    };
+    });
 
     expect(getDraftClassMetrics(draft, 'KC').totalPicks).toBe(1);
     expect(getDraftClassMetrics(draft, 'KC').awaitingDataCount).toBe(1);
@@ -166,35 +100,21 @@ describe('getDraftClassMetrics', () => {
   });
 
   it('uses drafting-team-only seasons when draftingTeamOnly is true', () => {
-    const draft: DraftClass = {
+    const draft = makeDraftClass({
       year: 2022,
       picks: [
-        {
-          playerId: 'p1',
+        makePick({
           playerName: 'Blossomed elsewhere',
           position: 'WR',
           round: 3,
           overallPick: 80,
-          teamId: 'KC',
           seasons: [
-            {
-              year: 2022,
-              gamesPlayed: 2,
-              teamGames: 17,
-              snapShare: 0.05,
-              retained: true,
-            },
-            {
-              year: 2024,
-              gamesPlayed: 16,
-              teamGames: 17,
-              snapShare: 0.85,
-              retained: false,
-            },
+            makeSeason({ year: 2022, gamesPlayed: 2, snapShare: 0.05 }),
+            makeSeason({ year: 2024, snapShare: 0.85, retained: false }),
           ],
-        },
+        }),
       ],
-    };
+    });
 
     const career = getDraftClassMetrics(draft, 'KC');
     const draftingOnly = getDraftClassMetrics(draft, 'KC', {
@@ -207,8 +127,7 @@ describe('getDraftClassMetrics', () => {
   });
 
   it('handles zero picks', () => {
-    const draft: DraftClass = { year: 2023, picks: [] };
-    const metrics = getDraftClassMetrics(draft, 'KC');
+    const metrics = getDraftClassMetrics(makeDraftClass(), 'KC');
 
     expect(metrics.totalPicks).toBe(0);
     expect(metrics.awaitingDataCount).toBe(0);

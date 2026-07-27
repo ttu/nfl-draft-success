@@ -2,10 +2,16 @@ import { describe, it, expect } from 'vitest';
 import { getRollingDraftScore } from './getRollingDraftScore';
 import { expectedScoreForPick } from './draftSlotBaseline';
 import type { DraftClass } from '../types';
+import {
+  makeDepthSeason,
+  makeDraftClass,
+  makePick,
+  makeSeason,
+} from '../test/factories';
 
-// Fixtures use the unknown position `ZZ` (baseline 1.0) so these aggregation
-// tests are unaffected by position-adjusted snap scoring, which is covered in
-// snapShareForTier.test.ts and getSeasonScore.test.ts.
+// Fixtures use the factory default position `ZZ` (baseline 1.0) so these
+// aggregation tests are unaffected by position-adjusted snap scoring, which is
+// covered in snapShareForTier.test.ts and getSeasonScore.test.ts.
 //
 // Continuous per-season score used by the snap-based formula:
 // clamp(0.7·snapShare + 0.3·availability, 0, 1) × 100.
@@ -14,74 +20,42 @@ const seasonScore = (snap: number, gp: number, tg: number) =>
 const CORE_PICK = seasonScore(0.9, 16, 17); // ~91.2
 const DEPTH_PICK = seasonScore(0.15, 3, 17); // ~15.8
 
-const coreStarterPick = (year: number): DraftClass => ({
-  year,
-  picks: [
-    {
-      playerId: 'p1',
-      playerName: 'Starter',
-      position: 'ZZ',
-      round: 1,
-      overallPick: 5,
-      teamId: 'KC',
-      seasons: [
-        {
-          year,
-          gamesPlayed: 16,
-          teamGames: 17,
-          snapShare: 0.9,
-          retained: true,
-        },
-      ],
-    },
-  ],
-});
+const coreStarterPick = (year: number): DraftClass =>
+  makeDraftClass({
+    year,
+    picks: [
+      makePick({
+        playerName: 'Starter',
+        overallPick: 5,
+        seasons: [makeSeason({ year })],
+      }),
+    ],
+  });
 
-const nonRetainedCorePick = (year: number): DraftClass => ({
-  year,
-  picks: [
-    {
-      playerId: 'p3',
-      playerName: 'Left in FA',
-      position: 'ZZ',
-      round: 1,
-      overallPick: 8,
-      teamId: 'KC',
-      seasons: [
-        {
-          year,
-          gamesPlayed: 16,
-          teamGames: 17,
-          snapShare: 0.9,
-          retained: false,
-        },
-      ],
-    },
-  ],
-});
+const nonRetainedCorePick = (year: number): DraftClass =>
+  makeDraftClass({
+    year,
+    picks: [
+      makePick({
+        playerName: 'Left in FA',
+        overallPick: 8,
+        seasons: [makeSeason({ year, retained: false })],
+      }),
+    ],
+  });
 
-const depthPick = (year: number): DraftClass => ({
-  year,
-  picks: [
-    {
-      playerId: 'p2',
-      playerName: 'Depth',
-      position: 'ZZ',
-      round: 5,
-      overallPick: 150,
-      teamId: 'KC',
-      seasons: [
-        {
-          year,
-          gamesPlayed: 3,
-          teamGames: 17,
-          snapShare: 0.15,
-          retained: true,
-        },
-      ],
-    },
-  ],
-});
+const depthPick = (year: number): DraftClass =>
+  makeDraftClass({
+    year,
+    picks: [
+      makePick({
+        playerName: 'Depth',
+        round: 5,
+        overallPick: 150,
+        seasons: [makeDepthSeason({ year })],
+      }),
+    ],
+  });
 
 describe('getRollingDraftScore', () => {
   it('score = mean(per-pick snap score)', () => {
@@ -126,35 +100,25 @@ describe('getRollingDraftScore', () => {
     // Barely played elsewhere before becoming a star with the drafting team;
     // still on the roster in the latest season (retention 1). draftingTeamOnly
     // drops the low non-retained season, raising the pick score.
-    const draft: DraftClass = {
+    const draft = makeDraftClass({
       year: 2021,
       picks: [
-        {
-          playerId: 'p1',
+        makePick({
           playerName: 'Mixed tenure',
-          position: 'ZZ',
           round: 5,
           overallPick: 150,
-          teamId: 'KC',
           seasons: [
-            {
+            makeSeason({
               year: 2021,
               gamesPlayed: 2,
-              teamGames: 17,
               snapShare: 0.05,
               retained: false,
-            },
-            {
-              year: 2022,
-              gamesPlayed: 16,
-              teamGames: 17,
-              snapShare: 0.9,
-              retained: true,
-            },
+            }),
+            makeSeason({ year: 2022 }),
           ],
-        },
+        }),
       ],
-    };
+    });
 
     const career = getRollingDraftScore([draft], 'KC');
     const draftingOnly = getRollingDraftScore([draft], 'KC', {
@@ -185,20 +149,10 @@ describe('getRollingDraftScore', () => {
   it('ignores picks with no season rows for score and scoredPickCount', () => {
     const drafts: DraftClass[] = [
       coreStarterPick(2023),
-      {
+      makeDraftClass({
         year: 2026,
-        picks: [
-          {
-            playerId: 'rook',
-            playerName: 'Rookie',
-            position: 'ZZ',
-            round: 1,
-            overallPick: 1,
-            teamId: 'KC',
-            seasons: [],
-          },
-        ],
-      },
+        picks: [makePick({ playerId: 'rook', playerName: 'Rookie' })],
+      }),
     ];
     const result = getRollingDraftScore(drafts, 'KC');
     expect(result.totalPicks).toBe(2);
@@ -207,29 +161,27 @@ describe('getRollingDraftScore', () => {
   });
 
   it('counts picks with only non-retained seasons when draftingTeamOnly (weight can be zero)', () => {
-    const draft: DraftClass = {
+    const draft = makeDraftClass({
       year: 2021,
       picks: [
-        {
+        makePick({
           playerId: 'gone',
           playerName: 'Traded out',
-          position: 'ZZ',
           round: 4,
           overallPick: 134,
           teamId: 'MIN',
           seasons: [
-            {
+            makeSeason({
               year: 2021,
               gamesPlayed: 5,
-              teamGames: 17,
               snapShare: 0.1,
               retained: false,
               currentTeam: 'CAR',
-            },
+            }),
           ],
-        },
+        }),
       ],
-    };
+    });
     const result = getRollingDraftScore([draft], 'MIN', {
       draftingTeamOnly: true,
     });
