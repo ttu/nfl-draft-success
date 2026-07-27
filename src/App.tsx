@@ -91,7 +91,10 @@ import './App.css';
 
 import type { TeamRanking } from './lib/getRollingDraftScore';
 
-import { TeamRankingsView } from './components/views/team/TeamRankingsView';
+import {
+  TeamRankingsView,
+  RankingsBoot,
+} from './components/views/team/TeamRankingsView';
 import { Footer } from './components/layout/Footer';
 import type { RosterPick } from './components/views/team/TeamDetailContent';
 
@@ -1017,14 +1020,16 @@ function renderPlayerView(a: RenderMainArgs) {
  * load so the page has content immediately. League context only accompanies
  * the computed rankings — it is not part of the pre-generated payload.
  *
- * Null when neither source is ready, so the caller falls through to the next
- * view.
+ * Before either source is ready, renders the hero with placeholder figures
+ * rather than falling through to a spinner: the headline is this page's LCP
+ * element, so it belongs in React's first paint, not the re-render after the
+ * rankings land.
  */
 function renderTeamRankings(a: RenderMainArgs) {
   const rankings = a.loading
     ? a.defaultRankings?.rankings
     : a.teamRank?.rankings;
-  if (!rankings) return null;
+  if (!rankings) return <RankingsBoot yearCount={a.yearCount} />;
 
   return (
     <TeamRankingsView
