@@ -5,7 +5,10 @@ import { TeamLogo, Sparkline, Delta, teamColor } from '../../design/Primitives';
 import { buildTeamHref } from '../../../lib/teamHref';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
-import type { LeagueContext } from '../../../lib/getLeagueContext';
+import type {
+  LeagueContext,
+  LeagueRoleDistribution,
+} from '../../../lib/getLeagueContext';
 
 export interface TeamRankingsViewProps {
   rankings: TeamRanking[];
@@ -125,6 +128,7 @@ export function RankingsBoot({ yearCount }: { yearCount: number }) {
         yearWindow={{ from: 0, to: 0 }}
         placeholder
       />
+      <LeagueContextBand />
     </section>
   );
 }
@@ -273,72 +277,99 @@ function pct(share: number): number {
  * League baseline strip: average score, best-vs-worst spread, and a 3-segment
  * bar showing where every scored pick in the window ended up.
  */
-function LeagueContextBand({ context }: { context: LeagueContext }) {
-  const { avgScore, spread, roleDistribution: rd } = context;
-  const hasPicks = rd.total > 0;
+/**
+ * The three role buckets, in the order the bar and legend show them. Declared
+ * once so the loaded and loading states cannot drift apart.
+ */
+const ROLE_SPLIT = [
+  {
+    cls: 'core',
+    label: 'Core',
+    of: (rd: LeagueRoleDistribution) => rd.corePct,
+  },
+  {
+    cls: 'contrib',
+    label: 'Contributor',
+    of: (rd: LeagueRoleDistribution) => rd.contributorPct,
+  },
+  {
+    cls: 'non',
+    label: 'Non-contributor',
+    of: (rd: LeagueRoleDistribution) => rd.nonContributorPct,
+  },
+] as const;
+
+function LeagueContextBand({
+  context,
+}: {
+  /**
+   * Absent while the league figures are still being computed, which renders the
+   * band at full size with em dashes. Note that absent is not the same as
+   * present-but-empty: an empty window can honestly say it has no scored picks,
+   * whereas a loading one does not know that yet.
+   */
+  context?: LeagueContext;
+}) {
+  const rd = context?.roleDistribution;
+  const hasPicks = !!rd && rd.total > 0;
+  const loading = !context;
+
+  let spreadSub: string | undefined;
+  if (context?.spread) {
+    spreadSub = `${context.spread.topId} → ${context.spread.bottomId}`;
+  } else if (!loading) {
+    spreadSub = 'need 2+ teams';
+  }
+
+  let barLabel: string;
+  if (hasPicks) {
+    barLabel = `Role distribution: ${ROLE_SPLIT.map(
+      (s) => `${pct(s.of(rd))}% ${s.label.toLowerCase()}`,
+    ).join(', ')}`;
+  } else if (loading) {
+    barLabel = 'Role distribution loading';
+  } else {
+    barLabel = 'No scored picks in this window yet';
+  }
 
   return (
     <section className="league-context" aria-label="League context">
       <div className="league-context__stats">
         <StatBlock
           label="League average"
-          value={hasPicks ? avgScore.toFixed(1) : '—'}
+          value={hasPicks ? context.avgScore.toFixed(1) : '—'}
           sub="draft success score"
         />
         <StatBlock
           label="Score spread"
-          value={spread ? spread.gap.toFixed(1) : '—'}
-          sub={
-            spread ? `${spread.topId} → ${spread.bottomId}` : 'need 2+ teams'
-          }
+          value={context?.spread ? context.spread.gap.toFixed(1) : '—'}
+          sub={spreadSub}
         />
       </div>
 
       <div className="league-context__dist">
-        <div
-          className="league-context__bar"
-          role="img"
-          aria-label={
-            hasPicks
-              ? `Role distribution: ${pct(rd.corePct)}% core starters, ${pct(
-                  rd.contributorPct,
-                )}% contributors, ${pct(rd.nonContributorPct)}% non-contributors`
-              : 'No scored picks in this window yet'
-          }
-        >
-          {hasPicks && (
-            <>
+        <div className="league-context__bar" role="img" aria-label={barLabel}>
+          {hasPicks &&
+            ROLE_SPLIT.map((s) => (
               <span
-                className="league-context__seg league-context__seg--core"
-                style={{ width: `${rd.corePct * 100}%` }}
+                key={s.cls}
+                className={`league-context__seg league-context__seg--${s.cls}`}
+                style={{ width: `${s.of(rd) * 100}%` }}
               />
-              <span
-                className="league-context__seg league-context__seg--contrib"
-                style={{ width: `${rd.contributorPct * 100}%` }}
-              />
-              <span
-                className="league-context__seg league-context__seg--non"
-                style={{ width: `${rd.nonContributorPct * 100}%` }}
-              />
-            </>
-          )}
+            ))}
         </div>
-        {hasPicks ? (
+        {hasPicks || loading ? (
           <>
             <div className="league-context__legend">
-              <span>
-                <i className="league-context__dot league-context__dot--core" />
-                Core <b className="tnum">{pct(rd.corePct)}%</b>
-              </span>
-              <span>
-                <i className="league-context__dot league-context__dot--contrib" />
-                Contributor <b className="tnum">{pct(rd.contributorPct)}%</b>
-              </span>
-              <span>
-                <i className="league-context__dot league-context__dot--non" />
-                Non-contributor{' '}
-                <b className="tnum">{pct(rd.nonContributorPct)}%</b>
-              </span>
+              {ROLE_SPLIT.map((s) => (
+                <span key={s.cls}>
+                  <i
+                    className={`league-context__dot league-context__dot--${s.cls}`}
+                  />
+                  {s.label}{' '}
+                  <b className="tnum">{rd ? `${pct(s.of(rd))}%` : '—'}</b>
+                </span>
+              ))}
             </div>
             <div className="league-context__caption">
               Where every drafted pick in this window ended up.
