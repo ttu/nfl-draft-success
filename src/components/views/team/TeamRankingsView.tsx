@@ -19,6 +19,8 @@ export interface TeamRankingsViewProps {
   leagueContext?: LeagueContext;
   onTeamSelect: (teamId: string) => void;
   onBack?: () => void;
+  /** Opens the methodology sheet, where the score's limits are spelled out. */
+  onShowInfo?: () => void;
 }
 
 /** Two-digit season suffix, e.g. 2021 → "'21". */
@@ -43,6 +45,7 @@ function TeamRankingsViewImpl({
   endYear,
   leagueContext,
   onTeamSelect,
+  onShowInfo,
 }: TeamRankingsViewProps) {
   const top = rankings[0] as ExtendedRanking | undefined;
   const bottom = rankings[rankings.length - 1] as ExtendedRanking | undefined;
@@ -104,6 +107,23 @@ function TeamRankingsViewImpl({
           starter's workload a player carries at his own position — 65% for Core
           Starter, 35% for Significant Contributor, 10% for Depth. Players are
           credited to the team that drafted them.
+        </div>
+        {/* The table is where the ranking claim gets made, so the two things it
+            can't see have to be reachable from here — not buried a menu away. */}
+        <div className="rankings-foot__text" data-testid="rankings-caveat">
+          Score spreads each pick across its rookie contract, so a pick traded
+          or released early carries the seasons its team never got. It can't see
+          what a trade brought back, and it judges recent classes more gently —
+          they've had less time to fail.{' '}
+          {onShowInfo && (
+            <button
+              type="button"
+              className="rankings-foot__link"
+              onClick={onShowInfo}
+            >
+              How the score is built
+            </button>
+          )}
         </div>
       </div>
     </section>

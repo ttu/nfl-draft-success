@@ -15,6 +15,7 @@ import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
+import { scoredWindowYears } from '../../../lib/rookieWindow';
 import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
 import { activateOnKey } from '../../../lib/activateOnKey';
@@ -64,6 +65,21 @@ function PlayerDetailViewImpl({
   );
   const roleCls = roleDesignClass(role);
   const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
+
+  // Rookie-window years with no season row at all. Only in drafting-team mode:
+  // that is the only mode whose denominator is the window, so in career mode a
+  // gap row would claim a penalty the score never applied.
+  const windowYears = draftingTeamOnly ? scoredWindowYears(pick) : [];
+  const countedSeasons = pick.seasons.filter((s) => s.retained).length;
+  const gapYears = windowYears.filter(
+    (y) => !pick.seasons.some((s) => s.year === y),
+  );
+  // One ordered list so gaps sit in their chronological place rather than in a
+  // block at the end.
+  const careerRows = [
+    ...sortedSeasons.map((s) => ({ year: s.year, season: s })),
+    ...gapYears.map((year) => ({ year, season: null })),
+  ].sort((a, b) => a.year - b.year);
   const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
 
   const { members: classmateRows, rank: positionRank } = useMemo(
@@ -172,7 +188,35 @@ function PlayerDetailViewImpl({
             )}
           </div>
           <div className="mono" style={{ fontSize: 11, color: 'var(--ink-3)' }}>
-            {sortedSeasons.length} season{sortedSeasons.length === 1 ? '' : 's'}
+            {windowYears.length > 0 ? (
+              // Spells out both halves of the division. Without it a reader
+              // adds up the visible Score column, gets a different number from
+              // the headline, and concludes the page is broken — more than half
+              // of all picks show at least one season that does not count.
+              <span data-testid="rookie-window-note">
+                {countedSeasons} of {sortedSeasons.length} season
+                {sortedSeasons.length === 1 ? '' : 's'} counted · divided by a{' '}
+                {windowYears.length}-season rookie window
+                {countedSeasons < sortedSeasons.length && (
+                  // The ✕ in the Score column carries the same meaning, but it
+                  // only explains itself through a title tooltip — which needs a
+                  // second of motionless hover on a 7px target, and so is not
+                  // where a key belongs. Say it in the open.
+                  <>
+                    {' · '}
+                    <span className="season-uncounted-key" aria-hidden="true">
+                      ✕
+                    </span>{' '}
+                    played elsewhere, not counted
+                  </>
+                )}
+              </span>
+            ) : (
+              <>
+                {sortedSeasons.length} season
+                {sortedSeasons.length === 1 ? '' : 's'}
+              </>
+            )}
           </div>
         </div>
         {sortedSeasons.length === 0 ? (
@@ -209,15 +253,20 @@ function PlayerDetailViewImpl({
                 </tr>
               </thead>
               <tbody>
-                {sortedSeasons.map((s) => (
-                  <SeasonRow
-                    key={s.year}
-                    s={s}
-                    pickTeamId={pick.teamId}
-                    position={pick.position}
-                    color={color}
-                  />
-                ))}
+                {careerRows.map(({ year, season }) =>
+                  season ? (
+                    <SeasonRow
+                      key={year}
+                      s={season}
+                      pickTeamId={pick.teamId}
+                      position={pick.position}
+                      color={color}
+                      counts={!draftingTeamOnly || season.retained}
+                    />
+                  ) : (
+                    <WindowGapRow key={year} year={year} />
+                  ),
+                )}
               </tbody>
             </table>
           </div>
@@ -388,11 +437,19 @@ function SeasonRow({
   pickTeamId,
   position,
   color,
+  counts = true,
 }: {
   s: Season;
   pickTeamId: string;
   position: string;
   color: string;
+  /**
+   * Whether this season feeds the pick's score. False for seasons played
+   * elsewhere while the drafting-team view is active — the row stays, because
+   * where a player went is worth seeing, but its Score must not read as part
+   * of the total above it.
+   */
+  counts?: boolean;
 }) {
   const team = s.retained ? pickTeamId : (s.currentTeam ?? 'FA');
   const seasonRole = classifyRole(
@@ -405,7 +462,10 @@ function SeasonRow({
   const loadPct = (s.cumulativeSnapShare ?? s.snapShare) * 100;
 
   return (
-    <tr>
+    <tr
+      className={counts ? undefined : 'season-row--uncounted'}
+      data-testid={counts ? undefined : `season-uncounted-${s.year}`}
+    >
       <td>
         <span className="player-career__year">{s.year}</span>
         <SeasonEndingInjuryMarker season={s} />
@@ -432,10 +492,44 @@ function SeasonRow({
       </td>
       <td className="right mono tnum player-career__score">
         {Math.round(getSeasonScore(s, position))}
+        {!counts && (
+          <abbr
+            className="season-uncounted-mark"
+            aria-label="Not counted — season played for another team"
+            title="Not counted — this season was played for another team"
+          >
+            ✕
+          </abbr>
+        )}
       </td>
       <td className="right mono tnum hide-mobile">
         {s.injuryReportWeeks ?? 0}
       </td>
+    </tr>
+  );
+}
+
+/**
+ * A rookie-window year the drafting team got nothing from.
+ *
+ * The score divides by the rookie-contract window, not by seasons played, so
+ * these years are in the denominator with a zero on top. They carry no season
+ * row of their own — the player was released, or out of the league — and
+ * without them the table shows (say) one season of 98 above a headline of 20,
+ * which reads as a bug rather than as the point being made.
+ */
+function WindowGapRow({ year }: { year: number }) {
+  return (
+    <tr
+      className="season-row season-row--gap"
+      data-testid={`window-gap-${year}`}
+    >
+      <td className="mono tnum">{year}</td>
+      <td className="mono" colSpan={5}>
+        Not with the team
+      </td>
+      <td className="right mono tnum">0</td>
+      <td className="right mono tnum hide-mobile">—</td>
     </tr>
   );
 }

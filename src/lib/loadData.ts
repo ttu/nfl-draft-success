@@ -5,6 +5,7 @@ import type {
   LaggedDraftRankingsData,
 } from '../types';
 import type { TeamSuccessData } from './teamSuccess';
+import { stampDraftYear } from './draftClass';
 
 /**
  * Completed and in-flight loads, keyed by data file.
@@ -66,8 +67,13 @@ async function fetchJson<T>(file: string, label: string): Promise<T> {
  * Load draft data for a given year from public/data/draft-{year}.json.
  */
 export async function loadData(year: string): Promise<DraftClass> {
-  return cached(`draft-${year}`, () =>
-    fetchJson<DraftClass>(`draft-${year}.json`, `draft data for ${year}`),
+  return cached(`draft-${year}`, async () =>
+    stampDraftYear(
+      await fetchJson<DraftClass>(
+        `draft-${year}.json`,
+        `draft data for ${year}`,
+      ),
+    ),
   );
 }
 

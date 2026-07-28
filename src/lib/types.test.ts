@@ -14,6 +14,7 @@ describe('DraftPick type', () => {
       round: 1,
       overallPick: 5,
       teamId: 'KC',
+      draftYear: 2023,
       seasons: [],
     };
     expect(typeof pick.playerId).toBe('string');
@@ -27,6 +28,7 @@ describe('DraftPick type', () => {
       round: 1,
       overallPick: 5,
       teamId: 'KC',
+      draftYear: 2023,
       seasons: [
         {
           year: 2023,

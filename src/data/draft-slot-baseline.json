@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-25",
+  "generatedAt": "2026-07-27",
   "method": "local-linear smoothing of pick score over ln(overallPick), bandwidth 0.25, forced non-increasing; classes ≥ 3 yrs old",
   "matureFrom": 2018,
   "matureTo": 2023,
@@ -7,99 +7,99 @@
   "knots": [
     {
       "overallPick": 1,
-      "expected": 90.8
+      "expected": 87.66
     },
     {
       "overallPick": 2,
-      "expected": 83.33
+      "expected": 77.9
     },
     {
       "overallPick": 3,
-      "expected": 83.33
+      "expected": 77.9
     },
     {
       "overallPick": 4,
-      "expected": 83.33
+      "expected": 77.9
     },
     {
       "overallPick": 5,
-      "expected": 83.33
+      "expected": 77.9
     },
     {
       "overallPick": 6,
-      "expected": 83.33
+      "expected": 77.9
     },
     {
       "overallPick": 8,
-      "expected": 83.33
+      "expected": 77.9
     },
     {
       "overallPick": 10,
-      "expected": 83.33
+      "expected": 74.07
     },
     {
       "overallPick": 13,
-      "expected": 80.02
+      "expected": 70.97
     },
     {
       "overallPick": 16,
-      "expected": 77.96
+      "expected": 68.93
     },
     {
       "overallPick": 20,
-      "expected": 76.1
+      "expected": 66.86
     },
     {
       "overallPick": 25,
-      "expected": 73.72
+      "expected": 65.19
     },
     {
       "overallPick": 32,
-      "expected": 71.15
+      "expected": 63.98
     },
     {
       "overallPick": 40,
-      "expected": 68.64
+      "expected": 62.85
     },
     {
       "overallPick": 50,
-      "expected": 65.26
-    },
-    {
-      "overallPick": 64,
       "expected": 60.55
     },
     {
+      "overallPick": 64,
+      "expected": 56.43
+    },
+    {
       "overallPick": 80,
-      "expected": 55.05
+      "expected": 50.7
     },
     {
       "overallPick": 100,
-      "expected": 48.42
+      "expected": 43.55
     },
     {
       "overallPick": 125,
-      "expected": 41.5
+      "expected": 36.38
     },
     {
       "overallPick": 150,
-      "expected": 35.9
+      "expected": 30.93
     },
     {
       "overallPick": 180,
-      "expected": 29.93
+      "expected": 25.43
     },
     {
       "overallPick": 210,
-      "expected": 24.46
+      "expected": 20.52
     },
     {
       "overallPick": 240,
-      "expected": 19.74
+      "expected": 16.19
     },
     {
       "overallPick": 262,
-      "expected": 16.89
+      "expected": 13.46
     }
   ]
 }

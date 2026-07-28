@@ -6,6 +6,7 @@ import {
 } from './getPlayerRole';
 import type { DraftPick } from '../types';
 import { makeDepthSeason, makePick, makeSeason } from '../test/factories';
+import { LATEST_SEASON } from './rookieWindow';
 
 /** The receiver these role tests classify, minus his career. */
 const receiver = (seasons: DraftPick['seasons']): DraftPick =>
@@ -158,14 +159,98 @@ describe('getPlayerDraftScore', () => {
       }),
       makeSeason({ year: 2022 }),
     ]);
-    const full = getPlayerDraftScore(pick);
-    const draftingOnly = getPlayerDraftScore(pick, { draftingTeamOnly: true });
-    expect(draftingOnly).toBeGreaterThan(full);
-    expect(draftingOnly).toBeCloseTo(seasonScore(0.9, 16, 17));
+    // Career mode averages both seasons played.
+    expect(getPlayerDraftScore(pick)).toBeCloseTo(
+      (seasonScore(0.1, 2, 17) + seasonScore(0.9, 16, 17)) / 2,
+    );
+    // Drafting-team mode drops the non-retained season from the numerator and
+    // divides what is left by the rookie window. The two modes are no longer on
+    // a common scale — a windowed score and a plain mean are not comparable —
+    // so this asserts values rather than an ordering between them.
+    expect(getPlayerDraftScore(pick, { draftingTeamOnly: true })).toBeCloseTo(
+      seasonScore(0.9, 16, 17) / 5,
+    );
   });
 
   it('returns 0 for picks with no season rows', () => {
     expect(getPlayerDraftScore(pickWith([]))).toBe(0);
+  });
+
+  describe('rookie-contract window (draftingTeamOnly)', () => {
+    const opts = { draftingTeamOnly: true } as const;
+    const perfect = (year: number) =>
+      makeSeason({ year, gamesPlayed: 17, snapShare: 1 });
+    /** A pick of `round` drafted `age` seasons before the end of the data. */
+    const agedPick = (
+      round: number,
+      age: number,
+      seasons: DraftPick['seasons'],
+    ) =>
+      makePick({
+        round,
+        overallPick: round === 1 ? 5 : 150,
+        draftYear: LATEST_SEASON - age + 1,
+        seasons,
+      });
+
+    it('divides a starter traded away mid-window by the full window — the Darnold case', () => {
+      // Three perfect seasons, then gone: 300 / 5, not a mean of 100.
+      const pick = agedPick(1, 5, [
+        perfect(2021),
+        perfect(2022),
+        perfect(2023),
+      ]);
+      expect(getPlayerDraftScore(pick, opts)).toBeCloseTo(60);
+    });
+
+    it('does not penalise a late-round pick who plays out his four-year deal', () => {
+      // The regression guard: 400 / 4 = 100, not 400 / 5 = 80.
+      const pick = agedPick(3, 5, [
+        perfect(2021),
+        perfect(2022),
+        perfect(2023),
+        perfect(2024),
+      ]);
+      expect(getPlayerDraftScore(pick, opts)).toBeCloseTo(100);
+    });
+
+    it('does not penalise a class whose window has not elapsed yet', () => {
+      // Still on the roster one season in — nothing has been missed.
+      const pick = agedPick(1, 1, [perfect(LATEST_SEASON)]);
+      expect(getPlayerDraftScore(pick, opts)).toBeCloseTo(100);
+    });
+
+    it('charges a departed pick the full window rather than elapsed seasons', () => {
+      // Gone after one season, two seasons ago. The rest of the window is known
+      // to be zero, so it is charged now — and the score stops drifting.
+      const gone = agedPick(1, 3, [perfect(LATEST_SEASON - 2)]);
+      const longGone = agedPick(1, 6, [perfect(LATEST_SEASON - 5)]);
+      expect(getPlayerDraftScore(gone, opts)).toBeCloseTo(20);
+      expect(getPlayerDraftScore(gone, opts)).toBeCloseTo(
+        getPlayerDraftScore(longGone, opts),
+      );
+    });
+
+    it('caps a long tenure at the pick’s own seasonal mean', () => {
+      const seasons = Array.from({ length: 7 }, (_, i) => perfect(2018 + i));
+      expect(getPlayerDraftScore(agedPick(1, 8, seasons), opts)).toBeCloseTo(
+        100,
+      );
+    });
+
+    it('scores a pick with no retained seasons as 0', () => {
+      const pick = agedPick(1, 5, [
+        makeSeason({ year: 2021, retained: false }),
+      ]);
+      expect(getPlayerDraftScore(pick, opts)).toBe(0);
+    });
+
+    it('leaves the career path on a plain mean over seasons played', () => {
+      // draftingTeamOnly false means the numerator spans other teams, so the
+      // drafting team's window is not a meaningful denominator.
+      const pick = agedPick(1, 5, [perfect(2021), perfect(2022)]);
+      expect(getPlayerDraftScore(pick)).toBeCloseTo(100);
+    });
   });
 });
 

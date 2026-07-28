@@ -17,6 +17,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { DraftClass, DraftSlotBaselineData } from '../src/types';
+import { stampDraftYear } from '../src/lib/draftClass';
 import {
   DRAFT_SLOT_MATURITY_LAG,
   deriveDraftSlotCurve,
@@ -37,7 +38,9 @@ function main() {
   }
 
   const classes: DraftClass[] = files.map((file) =>
-    JSON.parse(fs.readFileSync(path.join(dataDir, file), 'utf-8')),
+    stampDraftYear(
+      JSON.parse(fs.readFileSync(path.join(dataDir, file), 'utf-8')),
+    ),
   );
 
   const { curve, pointCount, matureFrom, matureTo } =

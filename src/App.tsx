@@ -1040,6 +1040,7 @@ function renderTeamRankings(a: RenderMainArgs) {
       leagueContext={a.loading ? undefined : a.leagueContext}
       onTeamSelect={a.handleTeamSelect}
       onBack={a.selectedTeam ? a.handleShowRankings : undefined}
+      onShowInfo={a.onShowMethodology}
     />
   );
 }

@@ -13,6 +13,10 @@ import type { DraftClass, DraftPick, Season, Team } from '../types';
  * - Seasons default to a full 17-game team season, the shape most fixtures want.
  * - A pick defaults to no season rows — the "awaiting data" case — because
  *   season data is the thing tests vary most.
+ * - `draftYear` matches the default season and class year, so a pick, its
+ *   seasons and its class agree unless a test says otherwise. Scoring divides by
+ *   the rookie-contract window measured from this year (see `rookieWindow`), so
+ *   fixtures that care about tenure set it explicitly.
  */
 
 /** A 16-of-17-game season at 90% snap share: classifies as `core_starter`. */
@@ -61,19 +65,35 @@ export function makePick(overrides: Partial<DraftPick> = {}): DraftPick {
     round: 1,
     overallPick,
     teamId: 'KC',
+    draftYear: 2023,
     seasons: [],
     ...overrides,
   };
 }
 
+/**
+ * A draft class whose picks all carry its year.
+ *
+ * In production `loadData` stamps every pick with the year of the file it came
+ * from, so `pick.draftYear === class.year` always holds. The factory reproduces
+ * that rather than leaving each pick on its own default, which would let a
+ * fixture pair a 2021 class with 2023 picks — a shape the app can never load,
+ * and one that now silently changes scores, since the rookie-contract window is
+ * measured from `draftYear`.
+ *
+ * Stamps in place, exactly as `stampDraftYear` does, so a fixture that holds a
+ * reference to a pick it passed in still sees the same object.
+ */
 export function makeDraftClass(
   overrides: Partial<DraftClass> = {},
 ): DraftClass {
-  return {
+  const cls = {
     year: 2023,
     picks: [],
     ...overrides,
   };
+  for (const pick of cls.picks) pick.draftYear = cls.year;
+  return cls;
 }
 
 export function makeTeam(overrides: Partial<Team> = {}): Team {

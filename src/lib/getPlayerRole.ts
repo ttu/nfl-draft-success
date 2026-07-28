@@ -3,6 +3,7 @@ import { classifyRole } from './classifyRole';
 import { getSeasonScore } from './getSeasonScore';
 import { ROLE_SCORE_WEIGHTS } from './roleWeights';
 import { snapShareForRoleTier } from './snapShareForTier';
+import { scoredSeasonCount } from './rookieWindow';
 
 const ROLE_ORDER: Role[] = [
   'non_contributor',
@@ -172,7 +173,19 @@ function computePlayerDraftScore(
   for (const s of seasons) {
     sum += getSeasonScore(s, pick.position);
   }
-  return sum / seasons.length;
+
+  // Divide by the rookie-contract window, not by seasons played, so the score
+  // measures volume rather than rate: a season the drafting team did not get
+  // scores zero instead of vanishing from the average. Without this a starter
+  // traded after three years and one who stayed six average identically.
+  //
+  // Career mode keeps the plain mean — its numerator spans every team the
+  // player suited up for, so the *drafting* team's window would be a
+  // denominator for seasons it never had a claim on.
+  const denominator = draftingTeamOnly
+    ? scoredSeasonCount(pick, seasons.length)
+    : seasons.length;
+  return sum / denominator;
 }
 
 /**

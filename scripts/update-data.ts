@@ -640,6 +640,22 @@ async function main() {
   fs.writeFileSync(metaPath, JSON.stringify({ lastUpdated }, null, 2) + '\n');
   console.log(`  Wrote data stamp ${metaPath}`);
 
+  // Scoring sizes each pick's rookie-contract window against the newest season
+  // in the dataset, so it must know MAX_SEASON without waiting on a fetch. This
+  // lands in src/data/ rather than public/data/ deliberately: it is imported at
+  // build time, and an async load would race the first score.
+  const seasonWindowPath = path.join(
+    process.cwd(),
+    'src',
+    'data',
+    'season-window.json',
+  );
+  fs.writeFileSync(
+    seasonWindowPath,
+    JSON.stringify({ latestSeason: MAX_SEASON }, null, 2) + '\n',
+  );
+  console.log(`  Wrote season window ${seasonWindowPath}`);
+
   console.log('Done.');
 }
 

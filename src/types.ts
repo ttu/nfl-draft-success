@@ -41,6 +41,12 @@ export interface DraftPick {
   round: number;
   overallPick: number;
   teamId: string;
+  /**
+   * Year the pick was made. Not present in `draft-{year}.json` — stamped from
+   * the enclosing class by `stampDraftYear` at parse time, so scoring can size
+   * a pick's rookie-contract window without reaching for the class.
+   */
+  draftYear: number;
   espnId?: string;
   /** NFL headshot URL from nflverse players */
   headshotUrl?: string;

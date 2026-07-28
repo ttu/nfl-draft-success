@@ -97,9 +97,9 @@ describe('getRollingDraftScore', () => {
   });
 
   it('uses drafting-team-only when option is true', () => {
-    // Barely played elsewhere before becoming a star with the drafting team;
-    // still on the roster in the latest season (retention 1). draftingTeamOnly
-    // drops the low non-retained season, raising the pick score.
+    // Barely played elsewhere before becoming a star with the drafting team.
+    // draftingTeamOnly drops the low non-retained season from the numerator,
+    // and divides what remains by the rookie window rather than by two.
     const draft = makeDraftClass({
       year: 2021,
       picks: [
@@ -127,10 +127,14 @@ describe('getRollingDraftScore', () => {
 
     expect(career.scoredPickCount).toBe(1);
     expect(draftingOnly.scoredPickCount).toBe(1);
-    // Both retain (latest season retained), so retention doesn't differ; the
-    // score gap is entirely from excluding the low non-drafting-team season.
-    expect(draftingOnly.score).toBeGreaterThan(career.score);
-    expect(draftingOnly.score).toBeCloseTo(CORE_PICK);
+    // Career mode averages both seasons played, wherever they happened.
+    expect(career.score).toBeCloseTo(
+      (seasonScore(0.05, 2, 17) + CORE_PICK) / 2,
+    );
+    // Drafting-team mode keeps only the retained season and divides by this
+    // pick's four-year rookie window. A windowed score and a plain mean are not
+    // on a common scale, so this asserts values, not an ordering between them.
+    expect(draftingOnly.score).toBeCloseTo(CORE_PICK / 4);
   });
 
   it('aggregates across multiple draft years', () => {

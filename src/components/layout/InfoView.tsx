@@ -106,11 +106,27 @@ function MethodologyColumn() {
         }}
       >
         Three honest measures: <b>snap share</b> (how often a drafted player is
-        on the field), <b>games played</b> (availability), and <b>retention</b>{' '}
-        (whether the player is still on the roster). Snap share and games played
-        combine into the draft success score — impact on a 0–100 scale.
-        Retention is reported alongside it as its own number, so keeping your
-        draftees stays a separate, visible signal rather than being folded in.
+        on the field), <b>games played</b> (availability), and{' '}
+        <b>how long the drafting team kept him</b>. Snap share and games played
+        combine into a per-season score on a 0–100 scale. That score is then
+        spread across the pick's <b>rookie contract</b> — five years for a
+        first-rounder, four for everyone else — so a season the team never got
+        counts as a zero rather than quietly vanishing from an average. A pick
+        you traded away is a pick that stopped paying.
+      </p>
+      <p
+        style={{
+          fontSize: 14,
+          lineHeight: 1.6,
+          color: 'var(--ink-2)',
+          maxWidth: 640,
+          marginTop: 12,
+        }}
+      >
+        <b>Retention</b> — the share of a team's picks still on its roster — is
+        still reported as its own number alongside the score, not folded into
+        it. The two answer different questions: the score asks how much a team
+        got out of its picks, retention asks how many are still there.
       </p>
 
       <div className="info-role-head">
@@ -204,12 +220,40 @@ function MethodologyColumn() {
       <h2 className="info-section-title" style={{ marginTop: 32 }}>
         The score, formally
       </h2>
-      <pre className="info-formula">{`snapShare_adj = min( snapShare / positionBaseline, 1 )   (K/P/LS: unadjusted)
-score(pick)   = clamp( w_s · snapShare_adj + w_a · availability, 0, 1 ) × 100
+      {/* Lines are kept under ~62 characters: the block is fixed-width mono and
+          wraps beyond that, which breaks an expression across two lines and
+          makes the formula harder to read than no formula at all. */}
+      <pre className="info-formula">{`adj           = min( snapShare / positionBaseline, 1 )
+score(season) = clamp( w_s·adj + w_a·avail, 0, 1 ) × 100
+weights       = w_s 0.7, w_a 0.3
+                (K, P and LS use raw snaps — no adjustment)
+
+window(pick)  = 5 if round 1 else 4
+elapsed       = latest season − draft year + 1
+departed      = no longer on the drafting team
+tracked       = window if departed else min( elapsed, window )
+
+score(pick)   = sum( score(season) for drafting-team seasons )
+                ÷ max( count of those seasons, tracked )
 score(class)  = mean( score(pick) for pick in class )
 score(team)   = mean( score(pick) for pick in range )
-retention     = retained_players / picks_in_range   (reported separately)
-weights       = w_s 0.7, w_a 0.3   (snap share is the heavier signal)`}</pre>
+retention     = retained_players / picks_in_range`}</pre>
+      <p
+        style={{
+          fontSize: 13,
+          lineHeight: 1.7,
+          color: 'var(--ink-2)',
+          margin: '12px 0 0',
+          maxWidth: 640,
+        }}
+      >
+        The two clamps are what keep it fair. A pick still on the roster is only
+        measured against seasons that have actually happened, so a recent class
+        isn't punished for a future it hasn't had yet. A pick who has already
+        left is charged the whole window immediately — the rest of it is known
+        to be zero, and waiting would both flatter recent busts and leave a
+        settled result drifting downward for years.
+      </p>
 
       <h2 className="info-section-title" style={{ marginTop: 32 }}>
         Over slot: skill vs. capital
@@ -238,7 +282,11 @@ weights       = w_s 0.7, w_a 0.3   (snap share is the heavier signal)`}</pre>
 overSlot(pick) = score(pick) − expected(pick)
 overSlot(team) = mean( overSlot(pick) for pick in range )`}</pre>
 
-      <h2 className="info-section-title" style={{ marginTop: 32 }}>
+      <h2
+        className="info-section-title"
+        style={{ marginTop: 32 }}
+        id="info-caveats"
+      >
         Caveats
       </h2>
       <ul
@@ -252,6 +300,22 @@ overSlot(team) = mean( overSlot(pick) for pick in range )`}</pre>
         <li>
           Players are credited to the team that <em>drafted</em> them — trades
           don't change accounting.
+        </li>
+        <li>
+          <b>What a trade brought back is invisible.</b> Miami turned Minkah
+          Fitzpatrick into a first-round pick two years after drafting him; this
+          scores it as a failed pick, because the years it measures are the ones
+          he spent in Miami. Reading the return would need contract and
+          transaction data this site doesn't carry.
+        </li>
+        <li>
+          <b>Recent classes are judged more gently</b>, by construction. A pick
+          still on the roster is only measured against seasons that have
+          happened, so a 2024 class hasn't had time to fail the way a 2019 one
+          has. This is honest — we don't know yet — but it means comparing a
+          very recent class against an old one flatters the recent one. Picks
+          who have already left are charged their full window regardless of
+          class, so the effect is limited to players still on the roster.
         </li>
         <li>
           Quarterbacks sitting behind a healthy starter score low on snap share.

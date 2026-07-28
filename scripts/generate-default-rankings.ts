@@ -11,6 +11,7 @@ import * as path from 'path';
 import { getRollingDraftScore } from '../src/lib/getRollingDraftScore';
 import { TEAMS } from '../src/data/teams';
 import type { DraftClass } from '../src/types';
+import { stampDraftYear } from '../src/lib/draftClass';
 
 const DEFAULT_FROM = 2021;
 const DEFAULT_TO = 2025;
@@ -24,7 +25,7 @@ function main() {
 
   const draftClasses: DraftClass[] = years.map((year) => {
     const filePath = path.join(dataDir, `draft-${year}.json`);
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    return stampDraftYear(JSON.parse(fs.readFileSync(filePath, 'utf-8')));
   });
 
   const teamScores = TEAMS.map((t) => {

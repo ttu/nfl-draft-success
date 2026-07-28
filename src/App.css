@@ -1129,6 +1129,21 @@ button {
   display: flex;
   gap: 14px;
 }
+/* Inline link inside the caveat sentence: reads as prose, behaves as a button
+   (it opens the methodology sheet rather than navigating). */
+.rankings-foot__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.rankings-foot__link:hover {
+  color: var(--ox);
+}
 
 /* ─── Team Detail Hero ────────────────────────────────────── */
 .team-hero {
@@ -2246,6 +2261,68 @@ button {
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
+/* A rookie-window year the drafting team got nothing from. Recedes: it is a
+   year of absence, and must not read as a season with data in it. The zero in
+   the score column is real, though — it is what the denominator divides. */
+.season-row--gap td {
+  color: var(--ink-3);
+  font-style: italic;
+}
+.season-row--gap {
+  background: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 6px,
+    color-mix(in oklch, var(--ink-3) 5%, transparent) 6px,
+    color-mix(in oklch, var(--ink-3) 5%, transparent) 12px
+  );
+}
+/* Beats the even-row zebra, which would otherwise cancel the hatching. */
+.player-career tbody tr.season-row--gap:nth-child(even) {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--paper-3),
+    var(--paper-3) 6px,
+    color-mix(in oklch, var(--ink-3) 8%, var(--paper-3)) 6px,
+    color-mix(in oklch, var(--ink-3) 8%, var(--paper-3)) 12px
+  );
+}
+
+/* A season played for someone else: shown, but not part of the score above it.
+   Recedes rather than disappears — where a player went is worth seeing. */
+.season-row--uncounted td {
+  color: var(--ink-3);
+}
+.season-row--uncounted .player-career__score {
+  opacity: 0.55;
+}
+/* The score column is read as a vertical list, so the numbers must share one
+   right edge. The marker is lifted out of the text flow and parked in the
+   cell's right padding — in flow it displaced the digits of exactly the rows
+   it annotates, leaving marked and unmarked scores misaligned. */
+.player-career__score {
+  position: relative;
+}
+/* The same glyph as the in-table marker, but inline in the header note where it
+   acts as the key. Kept separate because the marker itself is taken out of flow
+   to protect the score column's alignment. */
+.season-uncounted-key {
+  font-family: var(--f-mono);
+  font-size: 9px;
+}
+.season-uncounted-mark {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-3);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  line-height: 1;
+  text-decoration: none;
+  cursor: help;
+}
+
 /* Flags a season cut short by injury, next to the year in the career table. */
 .season-ending-injury {
   display: inline-block;

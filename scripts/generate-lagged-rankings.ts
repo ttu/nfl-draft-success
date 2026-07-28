@@ -14,6 +14,7 @@ import { getRollingDraftScore } from '../src/lib/getRollingDraftScore';
 import { TEAMS } from '../src/data/teams';
 import { LAGGED_WINDOWS } from '../src/lib/laggedWindow';
 import type { DraftClass } from '../src/types';
+import { stampDraftYear } from '../src/lib/draftClass';
 
 function main() {
   const dataDir = path.join(process.cwd(), 'public', 'data');
@@ -24,8 +25,10 @@ function main() {
   );
 
   const draftClasses: DraftClass[] = years.map((year) =>
-    JSON.parse(
-      fs.readFileSync(path.join(dataDir, `draft-${year}.json`), 'utf-8'),
+    stampDraftYear(
+      JSON.parse(
+        fs.readFileSync(path.join(dataDir, `draft-${year}.json`), 'utf-8'),
+      ),
     ),
   );
 

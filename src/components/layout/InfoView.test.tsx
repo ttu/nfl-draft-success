@@ -75,6 +75,39 @@ describe('InfoView', () => {
     expect(screen.getByText('2026-07-01')).toBeInTheDocument();
   });
 
+  it('states the rookie-contract window in the formal formula', () => {
+    render(<InfoView onClose={vi.fn()} />);
+    // The denominator is the whole claim the score makes; if it stops being
+    // spelled out here, the 0–100 number is unexplained.
+    expect(
+      screen.getByText(/window\(pick\)\s+=\s+5 if round 1 else 4/),
+    ).toBeInTheDocument();
+    // Long lines wrap mid-expression in this fixed-width block, which reads as
+    // corrupted maths. Pin the limit rather than rediscover it in a screenshot.
+    const formula = screen.getByText(/window\(pick\)/).textContent ?? '';
+    for (const line of formula.split('\n')) {
+      expect(line.length).toBeLessThanOrEqual(62);
+    }
+  });
+
+  it('no longer claims tenure is kept out of the score', () => {
+    render(<InfoView onClose={vi.fn()} />);
+    // This sentence was true before the score divided by the rookie window.
+    expect(
+      screen.queryByText(/rather than being folded in/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it('discloses what the score cannot capture', () => {
+    render(<InfoView onClose={vi.fn()} />);
+    expect(
+      screen.getByText(/what a trade brought back is invisible/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/recent classes are judged more gently/i),
+    ).toBeInTheDocument();
+  });
+
   it('links to the project source', () => {
     render(<InfoView onClose={vi.fn()} />);
     const link = screen.getByRole('link', { name: /github/i });

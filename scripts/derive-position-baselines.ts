@@ -33,6 +33,7 @@ import {
   QUALIFYING_GAMES_SHARE,
 } from '../src/lib/positionBaseline';
 import type { PositionBaselinesData } from '../src/types';
+import { stampDraftYear } from '../src/lib/draftClass';
 
 function main() {
   const dataDir = path.join(process.cwd(), 'public', 'data');
@@ -45,7 +46,9 @@ function main() {
   }
 
   const classes: DraftClass[] = files.map((file) =>
-    JSON.parse(fs.readFileSync(path.join(dataDir, file), 'utf-8')),
+    stampDraftYear(
+      JSON.parse(fs.readFileSync(path.join(dataDir, file), 'utf-8')),
+    ),
   );
 
   const { baselines, skipped } = deriveBaselinesFromClasses(classes);

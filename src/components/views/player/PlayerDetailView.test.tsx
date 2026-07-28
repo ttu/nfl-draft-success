@@ -4,6 +4,9 @@ import { MemoryRouter } from 'react-router-dom';
 import { PlayerDetailView } from './PlayerDetailView';
 import type { DraftClass, DraftPick } from '../../../types';
 import { makeDraftClass, makePick, makeSeason } from '../../../test/factories';
+import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
+import { formatOverSlot } from '../../../lib/formatOverSlot';
+import { LATEST_SEASON } from '../../../lib/rookieWindow';
 
 // Will Reichard, K, MIN 2024: high Avg snap (~40%) but low Load (~10%) because
 // specialist load is measured against the team's full scrimmage + ST capacity.
@@ -199,11 +202,17 @@ describe('PlayerDetailView draft score', () => {
   });
 
   it('shows a signed over-slot value in the hero, measured against the pick slot', () => {
-    // #1 overall scoring 83 against a ~91 slot expectation: a strong career
-    // still reads as below the top of the draft. Uses a real minus sign.
+    // #1 overall with a strong career still reads as below the top of the
+    // draft. Derived from the baseline curve rather than hard-coded — the curve
+    // is refitted whenever scoring changes, and a literal here would fail on
+    // every refit without saying anything about this component.
     renderScorer();
     const overSlot = screen.getByTestId('player-over-slot');
-    expect(overSlot.textContent).toMatch(/^−8\./);
+    expect(overSlot.textContent).toBe(
+      formatOverSlot(getPlayerDraftSkill(scorer, { draftingTeamOnly: false })),
+    );
+    // Rendered with a real minus sign (U+2212), not a hyphen.
+    expect(overSlot.textContent!.startsWith('−')).toBe(true);
   });
 
   it('shows a positive over-slot for a late pick who outplays his slot', () => {
@@ -245,5 +254,118 @@ describe('PlayerDetailView Pro Football Reference link', () => {
         name: /Career stats on Pro Football Reference/i,
       }),
     ).toBeNull();
+  });
+});
+
+describe('PlayerDetailView rookie window', () => {
+  // A first-rounder released after one season. The score divides by his full
+  // five-year window, so four of those years have no row of their own — and
+  // without them the table shows one season above a headline of ~18.
+  const oneAndDone: DraftPick = makePick({
+    playerId: 'bust',
+    playerName: 'One And Done',
+    position: 'ZZ',
+    round: 1,
+    overallPick: 17,
+    teamId: 'LV',
+    draftYear: 2021,
+    seasons: [makeSeason({ year: 2021, gamesPlayed: 17, snapShare: 1 })],
+  });
+
+  function renderPick(pick: DraftPick, draftingTeamOnly = true) {
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={pick}
+          draftYear={pick.draftYear}
+          draftClasses={[
+            makeDraftClass({ year: pick.draftYear, picks: [pick] }),
+          ]}
+          draftingTeamOnly={draftingTeamOnly}
+        />
+      </MemoryRouter>,
+    );
+  }
+
+  it('renders a zero row for each rookie-window year the team did not get', () => {
+    renderPick(oneAndDone);
+    for (const year of [2022, 2023, 2024, 2025]) {
+      expect(screen.getByTestId(`window-gap-${year}`)).toBeInTheDocument();
+    }
+    // The season he did play is a real row, not a gap.
+    expect(screen.queryByTestId('window-gap-2021')).toBeNull();
+  });
+
+  it('names both halves of the division so the headline can be checked', () => {
+    renderPick(oneAndDone);
+    expect(screen.getByTestId('rookie-window-note')).toHaveTextContent(
+      /1 of 1 seasons? counted · divided by a 5-season rookie window/i,
+    );
+  });
+
+  it('marks seasons played elsewhere as not counting', () => {
+    // The common case by far: the row exists and shows a real score, but it
+    // belongs to another team and is not in the total above it.
+    const traded: DraftPick = makePick({
+      playerName: 'Moved On',
+      round: 1,
+      draftYear: 2021,
+      seasons: [
+        makeSeason({ year: 2021 }),
+        makeSeason({ year: 2022, retained: false, currentTeam: 'CAR' }),
+      ],
+    });
+    renderPick(traded);
+    expect(screen.getByTestId('season-uncounted-2022')).toBeInTheDocument();
+    expect(screen.queryByTestId('season-uncounted-2021')).toBeNull();
+    expect(screen.getByTestId('rookie-window-note')).toHaveTextContent(
+      /1 of 2 seasons counted/i,
+    );
+    // The ✕ must explain itself on the page. A title tooltip needs a second of
+    // motionless hover on a 7px target, so it cannot be the only explanation.
+    expect(screen.getByTestId('rookie-window-note')).toHaveTextContent(
+      /played elsewhere, not counted/i,
+    );
+  });
+
+  it('omits the marker key when every season counted', () => {
+    renderPick(oneAndDone);
+    expect(screen.getByTestId('rookie-window-note')).not.toHaveTextContent(
+      /played elsewhere/i,
+    );
+  });
+
+  it('counts every season in career mode, where nothing is excluded', () => {
+    const traded: DraftPick = makePick({
+      playerName: 'Moved On',
+      round: 1,
+      draftYear: 2021,
+      seasons: [
+        makeSeason({ year: 2021 }),
+        makeSeason({ year: 2022, retained: false, currentTeam: 'CAR' }),
+      ],
+    });
+    renderPick(traded, false);
+    expect(screen.queryByTestId('season-uncounted-2022')).toBeNull();
+  });
+
+  it('leaves the table alone in career mode, where the window does not divide', () => {
+    renderPick(oneAndDone, false);
+    expect(screen.queryByTestId('window-gap-2022')).toBeNull();
+    expect(screen.queryByTestId('rookie-window-note')).toBeNull();
+  });
+
+  it('adds no gaps for a pick who is still on the roster mid-window', () => {
+    const onRoster: DraftPick = makePick({
+      playerName: 'Still Here',
+      round: 1,
+      draftYear: 2024,
+      seasons: [
+        makeSeason({ year: 2024 }),
+        makeSeason({ year: LATEST_SEASON }),
+      ],
+    });
+    renderPick(onRoster);
+    expect(screen.queryByTestId('window-gap-2026')).toBeNull();
   });
 });
