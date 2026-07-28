@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App.tsx';
+import { ScrollRestoration } from './components/layout/ScrollRestoration.tsx';
 import { loadDefaultRankings } from './lib/loadData.ts';
 
 // The pre-generated rankings are what the rankings page paints before the draft
@@ -14,6 +15,7 @@ void loadDefaultRankings().catch(() => {});
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
+      <ScrollRestoration />
       <App />
     </BrowserRouter>
   </StrictMode>,
