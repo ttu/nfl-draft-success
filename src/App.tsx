@@ -1034,7 +1034,8 @@ function renderPlayerView(a: RenderMainArgs) {
 /**
  * The rankings table, showing pre-generated rankings while the real classes
  * load so the page has content immediately. League context only accompanies
- * the computed rankings — it is not part of the pre-generated payload.
+ * the computed rankings — it is not part of the pre-generated payload, so the
+ * band rides along in its em-dash state rather than popping in later.
  *
  * Before either source is ready, renders the hero with placeholder figures
  * rather than falling through to a spinner: the headline is this page's LCP
@@ -1054,6 +1055,7 @@ function renderTeamRankings(a: RenderMainArgs) {
       startYear={a.startYear}
       endYear={a.endYear}
       leagueContext={a.loading ? undefined : a.leagueContext}
+      loading={a.loading}
       onTeamSelect={a.handleTeamSelect}
       onBack={a.selectedTeam ? a.handleShowRankings : undefined}
       onShowInfo={a.onShowMethodology}

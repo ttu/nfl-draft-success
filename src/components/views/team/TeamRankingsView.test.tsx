@@ -175,6 +175,35 @@ describe('TeamRankingsView', () => {
     expect(container.querySelector('.league-context')).toBeNull();
   });
 
+  it('keeps the band in its loading state while placeholder rankings show', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <TeamRankingsView
+          rankings={sample}
+          yearCount={3}
+          startYear={2021}
+          endYear={2025}
+          loading
+          onTeamSelect={() => {}}
+        />
+      </MemoryRouter>,
+    );
+    expect(container.querySelector('.league-context')).not.toBeNull();
+    expect(
+      screen.getByRole('img', { name: /role distribution loading/i }),
+    ).toBeInTheDocument();
+    // Loading is not the same claim as "this window has no picks".
+    expect(
+      screen.queryByText(/no scored picks in this window yet/i),
+    ).toBeNull();
+    expect(screen.queryByText('need 2+ teams')).toBeNull();
+    // Both stats keep their sub line, so the band does not grow one when the
+    // real figures arrive and push the table down.
+    expect(
+      container.querySelectorAll('.league-context .statblock__sub'),
+    ).toHaveLength(2);
+  });
+
   it('renders the league context band: average, spread and role distribution', () => {
     const leagueContext: LeagueContext = {
       avgScore: 58.2,

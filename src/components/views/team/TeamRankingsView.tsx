@@ -15,8 +15,14 @@ export interface TeamRankingsViewProps {
   yearCount: number;
   startYear: number;
   endYear: number;
-  /** League-wide baseline strip; omitted in the pre-load state. */
+  /** League-wide baseline strip; absent until the figures have been computed. */
   leagueContext?: LeagueContext;
+  /**
+   * True while the league figures are still being computed. Keeps the band
+   * mounted in its em-dash state instead of popping in with the numbers, which
+   * matters on the placeholder-rankings path where `RankingsBoot` never runs.
+   */
+  loading?: boolean;
   onTeamSelect: (teamId: string) => void;
   onBack?: () => void;
   /** Opens the methodology sheet, where the score's limits are spelled out. */
@@ -44,6 +50,7 @@ function TeamRankingsViewImpl({
   startYear,
   endYear,
   leagueContext,
+  loading = false,
   onTeamSelect,
   onShowInfo,
 }: TeamRankingsViewProps) {
@@ -61,7 +68,9 @@ function TeamRankingsViewImpl({
         yearWindow={{ from: startYear, to: endYear }}
       />
 
-      {leagueContext && <LeagueContextBand context={leagueContext} />}
+      {(leagueContext || loading) && (
+        <LeagueContextBand context={leagueContext} />
+      )}
 
       <div className="divider-em" />
 
@@ -334,10 +343,15 @@ function LeagueContextBand({
   const hasPicks = !!rd && rd.total > 0;
   const loading = !context;
 
-  let spreadSub: string | undefined;
+  let spreadSub: string;
   if (context?.spread) {
     spreadSub = `${context.spread.topId} → ${context.spread.bottomId}`;
-  } else if (!loading) {
+  } else if (loading) {
+    // An em dash rather than nothing: the sub line has to occupy its space now,
+    // or the stat grows a line when the team pair arrives and shoves the table
+    // down — which is the shift this loading state exists to avoid.
+    spreadSub = '—';
+  } else {
     spreadSub = 'need 2+ teams';
   }
 

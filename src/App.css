@@ -667,6 +667,11 @@ button {
 .league-context__legend b {
   font-weight: 600;
   color: var(--ink);
+  /* Reserve the width of the widest share so the loading em dash and the real
+     figure take the same room. Without it the legend fits on one line while
+     loading and wraps to two when the percentages land, moving the table. */
+  display: inline-block;
+  min-width: 4.25ch;
 }
 .league-context__dot {
   display: inline-block;
@@ -3184,13 +3189,18 @@ button {
   }
   .player-career td,
   .player-career th {
-    padding: 8px 5px;
+    padding: 8px 4px;
     font-size: 11px;
   }
   /* Match the compact header padding so all columns — including Score — fit the
      viewport instead of pushing the rightmost column past the fold. */
   .player-career td {
-    padding: 12px 5px;
+    padding: 12px 4px;
+  }
+  /* AVG SNAP tracked at 0.18em is wider than any number under it, so the
+     headers, not the data, were setting the column widths. */
+  .player-career th {
+    letter-spacing: 0.06em;
   }
   /* The IR-weeks column is decorative on mobile; hide it (the class had no
      display:none rule scoped to this table, unlike rankings/pos tables). */
@@ -3198,18 +3208,25 @@ button {
   .player-career td.hide-mobile {
     display: none;
   }
+  /* Load is cumulative snap share — a second read on Avg snap next to it, and
+     already plotted in the chart directly below. It is the column to give up
+     when six is all that fits. */
+  .player-career th.career-load,
+  .player-career td.career-load {
+    display: none;
+  }
   /* Compact the career table for mobile: drop the snap bars for the number
-     alone and shrink the role chips. With the Score column the seven data
-     columns no longer fit a phone width, so the wrapper scrolls horizontally
-     (rather than clipping the rightmost column) and the table sizes to its
-     compact content. */
+     alone and shrink the role chips. With Load hidden the remaining six
+     columns fit a phone, so the table sizes to the wrapper and nothing scrolls
+     — a horizontally scrolled table loses the Season column off the left edge
+     while still clipping Score on the right, which answers neither question. */
   .player-career__scroll {
+    /* Retained only as a safety valve for freak content widths; it should not
+       engage at any real phone size. */
     overflow-x: auto;
   }
   .player-career table {
-    /* Size to compact content and let the wrapper scroll when it exceeds the
-       viewport, so columns stay readable instead of crushing. */
-    min-width: max-content;
+    min-width: 0;
   }
   /* The desktop colgroup pins wide fixed column widths (inline styles that sum
      past the viewport); let content size the columns on mobile instead. */
