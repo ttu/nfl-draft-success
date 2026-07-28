@@ -246,7 +246,7 @@ function PlayerDetailViewImpl({
                   <th>Team</th>
                   <th className="right">GP</th>
                   <th className="right">Avg snap</th>
-                  <th className="right">Load</th>
+                  <th className="right career-load">Load</th>
                   <th>Role</th>
                   <th className="right">Score</th>
                   <th className="right hide-mobile">IR wks</th>
@@ -484,7 +484,7 @@ function SeasonRow({
       <td className="right">
         <SnapBar value={snapPct} color={color} />
       </td>
-      <td className="right">
+      <td className="right career-load">
         <SnapBar value={loadPct} muted />
       </td>
       <td>
@@ -525,9 +525,16 @@ function WindowGapRow({ year }: { year: number }) {
       data-testid={`window-gap-${year}`}
     >
       <td className="mono tnum">{year}</td>
-      <td className="mono" colSpan={5}>
+      {/* Spans Team → Avg snap only. Load gets its own cell so it can be hidden
+          on mobile with the rest of that column — a colSpan cannot be shrunk by
+          CSS, and an over-wide span here would push this row's Score out of
+          line with every other row's. No vertical borders, so the split is
+          invisible. */}
+      <td className="mono" colSpan={3}>
         Not with the team
       </td>
+      <td className="career-load" />
+      <td />
       <td className="right mono tnum">0</td>
       <td className="right mono tnum hide-mobile">—</td>
     </tr>
