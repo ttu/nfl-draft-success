@@ -86,6 +86,7 @@ import {
   resolvePlayerBackTarget,
   resolvePlayerOriginTab,
 } from './lib/playerBackTarget';
+import { usePreviousLocation } from './lib/usePreviousLocation';
 import { buildTeamHref } from './lib/teamHref';
 import './App.css';
 
@@ -326,12 +327,18 @@ function useResolvedYearRange(
     correctedRef.current = true;
     // Merge onto existing params so a range correction never drops unrelated
     // params (e.g. the player detail `ref` origin crumb).
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.set('from', String(DEFAULT_YEAR_MIN));
-      next.set('to', String(LATEST_COMPLETED_YEAR));
-      return next;
-    });
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('from', String(DEFAULT_YEAR_MIN));
+        next.set('to', String(LATEST_COMPLETED_YEAR));
+        return next;
+      },
+      // Backfilling the default range corrects the entry the user is already
+      // on; pushing would bury the page they came from behind a near-identical
+      // URL, so one press of Back appeared to do nothing.
+      { replace: true },
+    );
   }, [needsCorrection, setSearchParams]);
   return range;
 }
@@ -631,14 +638,23 @@ function AppContent() {
     navigate(`/?from=${startYear}&to=${endYear}`);
   }, [navigate, startYear, endYear]);
 
+  const previousLocation = usePreviousLocation();
+
   const playerBackTarget = resolvePlayerBackTarget(
     searchParams.get('ref'),
     TEAMS,
     { from: startYear, to: endYear },
   );
 
+  // When the crumb points at the entry we pushed from, retrace that step for
+  // real so the origin list reopens where it was left, rather than pushing a
+  // duplicate entry that lands at the top. Shared links and player-to-player
+  // hops have no such entry and still push.
+  const isRetracingPush = previousLocation === playerBackTarget.to;
+
   const handlePlayerBack = () => {
-    navigate(playerBackTarget.to);
+    if (isRetracingPush) navigate(-1);
+    else navigate(playerBackTarget.to);
   };
 
   const handlePositionChange = useCallback(
