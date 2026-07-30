@@ -1,5 +1,6 @@
 import type { DraftClass, DraftPick, Role } from '../types';
 import { getPlayerRole, type GetPlayerRoleOptions } from './getPlayerRole';
+import { playedSeasons } from './seasonPlayed';
 
 /** A same-position classmate ranked against the target pick by career load. */
 export interface CohortMember {
@@ -23,12 +24,13 @@ export interface PositionCohort {
  * a player's on-field volume across their whole career for cohort comparison.
  */
 export function avgLoad(pick: DraftPick): number {
-  if (pick.seasons.length === 0) return 0;
-  const total = pick.seasons.reduce(
+  const seasons = playedSeasons(pick);
+  if (seasons.length === 0) return 0;
+  const total = seasons.reduce(
     (a, s) => a + (s.cumulativeSnapShare ?? s.snapShare ?? 0),
     0,
   );
-  return total / pick.seasons.length;
+  return total / seasons.length;
 }
 
 /**

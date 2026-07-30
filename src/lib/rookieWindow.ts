@@ -1,5 +1,6 @@
 import seasonWindow from '../data/season-window.json';
 import type { DraftPick } from '../types';
+import { isPlayedSeason } from './seasonPlayed';
 
 /**
  * Newest NFL season present in the dataset, written by `update-data.ts`.
@@ -32,15 +33,23 @@ export function rookieWindow(round: number): number {
 
 /**
  * True when the drafting team no longer has the pick, judged by the absence of
- * a retained season row in the newest season in the data.
+ * a retained row in the newest season the pick has any record of.
  *
- * Covers both ways a pick leaves: traded or released to another roster (a
- * non-retained row), and out of the league entirely (no row at all). Roster
- * seasons spent injured still carry a retained row, so time on IR does not read
- * as departure.
+ * Normally that is {@link LATEST_SEASON}. It is the season after when the pick
+ * carries an upcoming-season row: a player traded or released over the
+ * offseason is gone now, and waiting for Week 1 to say so would score his old
+ * team as though it still held him.
+ *
+ * Covers both ways a pick leaves: to another roster (a non-retained row), and
+ * out of the league entirely (no row at all). Roster seasons spent injured
+ * still carry a retained row, so time on IR does not read as departure.
  */
 function hasDeparted(pick: DraftPick): boolean {
-  return !pick.seasons.some((s) => s.year === LATEST_SEASON && s.retained);
+  const newest = pick.seasons.reduce(
+    (year, s) => Math.max(year, s.year),
+    LATEST_SEASON,
+  );
+  return !pick.seasons.some((s) => s.year === newest && s.retained);
 }
 
 /**
@@ -90,7 +99,9 @@ export function scoredSeasonCount(
  * the score is making.
  */
 export function scoredWindowYears(pick: DraftPick): number[] {
-  const retained = pick.seasons.filter((s) => s.retained).length;
+  const retained = pick.seasons.filter(
+    (s) => s.retained && isPlayedSeason(s),
+  ).length;
   if (retained === 0) return [];
   const count = scoredSeasonCount(pick, retained);
   return Array.from({ length: count }, (_, i) => pick.draftYear + i);

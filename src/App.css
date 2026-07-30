@@ -2282,6 +2282,22 @@ button {
     color-mix(in oklch, var(--ink-3) 5%, transparent) 12px
   );
 }
+/* The upcoming season: a roster spot, not a result. Deliberately not hatched
+   like a gap row — hatching marks a year charged as zero, and this one is not
+   scored at all. A dashed rule separates what was played from what is ahead. */
+.season-row--upcoming td {
+  color: var(--ink-3);
+  font-style: italic;
+  border-top: 1px dashed color-mix(in oklch, var(--ink-3) 45%, transparent);
+}
+/* The year and team are the row's whole point, so they stay upright and
+   legible; only the "not played yet" note is muted and italic. */
+.season-row--upcoming td:nth-child(1),
+.season-row--upcoming td:nth-child(2) {
+  font-style: normal;
+  color: var(--ink-1);
+}
+
 /* Beats the even-row zebra, which would otherwise cancel the hatching. */
 .player-career tbody tr.season-row--gap:nth-child(even) {
   background: repeating-linear-gradient(

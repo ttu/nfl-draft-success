@@ -16,6 +16,7 @@ import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
 import { scoredWindowYears } from '../../../lib/rookieWindow';
+import { isPlayedSeason, isUnplayedSeason } from '../../../lib/seasonPlayed';
 import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
 import { activateOnKey } from '../../../lib/activateOnKey';
@@ -64,15 +65,22 @@ function PlayerDetailViewImpl({
     positionBaseline * CORE_TIER_THRESHOLD * 100,
   );
   const roleCls = roleDesignClass(role);
-  const sortedSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
+  const allSeasons = [...pick.seasons].sort((a, b) => a.year - b.year);
+  // Every count, chart and score below is about football played. The upcoming
+  // season is held apart so it cannot be tallied as a season anyone played.
+  const sortedSeasons = allSeasons.filter(isPlayedSeason);
+  const upcomingSeason = allSeasons.find(isUnplayedSeason);
 
   // Rookie-window years with no season row at all. Only in drafting-team mode:
   // that is the only mode whose denominator is the window, so in career mode a
   // gap row would claim a penalty the score never applied.
   const windowYears = draftingTeamOnly ? scoredWindowYears(pick) : [];
-  const countedSeasons = pick.seasons.filter((s) => s.retained).length;
+  const countedSeasons = sortedSeasons.filter((s) => s.retained).length;
+  // Checked against every row, not just played ones: the upcoming season
+  // already has a row of its own, and a gap row for the same year would both
+  // duplicate it and contradict it.
   const gapYears = windowYears.filter(
-    (y) => !pick.seasons.some((s) => s.year === y),
+    (y) => !allSeasons.some((s) => s.year === y),
   );
   // One ordered list so gaps sit in their chronological place rather than in a
   // block at the end.
@@ -195,7 +203,10 @@ function PlayerDetailViewImpl({
               // of all picks show at least one season that does not count.
               <span data-testid="rookie-window-note">
                 {countedSeasons} of {sortedSeasons.length} season
-                {sortedSeasons.length === 1 ? '' : 's'} counted · divided by a{' '}
+                {sortedSeasons.length === 1 ? '' : 's'} counted · divided by
+                {windowYears.length === 8 || windowYears.length === 11
+                  ? ' an '
+                  : ' a '}
                 {windowYears.length}-season rookie window
                 {countedSeasons < sortedSeasons.length && (
                   // The ✕ in the Score column carries the same meaning, but it
@@ -266,6 +277,12 @@ function PlayerDetailViewImpl({
                   ) : (
                     <WindowGapRow key={year} year={year} />
                   ),
+                )}
+                {upcomingSeason && (
+                  <UpcomingSeasonRow
+                    s={upcomingSeason}
+                    pickTeamId={pick.teamId}
+                  />
                 )}
               </tbody>
             </table>
@@ -518,6 +535,55 @@ function SeasonRow({
  * without them the table shows (say) one season of 98 above a headline of 20,
  * which reads as a bug rather than as the point being made.
  */
+/**
+ * Where the pick stands for a season that has not kicked off.
+ *
+ * Rendered from a roster snapshot, so it has a team and nothing else. It shows
+ * no GP, snap, role or score — not even zeros, which here would mean "played
+ * and did nothing" rather than "has not played". It sits outside the season
+ * count and outside the score for the same reason.
+ */
+function UpcomingSeasonRow({
+  s,
+  pickTeamId,
+}: {
+  s: Season;
+  pickTeamId: string;
+}) {
+  const team = s.retained ? pickTeamId : (s.currentTeam ?? 'FA');
+  return (
+    <tr
+      className="season-row season-row--upcoming"
+      data-testid={`season-upcoming-${s.year}`}
+    >
+      {/* Same year treatment as a played row: this is a real point on the
+          career timeline, and shrinking it the way a gap row does would break
+          the column's scan down the left edge. */}
+      <td>
+        <span className="player-career__year">{s.year}</span>
+      </td>
+      <td>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {team !== 'FA' ? (
+            <TeamLogo teamId={team} size={22} ring={false} />
+          ) : null}
+          <span className="mono" style={{ fontSize: 12, fontWeight: 700 }}>
+            {team}
+          </span>
+        </div>
+      </td>
+      {/* Split like WindowGapRow so the Load column stays hideable on mobile. */}
+      <td className="mono" colSpan={2}>
+        Not played yet
+      </td>
+      <td className="career-load" />
+      <td />
+      <td className="right mono tnum">—</td>
+      <td className="right mono tnum hide-mobile">—</td>
+    </tr>
+  );
+}
+
 function WindowGapRow({ year }: { year: number }) {
   return (
     <tr

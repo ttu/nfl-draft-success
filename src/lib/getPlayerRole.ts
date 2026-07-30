@@ -4,6 +4,7 @@ import { getSeasonScore } from './getSeasonScore';
 import { ROLE_SCORE_WEIGHTS } from './roleWeights';
 import { snapShareForRoleTier } from './snapShareForTier';
 import { scoredSeasonCount } from './rookieWindow';
+import { playedSeasons } from './seasonPlayed';
 
 const ROLE_ORDER: Role[] = [
   'non_contributor',
@@ -18,13 +19,17 @@ function ordinal(r: Role): number {
   return ROLE_ORDER.indexOf(r);
 }
 
+/**
+ * The seasons a pick is judged on. Always played seasons only — a row for an
+ * upcoming season records where the player stands, and scoring it would read
+ * "has not played yet" as "did nothing".
+ */
 export function getFilteredSeasons(
   pick: DraftPick,
   draftingTeamOnly: boolean | undefined,
 ) {
-  return draftingTeamOnly === true
-    ? pick.seasons.filter((s) => s.retained)
-    : pick.seasons;
+  const played = playedSeasons(pick);
+  return draftingTeamOnly === true ? played.filter((s) => s.retained) : played;
 }
 
 export interface GetPlayerRoleOptions {
@@ -61,14 +66,17 @@ const roleByPick = [
 // recomputation it saved.
 
 /**
- * True when the pick has any season rows in the dataset.
+ * True when the pick has any *played* season rows in the dataset.
  * Rolling score / “tracked” counts use this so picks with only non-retained
  * seasons (e.g. traded before playing for the drafting team) are not treated
  * as “no data.” Role and weight math still respect `draftingTeamOnly` via
  * {@link getFilteredSeasons}.
+ *
+ * A row for an upcoming season does not count: a pick whose only row says
+ * where he will line up is still awaiting data, not tracked.
  */
 export function pickHasSeasonSnapData(pick: DraftPick): boolean {
-  return pick.seasons.length > 0;
+  return playedSeasons(pick).length > 0;
 }
 
 /**

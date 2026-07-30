@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { DraftPick } from '../types';
+import type { DraftPick, Season } from '../types';
 import { makePick, makeSeason } from '../test/factories';
 import {
   LATEST_SEASON,
@@ -100,6 +100,63 @@ describe('scoredSeasonCount', () => {
 
     it('leaves a pick still on the roster clamped to elapsed seasons', () => {
       expect(scoredSeasonCount(pick(1, LATEST_SEASON - 1), 2)).toBe(2);
+    });
+  });
+
+  describe('picks departing over the offseason', () => {
+    /** A row for the upcoming season: carries standing, no football played. */
+    const upcoming = (retained: boolean, currentTeam?: string): Season =>
+      makeSeason({
+        year: LATEST_SEASON + 1,
+        gamesPlayed: 0,
+        teamGames: 0,
+        snapShare: 0,
+        retained,
+        ...(currentTeam ? { currentTeam } : {}),
+      });
+
+    /** Retained right through the newest played season. */
+    const stillHere = (round: number, draftYear: number): DraftPick =>
+      makePick({
+        round,
+        overallPick: 150,
+        draftYear,
+        teamId: 'KC',
+        seasons: [makeSeason({ year: LATEST_SEASON })],
+      });
+
+    it('charges the full window to a pick traded before playing a snap', () => {
+      // Nothing in the played rows says he left, because the season he leaves
+      // for has not started.
+      const traded = stillHere(3, LATEST_SEASON - 1);
+      traded.seasons.push(upcoming(false, 'MIN'));
+      expect(scoredSeasonCount(traded, 2)).toBe(4);
+    });
+
+    it('charges the full window to a pick left off every roster', () => {
+      const unsigned = stillHere(3, LATEST_SEASON - 1);
+      unsigned.seasons.push(upcoming(false));
+      expect(scoredSeasonCount(unsigned, 2)).toBe(4);
+    });
+
+    it('keeps clamping a pick his drafting team still rosters', () => {
+      const kept = stillHere(3, LATEST_SEASON - 1);
+      kept.seasons.push(upcoming(true));
+      expect(scoredSeasonCount(kept, 2)).toBe(2);
+    });
+
+    it('does not count the unplayed season as elapsed', () => {
+      // The trap this design avoids: the upcoming season must not enter the
+      // denominator, or every current pick's score silently deflates.
+      const rookie = stillHere(3, LATEST_SEASON);
+      rookie.seasons.push(upcoming(true));
+      expect(scoredSeasonCount(rookie, 1)).toBe(1);
+    });
+
+    it('leaves the scored window drawn over played seasons only', () => {
+      const kept = stillHere(3, LATEST_SEASON - 1);
+      kept.seasons.push(upcoming(true));
+      expect(scoredWindowYears(kept)).not.toContain(LATEST_SEASON + 1);
     });
   });
 });

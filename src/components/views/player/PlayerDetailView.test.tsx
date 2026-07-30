@@ -368,4 +368,78 @@ describe('PlayerDetailView rookie window', () => {
     renderPick(onRoster);
     expect(screen.queryByTestId('window-gap-2026')).toBeNull();
   });
+
+  describe('the upcoming season', () => {
+    /** Standing for a season not yet played: no games, so `teamGames` is 0. */
+    const upcoming = (retained: boolean, currentTeam?: string) =>
+      makeSeason({
+        year: LATEST_SEASON + 1,
+        gamesPlayed: 0,
+        teamGames: 0,
+        snapShare: 0,
+        retained,
+        ...(currentTeam ? { currentTeam } : {}),
+      });
+
+    const traded = (): DraftPick =>
+      makePick({
+        playerName: 'Traded Away',
+        round: 1,
+        draftYear: LATEST_SEASON - 1,
+        teamId: 'ARI',
+        seasons: [
+          makeSeason({ year: LATEST_SEASON - 1 }),
+          makeSeason({ year: LATEST_SEASON }),
+          upcoming(false, 'MIN'),
+        ],
+      });
+
+    it('shows the new team on a row of its own', () => {
+      renderPick(traded());
+      const row = screen.getByTestId(`season-upcoming-${LATEST_SEASON + 1}`);
+      expect(within(row).getByText('MIN')).toBeInTheDocument();
+    });
+
+    it('shows no score for it, since none has been earned', () => {
+      // A zero here would read as "played and did nothing" — the opposite of
+      // what an unplayed season means.
+      const row =
+        (renderPick(traded()),
+        screen.getByTestId(`season-upcoming-${LATEST_SEASON + 1}`));
+      expect(within(row).queryByText('0')).toBeNull();
+      expect(within(row).getByText('Not played yet')).toBeInTheDocument();
+    });
+
+    it('is left out of the seasons-counted tally', () => {
+      renderPick(traded());
+      expect(screen.getByTestId('rookie-window-note')).toHaveTextContent(
+        /2 of 2 seasons counted/i,
+      );
+    });
+
+    it('is not drawn as a rookie-window gap', () => {
+      // Gap rows mean "charged as zero". This season is not scored at all.
+      renderPick(traded());
+      expect(
+        screen.queryByTestId(`window-gap-${LATEST_SEASON + 1}`),
+      ).toBeNull();
+    });
+
+    it('shows the drafting team when the pick was kept', () => {
+      const kept = makePick({
+        playerName: 'Kept Around',
+        round: 1,
+        draftYear: LATEST_SEASON - 1,
+        teamId: 'KC',
+        seasons: [
+          makeSeason({ year: LATEST_SEASON - 1 }),
+          makeSeason({ year: LATEST_SEASON }),
+          upcoming(true),
+        ],
+      });
+      renderPick(kept);
+      const row = screen.getByTestId(`season-upcoming-${LATEST_SEASON + 1}`);
+      expect(within(row).getByText('KC')).toBeInTheDocument();
+    });
+  });
 });

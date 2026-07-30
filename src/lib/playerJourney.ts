@@ -2,6 +2,7 @@ import type { DraftPick, Role, Season } from '../types';
 import { classifyRole } from './classifyRole';
 import { snapShareForRoleTier } from './snapShareForTier';
 import { isStrongerRole } from './roleDisplay';
+import { isPlayedSeason } from './seasonPlayed';
 
 export interface TeamStint {
   team: string;
@@ -13,7 +14,13 @@ export function getLatestSeason(pick: DraftPick): Season | undefined {
   return [...pick.seasons].sort((a, b) => b.year - a.year)[0];
 }
 
-/** True when the player is no longer with their drafting team (latest season). */
+/**
+ * True when the player is no longer with their drafting team.
+ *
+ * Reads the newest season row of any kind, including one for a season not yet
+ * played: a pick traded over the offseason has left, even though the season he
+ * leaves for has not started.
+ */
 export function isDeparted(pick: DraftPick): boolean {
   return getLatestSeason(pick)?.retained === false;
 }
@@ -67,6 +74,9 @@ export function getTeamJourney(pick: DraftPick): TeamStint[] {
   return stints.map(({ team, seasons }) => {
     let bestRole: Role = 'non_contributor';
     for (const s of seasons) {
+      // An upcoming season carries no evidence of a role, and its zeros would
+      // classify a player who has not taken the field as a non-contributor.
+      if (!isPlayedSeason(s)) continue;
       const gps = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
       const role = classifyRole(
         snapShareForRoleTier(s, pick.position),

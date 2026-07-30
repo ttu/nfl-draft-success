@@ -53,6 +53,39 @@ describe('isDeparted / getCurrentTeam', () => {
     expect(isDeparted(p)).toBe(false);
     expect(getCurrentTeam(p)).toBeUndefined();
   });
+
+  describe('with a row for a season not yet played', () => {
+    /** Standing for an upcoming season: no games, so `teamGames` is 0. */
+    const upcoming = (retained: boolean, currentTeam?: string): Season =>
+      makeSeason({
+        year: 2026,
+        gamesPlayed: 0,
+        teamGames: 0,
+        snapShare: 0,
+        retained,
+        ...(currentTeam ? { currentTeam } : {}),
+      });
+
+    it('is departed to the new team before that season is played', () => {
+      const p = pick([season(2025), upcoming(false, 'MIN')], {
+        teamId: 'ARI',
+      });
+      expect(isDeparted(p)).toBe(true);
+      expect(getCurrentTeam(p)).toBe('MIN');
+      expect(getCurrentTeamIndicator(p)).toBe('MIN');
+    });
+
+    it('is not departed when the drafting team still rosters him', () => {
+      const p = pick([season(2025), upcoming(true)], { teamId: 'KC' });
+      expect(isDeparted(p)).toBe(false);
+      expect(getCurrentTeam(p)).toBeUndefined();
+    });
+
+    it('reads as a free agent when no team rosters him', () => {
+      const p = pick([season(2025), upcoming(false)], { teamId: 'KC' });
+      expect(getCurrentTeamIndicator(p)).toBe('FA');
+    });
+  });
 });
 
 describe('getCurrentTeamIndicator', () => {

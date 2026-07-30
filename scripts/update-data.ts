@@ -32,8 +32,14 @@ import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
 import { seasonEndingAbsenceGames } from '../src/lib/seasonEndingAbsence';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
-const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
+// The newest season with played games. The 2026 class is drafted but has not
+// played, so it gets picks with an empty season list.
 const MAX_SEASON = 2025;
+// The upcoming season, used only for roster state. Kept distinct from
+// MAX_SEASON on purpose: scoring divides by seasons that have been *played*, so
+// letting this leak into the window would deflate every current pick's score.
+const ROSTER_SEASON = MAX_SEASON + 1;
 
 interface CsvRow {
   [k: string]: string;
@@ -383,6 +389,58 @@ async function loadNflversePlayers(): Promise<{
   return { headshots, metaByPfrId };
 }
 
+/**
+ * Where every drafted player sits on a roster for {@link ROSTER_SEASON}, keyed
+ * both ways because neither id is complete on its own.
+ *
+ * `gsis_id` is the reliable key here — the roster release carries one for
+ * essentially every row, while `pfr_id` is missing from roughly 40% of them.
+ * Matching on `pfr_id` alone reads established players as unrostered, which
+ * downstream would score as departure.
+ */
+interface OffseasonRosterIndex {
+  season: number;
+  teamByGsisId: Map<string, string>;
+  teamByPfrId: Map<string, string>;
+}
+
+/**
+ * Fetch the roster for the season after the newest played one, so a pick traded
+ * or released over the offseason reads as departed before Week 1.
+ *
+ * Returns `undefined` when the release does not exist yet: rosters publish part
+ * way through the offseason, and until then picks simply carry no snapshot and
+ * fall back to season data.
+ */
+async function loadOffseasonRoster(): Promise<
+  OffseasonRosterIndex | undefined
+> {
+  const season = ROSTER_SEASON;
+  const url = `${BASE}/rosters/roster_${season}.csv`;
+  let rows: CsvRow[];
+  try {
+    rows = parseCsv(await fetchCsv(url));
+  } catch (err) {
+    console.log(`  No ${season} roster published yet (${String(err)})`);
+    return undefined;
+  }
+
+  const teamByGsisId = new Map<string, string>();
+  const teamByPfrId = new Map<string, string>();
+  for (const row of rows) {
+    const team = normalizeTeam(row.team ?? '');
+    if (!team) continue;
+    const gsisId = (row.gsis_id ?? '').trim();
+    const pfrId = (row.pfr_id ?? '').trim();
+    if (gsisId) teamByGsisId.set(gsisId, team);
+    if (pfrId) teamByPfrId.set(pfrId, team);
+  }
+  console.log(
+    `  ${rows.length} ${season} roster rows (${teamByGsisId.size} by gsis, ${teamByPfrId.size} by pfr)`,
+  );
+  return { season, teamByGsisId, teamByPfrId };
+}
+
 /** One season of a drafted player's career, as written to draft-<year>.json. */
 interface PickSeason {
   year: number;
@@ -535,6 +593,8 @@ interface PickSources {
   injuryData: Map<string, Map<number, InjurySeasonData>>;
   headshots: Map<string, string>;
   lookups: SeasonLookups;
+  /** Absent when no roster has been published for the upcoming season. */
+  roster?: OffseasonRosterIndex;
 }
 
 /**
@@ -571,6 +631,20 @@ function buildDraftPick(
     );
   }
 
+  // Only classes that have played get one. The incoming class is on its
+  // drafting team by definition, and the roster release does not list it yet
+  // anyway — a row would read those picks as unrostered, meaning departed.
+  if (sources.roster && year <= MAX_SEASON) {
+    const offseason = buildOffseasonSeason({
+      roster: sources.roster,
+      gsisId,
+      pfrId,
+      teamId,
+      seasons,
+    });
+    if (offseason) seasons.push(offseason);
+  }
+
   const headshotUrl = pfrId ? sources.headshots.get(pfrId) : undefined;
   return {
     playerId: pfrId || `unknown-${year}-${fallbackIndex}`,
@@ -583,6 +657,51 @@ function buildDraftPick(
     ...(espnId ? { espnId } : {}),
     ...(headshotUrl ? { headshotUrl } : {}),
     seasons,
+  };
+}
+
+/**
+ * A row for {@link ROSTER_SEASON} recording where a pick stands before a snap
+ * of it has been played, or `undefined` when there is nothing worth saying.
+ *
+ * The row is deliberately a normal season with `teamGames: 0`, the marker for
+ * "not played yet" (see `src/lib/seasonPlayed.ts`). That keeps a player's
+ * career one uniform list, so departure flows through the same
+ * `retained`/`currentTeam` fields as every other year — no parallel concept.
+ *
+ * Emitted only when it changes the picture: the player is on some roster, or he
+ * finished {@link MAX_SEASON} with his drafting team and now is not on one.
+ * A pick who left years ago and is still out of the league gets nothing, since
+ * his played seasons already say so and a fresh row would only add noise.
+ */
+function buildOffseasonSeason(params: {
+  roster: OffseasonRosterIndex;
+  gsisId: string;
+  pfrId: string;
+  teamId: string;
+  seasons: PickSeason[];
+}): PickSeason | undefined {
+  const { roster, gsisId, pfrId, teamId, seasons } = params;
+  const rosterTeam =
+    (gsisId ? roster.teamByGsisId.get(gsisId) : undefined) ??
+    (pfrId ? roster.teamByPfrId.get(pfrId) : undefined);
+
+  const heldAtSeasonEnd = seasons.some(
+    (s) => s.year === MAX_SEASON && s.retained,
+  );
+  if (!rosterTeam && !heldAtSeasonEnd) return undefined;
+
+  const retained = rosterTeam === teamId;
+  return {
+    year: roster.season,
+    gamesPlayed: 0,
+    teamGames: 0,
+    snapShare: 0,
+    cumulativeSnapShare: 0,
+    retained,
+    // Left off when no team rosters him: unsigned and retired look identical
+    // here, and the app reads a missing team as free agency either way.
+    ...(!retained && rosterTeam ? { currentTeam: rosterTeam } : {}),
   };
 }
 
@@ -615,7 +734,17 @@ async function main() {
   );
   console.log('Fetching injuries (2009–' + MAX_SEASON + ')...');
   const injuryData = await loadInjuryData(injurySeasons);
-  const sources: PickSources = { snapData, injuryData, headshots, lookups };
+
+  console.log(`Fetching ${ROSTER_SEASON} rosters (offseason departures)...`);
+  const roster = await loadOffseasonRoster();
+
+  const sources: PickSources = {
+    snapData,
+    injuryData,
+    headshots,
+    lookups,
+    ...(roster ? { roster } : {}),
+  };
 
   for (const year of YEARS) {
     console.log(`Processing ${year}...`);

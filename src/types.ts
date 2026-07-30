@@ -9,6 +9,16 @@ export type Role =
 export interface Season {
   year: number;
   gamesPlayed: number;
+  /**
+   * Team games the season offered. **Zero means the season has not been
+   * played** — the row exists only to carry `retained`/`currentTeam` for an
+   * upcoming season, sourced from the offseason roster release.
+   *
+   * Such a row says where a player stands, not how he did: `gamesPlayed` and
+   * `snapShare` are zero because nothing has happened, not because he was bad.
+   * Anything measuring football must therefore skip it — see
+   * `src/lib/seasonPlayed.ts`, which is the only place this rule is spelled out.
+   */
   teamGames: number;
   /** Average per-game role share in games with snaps (UI “Snap” column) */
   snapShare: number;
