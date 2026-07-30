@@ -30,16 +30,15 @@ import {
 } from '../src/lib/teamSeasonDenominator';
 import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
 import { seasonEndingAbsenceGames } from '../src/lib/seasonEndingAbsence';
+import { resolveLatestPlayedSeason } from '../src/lib/latestPlayedSeason';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
-const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
-// The newest season with played games. The 2026 class is drafted but has not
-// played, so it gets picks with an empty season list.
-const MAX_SEASON = 2025;
-// The upcoming season, used only for roster state. Kept distinct from
-// MAX_SEASON on purpose: scoring divides by seasons that have been *played*, so
-// letting this leak into the window would deflate every current pick's score.
-const ROSTER_SEASON = MAX_SEASON + 1;
+/** First season nflverse publishes snap counts for. */
+const FIRST_SNAP_SEASON = 2012;
+/** First season nflverse publishes an injury report for. */
+const FIRST_INJURY_SEASON = 2009;
+/** Earliest draft class this site tracks. */
+const FIRST_DRAFT_YEAR = 2018;
 
 interface CsvRow {
   [k: string]: string;
@@ -390,7 +389,7 @@ async function loadNflversePlayers(): Promise<{
 }
 
 /**
- * Where every drafted player sits on a roster for {@link ROSTER_SEASON}, keyed
+ * Where every drafted player sits on a roster for the upcoming season, keyed
  * both ways because neither id is complete on its own.
  *
  * `gsis_id` is the reliable key here — the roster release carries one for
@@ -412,10 +411,9 @@ interface OffseasonRosterIndex {
  * way through the offseason, and until then picks simply carry no snapshot and
  * fall back to season data.
  */
-async function loadOffseasonRoster(): Promise<
-  OffseasonRosterIndex | undefined
-> {
-  const season = ROSTER_SEASON;
+async function loadOffseasonRoster(
+  season: number,
+): Promise<OffseasonRosterIndex | undefined> {
   const url = `${BASE}/rosters/roster_${season}.csv`;
   let rows: CsvRow[];
   try {
@@ -593,13 +591,16 @@ interface PickSources {
   injuryData: Map<string, Map<number, InjurySeasonData>>;
   headshots: Map<string, string>;
   lookups: SeasonLookups;
+  /** Newest season with played games, derived from the snap-count releases. */
+  maxSeason: number;
   /** Absent when no roster has been published for the upcoming season. */
   roster?: OffseasonRosterIndex;
 }
 
 /**
  * Build one pick from a draft_picks row, with a season record for every year
- * from the draft through {@link MAX_SEASON}. Column names vary across nflverse
+ * from the draft through the newest played season. Column names vary across
+ * nflverse
  * releases, hence the `??` chains. `fallbackIndex` only names picks that have
  * no id at all.
  */
@@ -619,7 +620,7 @@ function buildDraftPick(
   const playerInjuries = gsisId ? sources.injuryData.get(gsisId) : undefined;
 
   const seasons: PickSeason[] = [];
-  for (let s = year; s <= MAX_SEASON; s++) {
+  for (let s = year; s <= sources.maxSeason; s++) {
     seasons.push(
       buildPickSeason({
         season: s,
@@ -634,13 +635,14 @@ function buildDraftPick(
   // Only classes that have played get one. The incoming class is on its
   // drafting team by definition, and the roster release does not list it yet
   // anyway — a row would read those picks as unrostered, meaning departed.
-  if (sources.roster && year <= MAX_SEASON) {
+  if (sources.roster && year <= sources.maxSeason) {
     const offseason = buildOffseasonSeason({
       roster: sources.roster,
       gsisId,
       pfrId,
       teamId,
       seasons,
+      maxSeason: sources.maxSeason,
     });
     if (offseason) seasons.push(offseason);
   }
@@ -661,8 +663,8 @@ function buildDraftPick(
 }
 
 /**
- * A row for {@link ROSTER_SEASON} recording where a pick stands before a snap
- * of it has been played, or `undefined` when there is nothing worth saying.
+ * A row for the upcoming season recording where a pick stands before a snap of
+ * it has been played, or `undefined` when there is nothing worth saying.
  *
  * The row is deliberately a normal season with `teamGames: 0`, the marker for
  * "not played yet" (see `src/lib/seasonPlayed.ts`). That keeps a player's
@@ -670,7 +672,7 @@ function buildDraftPick(
  * `retained`/`currentTeam` fields as every other year — no parallel concept.
  *
  * Emitted only when it changes the picture: the player is on some roster, or he
- * finished {@link MAX_SEASON} with his drafting team and now is not on one.
+ * finished `maxSeason` with his drafting team and now is not on one.
  * A pick who left years ago and is still out of the league gets nothing, since
  * his played seasons already say so and a fresh row would only add noise.
  */
@@ -680,14 +682,15 @@ function buildOffseasonSeason(params: {
   pfrId: string;
   teamId: string;
   seasons: PickSeason[];
+  maxSeason: number;
 }): PickSeason | undefined {
-  const { roster, gsisId, pfrId, teamId, seasons } = params;
+  const { roster, gsisId, pfrId, teamId, seasons, maxSeason } = params;
   const rosterTeam =
     (gsisId ? roster.teamByGsisId.get(gsisId) : undefined) ??
     (pfrId ? roster.teamByPfrId.get(pfrId) : undefined);
 
   const heldAtSeasonEnd = seasons.some(
-    (s) => s.year === MAX_SEASON && s.retained,
+    (s) => s.year === maxSeason && s.retained,
   );
   if (!rosterTeam && !heldAtSeasonEnd) return undefined;
 
@@ -705,22 +708,61 @@ function buildOffseasonSeason(params: {
   };
 }
 
+/**
+ * True when nflverse has published snap counts with rows for `season`.
+ *
+ * Rows, not merely a release: an empty or header-only file would otherwise
+ * promote a season nobody has played.
+ */
+async function seasonHasSnapCounts(season: number): Promise<boolean> {
+  const csv = await fetchCsv(`${BASE}/snap_counts/snap_counts_${season}.csv`);
+  return parseCsv(csv).length > 0;
+}
+
+/** Seasons `from`..`to` inclusive. */
+function seasonRange(from: number, to: number): number[] {
+  return Array.from({ length: to - from + 1 }, (_, i) => from + i);
+}
+
 async function main() {
   const outDir = path.join(process.cwd(), 'public', 'data');
   fs.mkdirSync(outDir, { recursive: true });
+
+  // Derived, not hard-coded, so a mid-season run picks up the season in
+  // progress on its own. A stale constant here would leave the pipeline
+  // ignoring live games while still labelling them "not played yet".
+  console.log('Resolving the newest played season...');
+  const maxSeason = await resolveLatestPlayedSeason({
+    floor: FIRST_SNAP_SEASON,
+    ceiling: new Date().getUTCFullYear(),
+    hasPlayedData: seasonHasSnapCounts,
+  });
+  // Roster state is only ever read for a season with no games yet, so it must
+  // stay one clear of maxSeason: scoring divides by seasons that have been
+  // *played*, and letting this leak into the window would deflate every
+  // current pick's score.
+  const rosterSeason = maxSeason + 1;
+  console.log(`  Newest played season: ${maxSeason}`);
 
   console.log('Fetching draft_picks...');
   const draftCsv = await fetchCsv(`${BASE}/draft_picks/draft_picks.csv`);
   const draftRows = parseCsv(draftCsv);
 
+  // Every class nflverse has drafted, so a new draft needs no code change.
+  const draftYears = [
+    ...new Set(
+      draftRows
+        .map((r) => parseInt(r.season ?? r.draft_year ?? r.year ?? '0', 10))
+        .filter((y) => y >= FIRST_DRAFT_YEAR),
+    ),
+  ].sort((a, b) => a - b);
+  console.log(`  Draft classes: ${draftYears[0]}–${draftYears.at(-1)}`);
+
   console.log('Fetching nflverse players (headshots + positions)...');
   const { headshots, metaByPfrId } = await loadNflversePlayers();
 
-  const snapSeasons = Array.from(
-    { length: MAX_SEASON - 2012 + 1 },
-    (_, i) => 2012 + i,
-  );
-  console.log('Fetching snap_counts (2012–' + MAX_SEASON + ')...');
+  const snapSeasons = seasonRange(FIRST_SNAP_SEASON, maxSeason);
+  console.log(`Fetching snap_counts (${FIRST_SNAP_SEASON}–${maxSeason})...`);
   const { snapData, franchiseGameCountsBySeason, maxFranchiseGamesBySeason } =
     await loadSnapData(snapSeasons, metaByPfrId);
   const lookups: SeasonLookups = {
@@ -728,25 +770,23 @@ async function main() {
     maxFranchiseGamesBySeason,
   };
 
-  const injurySeasons = Array.from(
-    { length: MAX_SEASON - 2009 + 1 },
-    (_, i) => 2009 + i,
-  );
-  console.log('Fetching injuries (2009–' + MAX_SEASON + ')...');
+  const injurySeasons = seasonRange(FIRST_INJURY_SEASON, maxSeason);
+  console.log(`Fetching injuries (${FIRST_INJURY_SEASON}–${maxSeason})...`);
   const injuryData = await loadInjuryData(injurySeasons);
 
-  console.log(`Fetching ${ROSTER_SEASON} rosters (offseason departures)...`);
-  const roster = await loadOffseasonRoster();
+  console.log(`Fetching ${rosterSeason} rosters (offseason departures)...`);
+  const roster = await loadOffseasonRoster(rosterSeason);
 
   const sources: PickSources = {
     snapData,
     injuryData,
     headshots,
     lookups,
+    maxSeason,
     ...(roster ? { roster } : {}),
   };
 
-  for (const year of YEARS) {
+  for (const year of draftYears) {
     console.log(`Processing ${year}...`);
 
     const yearPicks = draftRows.filter(
@@ -770,7 +810,7 @@ async function main() {
   console.log(`  Wrote data stamp ${metaPath}`);
 
   // Scoring sizes each pick's rookie-contract window against the newest season
-  // in the dataset, so it must know MAX_SEASON without waiting on a fetch. This
+  // in the dataset, so it must know that season without waiting on a fetch. This
   // lands in src/data/ rather than public/data/ deliberately: it is imported at
   // build time, and an async load would race the first score.
   const seasonWindowPath = path.join(
@@ -781,7 +821,7 @@ async function main() {
   );
   fs.writeFileSync(
     seasonWindowPath,
-    JSON.stringify({ latestSeason: MAX_SEASON }, null, 2) + '\n',
+    JSON.stringify({ latestSeason: maxSeason }, null, 2) + '\n',
   );
   console.log(`  Wrote season window ${seasonWindowPath}`);
 
