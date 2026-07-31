@@ -2344,6 +2344,154 @@ button {
   cursor: help;
 }
 
+/* "Show the math": the score formula worked through with this pick's numbers,
+   collapsed by default so it never competes with the table it explains. */
+.score-breakdown {
+  margin-top: 18px;
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+}
+.score-breakdown__toggle {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rule-2);
+  background: none;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.score-breakdown__toggle:hover {
+  color: var(--ox);
+  border-bottom-color: var(--ox);
+}
+.score-breakdown__body {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 6px;
+  background: var(--paper-3);
+  /* The math is read left-to-right per line; on a narrow screen the panel
+     scrolls rather than wrapping a formula mid-term. */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.score-breakdown__seasons {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 460px;
+}
+.score-breakdown__season + .score-breakdown__season {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+.score-breakdown__season-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.score-breakdown__year {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.score-breakdown__season-score {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.score-breakdown__terms {
+  margin-top: 6px;
+}
+.score-breakdown__term {
+  display: grid;
+  /* Label, then the working, then the points it yields — the points column is
+     fixed and right-aligned so the two terms of a season add up visibly. */
+  grid-template-columns: 88px 1fr 56px;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--ink-3);
+}
+.score-breakdown__term-label {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.score-breakdown__term-points {
+  text-align: right;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+/* Full measure rather than hanging under the working above it: the note is
+   prose, and indenting it to the points column cost more line breaks than the
+   alignment bought. */
+.score-breakdown__injury {
+  margin: 6px 0 0;
+  max-width: 68ch;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--ink-3);
+}
+.score-breakdown__injury strong {
+  color: var(--ink-2);
+}
+.score-breakdown__season--gap {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.score-breakdown__gap-note,
+.score-breakdown__uncounted-note {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.score-breakdown__uncounted-note {
+  margin-top: 4px;
+}
+.score-breakdown__season--uncounted .score-breakdown__year {
+  color: var(--ink-3);
+}
+.score-breakdown__sum {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: 12px;
+  color: var(--ink-2);
+  min-width: 460px;
+}
+.score-breakdown__sum-divide {
+  color: var(--ink-3);
+}
+.score-breakdown__sum-result {
+  font-weight: 700;
+  color: var(--ink);
+}
+.score-breakdown__rounded {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+.score-breakdown__overslot {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--ink-3);
+  min-width: 460px;
+}
+.score-breakdown__overslot strong {
+  color: var(--ink);
+}
+
 /* Flags a season cut short by injury, next to the year in the career table. */
 .season-ending-injury {
   display: inline-block;
@@ -2907,6 +3055,13 @@ button {
   .player-career {
     padding: 24px 24px 18px;
   }
+  .score-breakdown__body {
+    padding: 14px;
+  }
+  .score-breakdown__term {
+    grid-template-columns: 74px 1fr 48px;
+    gap: 8px;
+  }
   .player-charts {
     padding: 8px 24px 28px;
     gap: 24px;
@@ -3363,5 +3518,48 @@ button {
   }
   .player-career__year {
     font-size: 15px;
+  }
+}
+
+/* Narrow screens: the score breakdown stops being a three-column grid.
+   Placed after the wider breakpoints so it wins at equal specificity.
+
+   The panel scrolls horizontally on desktop because a formula reads worse
+   broken across lines than scrolled. That reasoning does not extend to the
+   injury note, which is prose — and at 375px the shared min-width was pushing
+   whole sentences off-screen. Stacking the working under its label lets both
+   the formulas and the prose fit the viewport, so nothing scrolls sideways. */
+@media (max-width: 760px) {
+  .score-breakdown__body {
+    overflow-x: visible;
+  }
+  .score-breakdown__seasons,
+  .score-breakdown__sum,
+  .score-breakdown__overslot {
+    min-width: 0;
+  }
+  .score-breakdown__term {
+    grid-template-columns: 1fr auto;
+    gap: 0 10px;
+  }
+  .score-breakdown__term-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .score-breakdown__term-points {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .score-breakdown__term-math {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    font-size: 10px;
+    /* The one line that can still outrun 375px; it scrolls alone rather than
+       widening the panel and taking the prose with it. */
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .score-breakdown__term + .score-breakdown__term {
+    margin-top: 6px;
   }
 }

@@ -1,9 +1,15 @@
 import type { Season } from '../types';
 import { snapShareForRoleTier } from './snapShareForTier';
 
-/** Draft-score weights: snap share is the heavier signal (see Info modal). */
-const SNAP_WEIGHT = 0.7;
-const AVAILABILITY_WEIGHT = 0.3;
+/**
+ * Draft-score weights: snap share is the heavier signal (see Info modal).
+ *
+ * Exported because the player page shows this formula worked through with a
+ * pick's own numbers (`explainDraftScore.ts`). An explanation that hard-coded
+ * 0.7/0.3 would keep printing them after a retune, so it reads them from here.
+ */
+export const SNAP_WEIGHT = 0.7;
+export const AVAILABILITY_WEIGHT = 0.3;
 
 function clamp01(v: number): number {
   return Math.min(1, Math.max(0, v));

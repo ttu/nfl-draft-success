@@ -10,6 +10,7 @@ import {
   roleLabel,
 } from '../../design/Primitives';
 import { CareerChart } from '../../design/CareerChart';
+import { ScoreBreakdown } from './ScoreBreakdown';
 import { TEAMS } from '../../../data/teams';
 import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
@@ -287,6 +288,9 @@ function PlayerDetailViewImpl({
               </tbody>
             </table>
           </div>
+        )}
+        {sortedSeasons.length > 0 && (
+          <ScoreBreakdown pick={pick} draftingTeamOnly={draftingTeamOnly} />
         )}
       </section>
 

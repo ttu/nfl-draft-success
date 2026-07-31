@@ -339,6 +339,19 @@ overSlot(team)  = mean(overSlot(pick) for scored picks)
 
 **Caveats:** over slot removes capital, not luck — it is still built on the snap-based score, so it rewards a pick that _plays_ relative to its slot, not one graded on play quality. And the head of an empirical curve rests on a thin sample (~30 picks per top-10 bucket against ~390 in the late rounds), so the top-of-draft expectations move more than the tail as new classes mature.
 
+### 7.5 "Show the math" panel (player page)
+
+**Functions:** `explainDraftScore` in `src/lib/explainDraftScore.ts`; rendered by `src/components/views/player/ScoreBreakdown.tsx`.
+
+The player page carries a collapsed panel under the career table that walks a single pick's score through §7.1 with that pick's own numbers: each season split into its Load and availability terms, then the sum, the denominator, and the §7.4 subtraction. It exists because the inputs are individually visible in the career table but the arithmetic joining them is not — most often for an injured pick, whose Load is forgiven while availability is not, and who therefore scores far below what the Load column alone suggests.
+
+Two properties are deliberate and pinned by tests:
+
+- **Nothing is re-derived.** Every figure comes from `getSeasonScore`, `getPlayerDraftScore`, `scoredSeasonCount` and `expectedScoreForPick`, and the weights are imported from `getSeasonScore.ts` rather than written out. An explanation that computed the formula a second time would keep printing the old one after a retune, and a wrong explanation is worse than none. `explainDraftScore.test.ts` asserts the reported terms sum to the real season score and that the division reproduces the real pick score.
+- **Displayed figures are rounded before being added, not after.** Rounding each term off the exact float prints `34.3 + 7.1` beside a season score of `41.3`. The panel's only value is being checkable, so the shown terms are the source of truth for every total built from them. The one figure that absorbs the residue is the slot expectation in the over-slot line, chosen because it appears nowhere else on the page — over slot itself must match the hero badge to the decimal.
+
+Rows are limited to the years the denominator spans (§7.1): seasons played elsewhere **after** the window closed contribute to neither half of the division, and listing them leaves seven rows above a divisor of four. Uncounted seasons **inside** the window stay, since they are why the denominator exceeds the number of seasons that scored.
+
 ---
 
 ## 8. Contributor Definition
