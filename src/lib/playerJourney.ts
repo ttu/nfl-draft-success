@@ -103,20 +103,32 @@ export function getJourneyAfterDraft(pick: DraftPick): TeamStint[] {
     : [{ team: 'FA', role: 'non_contributor' as Role }];
 }
 
+/** A list split at the start of its trailing free-agent run. */
+export interface TrailingFaRun<T> {
+  /** Items to render one by one. */
+  before: T[];
+  /** The trailing run, to render as a single range. Empty unless it has 2+. */
+  run: T[];
+}
+
 /**
- * Collapse a trailing run of items satisfying `isFa` down to its first item,
- * preserving everything before the run. No-op if the run has 0 or 1 items.
+ * Split a chronological list at the start of its trailing run of free-agent
+ * items, so a caller can render the run as one range instead of one row each.
+ *
+ * Only a run that reaches the end of the career is folded up: an FA year
+ * between two stints is a real gap between two clubs and earns its own row,
+ * while a run at the end is a player who left and never came back — the second
+ * and third identical rows of that say nothing the first did not.
+ *
+ * A run of one is left in `before`: there is nothing to collapse, and a range
+ * row spanning a single year would be a worse version of the row it replaced.
  */
-export function collapseTrailingFaRun<T>(
+export function splitTrailingFaRun<T>(
   items: T[],
   isFa: (item: T) => boolean,
-): T[] {
-  const n = items.length;
-  if (n < 2) return items;
-  let i = n - 1;
-  while (i >= 0 && isFa(items[i])) i -= 1;
-  const runStart = i + 1;
-  const runLen = n - runStart;
-  if (runLen <= 1) return items;
-  return items.slice(0, runStart + 1);
+): TrailingFaRun<T> {
+  let runStart = items.length;
+  while (runStart > 0 && isFa(items[runStart - 1])) runStart -= 1;
+  if (items.length - runStart < 2) return { before: items, run: [] };
+  return { before: items.slice(0, runStart), run: items.slice(runStart) };
 }

@@ -26,7 +26,11 @@ import {
   isBaselineExemptPosition,
 } from '../../../lib/positionBaseline';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
-import { getCurrentTeamIndicator } from '../../../lib/playerJourney';
+import {
+  getCurrentTeamIndicator,
+  isFreeAgentSeason,
+  splitTrailingFaRun,
+} from '../../../lib/playerJourney';
 import { getPfrUrl } from '../../../lib/playerDisplay';
 import {
   getPositionCohort,
@@ -89,6 +93,19 @@ function PlayerDetailViewImpl({
     ...sortedSeasons.map((s) => ({ year: s.year, season: s })),
     ...gapYears.map((year) => ({ year, season: null })),
   ].sort((a, b) => a.year - b.year);
+  // A career that trails off in free agency ends in identical empty rows —
+  // same team, same zeros, same role — one per year he stayed unsigned. They
+  // are folded into a single range row; only uncounted ones, so career mode,
+  // where each of those zeros drags the average down and appears as an addend
+  // in the math panel, keeps a row for every year it charges.
+  const { before: shownRows, run: faRun } = splitTrailingFaRun(
+    careerRows,
+    ({ season }) =>
+      draftingTeamOnly &&
+      season !== null &&
+      season.gamesPlayed === 0 &&
+      isFreeAgentSeason(season, pick),
+  );
   const pfrUrl = getPfrUrl(pick.playerId, pick.playerName);
 
   const { members: classmateRows, rank: positionRank } = useMemo(
@@ -265,7 +282,7 @@ function PlayerDetailViewImpl({
                 </tr>
               </thead>
               <tbody>
-                {careerRows.map(({ year, season }) =>
+                {shownRows.map(({ year, season }) =>
                   season ? (
                     <SeasonRow
                       key={year}
@@ -278,6 +295,12 @@ function PlayerDetailViewImpl({
                   ) : (
                     <WindowGapRow key={year} year={year} />
                   ),
+                )}
+                {faRun.length > 0 && (
+                  <FreeAgentRunRow
+                    fromYear={faRun[0].year}
+                    toYear={faRun[faRun.length - 1].year}
+                  />
                 )}
                 {upcomingSeason && (
                   <UpcomingSeasonRow
@@ -583,6 +606,58 @@ function UpcomingSeasonRow({
       <td className="career-load" />
       <td />
       <td className="right mono tnum">—</td>
+      <td className="right mono tnum hide-mobile">—</td>
+    </tr>
+  );
+}
+
+/**
+ * The years a career trailed off in, as one row.
+ *
+ * Stands for two or more consecutive seasons the player finished unsigned. Each
+ * would otherwise render as its own row of the same nothing — FA, 0 games, 0%,
+ * Non-Contributor — and repeating that three times says no more than saying it
+ * once, while burying the seasons he did play under a wall of zeros.
+ */
+function FreeAgentRunRow({
+  fromYear,
+  toYear,
+}: {
+  fromYear: number;
+  toYear: number;
+}) {
+  return (
+    <tr
+      className="season-row season-row--gap season-row--uncounted"
+      data-testid={`fa-run-${fromYear}-${toYear}`}
+    >
+      <td>
+        {/* En dash, not a hyphen: this is a span of years, not a compound. */}
+        <span className="player-career__year player-career__year--range">
+          {fromYear}–{toYear}
+        </span>
+      </td>
+      <td>
+        <span className="mono" style={{ fontSize: 12, fontWeight: 700 }}>
+          FA
+        </span>
+      </td>
+      {/* Split like WindowGapRow so the Load column stays hideable on mobile. */}
+      <td className="mono" colSpan={2}>
+        Not on a roster
+      </td>
+      <td className="career-load" />
+      <td />
+      <td className="right mono tnum player-career__score">
+        0
+        <abbr
+          className="season-uncounted-mark"
+          aria-label="Not counted — no season with the drafting team"
+          title="Not counted — the player was not on the drafting team's roster"
+        >
+          ✕
+        </abbr>
+      </td>
       <td className="right mono tnum hide-mobile">—</td>
     </tr>
   );

@@ -2266,6 +2266,13 @@ button {
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
+/* A span of years, not one. Set smaller and kept on one line: at the full size
+   it wraps inside the Season column, and the two-line cell makes the emptiest
+   row on the page the tallest one. */
+.player-career__year--range {
+  font-size: 15px;
+  white-space: nowrap;
+}
 /* A rookie-window year the drafting team got nothing from. Recedes: it is a
    year of absence, and must not read as a season with data in it. The zero in
    the score column is real, though — it is what the denominator divides. */

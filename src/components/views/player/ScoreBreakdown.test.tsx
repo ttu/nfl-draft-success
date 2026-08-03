@@ -249,6 +249,72 @@ describe('ScoreBreakdown', () => {
     );
   });
 
+  describe('a career that ends in free agency', () => {
+    /** Out of the league: on nobody's roster, so no team and no snaps. */
+    const faSeason = (year: number) =>
+      makeSeason({ year, gamesPlayed: 0, snapShare: 0, retained: false });
+
+    const washedOut = makePick({
+      position: 'ZZ',
+      round: 3,
+      overallPick: 66,
+      draftYear: 2021,
+      seasons: [
+        makeSeason({ year: 2021 }),
+        makeSeason({ year: 2022, gamesPlayed: 0, snapShare: 0 }),
+        faSeason(2023),
+        faSeason(2024),
+      ],
+    });
+
+    it('folds the trailing unsigned years into one entry', () => {
+      renderBreakdown(washedOut);
+      fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+
+      const row = screen.getByTestId('score-breakdown-fa-run-2023-2024');
+      expect(row).toHaveTextContent('2023–2024');
+      expect(row).toHaveTextContent(/not on a roster — not counted/i);
+      expect(
+        screen.queryByTestId('score-breakdown-season-2023'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('leaves the seasons he played as their own entries', () => {
+      renderBreakdown(washedOut);
+      fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+
+      for (const year of [2021, 2022]) {
+        expect(
+          screen.getByTestId(`score-breakdown-season-${year}`),
+        ).toBeInTheDocument();
+      }
+    });
+
+    it('says a lone unsigned year was on no roster, not on another team', () => {
+      const released = makePick({
+        position: 'ZZ',
+        draftYear: 2023,
+        seasons: [makeSeason({ year: 2023 }), faSeason(2024)],
+      });
+      renderBreakdown(released);
+      fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+
+      const row = screen.getByTestId('score-breakdown-season-2024');
+      expect(row).toHaveTextContent(/not on a roster — not counted/i);
+      expect(row).not.toHaveTextContent(/played for/i);
+    });
+
+    it('leaves the entries alone in career mode, where each is an addend', () => {
+      renderBreakdown(washedOut, false);
+      fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+
+      expect(screen.queryByTestId(/^score-breakdown-fa-run/)).toBeNull();
+      expect(
+        screen.getByTestId('score-breakdown-season-2023'),
+      ).toBeInTheDocument();
+    });
+  });
+
   it('renders nothing for a pick with no seasons to explain', () => {
     renderBreakdown(makePick({ seasons: [] }));
 

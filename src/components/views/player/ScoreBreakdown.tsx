@@ -5,6 +5,7 @@ import {
   type ScoreExplanationRow,
   type SeasonScoreExplanation,
 } from '../../../lib/explainDraftScore';
+import { splitTrailingFaRun } from '../../../lib/playerJourney';
 import type { DraftPick } from '../../../types';
 
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
@@ -63,6 +64,13 @@ export function ScoreBreakdown({
   // less than printing a subtraction that does not resolve.
   const shownOverSlot = round1(explanation.overSlot);
   const shownExpected = round1(dividedScore - shownOverSlot);
+  // Mirrors the career table: consecutive unsigned years at the end of a career
+  // are one entry, not one apiece. Only uncounted ones — a counted season is an
+  // addend in the sum below, and every addend must have a row behind it.
+  const { before: shownRows, run: faRun } = splitTrailingFaRun(
+    rows,
+    isUncountedFreeAgentRow,
+  );
 
   return (
     <div className="score-breakdown">
@@ -79,9 +87,15 @@ export function ScoreBreakdown({
       {expanded && (
         <div className="score-breakdown__body" data-testid="score-breakdown">
           <ol className="score-breakdown__seasons">
-            {rows.map((row) => (
+            {shownRows.map((row) => (
               <BreakdownRow key={row.year} row={row} />
             ))}
+            {faRun.length > 0 && (
+              <FreeAgentRunEntry
+                fromYear={faRun[0].year}
+                toYear={faRun[faRun.length - 1].year}
+              />
+            )}
           </ol>
 
           <div className="score-breakdown__sum">
@@ -141,6 +155,47 @@ function displayedSeasonScore(season: SeasonScoreExplanation): number {
   return round1(round1(season.snapPoints) + round1(season.availabilityPoints));
 }
 
+/**
+ * A season the drafting team lost the player for, to nobody: he was on no NFL
+ * roster that year. It scores zero for them like any other season away, but
+ * "played for another team" would be a claim about a year he did not play.
+ */
+function isUncountedFreeAgentRow(row: ScoreExplanationRow): boolean {
+  return (
+    row.kind === 'season' &&
+    !row.counted &&
+    row.currentTeam === undefined &&
+    row.gamesPlayed === 0
+  );
+}
+
+/** The years a career trailed off in, as one entry. See `FreeAgentRunRow`. */
+function FreeAgentRunEntry({
+  fromYear,
+  toYear,
+}: {
+  fromYear: number;
+  toYear: number;
+}) {
+  return (
+    <li
+      className="score-breakdown__season score-breakdown__season--uncounted"
+      data-testid={`score-breakdown-fa-run-${fromYear}-${toYear}`}
+    >
+      <div className="score-breakdown__season-head">
+        {/* En dash, not a hyphen: this is a span of years, not a compound. */}
+        <span className="score-breakdown__year mono tnum">
+          {fromYear}–{toYear}
+        </span>
+        <span className="score-breakdown__season-score mono tnum">—</span>
+      </div>
+      <div className="score-breakdown__uncounted-note">
+        Not on a roster — not counted toward the drafting team's score.
+      </div>
+    </li>
+  );
+}
+
 function BreakdownRow({ row }: { row: ScoreExplanationRow }) {
   if (row.kind === 'gap') {
     return (
@@ -155,11 +210,22 @@ function BreakdownRow({ row }: { row: ScoreExplanationRow }) {
   return <SeasonBreakdown season={row} />;
 }
 
+/**
+ * Where an uncounted season was spent. A free agent has no `currentTeam`, and
+ * saying he "played for another team" would claim a year of football that never
+ * happened — the distinction the reader needs is *why* the season scored zero.
+ */
+function whereHeWas(season: SeasonScoreExplanation): string {
+  if (season.currentTeam) return `Played for ${season.currentTeam}`;
+  return season.gamesPlayed === 0
+    ? 'Not on a roster'
+    : 'Played for another team';
+}
+
 function SeasonBreakdown({ season }: { season: SeasonScoreExplanation }) {
   const {
     year,
     counted,
-    currentTeam,
     rawShare,
     positionBaseline,
     baselineExempt,
@@ -223,8 +289,7 @@ function SeasonBreakdown({ season }: { season: SeasonScoreExplanation }) {
         </div>
       ) : (
         <div className="score-breakdown__uncounted-note">
-          Played for {currentTeam ?? 'another team'} — not counted toward the
-          drafting team's score.
+          {whereHeWas(season)} — not counted toward the drafting team's score.
         </div>
       )}
     </li>

@@ -3,7 +3,12 @@ import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { PlayerDetailView } from './PlayerDetailView';
 import type { DraftClass, DraftPick } from '../../../types';
-import { makeDraftClass, makePick, makeSeason } from '../../../test/factories';
+import {
+  makeDraftClass,
+  makeNonContributorSeason,
+  makePick,
+  makeSeason,
+} from '../../../test/factories';
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { LATEST_SEASON } from '../../../lib/rookieWindow';
@@ -367,6 +372,101 @@ describe('PlayerDetailView rookie window', () => {
     });
     renderPick(onRoster);
     expect(screen.queryByTestId('window-gap-2026')).toBeNull();
+  });
+
+  describe('a career that ends in free agency', () => {
+    /** Out of the league: on nobody's roster, so no team and no snaps. */
+    const faSeason = (year: number) =>
+      makeSeason({
+        year,
+        gamesPlayed: 0,
+        snapShare: 0,
+        retained: false,
+      });
+
+    /** Kellen Mond: two seasons in MIN, then out of the league for three. */
+    const washedOut = (): DraftPick =>
+      makePick({
+        playerName: 'Kellen Mond',
+        round: 3,
+        overallPick: 66,
+        teamId: 'MIN',
+        draftYear: 2021,
+        seasons: [
+          makeNonContributorSeason({ year: 2021 }),
+          makeSeason({ year: 2022, gamesPlayed: 0, snapShare: 0 }),
+          faSeason(2023),
+          faSeason(2024),
+          faSeason(2025),
+        ],
+      });
+
+    it('folds the trailing free-agent years into one row', () => {
+      renderPick(washedOut());
+      const row = screen.getByTestId('fa-run-2023-2025');
+      expect(within(row).getByText('2023–2025')).toBeInTheDocument();
+      expect(within(row).getByText('FA')).toBeInTheDocument();
+      for (const year of [2023, 2024, 2025]) {
+        expect(screen.queryByTestId(`season-uncounted-${year}`)).toBeNull();
+      }
+      // The seasons he did play keep their own rows.
+      const table = screen.getByRole('table');
+      expect(within(table).getByText('2021')).toBeInTheDocument();
+      expect(within(table).getByText('2022')).toBeInTheDocument();
+    });
+
+    it('still tallies the folded years as seasons, not as one', () => {
+      // The row count changed; the career did not.
+      renderPick(washedOut());
+      expect(screen.getByTestId('rookie-window-note')).toHaveTextContent(
+        /2 of 5 seasons counted/i,
+      );
+    });
+
+    it('marks the folded row as not counting toward the score', () => {
+      renderPick(washedOut());
+      const row = screen.getByTestId('fa-run-2023-2025');
+      expect(within(row).getByLabelText(/not counted/i)).toBeInTheDocument();
+    });
+
+    it('leaves a lone trailing free-agent year on its own row', () => {
+      const oneYearOut = makePick({
+        playerName: 'Just Released',
+        round: 1,
+        draftYear: 2021,
+        seasons: [makeSeason({ year: 2021 }), faSeason(2022)],
+      });
+      renderPick(oneYearOut);
+      expect(screen.queryByTestId(/^fa-run-/)).toBeNull();
+      expect(screen.getByTestId('season-uncounted-2022')).toBeInTheDocument();
+    });
+
+    it('keeps free-agent years that sit between two clubs', () => {
+      // A year out of the league before signing elsewhere is a real gap
+      // between stints, not a career trailing off.
+      const returned = makePick({
+        playerName: 'Came Back',
+        round: 1,
+        draftYear: 2021,
+        seasons: [
+          makeSeason({ year: 2021 }),
+          faSeason(2022),
+          faSeason(2023),
+          makeSeason({ year: 2024, retained: false, currentTeam: 'CAR' }),
+        ],
+      });
+      renderPick(returned);
+      expect(screen.queryByTestId(/^fa-run-/)).toBeNull();
+      expect(screen.getByTestId('season-uncounted-2022')).toBeInTheDocument();
+      expect(screen.getByTestId('season-uncounted-2023')).toBeInTheDocument();
+    });
+
+    it('leaves the rows alone in career mode, where they score', () => {
+      // Career mode counts these zeros into the average, and every addend the
+      // math panel sums has to be a row the reader can find.
+      renderPick(washedOut(), false);
+      expect(screen.queryByTestId(/^fa-run-/)).toBeNull();
+    });
   });
 
   describe('the upcoming season', () => {

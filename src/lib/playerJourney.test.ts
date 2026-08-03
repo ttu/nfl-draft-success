@@ -10,7 +10,7 @@ import {
   isFreeAgentSeason,
   getTeamJourney,
   getJourneyAfterDraft,
-  collapseTrailingFaRun,
+  splitTrailingFaRun,
 } from './playerJourney';
 
 const season = (year: number, opts: Partial<Season> = {}): Season =>
@@ -177,22 +177,37 @@ describe('getJourneyAfterDraft', () => {
   });
 });
 
-describe('collapseTrailingFaRun', () => {
+describe('splitTrailingFaRun', () => {
   const fa = (s: string) => s === 'FA';
-  it('returns input unchanged when length < 2', () => {
-    expect(collapseTrailingFaRun([], fa)).toEqual([]);
-    expect(collapseTrailingFaRun(['FA'], fa)).toEqual(['FA']);
+  it('reports no run for an empty or single-item list', () => {
+    expect(splitTrailingFaRun([], fa)).toEqual({ before: [], run: [] });
+    expect(splitTrailingFaRun(['FA'], fa)).toEqual({
+      before: ['FA'],
+      run: [],
+    });
   });
-  it('keeps a single trailing FA item as-is', () => {
-    expect(collapseTrailingFaRun(['KC', 'FA'], fa)).toEqual(['KC', 'FA']);
+  it('leaves a lone trailing FA item in place', () => {
+    expect(splitTrailingFaRun(['KC', 'FA'], fa)).toEqual({
+      before: ['KC', 'FA'],
+      run: [],
+    });
   });
-  it('collapses 2+ trailing FA items to one', () => {
-    expect(collapseTrailingFaRun(['KC', 'FA', 'FA', 'FA'], fa)).toEqual([
-      'KC',
-      'FA',
-    ]);
+  it('splits off a trailing run of 2+ FA items', () => {
+    expect(splitTrailingFaRun(['KC', 'FA', 'FA', 'FA'], fa)).toEqual({
+      before: ['KC'],
+      run: ['FA', 'FA', 'FA'],
+    });
   });
-  it('does not collapse FA items that are not at the end', () => {
-    expect(collapseTrailingFaRun(['FA', 'KC'], fa)).toEqual(['FA', 'KC']);
+  it('ignores FA items that are not at the end', () => {
+    expect(splitTrailingFaRun(['FA', 'FA', 'KC'], fa)).toEqual({
+      before: ['FA', 'FA', 'KC'],
+      run: [],
+    });
+  });
+  it('splits a list that is nothing but FA items', () => {
+    expect(splitTrailingFaRun(['FA', 'FA'], fa)).toEqual({
+      before: [],
+      run: ['FA', 'FA'],
+    });
   });
 });
