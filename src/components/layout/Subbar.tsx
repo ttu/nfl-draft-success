@@ -1,5 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { parseFromYear, parseToYear } from '../../lib/yearRange';
+import { useIsMobile } from '../../lib/useMediaQuery';
+
+/** Two-digit year, e.g. 2018 → "18". */
+function yy(year: number): string {
+  return String(year % 100).padStart(2, '0');
+}
 
 export function Subbar({ children }: { children: ReactNode }) {
   return <div className="subbar">{children}</div>;
@@ -47,29 +53,36 @@ export function YearRangeChips({
   // draft class). That newest class has no snap/retention data yet, so ending
   // at it would understate scores.
   // Ordered longest window first so the full range leads the chips.
+  // Phones get two-digit years and bare durations so all four windows fit one
+  // row; the full labels return as soon as there is width for them.
+  const isMobile = useIsMobile();
+  const span = (a: number, b: number) =>
+    isMobile ? `${yy(a)}–${yy(b)}` : `${a}–${b}`;
   const presets: Array<{ label: string; from: number; to: number }> = [
     {
-      label: `${min}–${latestCompletedYear}`,
+      label: span(min, latestCompletedYear),
       from: min,
       to: latestCompletedYear,
     },
     {
-      label: `${latestCompletedYear - 4}–${latestCompletedYear}`,
+      label: span(latestCompletedYear - 4, latestCompletedYear),
       from: latestCompletedYear - 4,
       to: latestCompletedYear,
     },
     {
-      label: `Last 3 yr`,
+      label: isMobile ? '3 yr' : 'Last 3 yr',
       from: latestCompletedYear - 2,
       to: latestCompletedYear,
     },
     {
-      label: `Last yr`,
+      label: isMobile ? '1 yr' : 'Last yr',
       from: latestCompletedYear,
       to: latestCompletedYear,
     },
   ];
 
+  /** Whether the custom From/To fields are revealed (mobile only — see CSS). */
+  const [customOpen, setCustomOpen] = useState(false);
   const [fromInput, setFromInput] = useState(String(from));
   const [toInput, setToInput] = useState(String(to));
   /**
@@ -110,18 +123,35 @@ export function YearRangeChips({
 
   return (
     <>
-      <span className="subbar__label">Range</span>
-      {presets.map((p) => (
-        <Chip
-          key={p.label}
-          on={p.from === committed.from && p.to === committed.to}
-          onClick={() => commitRange([p.from, p.to])}
-        >
-          {p.label}
-        </Chip>
-      ))}
+      {/* `display: contents` on desktop, so the label and chips stay direct
+          children of the subbar's flex row. On mobile it becomes its own
+          scroller, which keeps an overflowing chip from sliding under the
+          edit toggle instead of past the row's edge. */}
+      <span className="subbar__presets">
+        <span className="subbar__label">Range</span>
+        {presets.map((p) => (
+          <Chip
+            key={p.label}
+            on={p.from === committed.from && p.to === committed.to}
+            onClick={() => commitRange([p.from, p.to])}
+          >
+            {p.label}
+          </Chip>
+        ))}
+      </span>
+      {/* Mobile squeezes the whole control onto one row, so the custom range
+          hides behind this toggle. On desktop the button is not rendered and
+          the inputs sit open beside the chips. */}
+      <button
+        type="button"
+        className="subbar__range-edit mono"
+        aria-expanded={customOpen}
+        onClick={() => setCustomOpen((v) => !v)}
+      >
+        {customOpen ? 'done' : 'edit'}
+      </button>
       <span
-        className="subbar__range-inputs"
+        className={`subbar__range-inputs${customOpen ? ' is-open' : ''}`}
         role="group"
         aria-label="Custom year range"
       >

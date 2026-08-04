@@ -315,6 +315,13 @@ button {
   gap: 10px;
   margin-left: 4px;
 }
+.subbar__presets {
+  display: contents;
+}
+/* Desktop shows the From/To fields outright; the toggle is a mobile affordance. */
+.subbar__range-edit {
+  display: none;
+}
 .subbar__range-inputs label {
   display: inline-flex;
   align-items: center;
@@ -702,6 +709,166 @@ button {
     grid-template-columns: 1fr;
     gap: 24px;
     padding: 20px 24px 24px;
+  }
+}
+
+/* ─── Mobile rankings hero: podium ────────────────────────────
+   Rendered only below the mobile breakpoint (see useIsMobile), so these rules
+   need no media query of their own — the markup simply does not exist above
+   it. Everything stays on the cool/analytic type and colour system; the only
+   new ink is each team's own colour on its medallion and bar. */
+.podium {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0 2px;
+  list-style: none;
+}
+.podium__col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+/* Reading order is 1-2-3; the runner-up stands to the left of the winner. */
+.podium__col--1 {
+  order: 2;
+}
+.podium__col--2 {
+  order: 1;
+}
+.podium__col--3 {
+  order: 3;
+}
+.podium__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+.podium__link:focus-visible {
+  outline: 2px solid var(--ox);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.podium__link:hover .podium__name {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.podium__medal {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 12%);
+}
+.podium__col--lead .podium__medal {
+  width: 58px;
+  height: 58px;
+  font-size: 21px;
+}
+.podium__name {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 12.5px;
+  line-height: 1.1;
+  text-align: center;
+  /* Long names (Commanders, Buccaneers) get two lines rather than an ellipsis:
+     the column is only a third of a phone wide. */
+  overflow-wrap: anywhere;
+}
+.podium__col--lead .podium__name {
+  font-size: 14px;
+}
+.podium__score {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+}
+.podium__col--lead .podium__score {
+  font-size: 22px;
+}
+.podium__bar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 7px;
+  border-radius: 4px 4px 0 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 20px;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 10%);
+}
+.podium__col--1 .podium__bar {
+  height: 64px;
+  font-size: 26px;
+}
+.podium__col--2 .podium__bar {
+  height: 44px;
+}
+/* Tall enough to leave air under the numeral. At the mockup's 30px the glyph
+   ran to the bar's bottom edge and read as clipped. */
+.podium__col--3 .podium__bar {
+  height: 38px;
+}
+
+/* Boot state: the same geometry in neutral ink, so nothing moves when the real
+   teams land. The dashes keep each line's height, which is what holds the
+   column's box open — empty spans would collapse it. */
+.podium--placeholder .podium__medal,
+.podium--placeholder .podium__bar {
+  background: var(--paper-2);
+  color: var(--ink-4);
+  box-shadow: none;
+}
+.podium--placeholder .podium__name,
+.podium--placeholder .podium__score {
+  color: var(--ink-4);
+}
+
+.podium-strip {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 0 -16px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-3);
+}
+.podium-strip__value {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+.podium-strip__hint {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--ink-4);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+/* Narrow phones: the two labels would otherwise wrap and double the strip. */
+@media (max-width: 360px) {
+  .podium-strip {
+    gap: 14px;
+  }
+  .podium-strip .kicker {
+    letter-spacing: 0.08em;
+    white-space: nowrap;
   }
 }
 
@@ -3096,13 +3263,51 @@ button {
 
 /* ─── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
+  /* Brand and the Info/Light controls share the top row — the controls become
+     icon buttons — so the tab strip is the only other chrome above the hero. */
   .masthead {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: stretch;
   }
   .mast__brand {
+    grid-row: 1;
+    grid-column: 1;
     border-right: 0;
     border-bottom: 1px solid var(--rule);
+  }
+  .mast__controls {
+    grid-row: 1;
+    grid-column: 2;
+    border-bottom: 1px solid var(--rule);
+    align-items: center;
+    padding-right: 10px;
+  }
+  .mast__ctrl-btn {
+    border-right: 0;
+    padding: 0 6px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    border: 1px solid var(--rule);
+    background: var(--card);
+    margin-left: 6px;
+  }
+  .mast__ctrl-btn.is-on {
+    border-color: var(--ink);
+  }
+  .mast__ctrl-ico {
+    font-size: 13px;
+    line-height: 1;
+  }
+  .mast__ctrl-label {
+    display: none;
+  }
+  .mast__nav {
+    grid-row: 2;
+    grid-column: 1 / -1;
   }
   /* Tagline and sync/teams meta live in the Info view; on mobile they only
      eat vertical space, so hide them and keep the masthead compact. */
@@ -3124,12 +3329,96 @@ button {
   .mast__controls {
     border-left: 0;
   }
+  /* The presets get their own scroller and the From/To fields drop behind the
+     edit toggle, so the range control costs a single line. On Rankings that is
+     the whole subbar; the other tabs put their breadcrumb on a line above it —
+     the spacer that separates the two on desktop becomes the line break. */
   .subbar {
-    padding: 10px 16px;
-    gap: 10px;
+    padding: 9px 16px;
+    gap: 8px;
+  }
+  .subbar__sp {
+    flex-basis: 100%;
+    height: 0;
+  }
+  .subbar__presets {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .subbar__presets::-webkit-scrollbar {
+    display: none;
+  }
+  /* Sits outside the preset scroller, so it holds the row's right edge without
+     ever covering a chip. */
+  .subbar__range-edit {
+    display: inline-block;
+    /* Last in the row whatever it holds — presets or the two custom fields. */
+    order: 2;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 4px 0 4px 10px;
+    border: 0;
+    background: none;
+    color: var(--ink-4);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+  .league-context__legend {
+    gap: 6px 14px;
+    font-size: 11px;
+  }
+  .subbar__range-inputs {
+    display: none;
+  }
+  .subbar__range-inputs.is-open {
+    display: inline-flex;
+  }
+  .subbar__range-inputs input {
+    width: 56px;
+  }
+  /* Opening the custom range swaps the presets out for the two fields rather
+     than pushing them off the end of the scroll — one row either way. */
+  .subbar:has(.subbar__range-inputs.is-open) .subbar__chip {
+    display: none;
+  }
+  /* With the chips gone the scroller has nothing to fill, so stop it growing
+     and shoving the fields against the toggle. */
+  .subbar:has(.subbar__range-inputs.is-open) .subbar__presets {
+    flex: 0 0 auto;
+  }
+  /* The mobile hero's explainer line now says what this banner said, and it
+     sat between the controls and the podium — exactly the space the podium
+     needs. Desktop keeps it. */
+  .site-intro {
+    display: none;
   }
   .page-hero {
     padding: 24px 16px 18px;
+  }
+  .page-hero--mobile {
+    padding: 15px 16px 0;
+  }
+  .page-hero__headline--short {
+    font-size: 27px;
+    margin-top: 7px;
+  }
+  .page-hero__lede--short {
+    margin-top: 8px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    max-width: 46ch;
+  }
+  /* The podium strip already carries average and spread; the band is reduced
+     to the role distribution and should sit tight under the list header. */
+  .league-context--dist-only {
+    grid-template-columns: 1fr;
+    padding: 16px;
   }
   /* Headline+lede span the full width as their own row; the three stat blocks
      line up beneath as a compact box-score strip so nothing floats mid-column. */

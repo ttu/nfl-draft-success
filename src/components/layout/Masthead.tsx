@@ -92,6 +92,8 @@ export function Masthead({
         </div>
         <div>32 teams · 2018–2026</div>
       </div>
+      {/* The glyph carries the meaning on mobile, where the label is hidden and
+          these sit as icon buttons in the brand row. */}
       <div className="mast__controls">
         <button
           type="button"
@@ -99,16 +101,23 @@ export function Masthead({
           onClick={onShowInfo}
           aria-label="Methodology"
         >
-          ? Info
+          <span className="mast__ctrl-ico" aria-hidden="true">
+            ?
+          </span>
+          <span className="mast__ctrl-label">Info</span>
         </button>
         <button
           type="button"
           className={`mast__ctrl-btn${dark ? ' is-on' : ''}`}
           onClick={onToggleDark}
           aria-pressed={dark}
+          aria-label="Toggle dark mode"
           title="Toggle dark mode"
         >
-          {dark ? '☾ Dark' : '☀ Light'}
+          <span className="mast__ctrl-ico" aria-hidden="true">
+            {dark ? '☾' : '☀'}
+          </span>
+          <span className="mast__ctrl-label">{dark ? 'Dark' : 'Light'}</span>
         </button>
       </div>
     </header>

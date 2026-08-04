@@ -1,9 +1,17 @@
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { TEAMS } from '../../../data/teams';
-import { TeamLogo, Sparkline, Delta, teamColor } from '../../design/Primitives';
+import {
+  TeamLogo,
+  Sparkline,
+  Delta,
+  teamColor,
+  teamFg,
+} from '../../design/Primitives';
 import { buildTeamHref } from '../../../lib/teamHref';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
+import { useIsMobile } from '../../../lib/useMediaQuery';
+import { teamNickname } from '../../../lib/teamNickname';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type {
   LeagueContext,
@@ -44,6 +52,9 @@ interface ExtendedRanking extends TeamRanking {
   change?: number;
 }
 
+/** Teams the mobile hero lifts out of the list and onto the podium. */
+const PODIUM_SIZE = 3;
+
 function TeamRankingsViewImpl({
   rankings,
   yearCount,
@@ -54,22 +65,43 @@ function TeamRankingsViewImpl({
   onTeamSelect,
   onShowInfo,
 }: TeamRankingsViewProps) {
+  const isMobile = useIsMobile();
   const top = rankings[0] as ExtendedRanking | undefined;
   const bottom = rankings[rankings.length - 1] as ExtendedRanking | undefined;
   const total = rankings.length;
+  const yearWindow = { from: startYear, to: endYear };
+
+  // The podium *is* the top three on mobile, so the table picks up at #4 —
+  // unless there aren't three teams to stand on it, in which case the list
+  // keeps all of them rather than showing a stump.
+  const hasPodium = isMobile && total >= PODIUM_SIZE;
+  const tableRankings = hasPodium ? rankings.slice(PODIUM_SIZE) : rankings;
 
   return (
     <section className="rankings-view" aria-label="Team draft rankings">
-      <RankingsHero
-        yearCount={yearCount}
-        top={top}
-        bottom={bottom}
-        total={total}
-        yearWindow={{ from: startYear, to: endYear }}
-      />
+      {isMobile ? (
+        <MobileRankingsHero
+          yearCount={yearCount}
+          yearWindow={yearWindow}
+          podium={
+            hasPodium
+              ? (rankings.slice(0, PODIUM_SIZE) as ExtendedRanking[])
+              : undefined
+          }
+          leagueContext={leagueContext}
+        />
+      ) : (
+        <RankingsHero
+          yearCount={yearCount}
+          top={top}
+          bottom={bottom}
+          total={total}
+          yearWindow={yearWindow}
+        />
+      )}
 
       {(leagueContext || loading) && (
-        <LeagueContextBand context={leagueContext} />
+        <LeagueContextBand context={leagueContext} showStats={!isMobile} />
       )}
 
       <div className="divider-em" />
@@ -98,11 +130,11 @@ function TeamRankingsViewImpl({
           <RankingsTableColgroup />
           <RankingsTableHead startYear={startYear} endYear={endYear} />
           <tbody>
-            {rankings.map((r) => (
+            {tableRankings.map((r) => (
               <RankRow
                 key={r.teamId}
                 r={r as ExtendedRanking}
-                yearWindow={{ from: startYear, to: endYear }}
+                yearWindow={yearWindow}
                 onSelect={onTeamSelect}
               />
             ))}
@@ -149,15 +181,24 @@ function TeamRankingsViewImpl({
  * / slow 4G, and considerably more when the rankings request is slow.
  */
 export function RankingsBoot({ yearCount }: { yearCount: number }) {
+  const isMobile = useIsMobile();
   return (
     <section className="rankings-view" aria-label="Team draft rankings">
-      <RankingsHero
-        yearCount={yearCount}
-        total={0}
-        yearWindow={{ from: 0, to: 0 }}
-        placeholder
-      />
-      <LeagueContextBand />
+      {isMobile ? (
+        <MobileRankingsHero
+          yearCount={yearCount}
+          yearWindow={{ from: 0, to: 0 }}
+          placeholder
+        />
+      ) : (
+        <RankingsHero
+          yearCount={yearCount}
+          total={0}
+          yearWindow={{ from: 0, to: 0 }}
+          placeholder
+        />
+      )}
+      <LeagueContextBand showStats={!isMobile} />
     </section>
   );
 }
@@ -216,6 +257,188 @@ function RankingsHero({
         />
       </div>
     </section>
+  );
+}
+
+/**
+ * The rankings hero on phone-width screens.
+ *
+ * Where the desktop hero explains first and ranks later, this answers the
+ * question in the first screenful: a one-line premise, then the top three on a
+ * podium, then the league baseline — with the ranked list picking up at #4
+ * immediately below.
+ */
+function MobileRankingsHero({
+  yearCount,
+  yearWindow,
+  podium,
+  leagueContext,
+  placeholder = false,
+}: {
+  yearCount: number;
+  yearWindow: { from: number; to: number };
+  /** The top three, or absent while they load / when there are too few teams. */
+  podium?: ExtendedRanking[];
+  leagueContext?: LeagueContext;
+  /**
+   * Boot state: draws the podium's outline at full height with em dashes, so
+   * the real one replaces it in place instead of appearing and shoving the
+   * league strip and the whole board down the page.
+   */
+  placeholder?: boolean;
+}) {
+  const seasonWord = yearCount === 1 ? 'season' : 'seasons';
+  const windowLabel =
+    yearWindow.from && yearWindow.to
+      ? `${seasonTag(yearWindow.from)}–${seasonTag(yearWindow.to)}`
+      : `${yearCount} ${seasonWord}`;
+
+  return (
+    <section className="page-hero page-hero--mobile">
+      <div className="kicker">Draft success score · {windowLabel}</div>
+      <h1 className="page-hero__headline page-hero__headline--short">
+        Who drafted <em>best</em>.
+      </h1>
+      <p className="page-hero__lede page-hero__lede--short">
+        Snap share, games played, and retention — how much of each draft class
+        actually plays.
+      </p>
+
+      {placeholder ? (
+        <PodiumSkeleton />
+      ) : (
+        <Podium entries={podium} yearWindow={yearWindow} />
+      )}
+      <PodiumStrip context={leagueContext} />
+    </section>
+  );
+}
+
+/**
+ * Top three as ranked bars — 2nd, 1st, 3rd left to right, the winner tallest
+ * and centred. DOM order stays 1-2-3 so the reading order is the ranking; the
+ * staggered arrangement is CSS `order` on the columns.
+ */
+function Podium({
+  entries,
+  yearWindow,
+}: {
+  entries?: ExtendedRanking[];
+  yearWindow: { from: number; to: number };
+}) {
+  if (!entries || entries.length < PODIUM_SIZE) return null;
+  return (
+    <ol className="podium" aria-label="Top three teams">
+      {entries.map((entry, i) => (
+        <PodiumColumn
+          key={entry.teamId}
+          entry={entry}
+          rank={i + 1}
+          yearWindow={yearWindow}
+        />
+      ))}
+    </ol>
+  );
+}
+
+/**
+ * The podium before any team is known: same three columns at the same heights,
+ * em dashes where the names and scores go. It reserves the exact box the real
+ * podium will occupy, so the first paint and the data-driven one line up.
+ *
+ * Hidden from assistive tech — three dashes carry nothing a screen reader
+ * needs, and the real podium announces itself the moment it arrives.
+ */
+function PodiumSkeleton() {
+  return (
+    <ol className="podium podium--placeholder" aria-hidden="true">
+      {[1, 2, 3].map((rank) => (
+        <li
+          key={rank}
+          className={`podium__col podium__col--${rank}${rank === 1 ? ' podium__col--lead' : ''}`}
+        >
+          <span className="podium__link">
+            <span className="podium__medal">—</span>
+            <span className="podium__name">—</span>
+            <span className="podium__score mono tnum">—</span>
+            <span className="podium__bar" />
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function PodiumColumn({
+  entry,
+  rank,
+  yearWindow,
+}: {
+  entry: ExtendedRanking;
+  rank: number;
+  yearWindow: { from: number; to: number };
+}) {
+  const team = TEAMS.find((t) => t.id === entry.teamId);
+  const color = teamColor(entry.teamId);
+  const lead = rank === 1;
+
+  return (
+    <li
+      className={`podium__col podium__col--${rank}${lead ? ' podium__col--lead' : ''}`}
+    >
+      <Link
+        className="podium__link"
+        to={buildTeamHref(entry.teamId, yearWindow)}
+      >
+        <span
+          className="podium__medal"
+          style={{ background: color, color: teamFg(color) }}
+          aria-hidden="true"
+        >
+          {entry.teamId.slice(0, 2)}
+        </span>
+        <span className="podium__name">
+          {teamNickname(team?.name ?? entry.teamName)}
+        </span>
+        <span className="podium__score mono tnum">
+          {entry.score.toFixed(1)}
+        </span>
+        {/* Inside the link: the bar is the largest thing in the column, so it
+            has to be part of the tap target, not dead space beside it. */}
+        <span
+          className="podium__bar"
+          style={{ background: color, color: teamFg(color) }}
+          aria-hidden="true"
+        >
+          {rank}
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+/**
+ * League baseline in one thin line under the podium, plus the nudge that the
+ * rest of the board is a scroll away.
+ */
+function PodiumStrip({ context }: { context?: LeagueContext }) {
+  const hasPicks = !!context && context.roleDistribution.total > 0;
+  return (
+    <div className="podium-strip">
+      <div>
+        <div className="kicker">League avg</div>
+        <div className="podium-strip__value mono tnum">
+          {hasPicks ? context.avgScore.toFixed(1) : '—'}
+        </div>
+      </div>
+      <div>
+        <div className="kicker">Score spread</div>
+        <div className="podium-strip__value mono tnum">
+          {context?.spread ? context.spread.gap.toFixed(1) : '—'}
+        </div>
+      </div>
+      <div className="podium-strip__hint mono">full board ↓</div>
+    </div>
   );
 }
 
@@ -330,6 +553,7 @@ const ROLE_SPLIT = [
 
 function LeagueContextBand({
   context,
+  showStats = true,
 }: {
   /**
    * Absent while the league figures are still being computed, which renders the
@@ -338,6 +562,11 @@ function LeagueContextBand({
    * whereas a loading one does not know that yet.
    */
   context?: LeagueContext;
+  /**
+   * False on mobile, where the podium strip already carries the average and
+   * spread. Only the role distribution is left to show.
+   */
+  showStats?: boolean;
 }) {
   const rd = context?.roleDistribution;
   const hasPicks = !!rd && rd.total > 0;
@@ -367,19 +596,24 @@ function LeagueContextBand({
   }
 
   return (
-    <section className="league-context" aria-label="League context">
-      <div className="league-context__stats">
-        <StatBlock
-          label="League average"
-          value={hasPicks ? context.avgScore.toFixed(1) : '—'}
-          sub="draft success score"
-        />
-        <StatBlock
-          label="Score spread"
-          value={context?.spread ? context.spread.gap.toFixed(1) : '—'}
-          sub={spreadSub}
-        />
-      </div>
+    <section
+      className={`league-context${showStats ? '' : ' league-context--dist-only'}`}
+      aria-label="League context"
+    >
+      {showStats && (
+        <div className="league-context__stats">
+          <StatBlock
+            label="League average"
+            value={hasPicks ? context.avgScore.toFixed(1) : '—'}
+            sub="draft success score"
+          />
+          <StatBlock
+            label="Score spread"
+            value={context?.spread ? context.spread.gap.toFixed(1) : '—'}
+            sub={spreadSub}
+          />
+        </div>
+      )}
 
       <div className="league-context__dist">
         <div className="league-context__bar" role="img" aria-label={barLabel}>
