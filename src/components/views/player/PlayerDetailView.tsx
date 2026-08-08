@@ -12,7 +12,12 @@ import {
 import { CareerChart } from '../../design/CareerChart';
 import { ScoreBreakdown } from './ScoreBreakdown';
 import { TEAMS } from '../../../data/teams';
-import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
+import {
+  getFilteredSeasons,
+  getPlayerRole,
+  getPlayerDraftScore,
+} from '../../../lib/getPlayerRole';
+import { firstScoredYear } from '../../../lib/apprenticeship';
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
@@ -80,7 +85,20 @@ function PlayerDetailViewImpl({
   // that is the only mode whose denominator is the window, so in career mode a
   // gap row would claim a penalty the score never applied.
   const windowYears = draftingTeamOnly ? scoredWindowYears(pick) : [];
-  const countedSeasons = sortedSeasons.filter((s) => s.retained).length;
+  // Read from the scorer rather than counted here, so a season the score
+  // excludes — played elsewhere, or spent learning behind a veteran — is not
+  // announced as counted by the note under the table.
+  const countedYears = new Set(
+    getFilteredSeasons(pick, draftingTeamOnly).map((s) => s.year),
+  );
+  const countedSeasons = countedYears.size;
+  // A quarterback's bench years are uncounted for a different reason than a
+  // season played elsewhere, and the row marker has to say which.
+  const apprenticeYears = new Set(
+    sortedSeasons
+      .filter((s) => s.year < firstScoredYear(pick))
+      .map((s) => s.year),
+  );
   // Checked against every row, not just played ones: the upcoming season
   // already has a row of its own, and a gap row for the same year would both
   // duplicate it and contradict it.
@@ -214,38 +232,12 @@ function PlayerDetailViewImpl({
             )}
           </div>
           <div className="mono" style={{ fontSize: 11, color: 'var(--ink-3)' }}>
-            {windowYears.length > 0 ? (
-              // Spells out both halves of the division. Without it a reader
-              // adds up the visible Score column, gets a different number from
-              // the headline, and concludes the page is broken — more than half
-              // of all picks show at least one season that does not count.
-              <span data-testid="rookie-window-note">
-                {countedSeasons} of {sortedSeasons.length} season
-                {sortedSeasons.length === 1 ? '' : 's'} counted · divided by
-                {windowYears.length === 8 || windowYears.length === 11
-                  ? ' an '
-                  : ' a '}
-                {windowYears.length}-season rookie window
-                {countedSeasons < sortedSeasons.length && (
-                  // The ✕ in the Score column carries the same meaning, but it
-                  // only explains itself through a title tooltip — which needs a
-                  // second of motionless hover on a 7px target, and so is not
-                  // where a key belongs. Say it in the open.
-                  <>
-                    {' · '}
-                    <span className="season-uncounted-key" aria-hidden="true">
-                      ✕
-                    </span>{' '}
-                    played elsewhere, not counted
-                  </>
-                )}
-              </span>
-            ) : (
-              <>
-                {sortedSeasons.length} season
-                {sortedSeasons.length === 1 ? '' : 's'}
-              </>
-            )}
+            <CareerCountNote
+              countedSeasons={countedSeasons}
+              playedSeasons={sortedSeasons.length}
+              apprenticeSeasons={apprenticeYears.size}
+              windowYears={windowYears.length}
+            />
           </div>
         </div>
         {sortedSeasons.length === 0 ? (
@@ -290,7 +282,12 @@ function PlayerDetailViewImpl({
                       pickTeamId={pick.teamId}
                       position={pick.position}
                       color={color}
-                      counts={!draftingTeamOnly || season.retained}
+                      counts={countedYears.has(season.year)}
+                      uncountedReason={
+                        apprenticeYears.has(season.year)
+                          ? 'apprentice'
+                          : 'elsewhere'
+                      }
                     />
                   ) : (
                     <WindowGapRow key={year} year={year} />
@@ -476,12 +473,86 @@ function PlayerHeroVerdict({
   );
 }
 
+/**
+ * The line beside "Career, season by season" that spells out both halves of the
+ * division.
+ *
+ * It earns its place because more than half of all picks show at least one
+ * season that does not count: without it a reader adds up the visible Score
+ * column, gets a different number from the headline, and concludes the page is
+ * broken.
+ */
+function CareerCountNote({
+  countedSeasons,
+  playedSeasons,
+  apprenticeSeasons,
+  windowYears,
+}: {
+  countedSeasons: number;
+  playedSeasons: number;
+  apprenticeSeasons: number;
+  windowYears: number;
+}) {
+  const s = (n: number) => (n === 1 ? '' : 's');
+  if (windowYears === 0) {
+    return (
+      <>
+        {playedSeasons} season{s(playedSeasons)}
+      </>
+    );
+  }
+
+  return (
+    <span data-testid="rookie-window-note">
+      {countedSeasons} of {playedSeasons} season{s(playedSeasons)} counted ·
+      divided by
+      {apprenticeSeasons > 0 ? (
+        // Not "a 3-season rookie window". An apprenticeship shortens the window
+        // — Love's is 2 — and the divisor is 3 only because his seasons floor
+        // it, so naming a window here would state a contract term that does not
+        // exist. Say what the divisor is, and why the rows above outnumber it.
+        <>
+          {' the '}
+          {windowYears} season{s(windowYears)} since he won the job · first{' '}
+          {apprenticeSeasons} spent learning behind a veteran
+        </>
+      ) : (
+        <>
+          {windowYears === 8 || windowYears === 11 ? ' an ' : ' a '}
+          {windowYears}-season rookie window
+        </>
+      )}
+      {countedSeasons < playedSeasons - apprenticeSeasons && (
+        // The ✕ in the Score column carries the same meaning, but it only
+        // explains itself through a title tooltip — which needs a second of
+        // motionless hover on a 7px target, and so is not where a key belongs.
+        // Say it in the open.
+        <>
+          {' · '}
+          <span className="season-uncounted-key" aria-hidden="true">
+            ✕
+          </span>{' '}
+          played elsewhere, not counted
+        </>
+      )}
+    </span>
+  );
+}
+
+/** What the ✕ on an uncounted season says it means. */
+function uncountedNote(reason: 'elsewhere' | 'apprentice'): string {
+  return reason === 'apprentice'
+    ? 'this season was spent learning behind a veteran, before the rookie window opens'
+    : 'this season was played for another team';
+}
+
 function SeasonRow({
   s,
   pickTeamId,
   position,
   color,
   counts = true,
+  uncountedReason = 'elsewhere',
 }: {
   s: Season;
   pickTeamId: string;
@@ -494,6 +565,8 @@ function SeasonRow({
    * of the total above it.
    */
   counts?: boolean;
+  /** Why it does not count, which decides what the ✕ says. */
+  uncountedReason?: 'elsewhere' | 'apprentice';
 }) {
   const team = s.retained ? pickTeamId : (s.currentTeam ?? 'FA');
   const seasonRole = classifyRole(
@@ -531,16 +604,24 @@ function SeasonRow({
       <td className="right career-load">
         <SnapBar value={loadPct} muted />
       </td>
-      <td>
+      <td className="player-career__role-cell">
         <RoleChip role={seasonRole} />
+        {uncountedReason === 'apprentice' && !counts && (
+          // The chip stays factually true — he really was a non-contributor on
+          // the field — but Role is the column readers scan, and leaving that
+          // verdict unqualified beside a headline of 95 is the contradiction
+          // this feature exists to resolve. The ✕ says the same thing, only
+          // through a hover tooltip, which is not where a key belongs.
+          <span className="role-chip learning">learning</span>
+        )}
       </td>
       <td className="right mono tnum player-career__score">
         {Math.round(getSeasonScore(s, position))}
         {!counts && (
           <abbr
             className="season-uncounted-mark"
-            aria-label="Not counted — season played for another team"
-            title="Not counted — this season was played for another team"
+            aria-label={`Not counted — ${uncountedNote(uncountedReason)}`}
+            title={`Not counted — ${uncountedNote(uncountedReason)}`}
           >
             ✕
           </abbr>

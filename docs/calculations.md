@@ -319,6 +319,27 @@ Team drafts 10 players across 5 years:
 
 Score = (8 + 9 + 2 + 0) / 10 = **1.9**
 
+### 7.3b Apprenticeship (quarterbacks who sat behind a veteran)
+
+**Function:** `apprenticeSeasonCount` in `src/lib/apprenticeship.ts`; applied at `getFilteredSeasons` (`getPlayerRole.ts`) and `scoredSeasonCount` (`rookieWindow.ts`).
+
+A quarterback's **apprentice seasons** are the unbroken run from his draft year in which he was `retained` and classified `non_contributor` or `depth` — counted **only if** a later retained season reaches `core_starter` or `starter_when_healthy`. They leave the seasons the pick is judged on, in both the drafting-team and career views, and the rookie window's start moves to the first non-apprentice season while its length shortens by the same count (`rookieWindow(round) − n`).
+
+|                                     | before | after |
+| ----------------------------------- | ------ | ----- |
+| Jordan Love (2020 R1, sat 3)        | 52     | 95    |
+| J.J. McCarthy (2024 R1, sat 1)      | 40     | 81    |
+| Sam Howell (2022 R5, sat 1)         | 26     | 33    |
+| Kyle Trask (2021 R2, never started) | 3      | 3     |
+
+**Why the payoff gates it.** Love's first three seasons and Trask's first three are the same rows: retained quarterbacks taking no meaningful snaps. Only what came afterwards separates them, so sitting is scored as an investment and judged by whether it paid.
+
+**Why the window shortens rather than slides.** The window models what the rookie contract entitled the team to. Sliding it five years forward from 2023 would charge Love for 2026 and 2027, seasons his rookie deal never covered.
+
+**Why quarterback only.** It is the position where exactly one player takes the snaps. Run position-agnostic across the 2018–2025 classes the rule fires on 115 picks and erases the quiet rookie year of ordinary starters (Daniel Faalele 70 → 100, Luke Wattenberg 58 → 91).
+
+**Known limitation.** The rule keys on outcome, so it cannot separate sitting-to-learn from sitting-injured; McCarthy, who missed his rookie year with a knee injury, qualifies.
+
 ### 7.4 Over slot (draft value above draft-slot expectation)
 
 **Functions:** `getPlayerDraftSkill` / `expectedScoreForPick` in `src/lib/draftSlotBaseline.ts`; team aggregate is `skillScore` on `getRollingDraftScore`.
@@ -351,6 +372,8 @@ Two properties are deliberate and pinned by tests:
 - **Displayed figures are rounded before being added, not after.** Rounding each term off the exact float prints `34.3 + 7.1` beside a season score of `41.3`. The panel's only value is being checkable, so the shown terms are the source of truth for every total built from them. The one figure that absorbs the residue is the slot expectation in the over-slot line, chosen because it appears nowhere else on the page — over slot itself must match the hero badge to the decimal.
 
 Rows are limited to the years the denominator spans (§7.1): seasons played elsewhere **after** the window closed contribute to neither half of the division, and listing them leaves seven rows above a divisor of four. Uncounted seasons **inside** the window stay, since they are why the denominator exceeds the number of seasons that scored.
+
+Apprentice seasons (§7.3b) are the one exception kept despite being in neither half, as `kind: 'apprentice'` rows. They sit _before_ the window rather than after it, so dropping them would open a 2020 first-rounder's panel at 2023 with nothing to explain the jump. They are not addends — unlike gap years, which are zeros the window genuinely charges.
 
 ---
 

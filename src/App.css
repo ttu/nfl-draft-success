@@ -2505,6 +2505,27 @@ button {
   font-family: var(--f-mono);
   font-size: 9px;
 }
+/* Chip and its annotation stay on one line. Left to wrap, the longer chips
+   ("Non-Contributor") pushed the tag under themselves and left those rows
+   taller and ragged against the ones beside them; the table already scrolls
+   horizontally, so widening this column is the cheaper concession. */
+.player-career__role-cell {
+  white-space: nowrap;
+}
+
+/* Why an apprentice season does not count, said beside its Role chip rather
+   than only in the ✕'s tooltip. Built as a `role-chip` so it sits in the Role
+   column as an equal rather than as loose text the eye reads as leftover
+   markup. Muted, because it annotates the chip beside it — the season's real
+   classification — instead of replacing it. */
+.role-chip.learning {
+  margin-left: 6px;
+  color: var(--ink-3);
+  background: var(--paper-2);
+}
+.role-chip.learning::before {
+  background: var(--ink-4);
+}
 .season-uncounted-mark {
   position: absolute;
   right: 2px;

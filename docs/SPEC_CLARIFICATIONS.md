@@ -42,6 +42,18 @@ Together, **Depth** (10–20%) and **Contributor** (up to the SC threshold) cove
 
 **Core Starter %:** Share of picks whose **representative** overall role (from mean seasonal weights) is Core Starter — same rule as draft-class “Core starters” counts.
 
+## Apprenticeship (quarterbacks)
+
+A quarterback's **apprentice seasons** are the unbroken run from his draft year in which he was `retained` and classified `non_contributor` or `depth` — **counted only if** a later retained season reaches `core_starter` or `starter_when_healthy`. Otherwise the count is zero and nothing changes. See `src/lib/apprenticeship.ts`.
+
+Apprentice seasons are dropped from the seasons a pick is judged on (`getFilteredSeasons`), in **both** the drafting-team and career views, so they affect score, role badge, filters, draft-class bucket counts, and Core Starter % alike. The rookie window's start moves to the first non-apprentice season and its **length shortens by the same amount** (`rookieWindow(round) − n`), because the window models contractual entitlement and sitting does not extend it.
+
+**Why outcome-gated:** Jordan Love's first three seasons and Kyle Trask's first three are identical in the data — retained quarterbacks taking no meaningful snaps. Only what came after separates them, so sitting is scored as an investment, judged by whether it paid. Love moves 52 → 95; Trask stays at 3.
+
+**Why QB only:** quarterback is the one position where exactly one player takes the snaps. Run position-agnostic across 2018–2025 the rule fires on 115 picks and erases the quiet rookie year of ordinary starters.
+
+**Known limitation:** the rule cannot distinguish sitting-to-learn from sitting-injured, so a lost rookie season followed by winning the job also qualifies (J.J. McCarthy).
+
 ## Retention
 
 **Definition:** Still on the drafting team (same franchise).

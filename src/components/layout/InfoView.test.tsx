@@ -80,7 +80,7 @@ describe('InfoView', () => {
     // The denominator is the whole claim the score makes; if it stops being
     // spelled out here, the 0–100 number is unexplained.
     expect(
-      screen.getByText(/window\(pick\)\s+=\s+5 if round 1 else 4/),
+      screen.getByText(/window\(pick\)\s+=\s+\(5 if round 1 else 4\) − sat/),
     ).toBeInTheDocument();
     // Long lines wrap mid-expression in this fixed-width block, which reads as
     // corrupted maths. Pin the limit rather than rediscover it in a screenshot.

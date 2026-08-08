@@ -1,4 +1,5 @@
 import type { DraftPick, Season } from '../types';
+import { apprenticeSeasonCount } from './apprenticeship';
 import {
   getSeasonScore,
   SNAP_WEIGHT,
@@ -70,7 +71,14 @@ export interface GapYearExplanation {
 
 export type ScoreExplanationRow =
   | ({ kind: 'season' } & SeasonScoreExplanation)
-  | ({ kind: 'gap' } & GapYearExplanation);
+  | ({ kind: 'gap' } & GapYearExplanation)
+  /**
+   * A season spent learning behind a veteran, before the window opens. Its own
+   * kind rather than a `counted: false` season, because the two say different
+   * things: an uncounted season is one the drafting team did not get, an
+   * apprentice season is one it got and chose not to use.
+   */
+  | ({ kind: 'apprentice' } & SeasonScoreExplanation);
 
 export interface DraftScoreExplanation {
   /** Season and gap rows in chronological order. */
@@ -81,6 +89,11 @@ export interface DraftScoreExplanation {
   denominator: number;
   /** True when the denominator is the rookie window rather than seasons played. */
   usesRookieWindow: boolean;
+  /**
+   * Seasons spent on the bench before the window opened; 0 for almost every
+   * pick. Lets the panel explain why its first row is not the draft year.
+   */
+  apprenticeSeasons: number;
   /** The pick's full window length; absent in career mode, which has none. */
   windowLength?: number;
   /** `total / denominator` — the headline score. */
@@ -181,6 +194,9 @@ export function explainDraftScore(
   const countedYears = new Set(counted.map((s) => s.year));
   const windowYears = draftingTeamOnly ? scoredWindowYears(pick) : [];
   const inWindow = new Set(windowYears);
+  const apprenticeSeasons = apprenticeSeasonCount(pick);
+  const isApprentice = (year: number) =>
+    year < pick.draftYear + apprenticeSeasons;
 
   const seasonRows: ScoreExplanationRow[] = played
     // A season the drafting team did not get, played after the window closed,
@@ -189,14 +205,28 @@ export function explainDraftScore(
     // rows above a divisor of four, which reads as the arithmetic being wrong.
     // Uncounted seasons *inside* the window stay: they are precisely why the
     // denominator exceeds the number of seasons that scored.
+    //
+    // Apprentice seasons stay too, though they are in neither half. They sit
+    // *before* the window rather than after it, so dropping them would open the
+    // panel three years after the draft with nothing to say why.
     .filter(
       (s) =>
-        countedYears.has(s.year) || !draftingTeamOnly || inWindow.has(s.year),
+        countedYears.has(s.year) ||
+        isApprentice(s.year) ||
+        !draftingTeamOnly ||
+        inWindow.has(s.year),
     )
-    .map((s) => ({
-      kind: 'season' as const,
-      ...explainSeason(s, pick.position, countedYears.has(s.year)),
-    }));
+    .map((s) =>
+      isApprentice(s.year)
+        ? {
+            kind: 'apprentice' as const,
+            ...explainSeason(s, pick.position, false),
+          }
+        : {
+            kind: 'season' as const,
+            ...explainSeason(s, pick.position, countedYears.has(s.year)),
+          },
+    );
 
   // Gap rows exist to make the denominator visible: a pick divided by five
   // seasons but showing three rows reads as broken arithmetic. Only in
@@ -224,7 +254,13 @@ export function explainDraftScore(
       ? scoredSeasonCount(pick, counted.length)
       : counted.length,
     usesRookieWindow: draftingTeamOnly,
-    windowLength: draftingTeamOnly ? rookieWindow(pick.round) : undefined,
+    apprenticeSeasons,
+    // The window the pick is actually measured against, shortened by any bench
+    // years — the same length `scoredSeasonCount` uses, so the panel's stated
+    // window and its divisor cannot disagree.
+    windowLength: draftingTeamOnly
+      ? Math.max(0, rookieWindow(pick.round) - apprenticeSeasons)
+      : undefined,
     score,
     overallPick: pick.overallPick,
     expectedAtSlot,

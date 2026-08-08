@@ -309,3 +309,102 @@ describe('repeated evaluation', () => {
     expect(new Set(roles).size).toBe(1);
   });
 });
+
+describe('quarterbacks who sat behind a veteran', () => {
+  /**
+   * Real career shapes, rounded from the dataset. These are the cases the
+   * apprenticeship rule exists to separate, so they are pinned end to end
+   * rather than only at `apprenticeSeasonCount`.
+   */
+  const quarterback = (
+    draftYear: number,
+    round: number,
+    seasons: DraftPick['seasons'],
+  ): DraftPick =>
+    makePick({ position: 'QB', round, overallPick: 26, draftYear, seasons });
+
+  /** No snaps to speak of, but on the roster. */
+  const benched = (year: number) =>
+    makeSeason({ year, gamesPlayed: 2, snapShare: 0.03 });
+
+  const startingYear = (year: number) =>
+    makeSeason({ year, gamesPlayed: 17, teamGames: 17, snapShare: 0.99 });
+
+  it('scores Jordan Love on the seasons after he won the job', () => {
+    // Three years behind Rodgers, then three as QB1. Judged on the whole
+    // rookie window he reads 52 — Zach Wilson territory — for a pick that
+    // produced a franchise quarterback.
+    const love = quarterback(LATEST_SEASON - 5, 1, [
+      benched(LATEST_SEASON - 5),
+      benched(LATEST_SEASON - 4),
+      benched(LATEST_SEASON - 3),
+      startingYear(LATEST_SEASON - 2),
+      startingYear(LATEST_SEASON - 1),
+      startingYear(LATEST_SEASON),
+    ]);
+    expect(
+      getPlayerDraftScore(love, { draftingTeamOnly: true }),
+    ).toBeGreaterThan(90);
+    expect(getPlayerRole(love, { draftingTeamOnly: true })).toBe(
+      'core_starter',
+    );
+  });
+
+  it('forgives the same seasons in career mode', () => {
+    // Career mode has no window, so the bench years are simply absent from the
+    // mean. The two toggle states must not disagree about him.
+    const love = quarterback(LATEST_SEASON - 4, 1, [
+      benched(LATEST_SEASON - 4),
+      benched(LATEST_SEASON - 3),
+      startingYear(LATEST_SEASON - 2),
+      startingYear(LATEST_SEASON - 1),
+    ]);
+    expect(getPlayerDraftScore(love)).toBeGreaterThan(90);
+  });
+
+  it('leaves a quarterback who sat and never took over at the bottom', () => {
+    // The Kyle Trask shape: four bench years, no payoff, no forgiveness.
+    const trask = quarterback(LATEST_SEASON - 4, 2, [
+      benched(LATEST_SEASON - 4),
+      benched(LATEST_SEASON - 3),
+      benched(LATEST_SEASON - 2),
+      benched(LATEST_SEASON - 1),
+    ]);
+    expect(getPlayerDraftScore(trask, { draftingTeamOnly: true })).toBeLessThan(
+      15,
+    );
+    expect(getPlayerRole(trask, { draftingTeamOnly: true })).toBe(
+      'non_contributor',
+    );
+  });
+
+  it('leaves a quarterback who played real rookie snaps unchanged', () => {
+    // The Jalen Hurts shape: a rotation rookie year is not an apprenticeship,
+    // and the mean already handles it.
+    const hurts = quarterback(LATEST_SEASON - 3, 2, [
+      makeSeason({ year: LATEST_SEASON - 3, gamesPlayed: 15, snapShare: 0.45 }),
+      startingYear(LATEST_SEASON - 2),
+      startingYear(LATEST_SEASON - 1),
+      startingYear(LATEST_SEASON),
+    ]);
+    const scored = getPlayerDraftScore(hurts, { draftingTeamOnly: true });
+    expect(scored).toBeGreaterThan(75);
+    expect(scored).toBeLessThan(90);
+  });
+
+  it('leaves a non-quarterback with the same career shape unchanged', () => {
+    // The guard that keeps this from firing on 115 picks: an offensive tackle
+    // who was quiet as a rookie and started later is scored as before.
+    const tackle = quarterback(LATEST_SEASON - 3, 4, [
+      benched(LATEST_SEASON - 3),
+      startingYear(LATEST_SEASON - 2),
+      startingYear(LATEST_SEASON - 1),
+      startingYear(LATEST_SEASON),
+    ]);
+    tackle.position = 'OT';
+    // Four seasons, one of them near zero, divided by the four-year window.
+    expect(
+      getPlayerDraftScore(tackle, { draftingTeamOnly: true }),
+    ).toBeLessThan(80);
+  });
+});

@@ -47,12 +47,21 @@ export function ScoreBreakdown({
   const explanation = explainDraftScore(pick, draftingTeamOnly);
   if (!explanation) return null;
 
-  const { rows, denominator, usesRookieWindow, windowLength, score } =
-    explanation;
+  const {
+    rows,
+    denominator,
+    usesRookieWindow,
+    windowLength,
+    apprenticeSeasons,
+    score,
+  } = explanation;
   // Rebuilt from the rounded terms rather than taken from `explanation.total`,
   // so the addition shown on screen resolves. See `round1`.
+  // Gap rows are addends — they are the zeros the window charges. Apprentice
+  // rows are not: they sit outside the window entirely, and printing "0.0 +"
+  // for each would show the reader a penalty the score did not apply.
   const addends = rows
-    .filter((r) => r.kind !== 'season' || r.counted)
+    .filter((r) => r.kind === 'gap' || (r.kind === 'season' && r.counted))
     .map((r) => (r.kind === 'season' ? displayedSeasonScore(r) : 0));
   const total = round1(addends.reduce((a, b) => a + b, 0));
   const dividedScore = round1(total / denominator);
@@ -103,7 +112,13 @@ export function ScoreBreakdown({
               {addends.map(pts).join(' + ')} = {pts(total)}
             </span>
             <span className="score-breakdown__sum-divide mono">
-              ÷ {denominatorLabel(denominator, usesRookieWindow, windowLength)}
+              ÷{' '}
+              {denominatorLabel(
+                denominator,
+                usesRookieWindow,
+                windowLength,
+                apprenticeSeasons,
+              )}
             </span>
             <span className="score-breakdown__sum-result mono tnum">
               = {pts(dividedScore)}
@@ -131,9 +146,17 @@ function denominatorLabel(
   denominator: number,
   usesRookieWindow: boolean,
   windowLength?: number,
+  apprenticeSeasons = 0,
 ): string {
   if (!usesRookieWindow) {
     return `${denominator} season${denominator === 1 ? '' : 's'} played`;
+  }
+  // Said in terms of the apprenticeship rather than the window, because the
+  // window is the confusing part here: it has been shortened by the bench
+  // years, and "past his 2-season rookie window" invites the reader to hunt for
+  // a contract term that does not exist.
+  if (apprenticeSeasons > 0) {
+    return `${denominator} season${denominator === 1 ? '' : 's'} since he won the job, after ${apprenticeSeasons} on the bench`;
   }
   // A clamped denominator is the one readers query most: a pick drafted last
   // year is measured against one season, not five, and saying only "5-season
@@ -197,6 +220,23 @@ function FreeAgentRunEntry({
 }
 
 function BreakdownRow({ row }: { row: ScoreExplanationRow }) {
+  if (row.kind === 'apprentice') {
+    return (
+      <li
+        className="score-breakdown__season score-breakdown__season--uncounted"
+        data-testid={`score-breakdown-apprentice-${row.year}`}
+      >
+        <div className="score-breakdown__season-head">
+          <span className="score-breakdown__year mono tnum">{row.year}</span>
+          <span className="score-breakdown__season-score mono tnum">—</span>
+        </div>
+        <div className="score-breakdown__uncounted-note">
+          Learning behind a veteran — before the rookie window opens, so not
+          scored.
+        </div>
+      </li>
+    );
+  }
   if (row.kind === 'gap') {
     return (
       <li className="score-breakdown__season score-breakdown__season--gap">

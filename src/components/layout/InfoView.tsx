@@ -228,8 +228,10 @@ score(season) = clamp( w_s·adj + w_a·avail, 0, 1 ) × 100
 weights       = w_s 0.7, w_a 0.3
                 (K, P and LS use raw snaps — no adjustment)
 
-window(pick)  = 5 if round 1 else 4
-elapsed       = latest season − draft year + 1
+sat(pick)     = QB bench seasons before he won the job
+                (0 unless he later started for this team)
+window(pick)  = (5 if round 1 else 4) − sat
+elapsed       = latest season − (draft year + sat) + 1
 departed      = no longer on the drafting team
 tracked       = window if departed else min( elapsed, window )
 
@@ -253,6 +255,25 @@ retention     = retained_players / picks_in_range`}</pre>
         left is charged the whole window immediately — the rest of it is known
         to be zero, and waiting would both flatter recent busts and leave a
         settled result drifting downward for years.
+      </p>
+      <p
+        style={{
+          fontSize: 13,
+          lineHeight: 1.7,
+          color: 'var(--ink-2)',
+          margin: '12px 0 0',
+          maxWidth: 640,
+        }}
+      >
+        <strong>sat</strong> covers the one position where sitting is a plan
+        rather than a verdict. A quarterback drafted to learn behind a veteran
+        takes no snaps for a year or three, and scoring those seasons as
+        failures put Jordan Love — three years behind Rodgers, then a franchise
+        quarterback — at 52, level with Zach Wilson. His bench years are
+        forgiven, but only because he went on to win the job in Green Bay: Kyle
+        Trask, whose first three seasons look identical in the data, still
+        scores a 3. Sitting is treated as an investment, and judged by whether
+        it paid.
       </p>
 
       <h2 className="info-section-title" style={{ marginTop: 32 }}>

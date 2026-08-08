@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30",
+  "generatedAt": "2026-08-07",
   "method": "local-linear smoothing of pick score over ln(overallPick), bandwidth 0.25, forced non-increasing; classes ≥ 3 yrs old",
   "matureFrom": 2018,
   "matureTo": 2023,
@@ -39,31 +39,31 @@
     },
     {
       "overallPick": 13,
-      "expected": 70.52
+      "expected": 70.53
     },
     {
       "overallPick": 16,
-      "expected": 68.01
+      "expected": 68.07
     },
     {
       "overallPick": 20,
-      "expected": 65.48
+      "expected": 65.74
     },
     {
       "overallPick": 25,
-      "expected": 63.85
+      "expected": 64.3
     },
     {
       "overallPick": 32,
-      "expected": 63.29
+      "expected": 63.6
     },
     {
       "overallPick": 40,
-      "expected": 62.63
+      "expected": 62.73
     },
     {
       "overallPick": 50,
-      "expected": 60.42
+      "expected": 60.43
     },
     {
       "overallPick": 64,
@@ -75,15 +75,15 @@
     },
     {
       "overallPick": 100,
-      "expected": 43.41
+      "expected": 43.42
     },
     {
       "overallPick": 125,
-      "expected": 36.24
+      "expected": 36.26
     },
     {
       "overallPick": 150,
-      "expected": 30.78
+      "expected": 30.8
     },
     {
       "overallPick": 180,

@@ -543,3 +543,72 @@ describe('PlayerDetailView rookie window', () => {
     });
   });
 });
+
+describe('a quarterback who sat behind a veteran', () => {
+  /** The Jordan Love shape: three bench years, then QB1 for the same team. */
+  const love: DraftPick = makePick({
+    playerName: 'Jordan Love',
+    position: 'QB',
+    round: 1,
+    overallPick: 26,
+    teamId: 'GB',
+    draftYear: LATEST_SEASON - 5,
+    seasons: [
+      makeNonContributorSeason({ year: LATEST_SEASON - 5 }),
+      makeNonContributorSeason({ year: LATEST_SEASON - 4 }),
+      makeNonContributorSeason({ year: LATEST_SEASON - 3 }),
+      makeSeason({ year: LATEST_SEASON - 2, gamesPlayed: 17, snapShare: 0.99 }),
+      makeSeason({ year: LATEST_SEASON - 1, gamesPlayed: 16, snapShare: 0.97 }),
+      makeSeason({ year: LATEST_SEASON, gamesPlayed: 16, snapShare: 0.95 }),
+    ],
+  });
+
+  function renderLove() {
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={love}
+          draftYear={love.draftYear}
+          draftClasses={[
+            makeDraftClass({ year: love.draftYear, picks: [love] }),
+          ]}
+          draftingTeamOnly
+        />
+      </MemoryRouter>,
+    );
+  }
+
+  it('marks each bench season as learning, beside its role', () => {
+    // Role is the column readers scan, and "Non-Contributor" left unqualified
+    // beside a headline of 95 is the contradiction this feature resolves. The
+    // ✕ says the same thing, but only through a hover tooltip.
+    renderLove();
+    for (const year of [
+      LATEST_SEASON - 5,
+      LATEST_SEASON - 4,
+      LATEST_SEASON - 3,
+    ]) {
+      const row = screen.getByTestId(`season-uncounted-${year}`);
+      expect(within(row).getByText('learning')).toBeInTheDocument();
+    }
+  });
+
+  it('leaves the seasons he started unmarked', () => {
+    renderLove();
+    expect(screen.getAllByText('learning')).toHaveLength(3);
+  });
+
+  it('says what the divisor is rather than naming a window that shortened', () => {
+    // His window is 2 after the bench years; the divisor is 3 only because his
+    // played seasons floor it. "A 3-season rookie window" would be a contract
+    // term that does not exist.
+    renderLove();
+    const note = screen.getByTestId('rookie-window-note');
+    expect(note.textContent).toContain('3 of 6 seasons counted');
+    expect(note.textContent).toContain('3 seasons since he won the job');
+    expect(note.textContent).toContain(
+      'first 3 spent learning behind a veteran',
+    );
+    expect(note.textContent).not.toContain('rookie window');
+  });
+});

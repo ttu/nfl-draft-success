@@ -161,6 +161,105 @@ describe('scoredSeasonCount', () => {
   });
 });
 
+describe('scoredSeasonCount with an apprenticeship', () => {
+  /** A quarterback who sat `benchYears` behind a veteran, then won the job. */
+  const apprenticed = (
+    round: number,
+    draftYear: number,
+    benchYears: number,
+    startingYears: number,
+  ): DraftPick =>
+    makePick({
+      position: 'QB',
+      round,
+      overallPick: round === 1 ? 26 : 150,
+      draftYear,
+      seasons: [
+        ...Array.from({ length: benchYears }, (_, i) =>
+          makeSeason({
+            year: draftYear + i,
+            gamesPlayed: 1,
+            snapShare: 0.02,
+          }),
+        ),
+        ...Array.from({ length: startingYears }, (_, i) =>
+          makeSeason({ year: draftYear + benchYears + i }),
+        ),
+      ],
+    });
+
+  it('starts the window at the season the apprenticeship ended', () => {
+    // Three bench years, then three as the starter, still on the roster. Only
+    // the three starting seasons have elapsed since the window opened.
+    const love = apprenticed(1, LATEST_SEASON - 5, 3, 3);
+    expect(scoredSeasonCount(love, 3)).toBe(3);
+  });
+
+  it('shortens the window by the bench years rather than sliding it', () => {
+    // The rookie deal entitled the team to five years from the draft, not five
+    // from whenever he took over. Gone after two starting seasons, so the
+    // remaining window is charged: 5 − 3 = 2, floored at the 2 seasons he had.
+    const gone = makePick({
+      position: 'QB',
+      round: 1,
+      overallPick: 26,
+      draftYear: LATEST_SEASON - 6,
+      seasons: [
+        makeSeason({
+          year: LATEST_SEASON - 6,
+          gamesPlayed: 1,
+          snapShare: 0.02,
+        }),
+        makeSeason({
+          year: LATEST_SEASON - 5,
+          gamesPlayed: 1,
+          snapShare: 0.02,
+        }),
+        makeSeason({
+          year: LATEST_SEASON - 4,
+          gamesPlayed: 1,
+          snapShare: 0.02,
+        }),
+        makeSeason({ year: LATEST_SEASON - 3 }),
+        makeSeason({ year: LATEST_SEASON - 2 }),
+      ],
+    });
+    expect(scoredSeasonCount(gone, 2)).toBe(2);
+  });
+
+  it('leaves a quarterback who never won the job on the full window', () => {
+    // No vindication, no forgiveness: the Kyle Trask case still divides by the
+    // whole rookie deal.
+    const neverStarted = makePick({
+      position: 'QB',
+      round: 2,
+      overallPick: 64,
+      draftYear: LATEST_SEASON - 5,
+      seasons: Array.from({ length: 4 }, (_, i) =>
+        makeSeason({
+          year: LATEST_SEASON - 5 + i,
+          gamesPlayed: 1,
+          snapShare: 0.02,
+        }),
+      ),
+    });
+    expect(scoredSeasonCount(neverStarted, 4)).toBe(4);
+  });
+
+  it('never divides by less than the seasons actually counted', () => {
+    // Bench years can exhaust the window (4 − 3 = 1 here). The floor keeps the
+    // divisor at the seasons the numerator spans.
+    const late = apprenticed(4, LATEST_SEASON - 5, 3, 3);
+    expect(scoredSeasonCount(late, 3)).toBe(3);
+  });
+
+  it('leaves every other position on the unshifted window', () => {
+    const tackle = apprenticed(1, LATEST_SEASON - 5, 3, 3);
+    tackle.position = 'OT';
+    expect(scoredSeasonCount(tackle, 3)).toBe(5);
+  });
+});
+
 describe('scoredWindowYears', () => {
   it('runs from the draft year across the whole scored window', () => {
     // Departed after one season, so all five years are charged.
@@ -180,6 +279,23 @@ describe('scoredWindowYears', () => {
     const longServer = makePick({ round: 1, draftYear: 2018, seasons });
     expect(scoredWindowYears(longServer)).toHaveLength(7);
     expect(scoredWindowYears(longServer).at(-1)).toBe(2024);
+  });
+
+  it('starts at the season a quarterback finished his apprenticeship', () => {
+    const love = makePick({
+      position: 'QB',
+      round: 1,
+      overallPick: 26,
+      draftYear: 2020,
+      seasons: [
+        makeSeason({ year: 2020, gamesPlayed: 1, snapShare: 0.02 }),
+        makeSeason({ year: 2021, gamesPlayed: 1, snapShare: 0.02 }),
+        makeSeason({ year: 2022, gamesPlayed: 1, snapShare: 0.02 }),
+        makeSeason({ year: 2023 }),
+        makeSeason({ year: 2024 }),
+      ],
+    });
+    expect(scoredWindowYears(love)).toEqual([2023, 2024]);
   });
 
   it('is empty for a pick that never had a retained season', () => {

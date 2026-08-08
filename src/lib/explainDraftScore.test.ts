@@ -5,6 +5,7 @@ import { getPlayerDraftScore } from './getPlayerRole';
 import { getPlayerDraftSkill } from './draftSlotBaseline';
 import { LATEST_SEASON } from './rookieWindow';
 import type { DraftPick, Season } from '../types';
+import { makePick, makeSeason } from '../test/factories';
 
 const season = (overrides: Partial<Season> = {}): Season => ({
   year: 2023,
@@ -367,5 +368,67 @@ describe('explainDraftScore', () => {
     });
 
     expect(explainDraftScore(p, true)).toBeNull();
+  });
+});
+
+describe('a quarterback who sat behind a veteran', () => {
+  /** The Jordan Love shape. */
+  const love = makePick({
+    position: 'QB',
+    round: 1,
+    overallPick: 26,
+    teamId: 'GB',
+    draftYear: 2020,
+    seasons: [
+      makeSeason({ year: 2020, gamesPlayed: 1, snapShare: 0.01 }),
+      makeSeason({ year: 2021, gamesPlayed: 2, snapShare: 0.06 }),
+      makeSeason({ year: 2022, gamesPlayed: 2, snapShare: 0.03 }),
+      makeSeason({
+        year: 2023,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 0.99,
+      }),
+      makeSeason({
+        year: 2024,
+        gamesPlayed: 15,
+        teamGames: 17,
+        snapShare: 0.97,
+      }),
+    ],
+  });
+
+  it('marks the bench years as apprentice rows, not seasons', () => {
+    const explained = explainDraftScore(love, true);
+    const kinds = explained!.rows.map((r) => `${r.year}:${r.kind}`);
+    expect(kinds).toEqual([
+      '2020:apprentice',
+      '2021:apprentice',
+      '2022:apprentice',
+      '2023:season',
+      '2024:season',
+    ]);
+  });
+
+  it('keeps them out of the total', () => {
+    const explained = explainDraftScore(love, true)!;
+    const counted = explained.rows.filter(
+      (r) => r.kind === 'season' && r.counted,
+    );
+    expect(counted).toHaveLength(2);
+    expect(explained.apprenticeSeasons).toBe(3);
+  });
+
+  it('reports the shortened window, not the contract length', () => {
+    // 5 − 3 bench years. Saying "5-season window" beside a divisor of 2 would
+    // send the reader hunting for three seasons that are not there.
+    expect(explainDraftScore(love, true)!.windowLength).toBe(2);
+  });
+
+  it('still reconciles with the headline score', () => {
+    const explained = explainDraftScore(love, true)!;
+    expect(explained.total / explained.denominator).toBeCloseTo(
+      getPlayerDraftScore(love, { draftingTeamOnly: true }),
+    );
   });
 });

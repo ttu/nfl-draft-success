@@ -1,4 +1,5 @@
 import type { DraftPick, Role } from '../types';
+import { withoutApprenticeSeasons } from './apprenticeship';
 import { classifyRole } from './classifyRole';
 import { getSeasonScore } from './getSeasonScore';
 import { ROLE_SCORE_WEIGHTS } from './roleWeights';
@@ -23,12 +24,22 @@ function ordinal(r: Role): number {
  * The seasons a pick is judged on. Always played seasons only — a row for an
  * upcoming season records where the player stands, and scoring it would read
  * "has not played yet" as "did nothing".
+ *
+ * Seasons before {@link firstScoredYear} drop out too: a quarterback who sat
+ * behind a veteran and then won the job was not failing during the wait (see
+ * `apprenticeship.ts`). Applied in both modes — career mode has no window, so
+ * there those seasons are simply absent from the mean. If sitting to learn was
+ * not a failure, it was not a failure in either lens.
+ *
+ * This is the single choke point for scoring: `getPlayerDraftScore`,
+ * `getPlayerAverageScoreWeight`, `getPlayerPeakRole`, `getPlayerRole` and
+ * `explainDraftScore` all read their seasons from here.
  */
 export function getFilteredSeasons(
   pick: DraftPick,
   draftingTeamOnly: boolean | undefined,
 ) {
-  const played = playedSeasons(pick);
+  const played = withoutApprenticeSeasons(pick, playedSeasons(pick));
   return draftingTeamOnly === true ? played.filter((s) => s.retained) : played;
 }
 

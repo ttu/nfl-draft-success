@@ -1,5 +1,10 @@
 import seasonWindow from '../data/season-window.json';
 import type { DraftPick } from '../types';
+import {
+  apprenticeSeasonCount,
+  firstScoredYear,
+  withoutApprenticeSeasons,
+} from './apprenticeship';
 import { isPlayedSeason } from './seasonPlayed';
 
 /**
@@ -76,20 +81,30 @@ function hasDeparted(pick: DraftPick): boolean {
  * It also floors the result at `retained`, so a caller with at least one season
  * to divide can never divide by zero — including a class drafted after the
  * newest season in the data, where `elapsed` is 0.
+ *
+ * An apprenticeship (see `apprenticeship.ts`) moves the window's *start* to the
+ * season the quarterback won the job and shortens its *length* by the seasons
+ * he sat. Shortening rather than sliding, because the window models what the
+ * rookie contract entitled the team to, and sitting on the bench does not
+ * extend that entitlement — sliding would charge Jordan Love for 2026 and 2027,
+ * years his rookie deal never covered.
  */
 export function scoredSeasonCount(
   pick: DraftPick,
   retainedSeasonCount: number,
 ): number {
-  const window = rookieWindow(pick.round);
-  const elapsed = LATEST_SEASON - pick.draftYear + 1;
+  const apprenticeSeasons = apprenticeSeasonCount(pick);
+  // Can reach zero if the bench years exhausted the deal; the `retained` floor
+  // below is what keeps the divisor usable.
+  const window = Math.max(0, rookieWindow(pick.round) - apprenticeSeasons);
+  const elapsed = LATEST_SEASON - (pick.draftYear + apprenticeSeasons) + 1;
   const tracked = hasDeparted(pick) ? window : Math.min(elapsed, window);
   return Math.max(retainedSeasonCount, tracked);
 }
 
 /**
  * The calendar years a pick's drafting-team score is divided across, oldest
- * first: `draftYear` through the end of {@link scoredSeasonCount}.
+ * first: {@link firstScoredYear} through the end of {@link scoredSeasonCount}.
  *
  * Exists for display. The career table shows one row per season the player
  * actually had, so a pick whose seasons stop early — released, or out of the
@@ -99,10 +114,11 @@ export function scoredSeasonCount(
  * the score is making.
  */
 export function scoredWindowYears(pick: DraftPick): number[] {
-  const retained = pick.seasons.filter(
+  const from = firstScoredYear(pick);
+  const retained = withoutApprenticeSeasons(pick, pick.seasons).filter(
     (s) => s.retained && isPlayedSeason(s),
   ).length;
   if (retained === 0) return [];
   const count = scoredSeasonCount(pick, retained);
-  return Array.from({ length: count }, (_, i) => pick.draftYear + i);
+  return Array.from({ length: count }, (_, i) => from + i);
 }

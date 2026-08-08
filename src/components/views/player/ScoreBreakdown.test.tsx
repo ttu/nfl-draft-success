@@ -323,3 +323,63 @@ describe('ScoreBreakdown', () => {
     ).not.toBeInTheDocument();
   });
 });
+
+describe('a quarterback who sat behind a veteran', () => {
+  /** The Jordan Love shape: three years on the bench, then QB1. */
+  const love: DraftPick = makePick({
+    playerName: 'Jordan Love',
+    position: 'QB',
+    round: 1,
+    overallPick: 26,
+    teamId: 'GB',
+    draftYear: 2020,
+    seasons: [
+      makeSeason({ year: 2020, gamesPlayed: 1, snapShare: 0.01 }),
+      makeSeason({ year: 2021, gamesPlayed: 2, snapShare: 0.06 }),
+      makeSeason({ year: 2022, gamesPlayed: 2, snapShare: 0.03 }),
+      makeSeason({
+        year: 2023,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 0.99,
+      }),
+      makeSeason({
+        year: 2024,
+        gamesPlayed: 15,
+        teamGames: 17,
+        snapShare: 0.97,
+      }),
+    ],
+  });
+
+  const openPanel = (pick: DraftPick) => {
+    render(<ScoreBreakdown pick={pick} draftingTeamOnly />);
+    fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+  };
+
+  it('still lists the bench years, so the panel does not open mid-career', () => {
+    // They leave both halves of the division, but dropping the rows would open
+    // a 2020 first-rounder's math at 2023 with nothing to say why.
+    openPanel(love);
+    expect(screen.getByTestId('score-breakdown-apprentice-2020')).toBeTruthy();
+    expect(screen.getByTestId('score-breakdown-apprentice-2022')).toBeTruthy();
+  });
+
+  it('does not add the bench years to the sum as zeros', () => {
+    // A gap year is a zero the window charges; a bench year is outside the
+    // window, so printing "0.0 +" for it would show a penalty never applied.
+    openPanel(love);
+    const terms = screen.getByText(/=/, {
+      selector: '.score-breakdown__sum-terms',
+    }).textContent;
+    expect(terms?.startsWith('0.0')).toBe(false);
+    expect(terms?.split('+').length).toBe(2);
+  });
+
+  it('says the denominator is seasons since he won the job', () => {
+    openPanel(love);
+    expect(
+      screen.getByText(/since he won the job, after 3 on the bench/),
+    ).toBeTruthy();
+  });
+});
