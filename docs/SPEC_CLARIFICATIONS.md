@@ -52,7 +52,7 @@ Apprentice seasons are dropped from the seasons a pick is judged on (`getFiltere
 
 **Why QB only:** quarterback is the one position where exactly one player takes the snaps. Run position-agnostic across 2018–2025 the rule fires on 115 picks and erases the quiet rookie year of ordinary starters.
 
-**Known limitation:** the rule cannot distinguish sitting-to-learn from sitting-injured, so a lost rookie season followed by winning the job also qualifies (J.J. McCarthy).
+**Known limitation:** the rule cannot distinguish sitting-to-learn from sitting-injured, so a lost rookie season followed by winning the job also qualifies (J.J. McCarthy). Nor can it be taught to — McCarthy's 2024 row carries no injury fields whatsoever, so branching on them would still call it learning. The UI's `learning` label means **"before he won the job"**; the Info modal states that caveat, and `docs/calculations.md` §7.3b explains why detection is not possible.
 
 ## Retention
 

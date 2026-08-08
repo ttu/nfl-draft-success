@@ -90,6 +90,21 @@ describe('InfoView', () => {
     }
   });
 
+  it('admits that a "learning" season may have been an injured one', () => {
+    render(<InfoView onClose={vi.fn()} />);
+    // The career table labels these seasons "learning", which is the usual
+    // cause but not a knowable one — nothing in the snap data says why a
+    // quarterback did not play, and McCarthy's lost rookie year carries no
+    // injury signal at all. The methodology is where that gets owned; without
+    // it the app asserts a reason it cannot support.
+    expect(
+      screen.getByText(/lost to injury counts the same way/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Read the label as "before he won the job"/i),
+    ).toBeInTheDocument();
+  });
+
   it('no longer claims tenure is kept out of the score', () => {
     render(<InfoView onClose={vi.fn()} />);
     // This sentence was true before the score divided by the rookie window.

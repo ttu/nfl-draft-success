@@ -340,6 +340,8 @@ A quarterback's **apprentice seasons** are the unbroken run from his draft year 
 
 **Known limitation.** The rule keys on outcome, so it cannot separate sitting-to-learn from sitting-injured; McCarthy, who missed his rookie year with a knee injury, qualifies.
 
+Detection is not merely unimplemented, it is unavailable: McCarthy's 2024 row carries **no injury signal at all** — no `injuryReportWeeks`, no `seasonEndingAbsenceGames`, just `gamesPlayed: 0` — because he went to IR in the preseason and never appeared in a weekly snap count. Branching the copy on those fields would therefore still label him "learning". The career table's `learning` chip should be read as **"before he won the job"**, which is the rule's literal criterion; the Info modal says so in as many words, since the player page states the usual cause rather than a verified one.
+
 ### 7.4 Over slot (draft value above draft-slot expectation)
 
 **Functions:** `getPlayerDraftSkill` / `expectedScoreForPick` in `src/lib/draftSlotBaseline.ts`; team aggregate is `skillScore` on `getRollingDraftScore`.

@@ -275,6 +275,23 @@ retention     = retained_players / picks_in_range`}</pre>
         scores a 3. Sitting is treated as an investment, and judged by whether
         it paid.
       </p>
+      <p
+        style={{
+          fontSize: 13,
+          lineHeight: 1.7,
+          color: 'var(--ink-2)',
+          margin: '12px 0 0',
+          maxWidth: 640,
+        }}
+      >
+        Because the test is the outcome and not the reason, a season lost to
+        injury counts the same way: J.J. McCarthy missed his rookie year with a
+        knee injury, won Minnesota's job the year after, and is forgiven exactly
+        as Love is. The career table labels those seasons "learning", which is
+        the usual cause but not always the true one — nothing in the snap data
+        says why a quarterback did not play, and his 2024 season carries no
+        injury signal at all. Read the label as "before he won the job".
+      </p>
 
       <h2 className="info-section-title" style={{ marginTop: 32 }}>
         Over slot: skill vs. capital
