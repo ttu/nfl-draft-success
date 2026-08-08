@@ -96,6 +96,22 @@ describe('getRollingDraftScore', () => {
     expect(result.retentionRate).toBe(1);
   });
 
+  it('reports the core-starter and retained counts behind those rates', () => {
+    const drafts: DraftClass[] = [
+      coreStarterPick(2022),
+      nonRetainedCorePick(2023),
+    ];
+    const result = getRollingDraftScore(drafts, 'KC');
+    expect(result.coreStarterCount).toBe(2);
+    expect(result.retainedCount).toBe(1);
+  });
+
+  it('reports zero counts for a team with no scored picks', () => {
+    const result = getRollingDraftScore([], 'KC');
+    expect(result.coreStarterCount).toBe(0);
+    expect(result.retainedCount).toBe(0);
+  });
+
   it('uses drafting-team-only when option is true', () => {
     // Barely played elsewhere before becoming a star with the drafting team.
     // draftingTeamOnly drops the low non-retained season from the numerator,

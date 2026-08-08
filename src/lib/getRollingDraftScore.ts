@@ -22,6 +22,10 @@ export interface RollingDraftScore {
   scoredPickCount: number;
   coreStarterRate: number;
   retentionRate: number;
+  /** Scored picks classified `core_starter` — the numerator of `coreStarterRate`. */
+  coreStarterCount: number;
+  /** Scored picks still with the drafting team — the numerator of `retentionRate`. */
+  retainedCount: number;
 }
 
 /** A team's position in the league-wide draft-success ranking. */
@@ -85,5 +89,7 @@ export function getRollingDraftScore(
     coreStarterRate:
       scoredPickCount > 0 ? coreStarterCount / scoredPickCount : 0,
     retentionRate,
+    coreStarterCount,
+    retainedCount: retentionCount,
   };
 }

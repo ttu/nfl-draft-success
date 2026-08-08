@@ -35,6 +35,8 @@ function renderView(overrides: Partial<TeamDetailContentProps> = {}) {
       scoredPickCount: 2,
       coreStarterRate: 0.5,
       retentionRate: 1,
+      coreStarterCount: 1,
+      retainedCount: 2,
     },
     yearCount: 2,
     teamRank: { rank: 3, total: 32, rankings: [] },
@@ -194,6 +196,16 @@ describe('TeamDetailContent validation card', () => {
     ).toBeInTheDocument();
   });
 
+  it('follows the gap read with what the record produced', () => {
+    renderView({ correlationRow });
+    const card = screen
+      .getByText(/draft, then winning/i)
+      .closest('.side-card') as HTMLElement;
+    const beats = card.querySelectorAll('.validation-card__take');
+    expect(beats).toHaveLength(2);
+    expect(beats[1].textContent).toMatch(/5 of those 5 seasons/);
+  });
+
   it('opens the methodology from the card link', () => {
     const onShowMethodology = vi.fn();
     renderView({ correlationRow, onShowMethodology });
@@ -201,5 +213,56 @@ describe('TeamDetailContent validation card', () => {
       screen.getByRole('button', { name: /see all 32 teams in methodology/i }),
     );
     expect(onShowMethodology).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('TeamDetailContent summary card', () => {
+  /** The Summary card's paragraphs, in render order. */
+  function summaryBeats(): string[] {
+    const card = screen
+      .getByText('Summary')
+      .closest('.side-card') as HTMLElement;
+    return [...card.querySelectorAll('.side-card__prose')].map(
+      (p) => p.textContent ?? '',
+    );
+  }
+
+  it('renders one paragraph per narrative beat', () => {
+    renderView({
+      rollingDraftScore: {
+        score: 62.5,
+        skillScore: 8.4,
+        totalPicks: 63,
+        scoredPickCount: 63,
+        coreStarterRate: 0.3,
+        retentionRate: 0.45,
+        coreStarterCount: 19,
+        retainedCount: 28,
+      },
+    });
+    const beats = summaryBeats();
+    expect(beats.length).toBeGreaterThan(1);
+    expect(beats[0]).toContain('19 of 63');
+    expect(beats[1]).toContain('+8.4');
+  });
+
+  it('renders no prose but keeps the depth-chart link when there is nothing to say', () => {
+    renderView({
+      depthChartUrl: 'https://example.com/depth',
+      rollingDraftScore: {
+        score: 0,
+        skillScore: 0,
+        totalPicks: 0,
+        scoredPickCount: 0,
+        coreStarterRate: 0,
+        retentionRate: 0,
+        coreStarterCount: 0,
+        retainedCount: 0,
+      },
+    });
+    expect(summaryBeats()).toEqual([]);
+    expect(
+      screen.getByRole('link', { name: /external depth chart/i }),
+    ).toBeInTheDocument();
   });
 });

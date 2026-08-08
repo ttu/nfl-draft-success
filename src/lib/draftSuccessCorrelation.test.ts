@@ -120,7 +120,11 @@ describe('buildCorrelation', () => {
 });
 
 describe('teamStory', () => {
-  const row = (overSlotPct: number, winPctPct: number) => ({
+  const row = (
+    overSlotPct: number,
+    winPctPct: number,
+    postseason: { playoffApps?: number; sbApps?: number; sbWins?: number } = {},
+  ) => ({
     teamId: 'X',
     seasons: 5,
     score: 0,
@@ -132,23 +136,86 @@ describe('teamStory', () => {
     playoffApps: 0,
     sbApps: 0,
     sbWins: 0,
+    ...postseason,
     scorePercentile: 0,
     overSlotPercentile: overSlotPct,
     winPctPercentile: winPctPct,
   });
 
+  /** The gap read, which always leads the story. */
+  const gapBeat = (...args: Parameters<typeof row>) =>
+    teamStory(row(...args))[0];
+
   it('says drafting outpaces winning when the over-slot percentile is well ahead', () => {
-    expect(teamStory(row(90, 40))).toMatch(/draft/i);
-    expect(teamStory(row(90, 40))).not.toEqual(teamStory(row(50, 50)));
+    expect(gapBeat(90, 40)).toMatch(/draft/i);
+    expect(gapBeat(90, 40)).not.toEqual(gapBeat(50, 50));
   });
 
   it('says the two track closely when the percentiles are near each other', () => {
-    expect(teamStory(row(91, 94))).toMatch(/closely/i);
+    expect(gapBeat(91, 94)).toMatch(/closely/i);
   });
 
   it('says winning outpaces drafting when the win percentile is well ahead', () => {
-    expect(teamStory(row(40, 90))).not.toEqual(teamStory(row(90, 40)));
-    expect(teamStory(row(40, 90))).toMatch(/winning|record/i);
+    expect(gapBeat(40, 90)).not.toEqual(gapBeat(90, 40));
+    expect(gapBeat(40, 90)).toMatch(/winning|record/i);
+  });
+
+  describe('postseason beat', () => {
+    it('follows the gap read', () => {
+      expect(teamStory(row(50, 50, { playoffApps: 4 }))).toHaveLength(2);
+    });
+
+    it('cites playoff appearances against the seasons in the window', () => {
+      expect(teamStory(row(50, 50, { playoffApps: 4 }))[1]).toContain(
+        '4 of those 5 seasons',
+      );
+    });
+
+    it('distinguishes frequent, occasional and rare postseasons', () => {
+      const shapes = [4, 2, 0].map((playoffApps) =>
+        teamStory(row(50, 50, { playoffApps }))[1].replace(/\d+/g, '#'),
+      );
+      expect(new Set(shapes).size).toBe(3);
+    });
+
+    it('does not call an even split less often than not', () => {
+      const half = teamStory({ ...row(50, 50), seasons: 4, playoffApps: 2 })[1];
+      expect(half).not.toMatch(/less often than not/i);
+      const under = teamStory({
+        ...row(50, 50),
+        seasons: 4,
+        playoffApps: 1,
+      })[1];
+      expect(under).toMatch(/less often than not/i);
+    });
+
+    it('adds a Super Bowl clause only when the team reached one', () => {
+      expect(teamStory(row(50, 50, { playoffApps: 4 }))[1]).not.toMatch(
+        /Super Bowl/i,
+      );
+      expect(
+        teamStory(row(50, 50, { playoffApps: 4, sbApps: 2, sbWins: 1 }))[1],
+      ).toMatch(/Super Bowl/i);
+    });
+
+    it('separates reaching a Super Bowl from winning one', () => {
+      const lost = teamStory(row(50, 50, { playoffApps: 4, sbApps: 1 }))[1];
+      const won = teamStory(
+        row(50, 50, { playoffApps: 4, sbApps: 1, sbWins: 1 }),
+      )[1];
+      expect(lost).not.toEqual(won);
+    });
+
+    it('does not claim the draft caused the record', () => {
+      const story = teamStory(
+        row(90, 40, { playoffApps: 4, sbApps: 1, sbWins: 1 }),
+      ).join(' ');
+      expect(story).not.toMatch(/because|thanks to|driven by|the result of/i);
+    });
+
+    it('is omitted when the window holds no played seasons', () => {
+      expect(teamStory({ ...row(50, 50), seasons: 0 })).toHaveLength(1);
+    });
   });
 });
 

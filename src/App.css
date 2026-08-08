@@ -1655,12 +1655,19 @@ button {
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
-.validation-card__take {
+/* Narrative beats: one paragraph each, so the first sits flush with the card
+   content above it and the rest are spaced from their predecessor. */
+.validation-card__take,
+.side-card__prose {
   margin: 12px 0 0;
   font-family: var(--f-serif);
   font-size: 14.5px;
   line-height: 1.45;
   color: var(--ink-2);
+}
+
+.side-card__prose:first-child {
+  margin-top: 0;
 }
 
 /* ─── Roster list ─────────────────────────────────────────── */

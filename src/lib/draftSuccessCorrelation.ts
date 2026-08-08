@@ -101,13 +101,12 @@ export function buildCorrelation(
 }
 
 /**
- * A one-line, plain-language read on a single team's row: whether its drafting
- * is running ahead of its record, the other way round, or roughly in step. The
- * gap is between the over-slot (drafting-skill) and win-rate percentiles, so a
- * team is only ever compared with the rest of the league, not against an
- * absolute bar.
+ * Whether a team's drafting runs ahead of its record, the other way round, or
+ * roughly in step. The gap is between the over-slot (drafting-skill) and
+ * win-rate percentiles, so a team is only ever compared with the rest of the
+ * league, not against an absolute bar.
  */
-export function teamStory(row: CorrelationRow): string {
+function gapBeat(row: CorrelationRow): string {
   const gap = row.overSlotPercentile - row.winPctPercentile;
   if (gap > 15) {
     return 'This team is drafting better than its record shows — the wins have not caught up yet.';
@@ -116,6 +115,50 @@ export function teamStory(row: CorrelationRow): string {
     return 'This team is winning beyond what its draft returns alone would predict — coaching, health and veterans are carrying weight.';
   }
   return 'Drafting and winning are tracking closely for this team.';
+}
+
+/** How often the team played in January, banded frequent / occasional / never. */
+function playoffsClause(playoffApps: number, seasons: number): string {
+  if (playoffApps === 0) {
+    return `It did not reach the postseason in any of those ${seasons} seasons`;
+  }
+  const counted = `It reached the postseason in ${playoffApps} of those ${seasons} seasons`;
+  // Strictly fewer than half, so an even split never reads "less often than not".
+  return playoffApps / seasons < 0.5
+    ? `${counted}, less often than not`
+    : counted;
+}
+
+/**
+ * What the record actually produced in January. States the outcome and stops
+ * there: it never attributes the postseason to the draft, because the
+ * league-wide correlation in this dataset runs negative and the Methodology
+ * view says so.
+ */
+function postseasonBeat(row: CorrelationRow): string | null {
+  const { seasons, playoffApps, sbApps, sbWins } = row;
+  if (seasons === 0) return null;
+
+  const playoffs = playoffsClause(playoffApps, seasons);
+
+  if (sbApps === 0) return `${playoffs}.`;
+  // "reached … reaching" in one sentence, so the Super Bowl clause is phrased
+  // as a count rather than repeating the verb.
+  const trips =
+    sbApps === 1 ? 'one Super Bowl trip' : `${sbApps} Super Bowl trips`;
+  if (sbWins === 0) return `${playoffs}, with ${trips} and no title.`;
+  const wins = sbWins === 1 ? 'one win' : `${sbWins} wins`;
+  return `${playoffs}, with ${trips} and ${wins}.`;
+}
+
+/**
+ * A plain-language read on a single team's row, one sentence per beat: how its
+ * drafting compares with its record, then what that record produced.
+ */
+export function teamStory(row: CorrelationRow): string[] {
+  return [gapBeat(row), postseasonBeat(row)].filter(
+    (beat): beat is string => beat !== null,
+  );
 }
 
 export type CorrelationStrength = 'no' | 'weak' | 'moderate' | 'strong';

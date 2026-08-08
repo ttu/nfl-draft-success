@@ -7,7 +7,8 @@ import {
   StatBlock,
 } from '../../design/Primitives';
 import { ScoreByYearChart } from '../../design/ScoreByYearChart';
-import { getScoreByYear } from '../../../lib/getScoreByYear';
+import { getScoreByYear, type YearScore } from '../../../lib/getScoreByYear';
+import { buildTeamNarrative } from '../../../lib/teamNarrative';
 import { PlayerList } from '../../draft/PlayerList';
 import { RoleFilter } from '../../filters/RoleFilter';
 import {
@@ -117,6 +118,24 @@ function TeamDetailContentImpl({
     [allTeamPicks],
   );
 
+  // The per-class trend feeds both the hero chart and the Summary card's
+  // trajectory beat, so it is computed once here and passed to both.
+  const scoreByYear = useMemo(
+    () => getScoreByYear(draftClasses, selectedTeam, { draftingTeamOnly }),
+    [draftClasses, selectedTeam, draftingTeamOnly],
+  );
+  const narrative = useMemo(
+    () =>
+      buildTeamNarrative({
+        coreStarterCount: rollingDraftScore.coreStarterCount,
+        retainedCount: rollingDraftScore.retainedCount,
+        scoredPickCount: rollingDraftScore.scoredPickCount,
+        overSlot: rollingDraftScore.skillScore,
+        scoreByYear,
+      }),
+    [rollingDraftScore, scoreByYear],
+  );
+
   // Jump from a draft-class card down to that year's picks in the roster below.
   // Falls back to the roster section when the year is filtered out of the list.
   const scrollToRosterYear = useCallback((year: number) => {
@@ -133,10 +152,9 @@ function TeamDetailContentImpl({
         yearCount={yearCount}
         teamRank={teamRank}
         onShowRankings={onShowRankings}
-        draftClasses={draftClasses}
         selectedTeam={selectedTeam}
-        draftingTeamOnly={draftingTeamOnly}
         depthChartUrl={depthChartUrl}
+        scoreByYear={scoreByYear}
       />
 
       <ClassGrid
@@ -160,7 +178,7 @@ function TeamDetailContentImpl({
           color={color}
           unitBreakdown={unitBreakdown}
           positionBreakdown={positionBreakdown}
-          rollingDraftScore={rollingDraftScore}
+          narrative={narrative}
           depthChartUrl={depthChartUrl}
           correlationRow={correlationRow}
           onShowMethodology={onShowMethodology}
@@ -176,10 +194,9 @@ interface TeamHeroProps {
   yearCount: number;
   teamRank: TeamRank;
   onShowRankings: () => void;
-  draftClasses: DraftClass[];
   selectedTeam: string;
-  draftingTeamOnly: boolean;
   depthChartUrl: string | null;
+  scoreByYear: YearScore[];
 }
 
 const TeamHero = memo(function TeamHero({
@@ -187,17 +204,13 @@ const TeamHero = memo(function TeamHero({
   yearCount,
   teamRank,
   onShowRankings,
-  draftClasses,
   selectedTeam,
-  draftingTeamOnly,
   depthChartUrl,
+  scoreByYear,
 }: TeamHeroProps) {
   const team = TEAMS.find((t) => t.id === selectedTeam);
   const color = teamColor(selectedTeam);
   const fg = teamFg(color);
-  const scoreByYear = getScoreByYear(draftClasses, selectedTeam, {
-    draftingTeamOnly,
-  });
 
   return (
     <section
@@ -458,22 +471,11 @@ function RosterSection({
   );
 }
 
-/** Plain-language read on how often a team's picks reach core-starter snaps. */
-function coreStarterRateSummary(coreStarterRate: number): string {
-  if (coreStarterRate > 0.4) {
-    return 'A strong run — this team is producing starters at an above-average clip.';
-  }
-  if (coreStarterRate > 0.25) {
-    return 'A steady, unspectacular run. Retention remains the strength.';
-  }
-  return 'A lean stretch. Few picks have settled into starter-level snaps.';
-}
-
 const SideRail = memo(function SideRail({
   color,
   unitBreakdown,
   positionBreakdown,
-  rollingDraftScore,
+  narrative,
   depthChartUrl,
   correlationRow,
   onShowMethodology,
@@ -482,7 +484,8 @@ const SideRail = memo(function SideRail({
   color: string;
   unitBreakdown: UnitBreakdownRow[];
   positionBreakdown: PositionBreakdownRow[];
-  rollingDraftScore: RollingDraftScore;
+  /** The Summary card's read, one sentence per beat. */
+  narrative: string[];
   depthChartUrl: string | null;
   correlationRow: CorrelationRow | null;
   onShowMethodology: () => void;
@@ -502,10 +505,7 @@ const SideRail = memo(function SideRail({
           windows={windows}
         />
       )}
-      <SummaryCard
-        rollingDraftScore={rollingDraftScore}
-        depthChartUrl={depthChartUrl}
-      />
+      <SummaryCard narrative={narrative} depthChartUrl={depthChartUrl} />
     </aside>
   );
 });
@@ -554,7 +554,11 @@ function ValidationCard({
           SB wins <b>{row.sbWins}</b>
         </span>
       </div>
-      <p className="validation-card__take">{teamStory(row)}</p>
+      {teamStory(row).map((beat) => (
+        <p key={beat} className="validation-card__take">
+          {beat}
+        </p>
+      ))}
       <button
         type="button"
         className="fab-link side-card__cta"
@@ -642,25 +646,19 @@ function PicksByPositionCard({ rows }: { rows: PositionBreakdownRow[] }) {
 }
 
 function SummaryCard({
-  rollingDraftScore,
+  narrative,
   depthChartUrl,
 }: {
-  rollingDraftScore: RollingDraftScore;
+  narrative: string[];
   depthChartUrl: string | null;
 }) {
   return (
     <SideCard title="Summary" muted>
-      <p
-        style={{
-          margin: 0,
-          fontFamily: 'var(--f-serif)',
-          fontSize: 15,
-          lineHeight: 1.45,
-          color: 'var(--ink-2)',
-        }}
-      >
-        {coreStarterRateSummary(rollingDraftScore.coreStarterRate)}
-      </p>
+      {narrative.map((beat) => (
+        <p key={beat} className="side-card__prose">
+          {beat}
+        </p>
+      ))}
       {depthChartUrl && (
         <a
           className="fab-link side-card__cta"
