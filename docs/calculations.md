@@ -59,11 +59,11 @@ cumulativeSnapShare = sum(playerNum) / teamSeasonDen
 - `injuryReportWeeks`: weeks on the nflverse injury report.
 - `seasonEndingAbsenceGames`: team games between a player's **last snap** and the end of their team's season, from `snap_counts` weeks (`src/lib/seasonEndingAbsence.ts`). The nflverse injury feed is the weekly practice/game-status report, and a player placed on IR leaves the 53-man roster and that report entirely — so the most severe injuries produce **zero** report weeks (Nick Bosa has no 2020 rows despite tearing his ACL in week 2). Snap data still shows the shape: present every week, then gone. Weeks are matched against the team's own schedule so byes and playoff runs count correctly, and a gap of one game is ignored (that reads as a rest day or healthy scratch, not an injury). This is a heuristic: a player cut mid-season who never signs elsewhere looks the same as one who went on IR.
 
-Let `missedGames = max(0, teamGames - gamesPlayed)` and `excusedWeeks = min(max(injuryReportWeeks, seasonEndingAbsenceGames), missedGames)`. We subtract `excusedWeeks × (teamSeasonDen / gameCount)` where `gameCount` is the number of distinct games that franchise played in `snap_counts`. That approximates “weeks missed hurt” without penalizing load for those absences as harshly as healthy scratches. Applied only for single-franchise seasons when merging draft output (`resolveCumulativeLoadShareWithInjury`) — for a traded player, absence from one team's remaining schedule is a transaction, not an injury.
+Let `missedGames = max(0, teamGames - restTeamGames - (gamesPlayed - restPlayerGames))` and `excusedWeeks = min(max(injuryReportWeeks, seasonEndingAbsenceGames), missedGames)`. Missed games are counted over the schedule the **rest rule** (§1.6) leaves behind, so a rested finale is never excused here as well as erased there — the same reason the two injury signals are maxed rather than summed. We subtract `excusedWeeks × (teamSeasonDen / gameCount)` where `gameCount` is the number of distinct games that franchise played in `snap_counts`. That approximates “weeks missed hurt” without penalizing load for those absences as harshly as healthy scratches. Applied only for single-franchise seasons when merging draft output (`resolveCumulativeLoadShareWithInjury`) — for a traded player, absence from one team's remaining schedule is a transaction, not an injury.
 
 Note the **availability** term of the season score (`gamesPlayed / teamGames`, 30% weight) is untouched by this, so a season-ending injury still costs a player most of that component; the adjustment only stops Load from reading the missed games as bench time.
 
-**Cap vs Avg snap:** Full-season + injury math can still produce a load **above** average weekly role share. We set `cumulativeSnapShare = min(computedLoad, snapShare)` when storing JSON and in `snapShareForRoleTier`, so Load never exceeds **Avg snap** (typical usage when active).
+**Cap vs Avg snap:** Full-season + injury math can still produce a load **above** average weekly role share. We set `cumulativeSnapShare = min(computedLoad, snapShare)` when storing JSON and in `snapShareForRoleTier`, so Load never exceeds **Avg snap** (typical usage when active). A season carrying a `restGame` is stored **uncapped** and capped by `withoutRestGame` instead: rest moves both terms, so capping first would clamp the load against an average that still counts the rested game.
 
 **Multi-team seasons (traded mid-year):** If the player appears on more than one franchise in `snap_counts` for that year, fall back to the **games-played** ratio: `sum(playerNum) / sum(teamDen per game row)` so we do not attribute one team’s full-season denominator to snaps earned with another club. Injury adjustment is **not** applied (no `loadMeta`).
 
@@ -110,11 +110,34 @@ Note the **availability** term of the season score (`gamesPlayed / teamGames`, 3
 | OAK    | LV         |
 | LVR    | LV         |
 
-**Logic:**
+**Logic (retention):**
 
 1. If snap data exists: `retained = (normalize(primaryTeam) === teamId)`
 2. If no snap data but injury report exists: use injury report team as primary
 3. If neither: infer from previous/next season primary team (player on roster but inactive)
+
+### 1.6 Rest Games (per season, per franchise)
+
+A team that has locked its playoff seed sits its starters in the final regular-season game. The player was available and the coach chose to sit him, so nothing else in the pipeline forgives it: §1.2's absence rule deliberately ignores a one-game tail (that reads as a rest day or a healthy scratch), which leaves a rested finale costing both availability and Load.
+
+**Detection (`detectRestGames` in `src/lib/restGame.ts`, run per season in the update script).** Inferred from the team's own snap data rather than from computed clinch status, which would mean reconstructing standings, seeding and NFL tiebreakers. Per franchise:
+
+1. **Playoff gate.** The franchise must have a snap row past the last regular-season week (18 from 2021, else 17). This is a guard on the usage signal, not a substitute — without it the rule also fires on a 3–13 team looking at young players, and on one that has lost half its roster by then.
+2. **Regulars.** Players whose _median_ share (`max(offense_pct, defense_pct)`) across the team's other regular-season games clears `REST_GAME_STARTER_SHARE` (0.5). An absent player counts as zero for a week, so a starter who missed a stretch is measured on the whole schedule.
+3. **The drop.** For each regular, `ratio = finaleShare / medianOtherShare`. If the **median** ratio across them falls below `REST_GAME_RATIO_THRESHOLD` (0.7), the finale is a rest game. Median on both axes: two stars on IR cannot fake a rest week, and one stubborn ironman cannot mask a real one.
+4. **Fails closed** on fewer than `MIN_REST_GAME_REGULARS` (10) regulars or `MIN_REST_GAME_NORM_WEEKS` (6) other games.
+
+Judged per franchise, never per game — the opponent played that game for real, and its rows are untouched.
+
+**Calibration.** The 0.7 threshold comes from the 82 playoff teams of 2019–2024, whose median ratios separate cleanly there. Below it sit only real rests, down to a partial one like Baltimore 2023 at 0.59 (Jackson and six others sat while the roster played on); the nearest team above is New Orleans 2019 at 0.77, who played Brees in a game that decided their seed. A clean sweep of the starting lineup is the rarer shape, so a tighter bar would miss most of what the rule is for. It flags 23 of those 82 teams.
+
+**Effect — the game is erased, not excused.** `withoutRestGame` (same module) removes it from `teamGames`, from the Load denominator, from the avg-snap average, and from the player's own numerators. Excusing the absence while keeping the snaps would let a token one-series appearance score better than a full rest, though both are the same coaching decision, and would push the shares above 1.0 by measuring numerator and denominator over different sets of games.
+
+**Where it is applied.** The pipeline stays lossless: every stored field keeps its true full-season value, and each affected season additionally carries a `restGame` slice (`playerGames`, `playerShareSum`, `playerSnaps`, `teamSnaps`) plus `loadDenominator` — the denominator that produced the stored ratio, already injury-adjusted, without which the ratio could not be reopened. The subtraction happens in `stampDraftYear` (`src/lib/draftClass.ts`), the single point every path parsing draft JSON goes through, so role classification, season scores, cohort baselines and the derivation scripts all see the shortened schedule without each having to remember.
+
+**Accepted trade-off.** Erasure is team-wide, so a backup who played 60 snaps _because_ the starters sat loses that showcase game from his record.
+
+**Edge cases.** A player whose only appearance was the rest game reads 0-for-16 rather than `NaN`. Traded seasons take the games-played denominator, and emitting `loadDenominator` as the sum of per-game denominators makes the identical arithmetic work on both paths. The playoff gate keeps the rule inert on an in-progress season until the postseason appears in the data.
 
 ---
 

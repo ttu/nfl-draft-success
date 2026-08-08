@@ -1,4 +1,5 @@
 import type { DraftClass, DraftPick } from '../types';
+import { withoutRestGame } from './restGame';
 
 /**
  * A class as it exists before stamping: exactly `DraftClass`, minus the
@@ -15,7 +16,13 @@ export interface RawDraftClass {
 }
 
 /**
- * Stamps each pick in a freshly-parsed class with its `draftYear`.
+ * Prepares a freshly-parsed class for use: stamps each pick with its
+ * `draftYear`, and subtracts any rested finale from its seasons.
+ *
+ * Rest exclusion belongs here, at the single point every path parsing draft
+ * JSON goes through, so role classification, season scores, cohort baselines
+ * and the derivation scripts all see the shortened schedule without each having
+ * to remember. See {@link ./restGame.withoutRestGame}.
  *
  * `draft-{year}.json` carries the year once, on the class, but scoring needs it
  * per pick: {@link getPlayerDraftScore} divides by the rookie-contract window,
@@ -49,6 +56,7 @@ export function stampDraftYear(cls: RawDraftClass): DraftClass {
   const stamped = cls as DraftClass;
   for (const pick of stamped.picks) {
     pick.draftYear = stamped.year;
+    pick.seasons = pick.seasons.map(withoutRestGame);
   }
   return stamped;
 }

@@ -25,6 +25,19 @@ export interface TeamSeasonDenominatorTotals {
   gameCountByTeam: Map<string, number>;
   /** Distinct weeks played per normalized franchise, for absence detection */
   weeksByTeam: Map<string, Set<number>>;
+  /**
+   * One game's capacity, keyed `${team}|${week}`, so a single game can be
+   * subtracted from the season denominator — what a rest game needs.
+   */
+  capacityByTeamWeek: Map<string, TeamGameCapacity>;
+}
+
+/** Snap capacity of one team-game, on both denominator bases. */
+export interface TeamGameCapacity {
+  /** Offense + defense plays */
+  scrim: number;
+  /** Scrimmage plus special teams, the specialist basis */
+  full: number;
 }
 
 /**
@@ -39,6 +52,7 @@ export function buildTeamSeasonDenominatorTotals(
   const fullByTeam = new Map<string, number>();
   const gameCountByTeam = new Map<string, number>();
   const weeksByTeam = new Map<string, Set<number>>();
+  const capacityByTeamWeek = new Map<string, TeamGameCapacity>();
   const seenGameTeam = new Set<string>();
 
   for (const row of rows) {
@@ -73,10 +87,20 @@ export function buildTeamSeasonDenominatorTotals(
         weeksByTeam.set(nt, weeks);
       }
       weeks.add(week);
+      capacityByTeamWeek.set(`${nt}|${week}`, {
+        scrim,
+        full: scrim + stDen,
+      });
     }
   }
 
-  return { scrimByTeam, fullByTeam, gameCountByTeam, weeksByTeam };
+  return {
+    scrimByTeam,
+    fullByTeam,
+    gameCountByTeam,
+    weeksByTeam,
+    capacityByTeamWeek,
+  };
 }
 
 /**
@@ -162,6 +186,10 @@ export function injuryAdjustedFullSeasonDenominator(options: {
   teamGames: number;
   gamesPlayed: number;
   cumDenGamesPlayed: number;
+  /** Team games the rest rule erases (0 or 1) */
+  restTeamGames?: number;
+  /** Rest games the player actually appeared in (0 or 1) */
+  restPlayerGames?: number;
 }): number {
   const {
     fullSeasonTeamDen,
@@ -171,9 +199,18 @@ export function injuryAdjustedFullSeasonDenominator(options: {
     teamGames,
     gamesPlayed,
     cumDenGamesPlayed,
+    restTeamGames = 0,
+    restPlayerGames = 0,
   } = options;
 
-  const missedGames = Math.max(0, teamGames - gamesPlayed);
+  // Games missed are counted over the schedule the rest rule leaves behind. A
+  // rested finale is erased downstream, so excusing it here as well would
+  // discount the same absence twice — the same reason the two injury signals
+  // are maxed rather than summed.
+  const missedGames = Math.max(
+    0,
+    teamGames - restTeamGames - (gamesPlayed - restPlayerGames),
+  );
   const excusedWeeks = Math.min(
     Math.max(0, injuryReportWeeks, seasonEndingAbsenceGames),
     missedGames,
@@ -187,10 +224,22 @@ export function injuryAdjustedFullSeasonDenominator(options: {
   return Math.max(adjusted, cumDenGamesPlayed);
 }
 
+/** A season load share together with the denominator that produced it. */
+export interface CumulativeLoad {
+  share: number;
+  /**
+   * What `share` divides by: the injury-adjusted full-season capacity, or the
+   * sum of per-game denominators for a traded season. Stored on the Season so
+   * the engine can reopen the ratio to subtract a rest game.
+   */
+  denominator: number;
+}
+
 /**
- * Full-season load share with optional injury adjustment (single-franchise seasons).
+ * Full-season load share with optional injury adjustment (single-franchise
+ * seasons), reporting the denominator it divided by.
  */
-export function resolveCumulativeLoadShareWithInjury(options: {
+export function resolveCumulativeLoadWithInjury(options: {
   cumNum: number;
   cumDenGamesPlayed: number;
   fullSeasonTeamDen: number;
@@ -201,7 +250,11 @@ export function resolveCumulativeLoadShareWithInjury(options: {
   teamGames: number;
   gamesPlayed: number;
   gameCount: number;
-}): number {
+  /** Team games the rest rule erases (0 or 1) */
+  restTeamGames?: number;
+  /** Rest games the player actually appeared in (0 or 1) */
+  restPlayerGames?: number;
+}): CumulativeLoad {
   const seasonEndingAbsenceGames = options.seasonEndingAbsenceGames ?? 0;
   const applyInjuryAdjustmentToFullSeasonDen =
     options.useFullSeasonDenominator &&
@@ -216,12 +269,31 @@ export function resolveCumulativeLoadShareWithInjury(options: {
         teamGames: options.teamGames,
         gamesPlayed: options.gamesPlayed,
         cumDenGamesPlayed: options.cumDenGamesPlayed,
+        restTeamGames: options.restTeamGames,
+        restPlayerGames: options.restPlayerGames,
       })
     : options.fullSeasonTeamDen;
-  return resolveCumulativeLoadShare({
-    cumNum: options.cumNum,
-    cumDenGamesPlayed: options.cumDenGamesPlayed,
-    fullSeasonTeamDen: fullDen,
-    useFullSeasonDenominator: options.useFullSeasonDenominator,
-  });
+
+  const useFullSeason = options.useFullSeasonDenominator && fullDen > 0;
+  return {
+    share: resolveCumulativeLoadShare({
+      cumNum: options.cumNum,
+      cumDenGamesPlayed: options.cumDenGamesPlayed,
+      fullSeasonTeamDen: fullDen,
+      useFullSeasonDenominator: options.useFullSeasonDenominator,
+    }),
+    denominator: useFullSeason ? fullDen : options.cumDenGamesPlayed,
+  };
+}
+
+/**
+ * Full-season load share with optional injury adjustment, share only.
+ *
+ * @deprecated Prefer {@link resolveCumulativeLoadWithInjury}, which also reports
+ * the denominator a rest game has to be subtracted from.
+ */
+export function resolveCumulativeLoadShareWithInjury(
+  options: Parameters<typeof resolveCumulativeLoadWithInjury>[0],
+): number {
+  return resolveCumulativeLoadWithInjury(options).share;
 }

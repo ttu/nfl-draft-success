@@ -40,8 +40,45 @@ export interface Season {
    * see `src/lib/seasonEndingAbsence.ts`.
    */
   seasonEndingAbsenceGames?: number;
+  /**
+   * The franchise's final regular-season game, when a clinched playoff team
+   * rested through it. Present only for such seasons.
+   *
+   * Stored raw so the engine can back it out — every other field on this Season
+   * still counts the game. `src/lib/loadData.ts` applies
+   * {@link ../lib/restGame.withoutRestGame} on ingest, so app code sees seasons
+   * with the game already removed and reads this only to explain the shortened
+   * schedule.
+   */
+  restGame?: RestGameSlice;
+  /**
+   * Full-season team snap capacity behind `cumulativeSnapShare`, i.e. the
+   * denominator that produced it (injury adjustment already applied). Present
+   * alongside `restGame`, without which that ratio could not be reopened.
+   */
+  loadDenominator?: number;
   /** Team abbreviation the player played for (set when retained === false) */
   currentTeam?: string;
+}
+
+/**
+ * One player's slice of a rest game: what that game contributed to each of his
+ * season totals, so it can be subtracted from every one of them.
+ */
+export interface RestGameSlice {
+  /** 1 when the player logged a snap in it, else 0 */
+  playerGames: number;
+  /** His per-game role share in it, part of the `snapShare` average */
+  playerShareSum: number;
+  /** His snaps in it, part of the load numerator */
+  playerSnaps: number;
+  /**
+   * The portion of `loadDenominator` this game contributed. That is the team's
+   * capacity for a full-season denominator, but 0 for a traded player's
+   * games-played denominator when he did not play it — matching whichever
+   * denominator the season actually used.
+   */
+  teamSnaps: number;
 }
 
 export interface DraftPick {

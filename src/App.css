@@ -2635,14 +2635,16 @@ button {
 /* Full measure rather than hanging under the working above it: the note is
    prose, and indenting it to the points column cost more line breaks than the
    alignment bought. */
-.score-breakdown__injury {
+.score-breakdown__injury,
+.score-breakdown__rest {
   margin: 6px 0 0;
   max-width: 68ch;
   font-size: 11px;
   line-height: 1.55;
   color: var(--ink-3);
 }
-.score-breakdown__injury strong {
+.score-breakdown__injury strong,
+.score-breakdown__rest strong {
   color: var(--ink-2);
 }
 .score-breakdown__season--gap {

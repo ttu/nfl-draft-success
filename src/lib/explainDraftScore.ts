@@ -62,6 +62,11 @@ export interface SeasonScoreExplanation {
   /** The season score, straight from {@link getSeasonScore}. */
   score: number;
   injury?: InjuryAdjustmentExplanation;
+  /**
+   * True when the team rested through its clinched finale, which is why
+   * `teamGames` reads one short of the schedule the franchise actually played.
+   */
+  restedFinale: boolean;
 }
 
 /** A rookie-window year the pick has no season row for: scored as zero. */
@@ -169,6 +174,7 @@ function explainSeason(
     // number shown here is the number the rest of the app used.
     score: getSeasonScore(s, position),
     injury: explainInjury(s),
+    restedFinale: s.restGame != null,
   };
 }
 

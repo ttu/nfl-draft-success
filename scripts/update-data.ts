@@ -24,10 +24,12 @@ import { normalizeNflverseTeam } from '../src/lib/nflverseFranchise';
 import {
   buildTeamSeasonDenominatorTotals,
   resolveCumulativeLoadShare,
-  resolveCumulativeLoadShareWithInjury,
+  resolveCumulativeLoadWithInjury,
   resolveTeamGamesDenominator,
   type TeamSeasonDenominatorTotals,
 } from '../src/lib/teamSeasonDenominator';
+import { detectRestGames, type RestGame } from '../src/lib/restGame';
+import type { RestGameSlice } from '../src/types';
 import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
 import { seasonEndingAbsenceGames } from '../src/lib/seasonEndingAbsence';
 import { resolveLatestPlayedSeason } from '../src/lib/latestPlayedSeason';
@@ -79,6 +81,10 @@ interface SeasonSnapData {
   primaryTeam: string;
   /** Present when full-season denominator applies (single franchise); merge step applies injury */
   loadMeta?: SeasonLoadMeta;
+  /** Denominator behind `cumulativeSnapShare`, before any injury adjustment */
+  loadDenominator: number;
+  /** Present when the player's primary team rested through its finale */
+  restGame?: RestGameSlice;
 }
 
 /** nflverse players.csv fields used when aggregating snap rows */
@@ -96,6 +102,21 @@ interface PlayerSnapAccum {
   teamSnaps: Map<string, number>;
   /** Weeks the player took a snap, for season-ending absence detection */
   weeks: Set<number>;
+  /**
+   * What he contributed in each franchise's rested finale, keyed by normalized
+   * team. Kept per team because only his primary team's rest game shortens the
+   * schedule he is measured against.
+   */
+  restByTeam: Map<string, PlayerRestAccum>;
+}
+
+/** One player's contribution to a single rested finale. */
+interface PlayerRestAccum {
+  playerGames: number;
+  shareSum: number;
+  playerSnaps: number;
+  /** His own denominator contribution, for the games-played (traded) basis */
+  cumDen: number;
 }
 
 /**
@@ -106,6 +127,7 @@ interface PlayerSnapAccum {
 function accumulatePlayerSnaps(
   rows: CsvRow[],
   metaByPfrId: Map<string, NflversePlayerMeta>,
+  restGames: Map<string, RestGame>,
 ): Map<string, PlayerSnapAccum> {
   const playerAccum = new Map<string, PlayerSnapAccum>();
 
@@ -145,15 +167,14 @@ function accumulatePlayerSnaps(
         cumDen: 0,
         teamSnaps: new Map(),
         weeks: new Set(),
+        restByTeam: new Map(),
       };
       playerAccum.set(pfrId, acc);
     }
     const week = parseInt(row.week ?? '', 10);
     if (Number.isFinite(week)) acc.weeks.add(week);
-    acc.gamesPlayed += 1;
-    acc.shareSum += share;
-    acc.cumNum += playerSnapsForCumulativeLoad(off, def, st, isSpec);
-    acc.cumDen += teamDenominatorForCumulativeLoad(
+    const playerSnaps = playerSnapsForCumulativeLoad(off, def, st, isSpec);
+    const playerDen = teamDenominatorForCumulativeLoad(
       off,
       offPct,
       def,
@@ -162,8 +183,27 @@ function accumulatePlayerSnaps(
       stPct,
       isSpec,
     );
+    acc.gamesPlayed += 1;
+    acc.shareSum += share;
+    acc.cumNum += playerSnaps;
+    acc.cumDen += playerDen;
     if (team) {
       acc.teamSnaps.set(team, (acc.teamSnaps.get(team) ?? 0) + snaps);
+
+      const nt = normalizeTeam(team);
+      if (restGames.get(nt)?.week === week) {
+        const rest = acc.restByTeam.get(nt) ?? {
+          playerGames: 0,
+          shareSum: 0,
+          playerSnaps: 0,
+          cumDen: 0,
+        };
+        rest.playerGames += 1;
+        rest.shareSum += share;
+        rest.playerSnaps += playerSnaps;
+        rest.cumDen += playerDen;
+        acc.restByTeam.set(nt, rest);
+      }
     }
   }
 
@@ -186,11 +226,43 @@ function primaryTeamOf(byTeam: Map<string, number>): string {
   return primaryTeam;
 }
 
+/**
+ * What the rested finale contributed to one player's season totals, so the
+ * engine can subtract the same game from every one of them.
+ *
+ * `teamSnaps` tracks whichever denominator the season actually used: the team's
+ * capacity for that game on a full-season denominator, but only the player's
+ * own contribution on the games-played basis a traded season falls back to —
+ * which is zero when he did not play, since nothing of that game entered the
+ * denominator in the first place.
+ */
+function restGameSlice(params: {
+  rest: RestGame;
+  acc: PlayerSnapAccum;
+  team: string;
+  useFullSeasonDen: boolean;
+  isSpec: boolean;
+  totals: TeamSeasonDenominatorTotals;
+}): RestGameSlice {
+  const { rest, acc, team, useFullSeasonDen, isSpec, totals } = params;
+  const played = acc.restByTeam.get(team);
+  const capacity = totals.capacityByTeamWeek.get(`${team}|${rest.week}`);
+  const teamCapacity = (isSpec ? capacity?.full : capacity?.scrim) ?? 0;
+
+  return {
+    playerGames: played?.playerGames ?? 0,
+    playerShareSum: played?.shareSum ?? 0,
+    playerSnaps: played?.playerSnaps ?? 0,
+    teamSnaps: useFullSeasonDen ? teamCapacity : (played?.cumDen ?? 0),
+  };
+}
+
 /** Season totals for one player, normalised against their team's denominator. */
 function finalizePlayerSeason(
   acc: PlayerSnapAccum,
   meta: NflversePlayerMeta | undefined,
   totals: TeamSeasonDenominatorTotals,
+  restGames: Map<string, RestGame>,
 ): SeasonSnapData {
   const primaryTeam = primaryTeamOf(acc.teamSnaps);
   const isSpec = isSpecialTeamsSpecialistPosition(
@@ -206,13 +278,15 @@ function finalizePlayerSeason(
   const useFullSeasonDen =
     acc.teamSnaps.size <= 1 && pt !== '' && fullSeasonTeamDen > 0;
   const gameCount = totals.gameCountByTeam.get(pt) ?? 0;
+  const rest = pt ? restGames.get(pt) : undefined;
+  // Absence is measured against the schedule the rest rule leaves behind:
+  // sitting out a rested finale is not the start of a season-ending injury.
+  const teamWeeks = new Set(totals.weeksByTeam.get(pt) ?? []);
+  if (rest) teamWeeks.delete(rest.week);
   // Only meaningful for a single-franchise season: a traded player's "absence"
   // from one team's remaining schedule is a transaction, not an injury.
   const absenceGames = useFullSeasonDen
-    ? seasonEndingAbsenceGames({
-        playerWeeks: acc.weeks,
-        teamWeeks: totals.weeksByTeam.get(pt) ?? new Set<number>(),
-      })
+    ? seasonEndingAbsenceGames({ playerWeeks: acc.weeks, teamWeeks })
     : 0;
 
   const baseLoad = resolveCumulativeLoadShare({
@@ -227,6 +301,19 @@ function finalizePlayerSeason(
     snapShare: acc.gamesPlayed > 0 ? acc.shareSum / acc.gamesPlayed : 0,
     cumulativeSnapShare: baseLoad,
     primaryTeam,
+    loadDenominator: useFullSeasonDen ? fullSeasonTeamDen : acc.cumDen,
+    ...(rest
+      ? {
+          restGame: restGameSlice({
+            rest,
+            acc,
+            team: pt,
+            useFullSeasonDen,
+            isSpec,
+            totals,
+          }),
+        }
+      : {}),
     ...(useFullSeasonDen
       ? {
           loadMeta: {
@@ -271,7 +358,12 @@ async function loadSnapData(
 
     const rows = parseCsv(csv);
     const totals = buildTeamSeasonDenominatorTotals(rows);
+    const restGames = detectRestGames(rows, season);
     const { gameCountByTeam } = totals;
+    if (restGames.size > 0) {
+      const teams = [...restGames.keys()].sort().join(', ');
+      console.log(`  ${season}: rested finale for ${teams}`);
+    }
 
     franchiseGameCountsBySeason.set(season, new Map(gameCountByTeam));
     let maxFranchiseG = 0;
@@ -280,13 +372,20 @@ async function loadSnapData(
     }
     maxFranchiseGamesBySeason.set(season, Math.max(1, maxFranchiseG));
 
-    for (const [pfrId, acc] of accumulatePlayerSnaps(rows, metaByPfrId)) {
+    for (const [pfrId, acc] of accumulatePlayerSnaps(
+      rows,
+      metaByPfrId,
+      restGames,
+    )) {
       let pm = result.get(pfrId);
       if (!pm) {
         pm = new Map();
         result.set(pfrId, pm);
       }
-      pm.set(season, finalizePlayerSeason(acc, metaByPfrId.get(pfrId), totals));
+      pm.set(
+        season,
+        finalizePlayerSeason(acc, metaByPfrId.get(pfrId), totals, restGames),
+      );
     }
   }
 
@@ -539,9 +638,11 @@ function buildPickSeason(params: {
   const injuryReportWeeks = injData?.injuryReportWeeks ?? 0;
   const absenceGames = data?.loadMeta?.seasonEndingAbsenceGames ?? 0;
 
+  const restGame = data?.restGame;
   let cumulativeSnapShare = data?.cumulativeSnapShare ?? snapShare;
+  let loadDenominator = data?.loadDenominator ?? 0;
   if (data?.loadMeta?.useFullSeason) {
-    cumulativeSnapShare = resolveCumulativeLoadShareWithInjury({
+    const load = resolveCumulativeLoadWithInjury({
       cumNum: data.loadMeta.cumNum,
       cumDenGamesPlayed: data.loadMeta.cumDenGamesPlayed,
       fullSeasonTeamDen: data.loadMeta.fullSeasonTeamDen,
@@ -551,10 +652,17 @@ function buildPickSeason(params: {
       teamGames,
       gamesPlayed,
       gameCount: data.loadMeta.gameCount,
+      restTeamGames: restGame ? 1 : 0,
+      restPlayerGames: restGame?.playerGames ?? 0,
     });
+    cumulativeSnapShare = load.share;
+    loadDenominator = load.denominator;
   }
-  // Cumulative load is a season-long average; it cannot exceed the per-game share.
-  if (snapShare > 0 && cumulativeSnapShare > snapShare) {
+  // Cumulative load is a season-long average; it cannot exceed the per-game
+  // share. A rest season is left uncapped here and capped by `withoutRestGame`
+  // instead: rest moves both terms, and capping now would clamp the load
+  // against an average that still counts the rested game.
+  if (!restGame && snapShare > 0 && cumulativeSnapShare > snapShare) {
     cumulativeSnapShare = snapShare;
   }
 
@@ -581,6 +689,9 @@ function buildPickSeason(params: {
     retained,
     ...(injuryReportWeeks > 0 ? { injuryReportWeeks } : {}),
     ...(absenceGames > 0 ? { seasonEndingAbsenceGames: absenceGames } : {}),
+    // The denominator only travels with a rest game, which is the one thing
+    // that needs to reopen the ratio.
+    ...(restGame ? { restGame, loadDenominator } : {}),
     ...(currentTeamId ? { currentTeam: currentTeamId } : {}),
   };
 }

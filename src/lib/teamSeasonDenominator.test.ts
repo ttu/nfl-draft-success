@@ -5,6 +5,7 @@ import {
   injuryAdjustedFullSeasonDenominator,
   resolveCumulativeLoadShare,
   resolveCumulativeLoadShareWithInjury,
+  resolveCumulativeLoadWithInjury,
   resolveTeamGamesDenominator,
 } from './teamSeasonDenominator';
 
@@ -277,5 +278,165 @@ describe('resolveCumulativeLoadShare', () => {
         useFullSeasonDenominator: false,
       }),
     ).toBe(0.2);
+  });
+});
+
+describe('rest games and the injury adjustment', () => {
+  it('does not excuse a missed game the rest rule already erases', () => {
+    // 17 team games, played 16: the one he missed was the rested finale, and
+    // the engine subtracts that game itself. Excusing it here too would
+    // discount the same absence twice.
+    const adjusted = injuryAdjustedFullSeasonDenominator({
+      fullSeasonTeamDen: 1700,
+      gameCount: 17,
+      injuryReportWeeks: 3,
+      teamGames: 17,
+      gamesPlayed: 16,
+      cumDenGamesPlayed: 1600,
+      restTeamGames: 1,
+      restPlayerGames: 0,
+    });
+
+    expect(adjusted).toBe(1700);
+  });
+
+  it('still excuses injury weeks beyond the rested finale', () => {
+    // Missed four games; one of them was the rest game, so three are injury.
+    const fullDen = 1700;
+    const adjusted = injuryAdjustedFullSeasonDenominator({
+      fullSeasonTeamDen: fullDen,
+      gameCount: 17,
+      injuryReportWeeks: 5,
+      teamGames: 17,
+      gamesPlayed: 13,
+      cumDenGamesPlayed: 1300,
+      restTeamGames: 1,
+      restPlayerGames: 0,
+    });
+
+    expect(adjusted).toBeCloseTo(fullDen - 3 * (fullDen / 17), 5);
+  });
+
+  it('counts a game the player did play in the rest week as played', () => {
+    // He took a token series in the rested finale, so nothing was missed.
+    const adjusted = injuryAdjustedFullSeasonDenominator({
+      fullSeasonTeamDen: 1700,
+      gameCount: 17,
+      injuryReportWeeks: 4,
+      teamGames: 17,
+      gamesPlayed: 17,
+      cumDenGamesPlayed: 1700,
+      restTeamGames: 1,
+      restPlayerGames: 1,
+    });
+
+    expect(adjusted).toBe(1700);
+  });
+});
+
+describe('resolveCumulativeLoadWithInjury', () => {
+  it('reports the denominator it divided by, so the engine can reopen it', () => {
+    const result = resolveCumulativeLoadWithInjury({
+      cumNum: 800,
+      cumDenGamesPlayed: 1000,
+      fullSeasonTeamDen: 1700,
+      useFullSeasonDenominator: true,
+      injuryReportWeeks: 0,
+      teamGames: 17,
+      gamesPlayed: 17,
+      gameCount: 17,
+    });
+
+    expect(result).toEqual({ share: 800 / 1700, denominator: 1700 });
+  });
+
+  it('reports the injury-adjusted denominator, not the raw one', () => {
+    const fullDen = 1700;
+    const expected = fullDen - 4 * (fullDen / 17);
+
+    const result = resolveCumulativeLoadWithInjury({
+      cumNum: 800,
+      cumDenGamesPlayed: 1000,
+      fullSeasonTeamDen: fullDen,
+      useFullSeasonDenominator: true,
+      injuryReportWeeks: 4,
+      teamGames: 17,
+      gamesPlayed: 13,
+      gameCount: 17,
+    });
+
+    expect(result.denominator).toBeCloseTo(expected, 5);
+    expect(result.share).toBeCloseTo(800 / expected, 10);
+  });
+
+  it('reports the games-played denominator for a traded season', () => {
+    const result = resolveCumulativeLoadWithInjury({
+      cumNum: 400,
+      cumDenGamesPlayed: 900,
+      fullSeasonTeamDen: 1700,
+      useFullSeasonDenominator: false,
+      injuryReportWeeks: 0,
+      teamGames: 17,
+      gamesPlayed: 9,
+      gameCount: 17,
+    });
+
+    expect(result).toEqual({ share: 400 / 900, denominator: 900 });
+  });
+});
+
+describe('per-week capacity', () => {
+  it('records each team-week’s capacity so one game can be subtracted', () => {
+    const rows = [
+      {
+        game_id: 'g17',
+        team: 'BAL',
+        week: '17',
+        offense_snaps: '35',
+        offense_pct: '0.5',
+        defense_snaps: '0',
+        defense_pct: '0',
+        st_snaps: '12',
+        st_pct: '0.5',
+      },
+      {
+        game_id: 'g18',
+        team: 'BAL',
+        week: '18',
+        offense_snaps: '30',
+        offense_pct: '0.5',
+        defense_snaps: '0',
+        defense_pct: '0',
+        st_snaps: '10',
+        st_pct: '0.5',
+      },
+    ];
+
+    const { capacityByTeamWeek } = buildTeamSeasonDenominatorTotals(rows);
+
+    expect(capacityByTeamWeek.get('BAL|18')).toEqual({
+      scrim: 60,
+      full: 60 + 20,
+    });
+  });
+
+  it('leaves out weeks the team did not play', () => {
+    const rows = [
+      {
+        game_id: 'g1',
+        team: 'BAL',
+        week: '1',
+        offense_snaps: '35',
+        offense_pct: '0.5',
+        defense_snaps: '0',
+        defense_pct: '0',
+        st_snaps: '0',
+        st_pct: '0',
+      },
+    ];
+
+    const { capacityByTeamWeek } = buildTeamSeasonDenominatorTotals(rows);
+
+    expect(capacityByTeamWeek.has('BAL|2')).toBe(false);
   });
 });

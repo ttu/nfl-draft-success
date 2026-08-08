@@ -266,7 +266,7 @@ describe('explainDraftScore', () => {
       const rows = seasonRows(explainDraftScore(richardson(), true)!);
 
       expect(rows[0].baselineExempt).toBe(false);
-      expect(rows[0].positionBaseline).toBeCloseTo(0.989, 3);
+      expect(rows[0].positionBaseline).toBeCloseTo(0.99, 3);
       expect(rows[0].normalizedShare).toBeCloseTo(
         rows[0].rawShare / rows[0].positionBaseline,
         6,
@@ -430,5 +430,38 @@ describe('a quarterback who sat behind a veteran', () => {
     expect(explained.total / explained.denominator).toBeCloseTo(
       getPlayerDraftScore(love, { draftingTeamOnly: true }),
     );
+  });
+});
+
+describe('explainDraftScore rested finale', () => {
+  it('marks a season whose finale the team rested through', () => {
+    const explanation = explainDraftScore(
+      pick({
+        seasons: [
+          season({
+            gamesPlayed: 19,
+            teamGames: 19,
+            restGame: {
+              playerGames: 0,
+              playerShareSum: 0,
+              playerSnaps: 0,
+              teamSnaps: 100,
+            },
+          }),
+        ],
+      }),
+      true,
+    );
+
+    const row = explanation!.rows[0];
+    expect(row.kind).toBe('season');
+    expect(row.kind === 'season' && row.restedFinale).toBe(true);
+  });
+
+  it('leaves an ordinary season unmarked', () => {
+    const explanation = explainDraftScore(pick(), true)!;
+
+    const row = explanation.rows[0];
+    expect(row.kind === 'season' && row.restedFinale).toBe(false);
   });
 });

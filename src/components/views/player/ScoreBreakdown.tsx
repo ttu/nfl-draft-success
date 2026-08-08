@@ -275,6 +275,7 @@ function SeasonBreakdown({ season }: { season: SeasonScoreExplanation }) {
     teamGames,
     availabilityPoints,
     injury,
+    restedFinale,
   } = season;
 
   return (
@@ -319,6 +320,7 @@ function SeasonBreakdown({ season }: { season: SeasonScoreExplanation }) {
               {pts(round1(availabilityPoints))}
             </span>
           </div>
+          {restedFinale && <RestNote teamGames={teamGames} />}
           {injury && (
             <InjuryNote
               injury={injury}
@@ -375,6 +377,24 @@ function InjuryNote({
         {gamesPlayed} of {teamGames}
       </span>{' '}
       stands.
+    </p>
+  );
+}
+
+/**
+ * Why the schedule is one game shorter than the franchise really played.
+ *
+ * Without this the reader hits "19 of 19 games" for a team they know played 20
+ * and reads it as a data error. The game is gone from every term, not forgiven
+ * in one — which is what makes sitting out and taking a token series score the
+ * same, as the same coaching decision should.
+ */
+function RestNote({ teamGames }: { teamGames: number }) {
+  return (
+    <p className="score-breakdown__rest" data-testid="score-breakdown-rest">
+      His team had clinched and rested its starters in the finale, so that game
+      is excluded from both terms:{' '}
+      <strong className="tnum">{teamGames} games</strong> counted.
     </p>
   );
 }

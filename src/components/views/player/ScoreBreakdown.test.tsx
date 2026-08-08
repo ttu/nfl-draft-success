@@ -124,8 +124,8 @@ describe('ScoreBreakdown', () => {
       seasonScores.reduce((a, b) => a + b, 0),
       5,
     );
-    // 129.8 ÷ 3 = 43.3, which rounds to the 43 the hero shows.
-    expect(total / 3).toBeCloseTo(43.3, 1);
+    // 129.6 ÷ 3 = 43.2, which rounds to the 43 the hero shows.
+    expect(total / 3).toBeCloseTo(43.2, 1);
   });
 
   it('calls a tenure past the rookie deal what it is, not a longer window', () => {
@@ -381,5 +381,49 @@ describe('a quarterback who sat behind a veteran', () => {
     expect(
       screen.getByText(/since he won the job, after 3 on the bench/),
     ).toBeTruthy();
+  });
+});
+
+describe('ScoreBreakdown rested finale', () => {
+  /** A starter whose team clinched and sat him in the finale. */
+  const rested = makePick({
+    position: 'ZZ',
+    seasons: [
+      makeSeason({
+        year: 2023,
+        gamesPlayed: 19,
+        teamGames: 19,
+        snapShare: 0.9,
+        restGame: {
+          playerGames: 0,
+          playerShareSum: 0,
+          playerSnaps: 0,
+          teamSnaps: 100,
+        },
+      }),
+    ],
+  });
+
+  it('explains why the schedule reads one game short', () => {
+    renderBreakdown(rested);
+    fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+
+    const note = screen.getByTestId('score-breakdown-rest');
+    expect(note).toHaveTextContent(/rested/i);
+    expect(note).toHaveTextContent(/19 games/);
+  });
+
+  it('omits the note for a season with no rested finale', () => {
+    renderBreakdown(
+      makePick({
+        position: 'ZZ',
+        seasons: [makeSeason({ year: 2023, gamesPlayed: 17 })],
+      }),
+    );
+    fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+
+    expect(
+      screen.queryByTestId('score-breakdown-rest'),
+    ).not.toBeInTheDocument();
   });
 });

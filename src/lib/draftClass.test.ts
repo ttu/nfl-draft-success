@@ -42,3 +42,58 @@ describe('stampDraftYear', () => {
     expect(stampDraftYear(cls).picks[0].draftYear).toBe(2020);
   });
 });
+
+describe('stampDraftYear rest games', () => {
+  /** A pick whose team rested him through its clinched finale. */
+  const restedPick = (): Omit<DraftPick, 'draftYear'> => ({
+    ...rawPick('rested'),
+    seasons: [
+      {
+        year: 2023,
+        gamesPlayed: 19,
+        teamGames: 20,
+        snapShare: 0.9,
+        cumulativeSnapShare: 0.5,
+        loadDenominator: 2000,
+        retained: true,
+        restGame: {
+          playerGames: 0,
+          playerShareSum: 0,
+          playerSnaps: 0,
+          teamSnaps: 100,
+        },
+      },
+    ],
+  });
+
+  it('subtracts the rest game on ingest, so no consumer has to remember', () => {
+    const cls = stampDraftYear({ year: 2022, picks: [restedPick()] });
+
+    const season = cls.picks[0].seasons[0];
+    expect(season.teamGames).toBe(19);
+    expect(season.gamesPlayed).toBe(19);
+    expect(season.cumulativeSnapShare).toBeCloseTo(1000 / 1900, 10);
+  });
+
+  it('leaves seasons without a rest game untouched', () => {
+    const cls = stampDraftYear({
+      year: 2022,
+      picks: [
+        {
+          ...rawPick('normal'),
+          seasons: [
+            {
+              year: 2023,
+              gamesPlayed: 17,
+              teamGames: 17,
+              snapShare: 0.8,
+              retained: true,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(cls.picks[0].seasons[0].teamGames).toBe(17);
+  });
+});

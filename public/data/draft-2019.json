@@ -136,9 +136,16 @@
           "gamesPlayed": 20,
           "teamGames": 20,
           "snapShare": 0.779,
-          "cumulativeSnapShare": 0.779,
+          "cumulativeSnapShare": 0.8040912667191188,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.12,
+            "playerSnaps": 8,
+            "teamSnaps": 61
+          },
+          "loadDenominator": 1271
         },
         {
           "year": 2024,
@@ -303,10 +310,17 @@
           "gamesPlayed": 17,
           "teamGames": 20,
           "snapShare": 0.43117647058823527,
-          "cumulativeSnapShare": 0.43117647058823527,
+          "cumulativeSnapShare": 0.4314192171934253,
           "retained": false,
           "injuryReportWeeks": 1,
           "seasonEndingAbsenceGames": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.09,
+            "playerSnaps": 6,
+            "teamSnaps": 61
+          },
+          "loadDenominator": 1091.7455255332977,
           "currentTeam": "SF"
         },
         {
@@ -371,7 +385,14 @@
           "teamGames": 18,
           "snapShare": 0.9633333333333334,
           "cumulativeSnapShare": 0.8821263482280431,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.34,
+            "playerSnaps": 23,
+            "teamSnaps": 55
+          },
+          "loadDenominator": 1298
         },
         {
           "year": 2023,
@@ -387,10 +408,17 @@
           "gamesPlayed": 7,
           "teamGames": 19,
           "snapShare": 0.3685714285714286,
-          "cumulativeSnapShare": 0.16746794871794873,
+          "cumulativeSnapShare": 0.1913919413919414,
           "retained": false,
           "injuryReportWeeks": 3,
-          "seasonEndingAbsenceGames": 2,
+          "seasonEndingAbsenceGames": 5,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.79,
+            "playerSnaps": 49,
+            "teamSnaps": 60
+          },
+          "loadDenominator": 919.578947368421,
           "currentTeam": "HOU"
         },
         {
@@ -446,9 +474,16 @@
           "gamesPlayed": 18,
           "teamGames": 19,
           "snapShare": 0.9722222222222222,
-          "cumulativeSnapShare": 0.9722222222222222,
+          "cumulativeSnapShare": 0.9245432883240667,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 63
+          },
+          "loadDenominator": 1259
         },
         {
           "year": 2023,
@@ -498,7 +533,7 @@
       "round": 1,
       "overallPick": 7,
       "teamId": "JAX",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/frooc3vy4adlwpkdnyks",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q8vaxyizpzrlwlhsthvl",
       "seasons": [
         {
           "year": 2019,
@@ -616,9 +651,16 @@
           "gamesPlayed": 18,
           "teamGames": 18,
           "snapShare": 0.8466666666666668,
-          "cumulativeSnapShare": 0.8466666666666668,
+          "cumulativeSnapShare": 0.8479273945769441,
           "retained": false,
           "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.46,
+            "playerSnaps": 33,
+            "teamSnaps": 71.73913043478261
+          },
+          "loadDenominator": 1222.982069729437,
           "currentTeam": "MIN"
         },
         {
@@ -679,7 +721,14 @@
           "teamGames": 17,
           "snapShare": 0.5270588235294117,
           "cumulativeSnapShare": 0.5086805555555556,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.69,
+            "playerSnaps": 46,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1152
         },
         {
           "year": 2020,
@@ -688,7 +737,14 @@
           "snapShare": 0.5457894736842106,
           "cumulativeSnapShare": 0.5443137254901961,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.22,
+            "playerSnaps": 18,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1275
         },
         {
           "year": 2021,
@@ -722,9 +778,16 @@
           "gamesPlayed": 17,
           "teamGames": 20,
           "snapShare": 0.6829411764705882,
-          "cumulativeSnapShare": 0.6589322940270099,
+          "cumulativeSnapShare": 0.6223249443588427,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1168.2
         },
         {
           "year": 2025,
@@ -733,7 +796,14 @@
           "snapShare": 0.5,
           "cumulativeSnapShare": 0.1423650975889782,
           "retained": true,
-          "injuryReportWeeks": 6
+          "injuryReportWeeks": 6,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 871
         },
         {
           "year": 2026,
@@ -767,10 +837,17 @@
           "gamesPlayed": 5,
           "teamGames": 17,
           "snapShare": 0.8939999999999999,
-          "cumulativeSnapShare": 0.7949537426408746,
+          "cumulativeSnapShare": 0.6624614522007287,
           "retained": true,
           "injuryReportWeeks": 1,
-          "seasonEndingAbsenceGames": 12
+          "seasonEndingAbsenceGames": 11,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 419.6470588235295
         },
         {
           "year": 2021,
@@ -863,7 +940,14 @@
           "teamGames": 21,
           "snapShare": 1,
           "cumulativeSnapShare": 0.9601476014760147,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 54
+          },
+          "loadDenominator": 1355
         },
         {
           "year": 2022,
@@ -911,7 +995,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ARI"
+          "currentTeam": "AZ"
         }
       ]
     },
@@ -949,7 +1033,14 @@
           "snapShare": 0.6788235294117646,
           "cumulativeSnapShare": 0.6522786589038345,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.44,
+            "playerSnaps": 26,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 1106.888888888889
         },
         {
           "year": 2022,
@@ -984,7 +1075,14 @@
           "teamGames": 18,
           "snapShare": 0.6217647058823529,
           "cumulativeSnapShare": 0.6212121212121212,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 51
+          },
+          "loadDenominator": 1122
         },
         {
           "year": 2026,
@@ -1078,7 +1176,7 @@
       "round": 1,
       "overallPick": 14,
       "teamId": "ATL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/siocu1rimlusd0x8ut1w",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ej9vnjijinovikapg3nz",
       "seasons": [
         {
           "year": 2019,
@@ -1347,9 +1445,16 @@
           "gamesPlayed": 18,
           "teamGames": 19,
           "snapShare": 0.8244444444444446,
-          "cumulativeSnapShare": 0.8191245256376313,
+          "cumulativeSnapShare": 0.7760127084988085,
           "retained": true,
-          "injuryReportWeeks": 5
+          "injuryReportWeeks": 5,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 63
+          },
+          "loadDenominator": 1259
         },
         {
           "year": 2023,
@@ -1404,9 +1509,16 @@
           "gamesPlayed": 18,
           "teamGames": 18,
           "snapShare": 0.9633333333333334,
-          "cumulativeSnapShare": 0.9633333333333334,
+          "cumulativeSnapShare": 0.9712041884816754,
           "retained": true,
-          "injuryReportWeeks": 2
+          "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.37,
+            "playerSnaps": 18,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 1146
         },
         {
           "year": 2020,
@@ -1431,9 +1543,16 @@
           "gamesPlayed": 13,
           "teamGames": 18,
           "snapShare": 0.9976923076923077,
-          "cumulativeSnapShare": 0.9799686028257457,
+          "cumulativeSnapShare": 0.9099708454810496,
           "retained": true,
-          "injuryReportWeeks": 7
+          "injuryReportWeeks": 7,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 952.7777777777778
         },
         {
           "year": 2023,
@@ -1678,7 +1797,14 @@
           "snapShare": 0.9422222222222221,
           "cumulativeSnapShare": 0.9146757679180887,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 59,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 1172
         },
         {
           "year": 2022,
@@ -1761,7 +1887,14 @@
           "snapShare": 0.328125,
           "cumulativeSnapShare": 0.3225126475548061,
           "retained": true,
-          "injuryReportWeeks": 2
+          "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.84,
+            "playerSnaps": 62,
+            "teamSnaps": 74
+          },
+          "loadDenominator": 1054.2222222222222
         },
         {
           "year": 2022,
@@ -1820,7 +1953,14 @@
           "cumulativeSnapShare": 0.7229629629629629,
           "retained": true,
           "injuryReportWeeks": 8,
-          "seasonEndingAbsenceGames": 7
+          "seasonEndingAbsenceGames": 6,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 65
+          },
+          "loadDenominator": 675
         },
         {
           "year": 2020,
@@ -1865,9 +2005,16 @@
           "gamesPlayed": 18,
           "teamGames": 19,
           "snapShare": 0.98,
-          "cumulativeSnapShare": 0.98,
+          "cumulativeSnapShare": 0.9802795584045585,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.75,
+            "playerSnaps": 45,
+            "teamSnaps": 60
+          },
+          "loadDenominator": 1182.3157894736842
         },
         {
           "year": 2025,
@@ -1876,7 +2023,14 @@
           "snapShare": 0.9483333333333334,
           "cumulativeSnapShare": 0.9413319689605184,
           "retained": true,
-          "injuryReportWeeks": 7
+          "injuryReportWeeks": 7,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.79,
+            "playerSnaps": 54,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 1234.421052631579
         },
         {
           "year": 2026,
@@ -1960,9 +2114,16 @@
           "gamesPlayed": 16,
           "teamGames": 18,
           "snapShare": 0.5931250000000001,
-          "cumulativeSnapShare": 0.5931250000000001,
+          "cumulativeSnapShare": 0.5652720981440704,
           "retained": false,
           "injuryReportWeeks": 13,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 51
+          },
+          "loadDenominator": 1059.6666666666667,
           "currentTeam": "GB"
         },
         {
@@ -1983,7 +2144,7 @@
       "round": 1,
       "overallPick": 25,
       "teamId": "BAL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ixuddegcphzmvjn4jq6r",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/shkjxggufymydgp6wk3p",
       "seasons": [
         {
           "year": 2019,
@@ -2041,6 +2202,13 @@
           "cumulativeSnapShare": 0.15423921271763816,
           "retained": false,
           "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 34
+          },
+          "loadDenominator": 1056.8,
           "currentTeam": "KC"
         },
         {
@@ -2233,7 +2401,7 @@
       "round": 1,
       "overallPick": 28,
       "teamId": "LAC",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hyof95ttrz9czoqaxac7",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cyu9a5fqoidiujclm8dy",
       "seasons": [
         {
           "year": 2019,
@@ -2393,7 +2561,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ARI"
+          "currentTeam": "AZ"
         }
       ]
     },
@@ -2420,9 +2588,16 @@
           "gamesPlayed": 2,
           "teamGames": 19,
           "snapShare": 0.315,
-          "cumulativeSnapShare": 0.04110576923076923,
+          "cumulativeSnapShare": 0.04384615384615385,
           "retained": false,
-          "seasonEndingAbsenceGames": 3,
+          "seasonEndingAbsenceGames": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.63,
+            "playerSnaps": 45,
+            "teamSnaps": 53
+          },
+          "loadDenominator": 1026.3157894736842,
           "currentTeam": "KC"
         },
         {
@@ -2764,6 +2939,13 @@
           "cumulativeSnapShare": 0.23690983315583952,
           "retained": false,
           "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.97,
+            "playerSnaps": 60,
+            "teamSnaps": 57
+          },
+          "loadDenominator": 1186.1052631578948,
           "currentTeam": "BAL"
         },
         {
@@ -2802,7 +2984,7 @@
       "round": 2,
       "overallPick": 35,
       "teamId": "JAX",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/honwntzfepzenss8uqhw",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/smerpaxet2i7btib2ce1",
       "seasons": [
         {
           "year": 2019,
@@ -2844,9 +3026,16 @@
           "gamesPlayed": 21,
           "teamGames": 21,
           "snapShare": 0.9585714285714285,
-          "cumulativeSnapShare": 0.9585714285714285,
+          "cumulativeSnapShare": 0.9619450317124736,
           "retained": false,
           "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.33,
+            "playerSnaps": 19,
+            "teamSnaps": 58
+          },
+          "loadDenominator": 1419,
           "currentTeam": "KC"
         },
         {
@@ -2854,9 +3043,16 @@
           "gamesPlayed": 19,
           "teamGames": 20,
           "snapShare": 0.9857894736842105,
-          "cumulativeSnapShare": 0.9844809417875656,
+          "cumulativeSnapShare": 0.9591218773656321,
           "retained": false,
           "injuryReportWeeks": 9,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 34
+          },
+          "loadDenominator": 1321,
           "currentTeam": "KC"
         },
         {
@@ -2932,9 +3128,16 @@
           "gamesPlayed": 18,
           "teamGames": 20,
           "snapShare": 0.7072222222222222,
-          "cumulativeSnapShare": 0.7072222222222222,
+          "cumulativeSnapShare": 0.7100943735200105,
           "retained": true,
-          "injuryReportWeeks": 6
+          "injuryReportWeeks": 6,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.33,
+            "playerSnaps": 20,
+            "teamSnaps": 61
+          },
+          "loadDenominator": 1157.5926111416175
         },
         {
           "year": 2024,
@@ -3044,19 +3247,33 @@
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.6782352941176472,
-          "cumulativeSnapShare": 0.6782352941176472,
+          "cumulativeSnapShare": 0.6788194444444444,
           "retained": true,
-          "injuryReportWeeks": 2
+          "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.64,
+            "playerSnaps": 41,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1152
         },
         {
           "year": 2020,
           "gamesPlayed": 7,
           "teamGames": 19,
           "snapShare": 0.8200000000000001,
-          "cumulativeSnapShare": 0.634161220043573,
+          "cumulativeSnapShare": 0.5707450980392158,
           "retained": true,
           "injuryReportWeeks": 6,
-          "seasonEndingAbsenceGames": 10
+          "seasonEndingAbsenceGames": 9,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 671.0526315789473
         },
         {
           "year": 2021,
@@ -3159,7 +3376,14 @@
           "snapShare": 0.5776923076923076,
           "cumulativeSnapShare": 0.5301647505037336,
           "retained": true,
-          "injuryReportWeeks": 8
+          "injuryReportWeeks": 8,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.84,
+            "playerSnaps": 57,
+            "teamSnaps": 55
+          },
+          "loadDenominator": 937.4444444444445
         },
         {
           "year": 2023,
@@ -3196,7 +3420,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ARI"
+          "currentTeam": "AZ"
         }
       ]
     },
@@ -3528,7 +3752,7 @@
       "round": 2,
       "overallPick": 44,
       "teamId": "GB",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sm0mdwyzgfs8guhrddel",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/am4um8hjfero03sgxrgn",
       "seasons": [
         {
           "year": 2019,
@@ -3552,10 +3776,17 @@
           "gamesPlayed": 8,
           "teamGames": 18,
           "snapShare": 0.97875,
-          "cumulativeSnapShare": 0.6925224945702761,
+          "cumulativeSnapShare": 0.6348122866894198,
           "retained": true,
           "injuryReportWeeks": 4,
-          "seasonEndingAbsenceGames": 7
+          "seasonEndingAbsenceGames": 6,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 781.3333333333333
         },
         {
           "year": 2022,
@@ -3589,10 +3820,17 @@
           "gamesPlayed": 9,
           "teamGames": 18,
           "snapShare": 0.9333333333333333,
-          "cumulativeSnapShare": 0.9298701298701298,
+          "cumulativeSnapShare": 0.8614973262032086,
           "retained": true,
           "injuryReportWeeks": 1,
-          "seasonEndingAbsenceGames": 9
+          "seasonEndingAbsenceGames": 8,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 51
+          },
+          "loadDenominator": 623.3333333333333
         },
         {
           "year": 2026,
@@ -3993,9 +4231,16 @@
           "gamesPlayed": 18,
           "teamGames": 18,
           "snapShare": 0.5961111111111111,
-          "cumulativeSnapShare": 0.5961111111111111,
+          "cumulativeSnapShare": 0.5968586387434555,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.45,
+            "playerSnaps": 22,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 1146
         },
         {
           "year": 2020,
@@ -4020,7 +4265,14 @@
           "teamGames": 18,
           "snapShare": 0.47555555555555556,
           "cumulativeSnapShare": 0.23591836734693877,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.45,
+            "playerSnaps": 32,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 1225
         },
         {
           "year": 2023,
@@ -4040,6 +4292,13 @@
           "snapShare": 0.2914285714285714,
           "cumulativeSnapShare": 0.0985576923076923,
           "retained": false,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.3,
+            "playerSnaps": 18,
+            "teamSnaps": 60
+          },
+          "loadDenominator": 1248,
           "currentTeam": "HOU"
         },
         {
@@ -4106,6 +4365,13 @@
           "cumulativeSnapShare": 0.8881646684388808,
           "retained": false,
           "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.18,
+            "playerSnaps": 12,
+            "teamSnaps": 65
+          },
+          "loadDenominator": 1147.3097683463218,
           "currentTeam": "PHI"
         },
         {
@@ -4113,9 +4379,16 @@
           "gamesPlayed": 17,
           "teamGames": 21,
           "snapShare": 0.8782352941176471,
-          "cumulativeSnapShare": 0.874290999534735,
+          "cumulativeSnapShare": 0.8277192982456141,
           "retained": false,
           "injuryReportWeeks": 13,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 1221.4285714285713,
           "currentTeam": "PHI"
         },
         {
@@ -4123,9 +4396,16 @@
           "gamesPlayed": 16,
           "teamGames": 18,
           "snapShare": 0.9125,
-          "cumulativeSnapShare": 0.9114657610231306,
+          "cumulativeSnapShare": 0.860587713346208,
           "retained": false,
           "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1064.388888888889,
           "currentTeam": "PHI"
         },
         {
@@ -4172,9 +4452,16 @@
           "gamesPlayed": 21,
           "teamGames": 21,
           "snapShare": 0.42000000000000004,
-          "cumulativeSnapShare": 0.42000000000000004,
+          "cumulativeSnapShare": 0.42509225092250924,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.31,
+            "playerSnaps": 17,
+            "teamSnaps": 54
+          },
+          "loadDenominator": 1355
         },
         {
           "year": 2022,
@@ -4255,9 +4542,16 @@
           "gamesPlayed": 13,
           "teamGames": 18,
           "snapShare": 0.5238461538461539,
-          "cumulativeSnapShare": 0.516545718335364,
+          "cumulativeSnapShare": 0.4856661045531197,
           "retained": true,
-          "injuryReportWeeks": 9
+          "injuryReportWeeks": 9,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 74
+          },
+          "loadDenominator": 922.4444444444445
         },
         {
           "year": 2022,
@@ -4317,7 +4611,14 @@
           "snapShare": 0.5475,
           "cumulativeSnapShare": 0.5361111111111111,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.87,
+            "playerSnaps": 54,
+            "teamSnaps": 65
+          },
+          "loadDenominator": 1080
         },
         {
           "year": 2020,
@@ -4403,8 +4704,15 @@
           "gamesPlayed": 18,
           "teamGames": 18,
           "snapShare": 0.8888888888888888,
-          "cumulativeSnapShare": 0.8888888888888888,
-          "retained": true
+          "cumulativeSnapShare": 0.8946502057613168,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 65,
+            "teamSnaps": 65
+          },
+          "loadDenominator": 1215
         },
         {
           "year": 2020,
@@ -4488,7 +4796,14 @@
           "snapShare": 0.45947368421052626,
           "cumulativeSnapShare": 0.4524662668494464,
           "retained": true,
-          "injuryReportWeeks": 2
+          "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.6,
+            "playerSnaps": 32,
+            "teamSnaps": 53.333333333333336
+          },
+          "loadDenominator": 1306.174721300603
         },
         {
           "year": 2021,
@@ -4513,19 +4828,33 @@
           "gamesPlayed": 15,
           "teamGames": 21,
           "snapShare": 0.23466666666666663,
-          "cumulativeSnapShare": 0.23466666666666663,
+          "cumulativeSnapShare": 0.23520920551155214,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 58,
+            "teamSnaps": 58
+          },
+          "loadDenominator": 931.0860071301247
         },
         {
           "year": 2024,
           "gamesPlayed": 12,
           "teamGames": 20,
           "snapShare": 0.13749999999999998,
-          "cumulativeSnapShare": 0.13749999999999998,
+          "cumulativeSnapShare": 0.1339311710242823,
           "retained": true,
           "injuryReportWeeks": 9,
-          "seasonEndingAbsenceGames": 8
+          "seasonEndingAbsenceGames": 7,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 34
+          },
+          "loadDenominator": 858.6500000000001
         },
         {
           "year": 2025,
@@ -4535,6 +4864,13 @@
           "cumulativeSnapShare": 0.019315188762071993,
           "retained": false,
           "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 1139,
           "currentTeam": "BUF"
         },
         {
@@ -4580,9 +4916,16 @@
           "gamesPlayed": 16,
           "teamGames": 18,
           "snapShare": 0.15499999999999997,
-          "cumulativeSnapShare": 0.15499999999999997,
+          "cumulativeSnapShare": 0.16125632377740304,
           "retained": true,
-          "injuryReportWeeks": 5
+          "injuryReportWeeks": 5,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.57,
+            "playerSnaps": 42,
+            "teamSnaps": 74
+          },
+          "loadDenominator": 1054.2222222222222
         },
         {
           "year": 2022,
@@ -4756,6 +5099,13 @@
           "snapShare": 0.3225,
           "cumulativeSnapShare": 0.11508771929824561,
           "retained": false,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 1425,
           "currentTeam": "PHI"
         },
         {
@@ -4915,6 +5265,13 @@
           "cumulativeSnapShare": 0.8079738058551618,
           "retained": false,
           "injuryReportWeeks": 13,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.42,
+            "playerSnaps": 27,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1038.4,
           "currentTeam": "BUF"
         },
         {
@@ -4922,10 +5279,17 @@
           "gamesPlayed": 6,
           "teamGames": 19,
           "snapShare": 0.9583333333333334,
-          "cumulativeSnapShare": 0.8532338308457711,
+          "cumulativeSnapShare": 0.7313432835820896,
           "retained": false,
           "injuryReportWeeks": 2,
-          "seasonEndingAbsenceGames": 13,
+          "seasonEndingAbsenceGames": 12,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 469,
           "currentTeam": "BUF"
         }
       ]
@@ -5023,9 +5387,16 @@
           "gamesPlayed": 19,
           "teamGames": 19,
           "snapShare": 0.6636842105263158,
-          "cumulativeSnapShare": 0.6636842105263158,
+          "cumulativeSnapShare": 0.6703334059412849,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 72,
+            "teamSnaps": 72
+          },
+          "loadDenominator": 1276.9764902257875
         },
         {
           "year": 2021,
@@ -5050,9 +5421,16 @@
           "gamesPlayed": 12,
           "teamGames": 18,
           "snapShare": 0.9166666666666666,
-          "cumulativeSnapShare": 0.7425629290617849,
+          "cumulativeSnapShare": 0.6854427037493399,
           "retained": false,
           "injuryReportWeeks": 12,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 53
+          },
+          "loadDenominator": 946.8333333333334,
           "currentTeam": "CLE"
         },
         {
@@ -5273,7 +5651,14 @@
           "snapShare": 0.7262500000000001,
           "cumulativeSnapShare": 0.7231387598880741,
           "retained": true,
-          "injuryReportWeeks": 8
+          "injuryReportWeeks": 8,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.87,
+            "playerSnaps": 58,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1121.4998351430158
         },
         {
           "year": 2021,
@@ -5597,9 +5982,16 @@
           "gamesPlayed": 4,
           "teamGames": 18,
           "snapShare": 0.49749999999999994,
-          "cumulativeSnapShare": 0.1880597014925373,
+          "cumulativeSnapShare": 0.17096336499321574,
           "retained": true,
-          "seasonEndingAbsenceGames": 8
+          "seasonEndingAbsenceGames": 7,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 737
         },
         {
           "year": 2024,
@@ -5738,7 +6130,14 @@
           "snapShare": 0.7321052631578947,
           "cumulativeSnapShare": 0.7074907749077491,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 54
+          },
+          "loadDenominator": 1290.4761904761904
         },
         {
           "year": 2022,
@@ -5879,9 +6278,16 @@
           "gamesPlayed": 13,
           "teamGames": 17,
           "snapShare": 0.6830769230769231,
-          "cumulativeSnapShare": 0.6754139957264956,
+          "cumulativeSnapShare": 0.6271701388888888,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 948.7058823529412
         },
         {
           "year": 2020,
@@ -5889,7 +6295,14 @@
           "teamGames": 19,
           "snapShare": 0.5926315789473683,
           "cumulativeSnapShare": 0.5850980392156863,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.28,
+            "playerSnaps": 18,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1275
         },
         {
           "year": 2021,
@@ -6379,9 +6792,16 @@
           "gamesPlayed": 16,
           "teamGames": 18,
           "snapShare": 0.625,
-          "cumulativeSnapShare": 0.5251716247139588,
+          "cumulativeSnapShare": 0.49427917620137296,
           "retained": true,
-          "injuryReportWeeks": 6
+          "injuryReportWeeks": 6,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 53
+          },
+          "loadDenominator": 1238.1666666666667
         },
         {
           "year": 2024,
@@ -6588,7 +7008,14 @@
           "teamGames": 17,
           "snapShare": 0.10352941176470588,
           "cumulativeSnapShare": 0.09840201850294365,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.26,
+            "playerSnaps": 16,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1189
         },
         {
           "year": 2021,
@@ -6604,9 +7031,16 @@
           "gamesPlayed": 9,
           "teamGames": 19,
           "snapShare": 0.01888888888888889,
-          "cumulativeSnapShare": 0.01888888888888889,
+          "cumulativeSnapShare": 0.17,
           "retained": false,
           "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 0
+          },
+          "loadDenominator": 64.70588235294117,
           "currentTeam": "NYG"
         },
         {
@@ -6658,10 +7092,17 @@
           "gamesPlayed": 3,
           "teamGames": 19,
           "snapShare": 0.3466666666666667,
-          "cumulativeSnapShare": 0.07725274725274726,
+          "cumulativeSnapShare": 0.1351923076923077,
           "retained": true,
           "injuryReportWeeks": 5,
-          "seasonEndingAbsenceGames": 3
+          "seasonEndingAbsenceGames": 11,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.71,
+            "playerSnaps": 51,
+            "teamSnaps": 53
+          },
+          "loadDenominator": 547.3684210526316
         },
         {
           "year": 2021,
@@ -7144,9 +7585,16 @@
           "gamesPlayed": 19,
           "teamGames": 20,
           "snapShare": 0.9452631578947369,
-          "cumulativeSnapShare": 0.9452631578947369,
+          "cumulativeSnapShare": 0.8983050847457628,
           "retained": false,
           "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1298,
           "currentTeam": "BUF"
         },
         {
@@ -7154,9 +7602,16 @@
           "gamesPlayed": 18,
           "teamGames": 19,
           "snapShare": 0.9750000000000002,
-          "cumulativeSnapShare": 0.966832504145937,
+          "cumulativeSnapShare": 0.9159465828750982,
           "retained": false,
           "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 1273,
           "currentTeam": "BUF"
         },
         {
@@ -7239,7 +7694,14 @@
           "snapShare": 0.7271428571428571,
           "cumulativeSnapShare": 0.7117919486996793,
           "retained": true,
-          "injuryReportWeeks": 8
+          "injuryReportWeeks": 8,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 935.6666666666667
         },
         {
           "year": 2026,
@@ -7258,7 +7720,7 @@
       "round": 3,
       "overallPick": 92,
       "teamId": "NYJ",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cjz3anx4ehf8eny1p11v",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/daovqppglueevdbutt7k",
       "seasons": [
         {
           "year": 2019,
@@ -7456,7 +7918,14 @@
           "snapShare": 0.8512500000000001,
           "cumulativeSnapShare": 0.7670454545454545,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.09,
+            "playerSnaps": 6,
+            "teamSnaps": 55
+          },
+          "loadDenominator": 1153.7777777777778
         },
         {
           "year": 2023,
@@ -7538,9 +8007,16 @@
           "gamesPlayed": 17,
           "teamGames": 19,
           "snapShare": 0.4688235294117647,
-          "cumulativeSnapShare": 0.4688235294117647,
+          "cumulativeSnapShare": 0.4696070644302201,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 73,
+            "teamSnaps": 63
+          },
+          "loadDenominator": 1126.4736842105262
         },
         {
           "year": 2023,
@@ -7586,18 +8062,32 @@
           "gamesPlayed": 16,
           "teamGames": 17,
           "snapShare": 0.645,
-          "cumulativeSnapShare": 0.645,
+          "cumulativeSnapShare": 0.6119791666666666,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1152
         },
         {
           "year": 2020,
           "gamesPlayed": 15,
           "teamGames": 19,
           "snapShare": 0.6006666666666667,
-          "cumulativeSnapShare": 0.6006666666666667,
+          "cumulativeSnapShare": 0.6019701044834831,
           "retained": true,
-          "injuryReportWeeks": 6
+          "injuryReportWeeks": 6,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.72,
+            "playerSnaps": 46,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1026.629055823746
         },
         {
           "year": 2021,
@@ -7631,9 +8121,16 @@
           "gamesPlayed": 19,
           "teamGames": 20,
           "snapShare": 0.5994736842105264,
-          "cumulativeSnapShare": 0.5994736842105264,
+          "cumulativeSnapShare": 0.5724191063174114,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1298
         },
         {
           "year": 2025,
@@ -7642,7 +8139,14 @@
           "snapShare": 0.5805263157894738,
           "cumulativeSnapShare": 0.5758051846032993,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.05,
+            "playerSnaps": 4,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 1273
         },
         {
           "year": 2026,
@@ -7855,9 +8359,16 @@
           "gamesPlayed": 14,
           "teamGames": 18,
           "snapShare": 0.9371428571428572,
-          "cumulativeSnapShare": 0.8677085626238169,
+          "cumulativeSnapShare": 0.8098613251155623,
           "retained": true,
-          "injuryReportWeeks": 10
+          "injuryReportWeeks": 10,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 55
+          },
+          "loadDenominator": 1081.6666666666667
         },
         {
           "year": 2023,
@@ -7867,6 +8378,13 @@
           "cumulativeSnapShare": 0.5715292459478506,
           "retained": false,
           "injuryReportWeeks": 5,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.31,
+            "playerSnaps": 26,
+            "teamSnaps": 58
+          },
+          "loadDenominator": 1419,
           "currentTeam": "KC"
         },
         {
@@ -8052,9 +8570,16 @@
           "gamesPlayed": 15,
           "teamGames": 18,
           "snapShare": 0.21533333333333332,
-          "cumulativeSnapShare": 0.21533333333333332,
+          "cumulativeSnapShare": 0.2081151832460733,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 1018.6666666666666
         },
         {
           "year": 2020,
@@ -8079,9 +8604,16 @@
           "gamesPlayed": 18,
           "teamGames": 18,
           "snapShare": 0.24722222222222223,
-          "cumulativeSnapShare": 0.24722222222222223,
+          "cumulativeSnapShare": 0.24816326530612245,
           "retained": true,
-          "injuryReportWeeks": 2
+          "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.35,
+            "playerSnaps": 25,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 1225
         },
         {
           "year": 2023,
@@ -8310,9 +8842,16 @@
           "gamesPlayed": 20,
           "teamGames": 21,
           "snapShare": 0.9279999999999999,
-          "cumulativeSnapShare": 0.862842105263158,
+          "cumulativeSnapShare": 0.8217543859649122,
           "retained": false,
           "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 1425,
           "currentTeam": "PHI"
         },
         {
@@ -8459,7 +8998,14 @@
           "snapShare": 0.581111111111111,
           "cumulativeSnapShare": 0.5338983050847458,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.75,
+            "playerSnaps": 51,
+            "teamSnaps": 55
+          },
+          "loadDenominator": 1298
         },
         {
           "year": 2023,
@@ -8538,9 +9084,16 @@
           "gamesPlayed": 18,
           "teamGames": 19,
           "snapShare": 0.953888888888889,
-          "cumulativeSnapShare": 0.8408688342768493,
+          "cumulativeSnapShare": 0.9023034154090548,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 63
+          },
+          "loadDenominator": 1259
         },
         {
           "year": 2023,
@@ -8702,7 +9255,14 @@
           "teamGames": 20,
           "snapShare": 0.3365,
           "cumulativeSnapShare": 0.0971380222381141,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.37,
+            "playerSnaps": 7,
+            "teamSnaps": 80.04761904761905
+          },
+          "loadDenominator": 1791.2656238097416
         },
         {
           "year": 2024,
@@ -8722,6 +9282,13 @@
           "cumulativeSnapShare": 0.07241665655792548,
           "retained": false,
           "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.38,
+            "playerSnaps": 6,
+            "teamSnaps": 90.78947368421052
+          },
+          "loadDenominator": 1670.8863091906642,
           "currentTeam": "BUF"
         },
         {
@@ -8784,8 +9351,15 @@
           "gamesPlayed": 5,
           "teamGames": 20,
           "snapShare": 0.082,
-          "cumulativeSnapShare": 0.082,
+          "cumulativeSnapShare": 0.19700214132762311,
           "retained": false,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 0
+          },
+          "loadDenominator": 116.75,
           "currentTeam": "SF"
         },
         {
@@ -8925,9 +9499,16 @@
           "gamesPlayed": 18,
           "teamGames": 19,
           "snapShare": 0.43166666666666664,
-          "cumulativeSnapShare": 0.43166666666666664,
+          "cumulativeSnapShare": 0.43335108271210504,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.54,
+            "playerSnaps": 31,
+            "teamSnaps": 57
+          },
+          "loadDenominator": 1186.1052631578948
         },
         {
           "year": 2024,
@@ -8972,9 +9553,16 @@
           "gamesPlayed": 2,
           "teamGames": 18,
           "snapShare": 0.315,
-          "cumulativeSnapShare": 0.03043193717277487,
+          "cumulativeSnapShare": 0.08115183246073299,
           "retained": true,
-          "seasonEndingAbsenceGames": 2
+          "seasonEndingAbsenceGames": 12,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.63,
+            "playerSnaps": 31,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 382
         },
         {
           "year": 2020,
@@ -9228,9 +9816,16 @@
           "gamesPlayed": 2,
           "teamGames": 20,
           "snapShare": 0.32999999999999996,
-          "cumulativeSnapShare": 0.11329661683713611,
+          "cumulativeSnapShare": 0.09441384736428007,
           "retained": false,
-          "seasonEndingAbsenceGames": 15,
+          "seasonEndingAbsenceGames": 14,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 61
+          },
+          "loadDenominator": 381.30000000000007,
           "currentTeam": "SF"
         },
         {
@@ -9335,7 +9930,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ARI"
+          "currentTeam": "AZ"
         }
       ]
     },
@@ -9579,8 +10174,15 @@
           "gamesPlayed": 17,
           "teamGames": 17,
           "snapShare": 0.2517647058823529,
-          "cumulativeSnapShare": 0.2517647058823529,
-          "retained": true
+          "cumulativeSnapShare": 0.2531539108494533,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.16,
+            "playerSnaps": 11,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1189
         },
         {
           "year": 2021,
@@ -9817,9 +10419,15 @@
           "gamesPlayed": 1,
           "teamGames": 21,
           "snapShare": 0.62,
-          "cumulativeSnapShare": 0.03737790319079661,
+          "cumulativeSnapShare": 0.03025830258302583,
           "retained": true,
-          "seasonEndingAbsenceGames": 4
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.62,
+            "playerSnaps": 41,
+            "teamSnaps": 54
+          },
+          "loadDenominator": 1355
         },
         {
           "year": 2022,
@@ -10195,6 +10803,13 @@
           "cumulativeSnapShare": 0.5312896405919663,
           "retained": false,
           "injuryReportWeeks": 5,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 58
+          },
+          "loadDenominator": 1351.4285714285713,
           "currentTeam": "KC"
         },
         {
@@ -10202,9 +10817,16 @@
           "gamesPlayed": 19,
           "teamGames": 20,
           "snapShare": 0.7926315789473685,
-          "cumulativeSnapShare": 0.7713454719311527,
+          "cumulativeSnapShare": 0.732778198334595,
           "retained": false,
           "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 34
+          },
+          "loadDenominator": 1321,
           "currentTeam": "KC"
         },
         {
@@ -10610,7 +11232,7 @@
       "round": 4,
       "overallPick": 136,
       "teamId": "CIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/b7mi3e3r7n1cdlymjtwl",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wnmowwmhwy02pkvfxhkr",
       "seasons": [
         {
           "year": 2019,
@@ -11008,9 +11630,16 @@
           "gamesPlayed": 2,
           "teamGames": 17,
           "snapShare": 0.135,
-          "cumulativeSnapShare": 0.028595458368376785,
+          "cumulativeSnapShare": 0.025995871243978896,
           "retained": true,
-          "seasonEndingAbsenceGames": 7
+          "seasonEndingAbsenceGames": 6,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 769.3529411764706
         },
         {
           "year": 2021,
@@ -11169,6 +11798,13 @@
           "snapShare": 0.31,
           "cumulativeSnapShare": 0.013061224489795919,
           "retained": false,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.31,
+            "playerSnaps": 16,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 1225,
           "currentTeam": "MIN"
         },
         {
@@ -11556,9 +12192,16 @@
           "gamesPlayed": 18,
           "teamGames": 20,
           "snapShare": 0.8638888888888888,
-          "cumulativeSnapShare": 0.8555195997993765,
+          "cumulativeSnapShare": 0.8273634519027703,
           "retained": true,
-          "injuryReportWeeks": 9
+          "injuryReportWeeks": 9,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 61
+          },
+          "loadDenominator": 1207.45
         },
         {
           "year": 2024,
@@ -11699,7 +12342,14 @@
           "cumulativeSnapShare": 0.4311311555338859,
           "retained": true,
           "injuryReportWeeks": 4,
-          "seasonEndingAbsenceGames": 4
+          "seasonEndingAbsenceGames": 3,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 911.5555555555555
         },
         {
           "year": 2022,
@@ -12119,7 +12769,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ARI"
+          "currentTeam": "AZ"
         }
       ]
     },
@@ -12527,9 +13177,16 @@
           "gamesPlayed": 16,
           "teamGames": 18,
           "snapShare": 0.435,
-          "cumulativeSnapShare": 0.435,
+          "cumulativeSnapShare": 0.4391760484998305,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.79,
+            "playerSnaps": 49,
+            "teamSnaps": 65
+          },
+          "loadDenominator": 1088.4017961197728
         },
         {
           "year": 2020,
@@ -12566,6 +13223,13 @@
           "cumulativeSnapShare": 0.39178813842216537,
           "retained": false,
           "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.29,
+            "playerSnaps": 24,
+            "teamSnaps": 58
+          },
+          "loadDenominator": 1283.857142857143,
           "currentTeam": "KC"
         },
         {
@@ -12576,6 +13240,13 @@
           "cumulativeSnapShare": 0.3502397173858188,
           "retained": false,
           "injuryReportWeeks": 5,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.68,
+            "playerSnaps": 50,
+            "teamSnaps": 34
+          },
+          "loadDenominator": 990.75,
           "currentTeam": "KC"
         },
         {
@@ -12614,7 +13285,14 @@
           "teamGames": 18,
           "snapShare": 0.06571428571428571,
           "cumulativeSnapShare": 0.028795811518324606,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.31,
+            "playerSnaps": 23,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 1146
         },
         {
           "year": 2020,
@@ -12673,7 +13351,7 @@
       "round": 5,
       "overallPick": 163,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xgqo8pwrwqtmfhoaproq",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/loghcplmv69wosiqlopr",
       "seasons": [
         {
           "year": 2019,
@@ -12819,6 +13497,13 @@
           "cumulativeSnapShare": 0.3596827833205423,
           "retained": false,
           "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.46,
+            "playerSnaps": 30,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 1234.421052631579,
           "currentTeam": "HOU"
         },
         {
@@ -13182,6 +13867,13 @@
           "snapShare": 0.9605263157894739,
           "cumulativeSnapShare": 0.9106317411402157,
           "retained": false,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1298,
           "currentTeam": "BUF"
         },
         {
@@ -13191,6 +13883,13 @@
           "snapShare": 0.93,
           "cumulativeSnapShare": 0.9238020424194815,
           "retained": false,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 1273,
           "currentTeam": "BUF"
         },
         {
@@ -13327,7 +14026,14 @@
           "snapShare": 0.683888888888889,
           "cumulativeSnapShare": 0.6749480791749726,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.05,
+            "playerSnaps": 3,
+            "teamSnaps": 63
+          },
+          "loadDenominator": 1204.5370971257169
         },
         {
           "year": 2023,
@@ -13561,6 +14267,13 @@
           "snapShare": 0.03,
           "cumulativeSnapShare": 0.0016863406408094434,
           "retained": false,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 74
+          },
+          "loadDenominator": 1186,
           "currentTeam": "PHI"
         },
         {
@@ -13842,8 +14555,16 @@
           "gamesPlayed": 4,
           "teamGames": 18,
           "snapShare": 0.5825,
-          "cumulativeSnapShare": 0.1399662731871838,
+          "cumulativeSnapShare": 0.1574620573355818,
           "retained": false,
+          "seasonEndingAbsenceGames": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 74,
+            "teamSnaps": 74
+          },
+          "loadDenominator": 1054.2222222222222,
           "currentTeam": "PHI"
         },
         {
@@ -13893,7 +14614,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ARI"
+          "currentTeam": "AZ"
         }
       ]
     },
@@ -13974,7 +14695,7 @@
       "round": 6,
       "overallPick": 180,
       "teamId": "NYG",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/p1pbz0j3iviqhqtltudy",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fjv8xcxehvjnmmyrjiqx",
       "seasons": [
         {
           "year": 2019,
@@ -14069,16 +14790,30 @@
           "snapShare": 0.05642857142857143,
           "cumulativeSnapShare": 0.048882378472222224,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.79,
+            "playerSnaps": 53,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1084.235294117647
         },
         {
           "year": 2020,
           "gamesPlayed": 17,
           "teamGames": 19,
           "snapShare": 0.037647058823529415,
-          "cumulativeSnapShare": 0.037647058823529415,
+          "cumulativeSnapShare": 0.042952710495963095,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.49,
+            "playerSnaps": 41,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1140.7894736842104
         },
         {
           "year": 2021,
@@ -14155,9 +14890,16 @@
           "gamesPlayed": 5,
           "teamGames": 21,
           "snapShare": 0.122,
-          "cumulativeSnapShare": 0.03281962231387019,
+          "cumulativeSnapShare": 0.03985239852398524,
           "retained": true,
-          "seasonEndingAbsenceGames": 4
+          "seasonEndingAbsenceGames": 7,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.44,
+            "playerSnaps": 24,
+            "teamSnaps": 54
+          },
+          "loadDenominator": 903.3333333333334
         },
         {
           "year": 2022,
@@ -14236,6 +14978,13 @@
           "snapShare": 0.29,
           "cumulativeSnapShare": 0.012326656394453005,
           "retained": false,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.29,
+            "playerSnaps": 16,
+            "teamSnaps": 55
+          },
+          "loadDenominator": 1298,
           "currentTeam": "TB"
         },
         {
@@ -14407,8 +15156,15 @@
           "gamesPlayed": 10,
           "teamGames": 19,
           "snapShare": 0.151,
-          "cumulativeSnapShare": 0.151,
+          "cumulativeSnapShare": 0.5424903474903475,
           "retained": false,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 0
+          },
+          "loadDenominator": 213.82868937048502,
           "currentTeam": "HOU"
         },
         {
@@ -14482,9 +15238,16 @@
           "gamesPlayed": 20,
           "teamGames": 20,
           "snapShare": 0.3045,
-          "cumulativeSnapShare": 0.3045,
+          "cumulativeSnapShare": 0.3089368258859784,
           "retained": false,
           "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.25,
+            "playerSnaps": 17,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1298,
           "currentTeam": "BUF"
         },
         {
@@ -14496,6 +15259,13 @@
           "retained": false,
           "injuryReportWeeks": 2,
           "seasonEndingAbsenceGames": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.33,
+            "playerSnaps": 25,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 1139,
           "currentTeam": "BUF"
         },
         {
@@ -14545,6 +15315,13 @@
           "snapShare": 0.26125,
           "cumulativeSnapShare": 0.1220136518771331,
           "retained": false,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.65,
+            "playerSnaps": 44,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 1172,
           "currentTeam": "GB"
         },
         {
@@ -14745,7 +15522,14 @@
           "cumulativeSnapShare": 0.11878272251308901,
           "retained": true,
           "injuryReportWeeks": 1,
-          "seasonEndingAbsenceGames": 2
+          "seasonEndingAbsenceGames": 2,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.6,
+            "playerSnaps": 45,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 1018.6666666666666
         },
         {
           "year": 2020,
@@ -14811,7 +15595,7 @@
       "round": 6,
       "overallPick": 191,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/buqwodgcsy5ndrrxtpga",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mlmepu3ng2uaqlo4sqhx",
       "seasons": [
         {
           "year": 2019,
@@ -14837,9 +15621,16 @@
           "gamesPlayed": 17,
           "teamGames": 18,
           "snapShare": 0.4694117647058823,
-          "cumulativeSnapShare": 0.4694117647058823,
+          "cumulativeSnapShare": 0.4527824620573356,
           "retained": false,
           "injuryReportWeeks": 2,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 74
+          },
+          "loadDenominator": 1186,
           "currentTeam": "PHI"
         },
         {
@@ -14879,6 +15670,13 @@
           "cumulativeSnapShare": 0.3279503105590062,
           "retained": false,
           "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 939.1666666666666,
           "currentTeam": "PHI"
         },
         {
@@ -14916,7 +15714,15 @@
           "snapShare": 0.189,
           "cumulativeSnapShare": 0.14407711716374458,
           "retained": true,
-          "injuryReportWeeks": 4
+          "injuryReportWeeks": 4,
+          "seasonEndingAbsenceGames": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.15,
+            "playerSnaps": 9,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 909.2352941176471
         },
         {
           "year": 2021,
@@ -14980,9 +15786,15 @@
           "gamesPlayed": 1,
           "teamGames": 18,
           "snapShare": 0.63,
-          "cumulativeSnapShare": 0.03043193717277487,
+          "cumulativeSnapShare": 0.027050610820244327,
           "retained": true,
-          "seasonEndingAbsenceGames": 2
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.63,
+            "playerSnaps": 31,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 1146
         },
         {
           "year": 2020,
@@ -15008,7 +15820,14 @@
           "teamGames": 18,
           "snapShare": 0.16666666666666666,
           "cumulativeSnapShare": 0.15346938775510205,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 71,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 1225
         },
         {
           "year": 2023,
@@ -15044,7 +15863,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ARI"
+          "currentTeam": "AZ"
         }
       ]
     },
@@ -15132,8 +15951,15 @@
           "gamesPlayed": 5,
           "teamGames": 18,
           "snapShare": 0.02,
-          "cumulativeSnapShare": 0.02,
-          "retained": true
+          "cumulativeSnapShare": 0.04941176470588235,
+          "retained": true,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 0
+          },
+          "loadDenominator": 141.66666666666669
         },
         {
           "year": 2020,
@@ -15565,9 +16391,16 @@
           "gamesPlayed": 18,
           "teamGames": 19,
           "snapShare": 0.44555555555555565,
-          "cumulativeSnapShare": 0.44555555555555565,
+          "cumulativeSnapShare": 0.5443610026409178,
           "retained": true,
-          "injuryReportWeeks": 5
+          "injuryReportWeeks": 5,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.72,
+            "playerSnaps": 52,
+            "teamSnaps": 72.22222222222223
+          },
+          "loadDenominator": 1017.7069946456845
         },
         {
           "year": 2021,
@@ -15647,6 +16480,13 @@
           "cumulativeSnapShare": 0.49434960365393626,
           "retained": false,
           "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 54,
+            "teamSnaps": 54
+          },
+          "loadDenominator": 1296.6532091097308,
           "currentTeam": "CIN"
         },
         {
@@ -15886,6 +16726,13 @@
           "snapShare": 0.5866666666666667,
           "cumulativeSnapShare": 0.38285714285714284,
           "retained": false,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 51,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 1225,
           "currentTeam": "MIN"
         },
         {
@@ -15896,6 +16743,13 @@
           "cumulativeSnapShare": 0.06672519754170325,
           "retained": false,
           "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1139,
           "currentTeam": "LAR"
         },
         {
@@ -16009,10 +16863,17 @@
           "gamesPlayed": 4,
           "teamGames": 17,
           "snapShare": 0.125,
-          "cumulativeSnapShare": 0.03370179021987264,
+          "cumulativeSnapShare": 0.03145500420521447,
           "retained": true,
           "injuryReportWeeks": 2,
-          "seasonEndingAbsenceGames": 3
+          "seasonEndingAbsenceGames": 2,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1049.1176470588234
         },
         {
           "year": 2021,
@@ -16029,6 +16890,13 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 55
+          },
+          "loadDenominator": 1298,
           "currentTeam": "TB"
         },
         {
@@ -16100,7 +16968,14 @@
           "snapShare": 0.23249999999999996,
           "cumulativeSnapShare": 0.21535393818544366,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.38,
+            "playerSnaps": 21,
+            "teamSnaps": 55
+          },
+          "loadDenominator": 1225.888888888889
         },
         {
           "year": 2023,
@@ -16525,7 +17400,14 @@
           "snapShare": 0.08687500000000001,
           "cumulativeSnapShare": 0.0758173076923077,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.92,
+            "playerSnaps": 49,
+            "teamSnaps": 53
+          },
+          "loadDenominator": 1094.7368421052631
         },
         {
           "year": 2021,
@@ -16658,8 +17540,15 @@
           "gamesPlayed": 19,
           "teamGames": 19,
           "snapShare": 0.6794736842105263,
-          "cumulativeSnapShare": 0.6794736842105263,
-          "retained": true
+          "cumulativeSnapShare": 0.8325523612075197,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 0
+          },
+          "loadDenominator": 1081.0130893084674
         },
         {
           "year": 2021,
@@ -16682,9 +17571,16 @@
           "gamesPlayed": 21,
           "teamGames": 21,
           "snapShare": 0.16904761904761903,
-          "cumulativeSnapShare": 0.16904761904761903,
+          "cumulativeSnapShare": 0.17829457364341086,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 58,
+            "teamSnaps": 58
+          },
+          "loadDenominator": 1419
         },
         {
           "year": 2024,
@@ -16730,8 +17626,15 @@
           "gamesPlayed": 18,
           "teamGames": 18,
           "snapShare": 0.07666666666666667,
-          "cumulativeSnapShare": 0.07666666666666667,
-          "retained": true
+          "cumulativeSnapShare": 0.08464223385689354,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.65,
+            "playerSnaps": 49,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 1146
         },
         {
           "year": 2020,
@@ -16758,7 +17661,14 @@
           "teamGames": 18,
           "snapShare": 0.037222222222222226,
           "cumulativeSnapShare": 0.030204081632653063,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.55,
+            "playerSnaps": 28,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 1225
         },
         {
           "year": 2023,
@@ -16777,6 +17687,13 @@
           "cumulativeSnapShare": 0.038461538461538464,
           "retained": false,
           "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.77,
+            "playerSnaps": 48,
+            "teamSnaps": 60
+          },
+          "loadDenominator": 1248,
           "currentTeam": "HOU"
         },
         {
@@ -16878,9 +17795,16 @@
           "gamesPlayed": 5,
           "teamGames": 17,
           "snapShare": 0.076,
-          "cumulativeSnapShare": 0.025531659257479272,
+          "cumulativeSnapShare": 0.023829548640313992,
           "retained": true,
-          "seasonEndingAbsenceGames": 3
+          "seasonEndingAbsenceGames": 2,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1049.1176470588234
         },
         {
           "year": 2021,
@@ -16938,8 +17862,15 @@
           "gamesPlayed": 18,
           "teamGames": 18,
           "snapShare": 0.017777777777777778,
-          "cumulativeSnapShare": 0.017777777777777778,
-          "retained": true
+          "cumulativeSnapShare": 0.01810699588477366,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 65
+          },
+          "loadDenominator": 1215
         },
         {
           "year": 2020,
@@ -17283,7 +18214,14 @@
           "teamGames": 17,
           "snapShare": 0.19941176470588234,
           "cumulativeSnapShare": 0.1953125,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.93,
+            "playerSnaps": 62,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1152
         },
         {
           "year": 2020,
@@ -17292,7 +18230,14 @@
           "snapShare": 0.22705882352941179,
           "cumulativeSnapShare": 0.22424509542165943,
           "retained": true,
-          "injuryReportWeeks": 3
+          "injuryReportWeeks": 3,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.4,
+            "playerSnaps": 33,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 1150.526835447034
         },
         {
           "year": 2021,
@@ -17372,10 +18317,17 @@
           "gamesPlayed": 14,
           "teamGames": 18,
           "snapShare": 0.031428571428571424,
-          "cumulativeSnapShare": 0.031428571428571424,
+          "cumulativeSnapShare": 0.02969283276450512,
           "retained": true,
           "injuryReportWeeks": 1,
-          "seasonEndingAbsenceGames": 4
+          "seasonEndingAbsenceGames": 3,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 976.6666666666666
         },
         {
           "year": 2022,
@@ -17504,8 +18456,16 @@
           "gamesPlayed": 6,
           "teamGames": 17,
           "snapShare": 0.31666666666666665,
-          "cumulativeSnapShare": 0.11197916666666667,
-          "retained": true
+          "cumulativeSnapShare": 0.30656089196297004,
+          "retained": true,
+          "seasonEndingAbsenceGames": 11,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.63,
+            "playerSnaps": 40,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 420.7973142757626
         },
         {
           "year": 2020,
@@ -17958,6 +18918,13 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 0
+          },
+          "loadDenominator": 0,
           "currentTeam": "LAR"
         },
         {
@@ -18853,9 +19820,16 @@
           "gamesPlayed": 18,
           "teamGames": 18,
           "snapShare": 0.5205555555555557,
-          "cumulativeSnapShare": 0.5205555555555557,
+          "cumulativeSnapShare": 0.5209424083769634,
           "retained": true,
-          "injuryReportWeeks": 1
+          "injuryReportWeeks": 1,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.73,
+            "playerSnaps": 36,
+            "teamSnaps": 49
+          },
+          "loadDenominator": 1146
         },
         {
           "year": 2020,
@@ -19077,7 +20051,14 @@
           "teamGames": 18,
           "snapShare": 0.3194444444444444,
           "cumulativeSnapShare": 0.0972116107038568,
-          "retained": true
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.24,
+            "playerSnaps": 6,
+            "teamSnaps": 74
+          },
+          "loadDenominator": 1604.746581920495
         },
         {
           "year": 2020,
