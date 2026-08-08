@@ -612,3 +612,69 @@ describe('a quarterback who sat behind a veteran', () => {
     expect(note.textContent).not.toContain('rookie window');
   });
 });
+
+describe('PlayerDetailView rested-finale marker', () => {
+  // Lamar Jackson 2023: the 1 seed locked, so he sat the finale. GP reads 18
+  // against a schedule the reader knows was 19, and the table has no teamGames
+  // column to explain the difference — the marker is what closes that gap.
+  const rested: DraftPick = makePick({
+    position: 'QB',
+    seasons: [
+      makeSeason({
+        year: 2023,
+        gamesPlayed: 18,
+        teamGames: 18,
+        snapShare: 0.977,
+        cumulativeSnapShare: 0.976,
+        restGame: {
+          playerGames: 0,
+          playerShareSum: 0,
+          playerSnaps: 0,
+          teamSnaps: 57,
+        },
+      }),
+      makeSeason({
+        year: 2024,
+        gamesPlayed: 17,
+        teamGames: 17,
+        snapShare: 0.98,
+        cumulativeSnapShare: 0.98,
+      }),
+    ],
+  });
+
+  function renderRested() {
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={rested}
+          draftYear={2023}
+          draftClasses={[makeDraftClass({ year: 2023, picks: [rested] })]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+  }
+
+  it('marks the season whose finale his team rested through', () => {
+    renderRested();
+
+    const marker = screen.getByTestId('rested-finale-2023');
+    expect(marker).toBeInTheDocument();
+    expect(marker).toHaveAccessibleDescription(/rested/i);
+  });
+
+  it('names the shortened schedule, which is what GP is measured against', () => {
+    renderRested();
+
+    expect(
+      screen.getByTestId('rested-finale-2023'),
+    ).toHaveAccessibleDescription(/18 team games/i);
+  });
+
+  it('leaves a season played out in full unmarked', () => {
+    renderRested();
+
+    expect(screen.queryByTestId('rested-finale-2024')).toBeNull();
+  });
+});

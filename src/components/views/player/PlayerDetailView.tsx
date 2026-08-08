@@ -583,9 +583,10 @@ function SeasonRow({
       className={counts ? undefined : 'season-row--uncounted'}
       data-testid={counts ? undefined : `season-uncounted-${s.year}`}
     >
-      <td>
+      <td className="player-career__season-cell">
         <span className="player-career__year">{s.year}</span>
         <SeasonEndingInjuryMarker season={s} />
+        <RestedFinaleMarker season={s} />
       </td>
       <td>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -783,6 +784,29 @@ function SeasonEndingInjuryMarker({ season }: { season: Season }) {
       title={`Season ended by injury — missed the final ${missed} ${missed === 1 ? 'game' : 'games'}`}
     >
       IR
+    </abbr>
+  );
+}
+
+/**
+ * Flags a season whose finale the team rested through, that game having been
+ * dropped from every figure in the row.
+ *
+ * Without it the adjustment is invisible: GP reads one short of the schedule
+ * the reader remembers, and this table has no team-games column to explain the
+ * difference. Same reasoning as {@link SeasonEndingInjuryMarker} — a forgiven
+ * number with nothing on screen accounting for it reads as a bug.
+ */
+function RestedFinaleMarker({ season }: { season: Season }) {
+  if (!season.restGame) return null;
+  return (
+    <abbr
+      className="rested-finale"
+      data-testid={`rested-finale-${season.year}`}
+      aria-label="Finale rested"
+      title={`Team clinched and rested its starters in the finale — that game is excluded, ${season.teamGames} team games counted`}
+    >
+      REST
     </abbr>
   );
 }

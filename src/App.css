@@ -2433,6 +2433,13 @@ button {
 .player-career tbody tr:nth-child(even) {
   background: var(--paper-3);
 }
+/* The year and its markers stay on one line: the column is narrow enough that
+   a four-character badge wraps under the year, and the taller row that makes
+   reads as a layout fault rather than a flag. Widening the column by those few
+   pixels is the cheaper of the two. Same fix as `--range` below. */
+.player-career__season-cell {
+  white-space: nowrap;
+}
 .player-career__year {
   font-family: var(--f-serif);
   font-size: 20px;
@@ -2706,6 +2713,25 @@ button {
   border-radius: 3px;
   background: color-mix(in oklch, var(--negative) 10%, var(--paper));
   color: var(--negative);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  cursor: help;
+}
+/* Shares the IR marker's shape but stays neutral: a rested finale is a fact
+   about the schedule, not a misfortune, and borrowing the injury red would
+   read as one. */
+.rested-finale {
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: 4px;
+  padding: 1px 4px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--paper-2);
+  color: var(--ink-3);
   font-family: var(--f-mono);
   font-size: 9px;
   font-weight: 700;
