@@ -46,7 +46,8 @@ function main() {
 
   const output = { from: draftFrom, to: draftTo, rankings };
   const outPath = path.join(dataDir, 'lagged-draft-rankings.json');
-  fs.writeFileSync(outPath, JSON.stringify(output));
+  // Pretty-printed so diffs stay reviewable; gzip makes the size cost negligible.
+  fs.writeFileSync(outPath, `${JSON.stringify(output, null, 2)}\n`);
   console.log(
     `Wrote lagged draft rankings (${draftFrom}–${draftTo}) for ${rankings.length} teams to ${outPath}`,
   );

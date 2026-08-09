@@ -56,7 +56,8 @@ function main() {
 
   const output = { from: DEFAULT_FROM, to: DEFAULT_TO, rankings };
   const outPath = path.join(dataDir, 'default-rankings.json');
-  fs.writeFileSync(outPath, JSON.stringify(output));
+  // Pretty-printed so diffs stay reviewable; gzip makes the size cost negligible.
+  fs.writeFileSync(outPath, `${JSON.stringify(output, null, 2)}\n`);
   console.log(
     `Wrote default rankings to ${outPath} (${rankings.length} teams)`,
   );
