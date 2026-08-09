@@ -1,4 +1,6 @@
 import { useNavigate, useSearchParams, useMatch } from 'react-router-dom';
+import { DRAFT_YEAR_BOUNDS } from '../../lib/draftYearBounds';
+import { formatYearRange } from '../../lib/laggedWindow';
 
 export type MastheadTab = 'rankings' | 'team' | 'year' | 'pos' | 'highlights';
 
@@ -90,7 +92,10 @@ export function Masthead({
           <span className="mast__dot" /> Data synced{' '}
           <b>{dataLastUpdatedDate}</b>
         </div>
-        <div>32 teams · 2018–2026</div>
+        <div>
+          32 teams ·{' '}
+          {formatYearRange(DRAFT_YEAR_BOUNDS.min, DRAFT_YEAR_BOUNDS.max)}
+        </div>
       </div>
       {/* The glyph carries the meaning on mobile, where the label is hidden and
           these sit as icon buttons in the brand row. */}

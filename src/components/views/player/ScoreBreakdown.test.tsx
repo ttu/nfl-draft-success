@@ -124,8 +124,8 @@ describe('ScoreBreakdown', () => {
       seasonScores.reduce((a, b) => a + b, 0),
       5,
     );
-    // 129.6 ÷ 3 = 43.2, which rounds to the 43 the hero shows.
-    expect(total / 3).toBeCloseTo(43.2, 1);
+    // 129.4 ÷ 3 = 43.1, which rounds to the 43 the hero shows.
+    expect(total / 3).toBeCloseTo(43.1, 1);
   });
 
   it('calls a tenure past the rookie deal what it is, not a longer window', () => {

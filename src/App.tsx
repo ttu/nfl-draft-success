@@ -77,6 +77,7 @@ import {
   clampYear,
   generateYearArray,
 } from './lib/yearRange';
+import { DRAFT_YEAR_BOUNDS } from './lib/draftYearBounds';
 import {
   parsePositionParam,
   determineActiveView,
@@ -130,8 +131,11 @@ const HighlightsView = lazy(() =>
   })),
 );
 
-const YEAR_MIN = 2018;
-const YEAR_MAX = 2026;
+const YEAR_MIN = DRAFT_YEAR_BOUNDS.min;
+const YEAR_MAX = DRAFT_YEAR_BOUNDS.max;
+// Opening range. Deliberately narrower than YEAR_MIN: the older classes are
+// there for anyone who widens the range, but a first visit should show the
+// window whose picks are still on their rookie deals.
 const DEFAULT_YEAR_MIN = 2021;
 // The newest draft class (YEAR_MAX) has not played a full season yet, so the
 // last *completed* season is the year before it. Drives the "Last 3 yr" preset.

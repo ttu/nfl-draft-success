@@ -28,7 +28,7 @@ src/
   lib/            # Calculation logic (role classification, metrics)
   data/           # Team metadata, data loading helpers
 public/
-  data/           # JSON files (draft-2018.json, etc.)
+  data/           # JSON files (draft-2013.json … draft-2026.json)
 scripts/
   update-data.ts      # Fetch nflverse, transform, write JSON
   generate-og-image.ts # Generate OG image for social sharing

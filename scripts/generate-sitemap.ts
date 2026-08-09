@@ -1,13 +1,15 @@
 /**
- * Writes public/sitemap.xml for indexable routes. Year bounds must match App.tsx /
- * AppHeader; positions are derived from public/data/draft-*.json (same idea as
- * collectDraftPositions).
+ * Writes public/sitemap.xml for indexable routes. Year bounds come from the same
+ * season window App.tsx reads, so the sitemap can never advertise a class the
+ * site does not offer; positions are derived from public/data/draft-*.json
+ * (same idea as collectDraftPositions).
  */
 import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { TEAMS } from '../src/data/teams';
 import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
+import { DRAFT_YEAR_BOUNDS } from '../src/lib/draftYearBounds';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -15,9 +17,7 @@ const OUT = join(ROOT, 'public/sitemap.xml');
 const DATA_DIR = join(ROOT, 'public/data');
 
 const BASE = 'https://www.nfldraftsuccess.com';
-/** Keep in sync with App.tsx / AppHeader */
-const YEAR_MIN = 2018;
-const YEAR_MAX = 2026;
+const { min: YEAR_MIN, max: YEAR_MAX } = DRAFT_YEAR_BOUNDS;
 
 function collectPositionsFromDraftFiles(): string[] {
   const byCanon = new Map<string, string>();

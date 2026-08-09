@@ -41,7 +41,7 @@ describe('InfoView', () => {
     // tier shifts down with it.
     expect(picker).toHaveValue('RB');
     expect(screen.queryByText('≥ 65%')).not.toBeInTheDocument();
-    expect(screen.getAllByText('≥ 42%')).toHaveLength(2);
+    expect(screen.getAllByText('≥ 44%')).toHaveLength(2);
     expect(screen.getByText('≥ 23%')).toBeInTheDocument();
   });
 

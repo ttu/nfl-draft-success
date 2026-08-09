@@ -23,7 +23,7 @@ const GAMES_URL =
   'https://github.com/nflverse/nfldata/raw/master/data/games.csv';
 // Every season with played results the app's draft data can pair with. 2026 is
 // scheduled-only, so it contributes no records until games are played.
-const FROM = 2018;
+const FROM = 2013;
 const TO = 2026;
 
 async function main() {

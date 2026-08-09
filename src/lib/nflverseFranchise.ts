@@ -12,6 +12,7 @@ export const NFLVERSE_FRANCHISE_MAP: Record<string, string> = {
   LA: 'LAR',
   AZ: 'ARI',
   SD: 'LAC',
+  SDG: 'LAC',
   OAK: 'LV',
   LVR: 'LV',
   KAN: 'KC',

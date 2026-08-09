@@ -7,7 +7,8 @@ import {
 import { getPositionDisplayName } from '../../lib/positionDisplayName';
 import { ValidationSection } from './ValidationSection';
 import type { CorrelationResult } from '../../lib/draftSuccessCorrelation';
-import type { LaggedWindows } from '../../lib/laggedWindow';
+import { formatYearRange, type LaggedWindows } from '../../lib/laggedWindow';
+import { DRAFT_YEAR_BOUNDS } from '../../lib/draftYearBounds';
 
 const GITHUB_URL = 'https://github.com/ttu/nfl-draft-success';
 
@@ -411,7 +412,9 @@ function DataColumn({
       </div>
       <div className="info-kv">
         <span>Years</span>
-        <span>2018 – 2026</span>
+        <span>
+          {formatYearRange(DRAFT_YEAR_BOUNDS.min, DRAFT_YEAR_BOUNDS.max)}
+        </span>
       </div>
       {dataLastUpdatedDate && (
         <div className="info-kv">

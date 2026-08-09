@@ -39,8 +39,15 @@ const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 const FIRST_SNAP_SEASON = 2012;
 /** First season nflverse publishes an injury report for. */
 const FIRST_INJURY_SEASON = 2009;
-/** Earliest draft class this site tracks. */
-const FIRST_DRAFT_YEAR = 2018;
+/**
+ * Earliest draft class this site tracks.
+ *
+ * Floored at 2013 by snap coverage: scoring a class needs snap counts from its
+ * rookie season on, and nflverse starts at FIRST_SNAP_SEASON. 2013 rather than
+ * 2012 leaves a season of margin and makes the pre-2018 range a clean mirror of
+ * the lagged window (2013–2016 drafts → 2017–2020 wins).
+ */
+const FIRST_DRAFT_YEAR = 2013;
 
 interface CsvRow {
   [k: string]: string;
@@ -921,9 +928,11 @@ async function main() {
   console.log(`  Wrote data stamp ${metaPath}`);
 
   // Scoring sizes each pick's rookie-contract window against the newest season
-  // in the dataset, so it must know that season without waiting on a fetch. This
-  // lands in src/data/ rather than public/data/ deliberately: it is imported at
-  // build time, and an async load would race the first score.
+  // in the dataset, so it must know that season without waiting on a fetch. The
+  // draft-class bounds ride along so the year selector and the sitemap offer
+  // exactly the classes written above. This lands in src/data/ rather than
+  // public/data/ deliberately: it is imported at build time, and an async load
+  // would race the first score.
   const seasonWindowPath = path.join(
     process.cwd(),
     'src',
@@ -932,7 +941,15 @@ async function main() {
   );
   fs.writeFileSync(
     seasonWindowPath,
-    JSON.stringify({ latestSeason: maxSeason }, null, 2) + '\n',
+    JSON.stringify(
+      {
+        latestSeason: maxSeason,
+        firstDraftYear: draftYears[0],
+        latestDraftYear: draftYears.at(-1),
+      },
+      null,
+      2,
+    ) + '\n',
   );
   console.log(`  Wrote season window ${seasonWindowPath}`);
 

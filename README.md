@@ -14,7 +14,7 @@ Open http://localhost:3273
 ## Features
 
 - **32 NFL teams** – Select any team to view their draft performance
-- **Configurable year range** – Select any span within 2018–2025 (default 2021–2025)
+- **Configurable year range** – Select any span within 2013–2026 (default 2021–2025)
 - **Role classification** – Core Starter, Starter When Healthy, Significant Contributor, Depth, Non Contributor (from snap share + availability)
 - **Draft class metrics** – Picks, core starters, contributors, retention per year
 - **Rolling draft score** – Aggregated score across your chosen year range, with Core Starter % and Retention %
@@ -61,7 +61,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, conventions, and P
 ## Acceptance
 
 - [x] 32 teams supported
-- [x] 6+ draft years (2018–2025)
+- [x] 14 draft years (2013–2026)
 - [x] Metrics compute correctly
 - [x] Static build, no backend
 - [x] Ongoing seasons handled (teamGames from data)

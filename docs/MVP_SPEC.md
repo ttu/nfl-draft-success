@@ -14,7 +14,7 @@ draft success using:
 - Retention status
 
 The site must: - Support all 32 NFL teams - Show draft classes for a
-configurable year range (default: 2018--2025) - Classify player roles
+configurable year range (2013--2026, default: 2021--2025) - Classify player roles
 using snap share + availability - Calculate team-level draft success
 metrics - Load all data from version-controlled JSON files - Require no
 backend or database

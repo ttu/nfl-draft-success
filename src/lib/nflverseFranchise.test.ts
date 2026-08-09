@@ -22,6 +22,13 @@ describe('normalizeNflverseTeam', () => {
     expect(normalizeNflverseTeam('GNB')).toBe('GB');
   });
 
+  it('maps a relocated franchise spelled in the four-letter style', () => {
+    // The draft feed writes San Diego as SDG, not SD — invisible until the
+    // 2013–2016 classes shipped, where it surfaced on the board as a team with
+    // no colour and no logo (D.J. Fluker, 2013 pick 11).
+    expect(normalizeNflverseTeam('SDG')).toBe('LAC');
+  });
+
   it('leaves a code that is already canonical alone', () => {
     expect(normalizeNflverseTeam('ARI')).toBe('ARI');
     expect(normalizeNflverseTeam('BUF')).toBe('BUF');

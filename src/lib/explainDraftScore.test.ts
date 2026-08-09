@@ -266,7 +266,7 @@ describe('explainDraftScore', () => {
       const rows = seasonRows(explainDraftScore(richardson(), true)!);
 
       expect(rows[0].baselineExempt).toBe(false);
-      expect(rows[0].positionBaseline).toBeCloseTo(0.99, 3);
+      expect(rows[0].positionBaseline).toBeCloseTo(0.993, 3);
       expect(rows[0].normalizedShare).toBeCloseTo(
         rows[0].rawShare / rows[0].positionBaseline,
         6,
