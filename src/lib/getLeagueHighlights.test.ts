@@ -48,6 +48,38 @@ describe('getLeagueHighlights', () => {
     expect(h.steals).toEqual([]);
     expect(h.busts).toEqual([]);
     expect(h.mostCoreStarters).toBeNull();
+    expect(h.dayOneStarters).toEqual([]);
+    expect(h.lateBloomers).toEqual([]);
+    expect(h.ironMen).toEqual([]);
+    expect(h.snakebit).toEqual([]);
+    expect(h.gotAway).toEqual([]);
+    expect(h.keptTheBand).toEqual([]);
+  });
+
+  it('carries the career-shape and retention bands', () => {
+    const classes: DraftClass[] = [
+      {
+        year: 2021,
+        picks: [
+          pick({
+            teamId: 'A',
+            round: 1,
+            overallPick: 1,
+            snapShare: 0.9,
+            draftYear: 2021,
+          }),
+        ],
+      },
+    ];
+
+    const h = getLeagueHighlights(classes, teams, opts);
+
+    expect(h.dayOneStarters).toHaveLength(1);
+    expect(h.lateBloomers).toBeDefined();
+    expect(h.ironMen).toBeDefined();
+    expect(h.snakebit).toBeDefined();
+    expect(h.gotAway).toBeDefined();
+    expect(h.keptTheBand).toBeDefined();
   });
 
   it('ranks the top steals by over slot, not by raw score', () => {

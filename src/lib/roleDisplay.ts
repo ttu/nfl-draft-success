@@ -38,3 +38,12 @@ export function formatRoleLabel(role: Role): string {
 export function isStrongerRole(candidate: Role, current: Role): boolean {
   return ROLE_ORDER.indexOf(candidate) > ROLE_ORDER.indexOf(current);
 }
+
+/**
+ * Whether `candidate` is at least as strong as `floor`. The inclusive sibling of
+ * {@link isStrongerRole}, for gates phrased as "significant contributor or
+ * better".
+ */
+export function isAtLeastRole(candidate: Role, floor: Role): boolean {
+  return ROLE_ORDER.indexOf(candidate) >= ROLE_ORDER.indexOf(floor);
+}

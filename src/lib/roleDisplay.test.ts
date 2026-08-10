@@ -5,6 +5,7 @@ import {
   ROLE_ABBREV,
   formatRoleLabel,
   isStrongerRole,
+  isAtLeastRole,
 } from './roleDisplay';
 
 describe('roleDisplay', () => {
@@ -30,5 +31,21 @@ describe('roleDisplay', () => {
     expect(isStrongerRole('core_starter', 'depth')).toBe(true);
     expect(isStrongerRole('depth', 'core_starter')).toBe(false);
     expect(isStrongerRole('depth', 'depth')).toBe(false);
+  });
+});
+
+describe('isAtLeastRole', () => {
+  it('is true when the candidate outranks the floor', () => {
+    expect(isAtLeastRole('core_starter', 'significant_contributor')).toBe(true);
+  });
+
+  it('is true at the floor itself', () => {
+    expect(
+      isAtLeastRole('significant_contributor', 'significant_contributor'),
+    ).toBe(true);
+  });
+
+  it('is false below the floor', () => {
+    expect(isAtLeastRole('contributor', 'significant_contributor')).toBe(false);
   });
 });

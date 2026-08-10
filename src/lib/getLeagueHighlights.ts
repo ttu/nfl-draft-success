@@ -1,5 +1,13 @@
 import type { DraftClass, DraftPick, Team } from '../types';
 import { isBustExcluded } from './bustExclusions';
+import {
+  getCareerShapeHighlights,
+  type CareerShapeHighlights,
+} from './careerShapeHighlights';
+import {
+  getRetentionHighlights,
+  type RetentionHighlights,
+} from './retentionHighlights';
 import { expectedScoreForPick } from './draftSlotBaseline';
 import {
   getPlayerDraftScore,
@@ -33,8 +41,13 @@ export const HIGHLIGHT_LIST_SIZE = 3;
 /** Full length of each ranked list once expanded (the top-20 view). */
 export const HIGHLIGHT_LIST_MAX = 20;
 
-/** Human-interest highlights across the loaded draft window. */
-export interface LeagueHighlights {
+/**
+ * Human-interest highlights across the loaded draft window, in three bands:
+ * value (here), career shape ({@link CareerShapeHighlights}) and retention
+ * ({@link RetentionHighlights}).
+ */
+export interface LeagueHighlights
+  extends CareerShapeHighlights, RetentionHighlights {
   /** Picks most above their draft slot's expectation, best first. */
   steals: PlayerHighlight[];
   /** Picks furthest below their draft slot's expectation, worst first. */
@@ -65,6 +78,14 @@ export interface LeagueHighlights {
  * players, so a window with fewer picks than that can list one player on both
  * sides; real windows carry hundreds. `mostCoreStarters` is `null` when no team
  * has one.
+ *
+ * The result carries two further bands, each owned by its own module and merged
+ * in whole: career shape ({@link getCareerShapeHighlights} — day-one starters,
+ * late bloomers, iron men, snakebit) and retention
+ * ({@link getRetentionHighlights} — the ones that got away, kept the band
+ * together). Those bands read usage and availability rather than score, so they
+ * take no {@link GetPlayerRoleOptions}: `draftingTeamOnly` would delete the very
+ * seasons the retention band exists to measure.
  */
 export function getLeagueHighlights(
   draftClasses: DraftClass[],
@@ -108,6 +129,9 @@ export function getLeagueHighlights(
       .sort(compareBust)
       .slice(0, HIGHLIGHT_LIST_MAX),
     mostCoreStarters: pickCoreLeader(coreCount, scoredCount, teamById),
+    ...getCareerShapeHighlights(draftClasses, teams),
+    // No options: this band's subject is the seasons `draftingTeamOnly` removes.
+    ...getRetentionHighlights(draftClasses, teams),
   };
 }
 
