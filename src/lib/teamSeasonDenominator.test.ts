@@ -51,6 +51,74 @@ describe('buildTeamSeasonDenominatorTotals', () => {
     expect(gameCountByTeam.get('MIN')).toBe(2);
   });
 
+  it('takes both scrimmage phases from a game, whichever row carries them', () => {
+    // Real files list one row per player, so offensive and defensive capacity
+    // never appear on the same row. Reading a game from a single row dropped
+    // whichever phase that player did not play (§1.2 wants off + def).
+    const rows = [
+      {
+        game_id: 'g1',
+        team: 'MIN',
+        week: '1',
+        offense_snaps: '35',
+        offense_pct: '0.5',
+        defense_snaps: '0',
+        defense_pct: '0',
+        st_snaps: '0',
+        st_pct: '0',
+      },
+      {
+        game_id: 'g1',
+        team: 'MIN',
+        week: '1',
+        offense_snaps: '0',
+        offense_pct: '0',
+        defense_snaps: '26',
+        defense_pct: '0.4',
+        st_snaps: '0',
+        st_pct: '0',
+      },
+    ];
+    const { scrimByTeam, capacityByTeamWeek } =
+      buildTeamSeasonDenominatorTotals(rows);
+    const teamOff = 35 / 0.5; // 70
+    const teamDef = 26 / 0.4; // 65
+    expect(scrimByTeam.get('MIN')).toBeCloseTo(teamOff + teamDef, 5);
+    expect(capacityByTeamWeek.get('MIN|1')?.scrim).toBeCloseTo(
+      teamOff + teamDef,
+      5,
+    );
+  });
+
+  it('takes special-teams capacity from a row that played special teams', () => {
+    const rows = [
+      {
+        game_id: 'g1',
+        team: 'MIN',
+        week: '1',
+        offense_snaps: '35',
+        offense_pct: '0.5',
+        defense_snaps: '0',
+        defense_pct: '0',
+        st_snaps: '0',
+        st_pct: '0',
+      },
+      {
+        game_id: 'g1',
+        team: 'MIN',
+        week: '1',
+        offense_snaps: '0',
+        offense_pct: '0',
+        defense_snaps: '0',
+        defense_pct: '0',
+        st_snaps: '12',
+        st_pct: '0.48',
+      },
+    ];
+    const { fullByTeam } = buildTeamSeasonDenominatorTotals(rows);
+    expect(fullByTeam.get('MIN')).toBeCloseTo(35 / 0.5 + 12 / 0.48, 5);
+  });
+
   it('collects the distinct weeks each team played', () => {
     const row = (game_id: string, team: string, week: string) => ({
       game_id,

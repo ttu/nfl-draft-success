@@ -45,6 +45,98 @@ export interface TeamGameCapacity {
  * across every distinct (game, team) in the file. Used as full-season
  * denominators for season load share.
  */
+/**
+ * The strongest percentage seen for each phase of one team-game, with the snap
+ * count that produced it. Percentages arrive rounded, so the largest share
+ * inverts into team capacity with the least relative error.
+ */
+interface GameCapacityAccum {
+  offSnaps: number;
+  offPct: number;
+  defSnaps: number;
+  defPct: number;
+  stSnaps: number;
+  stPct: number;
+  week: number;
+}
+
+function emptyGameCapacity(): GameCapacityAccum {
+  return {
+    offSnaps: 0,
+    offPct: 0,
+    defSnaps: 0,
+    defPct: 0,
+    stSnaps: 0,
+    stPct: 0,
+    week: Number.NaN,
+  };
+}
+
+/**
+ * Fold every player row of one team-game into that game's capacity.
+ *
+ * A row only carries the phases its player was on the field for, so a game has
+ * to be read across rows: taking it from the first row alone dropped whichever
+ * phase that player did not play, and with it roughly half the denominator.
+ */
+function collectGameCapacities(
+  rows: SnapCountCsvRow[],
+): Map<string, GameCapacityAccum> {
+  const byGameTeam = new Map<string, GameCapacityAccum>();
+
+  for (const row of rows) {
+    const gid = (row.game_id ?? '').trim();
+    const rawTeam = (row.team ?? '').trim();
+    if (!gid || !rawTeam) continue;
+
+    const key = `${gid}|${rawTeam}`;
+    let g = byGameTeam.get(key);
+    if (!g) {
+      g = emptyGameCapacity();
+      byGameTeam.set(key, g);
+    }
+
+    const offPct = parseFloat(row.offense_pct ?? '0') || 0;
+    if (offPct > g.offPct) {
+      g.offPct = offPct;
+      g.offSnaps = parseInt(row.offense_snaps ?? '0', 10) || 0;
+    }
+    const defPct = parseFloat(row.defense_pct ?? '0') || 0;
+    if (defPct > g.defPct) {
+      g.defPct = defPct;
+      g.defSnaps = parseInt(row.defense_snaps ?? '0', 10) || 0;
+    }
+    const stPct = parseFloat(row.st_pct ?? '0') || 0;
+    if (stPct > g.stPct) {
+      g.stPct = stPct;
+      g.stSnaps = parseInt(row.st_snaps ?? '0', 10) || 0;
+    }
+
+    const week = parseInt(row.week ?? '', 10);
+    if (Number.isFinite(week)) g.week = week;
+  }
+
+  return byGameTeam;
+}
+
+/** Scrimmage and full capacity implied by one game's collected percentages. */
+export function gameCapacityOf(g: {
+  offSnaps: number;
+  offPct: number;
+  defSnaps: number;
+  defPct: number;
+  stSnaps: number;
+  stPct: number;
+}): TeamGameCapacity {
+  const scrim = teamScrimmagePlaysFromRow(
+    g.offSnaps,
+    g.offPct,
+    g.defSnaps,
+    g.defPct,
+  );
+  return { scrim, full: scrim + teamStPlaysFromRow(g.stSnaps, g.stPct) };
+}
+
 export function buildTeamSeasonDenominatorTotals(
   rows: SnapCountCsvRow[],
 ): TeamSeasonDenominatorTotals {
@@ -53,44 +145,24 @@ export function buildTeamSeasonDenominatorTotals(
   const gameCountByTeam = new Map<string, number>();
   const weeksByTeam = new Map<string, Set<number>>();
   const capacityByTeamWeek = new Map<string, TeamGameCapacity>();
-  const seenGameTeam = new Set<string>();
 
-  for (const row of rows) {
-    const gid = (row.game_id ?? '').trim();
-    const rawTeam = (row.team ?? '').trim();
-    if (!gid || !rawTeam) continue;
-
-    const kt = `${gid}|${rawTeam}`;
-    if (seenGameTeam.has(kt)) continue;
-    seenGameTeam.add(kt);
-
-    const off = parseInt(row.offense_snaps ?? '0', 10) || 0;
-    const def = parseInt(row.defense_snaps ?? '0', 10) || 0;
-    const st = parseInt(row.st_snaps ?? '0', 10) || 0;
-    const offPct = parseFloat(row.offense_pct ?? '0') || 0;
-    const defPct = parseFloat(row.defense_pct ?? '0') || 0;
-    const stPct = parseFloat(row.st_pct ?? '0') || 0;
-
-    const scrim = teamScrimmagePlaysFromRow(off, offPct, def, defPct);
-    const stDen = teamStPlaysFromRow(st, stPct);
+  for (const [key, g] of collectGameCapacities(rows)) {
+    const rawTeam = key.slice(key.indexOf('|') + 1);
     const nt = normalizeNflverseTeam(rawTeam);
+    const { scrim, full } = gameCapacityOf(g);
 
     scrimByTeam.set(nt, (scrimByTeam.get(nt) ?? 0) + scrim);
-    fullByTeam.set(nt, (fullByTeam.get(nt) ?? 0) + scrim + stDen);
+    fullByTeam.set(nt, (fullByTeam.get(nt) ?? 0) + full);
     gameCountByTeam.set(nt, (gameCountByTeam.get(nt) ?? 0) + 1);
 
-    const week = parseInt(row.week ?? '', 10);
-    if (Number.isFinite(week)) {
+    if (Number.isFinite(g.week)) {
       let weeks = weeksByTeam.get(nt);
       if (!weeks) {
         weeks = new Set();
         weeksByTeam.set(nt, weeks);
       }
-      weeks.add(week);
-      capacityByTeamWeek.set(`${nt}|${week}`, {
-        scrim,
-        full: scrim + stDen,
-      });
+      weeks.add(g.week);
+      capacityByTeamWeek.set(`${nt}|${g.week}`, { scrim, full });
     }
   }
 
