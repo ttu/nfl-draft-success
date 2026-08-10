@@ -61,7 +61,7 @@ function renderView() {
 describe('PlayerDetailView specialist role classification', () => {
   it('classifies each kicker season by Avg snap, not Load', () => {
     renderView();
-    const table = screen.getByRole('table');
+    const table = screen.getByRole('table', { name: 'Career by season' });
     // Both seasons have ~40% / ~35% avg snap → Significant for a specialist.
     expect(within(table).queryByText(/Non-Contributor/i)).toBeNull();
     expect(within(table).queryByText(/^Depth$/i)).toBeNull();
@@ -201,7 +201,7 @@ describe('PlayerDetailView draft score', () => {
 
   it('shows each season score in the career table', () => {
     renderScorer();
-    const table = screen.getByRole('table');
+    const table = screen.getByRole('table', { name: 'Career by season' });
     expect(within(table).getByText('100')).toBeInTheDocument();
     expect(within(table).getByText('65')).toBeInTheDocument();
   });
@@ -410,7 +410,7 @@ describe('PlayerDetailView rookie window', () => {
         expect(screen.queryByTestId(`season-uncounted-${year}`)).toBeNull();
       }
       // The seasons he did play keep their own rows.
-      const table = screen.getByRole('table');
+      const table = screen.getByRole('table', { name: 'Career by season' });
       expect(within(table).getByText('2021')).toBeInTheDocument();
       expect(within(table).getByText('2022')).toBeInTheDocument();
     });

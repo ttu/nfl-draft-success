@@ -1244,6 +1244,35 @@ button {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+/* Available to screen readers, removed from the visual layout. Used to give a
+   chart the numbers its shapes encode. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  /* `display: table` treats width/height as minimums, so the box stays the
+     size of its content. clip-path does the hiding regardless of display,
+     with the legacy clip kept for older engines. */
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Player name inside a clickable roster row: carries the row's own colour and
+   only reveals itself as a link on hover or keyboard focus. */
+.player-row__link {
+  color: inherit;
+  text-decoration: none;
+}
+.player-row__link:hover,
+.player-row__link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .team-row__id {
   font-family: var(--f-mono);
   font-weight: 700;

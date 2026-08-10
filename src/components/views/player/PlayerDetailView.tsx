@@ -249,7 +249,7 @@ function PlayerDetailViewImpl({
           </p>
         ) : (
           <div className="player-career__scroll">
-            <table>
+            <table aria-label="Career by season">
               <colgroup>
                 {/* Fits the year plus the season-ending injury marker inline */}
                 <col style={{ width: 112 }} />

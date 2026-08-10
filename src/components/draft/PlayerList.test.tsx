@@ -179,4 +179,16 @@ describe('PlayerList', () => {
     expect(screen.getByText('KC Player')).toBeInTheDocument();
     expect(screen.getAllByRole('row')).toHaveLength(2);
   });
+
+  it('makes each player name a real link, so the row is keyboard-reachable', () => {
+    render(<PlayerList picks={mockPicks} teamId="KC" />);
+    const link = screen.getByRole('link', { name: /Patrick Mahomes/ });
+    expect(link).toHaveAttribute('href', expect.stringContaining('p1'));
+  });
+
+  it('does not navigate twice when the name link inside a row is clicked', () => {
+    render(<PlayerList picks={mockPicks} teamId="KC" />);
+    fireEvent.click(screen.getByRole('link', { name: /Patrick Mahomes/ }));
+    expect(screen.getByTestId('location').textContent).toContain('p1');
+  });
 });

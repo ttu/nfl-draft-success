@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { Season } from '../../types';
 import {
   getPositionTierThresholds,
@@ -25,6 +26,9 @@ export function CareerChart({
   color: string;
   position: string;
 }) {
+  const chartId = useId();
+  const titleId = `${chartId}-title`;
+  const descId = `${chartId}-desc`;
   const showCoreLine = !isBaselineExemptPosition(position);
   const coreFrac = getPositionTierThresholds(position).core;
   const corePct = Math.round(coreFrac * 100);
@@ -66,95 +70,134 @@ export function CareerChart({
     )
     .join(' ');
 
+  const firstYear = seasons[0].year;
+  const lastYear = seasons[seasons.length - 1].year;
+  const summary =
+    `Season load and raw snap share, ${firstYear}` +
+    (lastYear === firstYear ? '' : ` to ${lastYear}`) +
+    (showCoreLine ? `, against a ${corePct}% core-starter line` : '') +
+    '. The same figures follow in a table.';
+
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" style={{ display: 'block' }}>
-      {[100, 75, 50, 25, 0].map((g) => (
-        <g key={g}>
-          <line
-            x1={padL}
-            x2={w - padR}
-            y1={padT + innerH * (1 - g / 100)}
-            y2={padT + innerH * (1 - g / 100)}
-            stroke="var(--rule-2)"
-          />
-          <text
-            x={padL - 8}
-            y={padT + innerH * (1 - g / 100) + 3}
-            fontSize="9.5"
-            textAnchor="end"
-            fill="var(--ink-4)"
-            fontFamily="var(--f-mono)"
-          >
-            {g}
-          </text>
-        </g>
-      ))}
-      {showCoreLine && (
-        <>
-          <line
-            x1={padL}
-            x2={w - padR}
-            y1={padT + innerH * (1 - coreFrac)}
-            y2={padT + innerH * (1 - coreFrac)}
-            stroke="var(--positive)"
-            strokeOpacity="0.3"
-            strokeDasharray="3 3"
-          />
-          <text
-            x={w - padR - 4}
-            y={padT + innerH * (1 - coreFrac) - 3}
-            fontSize="8.5"
-            textAnchor="end"
-            fill="var(--positive)"
-            fontFamily="var(--f-mono)"
-            letterSpacing="0.08em"
-          >
-            CORE {corePct}%
-          </text>
-        </>
-      )}
-      <path
-        d={`${loadPath} L ${xs[xs.length - 1]} ${padT + innerH} L ${xs[0]} ${padT + innerH} Z`}
-        fill={color}
-        fillOpacity={0.1}
-      />
-      <path
-        d={loadPath}
-        fill="none"
-        stroke={color}
-        strokeWidth={2.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d={snapPath}
-        fill="none"
-        stroke="var(--ink-2)"
-        strokeWidth={1.6}
-        strokeDasharray="4 3"
-      />
-      {seasons.map((s, i) => (
-        <g key={s.year}>
-          <circle
-            cx={xs[i]}
-            cy={padT + innerH - (loadVals[i] / 100) * innerH}
-            r={3.5}
-            fill="var(--card)"
-            stroke={color}
-            strokeWidth={1.8}
-          />
-          <text
-            x={xs[i]}
-            y={h - padB + 14}
-            fontSize="10"
-            textAnchor="middle"
-            fontFamily="var(--f-mono)"
-            fill="var(--ink-3)"
-          >
-            {s.year}
-          </text>
-        </g>
-      ))}
-    </svg>
+    <>
+      <svg
+        viewBox={`0 0 ${w} ${h}`}
+        width="100%"
+        style={{ display: 'block' }}
+        role="img"
+        aria-labelledby={`${titleId} ${descId}`}
+      >
+        <title id={titleId}>Career snap share by season</title>
+        <desc id={descId}>{summary}</desc>
+        {[100, 75, 50, 25, 0].map((g) => (
+          <g key={g}>
+            <line
+              x1={padL}
+              x2={w - padR}
+              y1={padT + innerH * (1 - g / 100)}
+              y2={padT + innerH * (1 - g / 100)}
+              stroke="var(--rule-2)"
+            />
+            <text
+              x={padL - 8}
+              y={padT + innerH * (1 - g / 100) + 3}
+              fontSize="9.5"
+              textAnchor="end"
+              fill="var(--ink-4)"
+              fontFamily="var(--f-mono)"
+            >
+              {g}
+            </text>
+          </g>
+        ))}
+        {showCoreLine && (
+          <>
+            <line
+              x1={padL}
+              x2={w - padR}
+              y1={padT + innerH * (1 - coreFrac)}
+              y2={padT + innerH * (1 - coreFrac)}
+              stroke="var(--positive)"
+              strokeOpacity="0.3"
+              strokeDasharray="3 3"
+            />
+            <text
+              x={w - padR - 4}
+              y={padT + innerH * (1 - coreFrac) - 3}
+              fontSize="8.5"
+              textAnchor="end"
+              fill="var(--positive)"
+              fontFamily="var(--f-mono)"
+              letterSpacing="0.08em"
+            >
+              CORE {corePct}%
+            </text>
+          </>
+        )}
+        <path
+          d={`${loadPath} L ${xs[xs.length - 1]} ${padT + innerH} L ${xs[0]} ${padT + innerH} Z`}
+          fill={color}
+          fillOpacity={0.1}
+        />
+        <path
+          d={loadPath}
+          fill="none"
+          stroke={color}
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d={snapPath}
+          fill="none"
+          stroke="var(--ink-2)"
+          strokeWidth={1.6}
+          strokeDasharray="4 3"
+        />
+        {seasons.map((s, i) => (
+          <g key={s.year}>
+            <circle
+              cx={xs[i]}
+              cy={padT + innerH - (loadVals[i] / 100) * innerH}
+              r={3.5}
+              fill="var(--card)"
+              stroke={color}
+              strokeWidth={1.8}
+            />
+            <text
+              x={xs[i]}
+              y={h - padB + 14}
+              fontSize="10"
+              textAnchor="middle"
+              fontFamily="var(--f-mono)"
+              fill="var(--ink-3)"
+            >
+              {s.year}
+            </text>
+          </g>
+        ))}
+      </svg>
+      {/* The chart encodes these numbers as shape alone; the table is the only
+          way a screen reader reaches them. */}
+      <table className="sr-only">
+        <caption>Career snap share by season</caption>
+        <thead>
+          <tr>
+            <th scope="col">Season</th>
+            <th scope="col">Load</th>
+            <th scope="col">Snap share</th>
+          </tr>
+        </thead>
+        <tbody>
+          {seasons.map((s, i) => (
+            <tr key={s.year}>
+              <th scope="row">{s.year}</th>
+              <td>{loadVals[i].toFixed(1)}%</td>
+              <td>{snapVals[i].toFixed(1)}%</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }

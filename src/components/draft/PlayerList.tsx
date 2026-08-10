@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import type { DraftPick } from '../../types';
 import { getPlayerRole, getPlayerDraftScore } from '../../lib/getPlayerRole';
 import { getPlayerDraftSkill } from '../../lib/draftSlotBaseline';
@@ -93,7 +93,17 @@ export function PlayerList({
                 <span className="pos-chip">{pick.position}</span>
               </td>
               <td style={{ fontWeight: 500 }}>
-                {pick.playerName}
+                {/* The whole row is clickable, but the name is a real link so
+                    the player page is keyboard-reachable and can be opened in
+                    a new tab. Stop propagation so the row handler doesn't
+                    navigate twice. */}
+                <Link
+                  className="player-row__link"
+                  to={buildPlayerHref(pick.playerId, origin)}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {pick.playerName}
+                </Link>
                 {departed && currentTeam && (
                   <span
                     className="mono"

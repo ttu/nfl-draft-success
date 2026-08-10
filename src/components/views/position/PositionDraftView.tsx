@@ -1,5 +1,10 @@
 import { memo, useMemo } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+  useLocation,
+} from 'react-router-dom';
 import {
   TeamLogo,
   PlayerAvatar,
@@ -270,16 +275,26 @@ function PosRow({ r, i }: { r: PickRow; i: number }) {
             <TeamLogo teamId={r.pick.teamId} size={26} ring={false} />
           </span>
           <div>
-            <div
-              className="pos-player__name"
+            {/* The whole row is clickable, but the name is a real link so the
+                player page is keyboard-reachable and can be opened in a new
+                tab. Stop propagation so the row handler doesn't navigate
+                twice. */}
+            <Link
+              className="pos-player__name player-row__link"
+              to={buildPlayerHref(
+                r.pick.playerId,
+                location.pathname + location.search,
+              )}
+              onClick={(e) => e.stopPropagation()}
               style={{
                 fontFamily: 'var(--f-serif)',
                 fontSize: 16,
                 fontWeight: 600,
+                display: 'block',
               }}
             >
               {r.pick.playerName}
-            </div>
+            </Link>
             <div
               className="mono"
               style={{ fontSize: 10.5, color: 'var(--ink-3)' }}
