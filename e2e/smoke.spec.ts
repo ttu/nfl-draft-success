@@ -55,6 +55,17 @@ function watchForProblems(
     }
   });
 
+  // A request that never gets an HTTP response at all (DNS failure, connection
+  // reset, blocked) fires no `response` event, so it would otherwise slip past
+  // the check above and read as a clean page.
+  page.on('requestfailed', (request) => {
+    const url = request.url();
+    if (request.resourceType() === 'document') return;
+    if (!isSameOrigin(url, baseURL)) return;
+    const reason = request.failure()?.errorText ?? 'request failed';
+    failedRequests.push(`${reason} ${url}`);
+  });
+
   return { consoleErrors, failedRequests };
 }
 

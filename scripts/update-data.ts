@@ -57,10 +57,48 @@ function parseCsv(text: string): CsvRow[] {
   return parse(text, { columns: true, skip_empty_lines: true }) as CsvRow[];
 }
 
+/** A non-OK HTTP response, carrying the status so callers can tell a genuine
+ * "not published yet" 404 apart from a transient upstream failure. */
+class HttpError extends Error {
+  constructor(
+    readonly status: number,
+    readonly url: string,
+  ) {
+    super(`HTTP ${status}: ${url}`);
+    this.name = 'HttpError';
+  }
+}
+
 async function fetchCsv(url: string): Promise<string> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
+  if (!res.ok) throw new HttpError(res.status, url);
   return res.text();
+}
+
+/**
+ * Fetch one season's CSV, treating a 404 as "not published yet" and returning
+ * undefined. Any other failure is a network blip or upstream error, which is
+ * never the same thing as an absent season: for `required` feeds it aborts the
+ * run rather than let a whole season quietly drop out of the data.
+ */
+async function fetchSeasonCsv(
+  url: string,
+  label: string,
+  { required }: { required: boolean },
+): Promise<string | undefined> {
+  try {
+    return await fetchCsv(url);
+  } catch (e) {
+    if (e instanceof HttpError && e.status === 404) {
+      console.warn(`  Skip ${label}: not published (404)`);
+      return undefined;
+    }
+    if (required) {
+      throw new Error(`Failed to load ${label}: ${String(e)}`, { cause: e });
+    }
+    console.warn(`  Skip ${label}: ${String(e)}`);
+    return undefined;
+  }
 }
 
 function normalizeTeam(team: string): string {
@@ -131,10 +169,48 @@ interface PlayerRestAccum {
  * with zero snaps contribute nothing (a player on the sheet but not on the
  * field has not "played" the game).
  */
+/**
+ * Denominator for one player-game.
+ *
+ * The capacity has to come from every row of that team-game, not this player's
+ * own row: a player only carries the phases he was on the field for, so reading
+ * it from one row dropped the other phase entirely and roughly halved the
+ * denominator. The single-row form remains as a fallback for rows whose week
+ * cannot be keyed.
+ */
+function perGameDenominator(params: {
+  totals: TeamSeasonDenominatorTotals;
+  team: string;
+  week: number;
+  isSpec: boolean;
+  off: number;
+  offPct: number;
+  def: number;
+  defPct: number;
+  st: number;
+  stPct: number;
+}): number {
+  const { totals, team, week, isSpec } = params;
+  const capacity = team
+    ? totals.capacityByTeamWeek.get(`${normalizeTeam(team)}|${week}`)
+    : undefined;
+  if (capacity) return isSpec ? capacity.full : capacity.scrim;
+  return teamDenominatorForCumulativeLoad(
+    params.off,
+    params.offPct,
+    params.def,
+    params.defPct,
+    params.st,
+    params.stPct,
+    isSpec,
+  );
+}
+
 function accumulatePlayerSnaps(
   rows: CsvRow[],
   metaByPfrId: Map<string, NflversePlayerMeta>,
   restGames: Map<string, RestGame>,
+  totals: TeamSeasonDenominatorTotals,
 ): Map<string, PlayerSnapAccum> {
   const playerAccum = new Map<string, PlayerSnapAccum>();
 
@@ -181,15 +257,18 @@ function accumulatePlayerSnaps(
     const week = parseInt(row.week ?? '', 10);
     if (Number.isFinite(week)) acc.weeks.add(week);
     const playerSnaps = playerSnapsForCumulativeLoad(off, def, st, isSpec);
-    const playerDen = teamDenominatorForCumulativeLoad(
+    const playerDen = perGameDenominator({
+      totals,
+      team,
+      week,
+      isSpec,
       off,
       offPct,
       def,
       defPct,
       st,
       stPct,
-      isSpec,
-    );
+    });
     acc.gamesPlayed += 1;
     acc.shareSum += share;
     acc.cumNum += playerSnaps;
@@ -355,13 +434,11 @@ async function loadSnapData(
 
   for (const season of seasons) {
     const url = `${BASE}/snap_counts/snap_counts_${season}.csv`;
-    let csv: string;
-    try {
-      csv = await fetchCsv(url);
-    } catch (e) {
-      console.warn(`  Skip snap_counts_${season}: ${e}`);
-      continue;
-    }
+    // Snaps drive every score, so a transient failure must not pass silently.
+    const csv = await fetchSeasonCsv(url, `snap_counts_${season}`, {
+      required: true,
+    });
+    if (csv === undefined) continue;
 
     const rows = parseCsv(csv);
     const totals = buildTeamSeasonDenominatorTotals(rows);
@@ -383,6 +460,7 @@ async function loadSnapData(
       rows,
       metaByPfrId,
       restGames,
+      totals,
     )) {
       let pm = result.get(pfrId);
       if (!pm) {
@@ -424,7 +502,10 @@ function accumulateInjuryReports(rows: CsvRow[]): Map<string, InjuryAccum> {
     const gsisId = (row.gsis_id ?? '').trim();
     if (!gsisId) continue;
 
-    const week = parseInt(row.week ?? '0', 10) || 0;
+    // A missing or unparsable week used to fall back to 0, which entered the
+    // set as a real week and inflated injuryReportWeeks by one.
+    const week = parseInt(row.week ?? '', 10);
+    const hasWeek = Number.isFinite(week) && week > 0;
     const team = row.team ?? '';
 
     let acc = accum.get(gsisId);
@@ -432,7 +513,7 @@ function accumulateInjuryReports(rows: CsvRow[]): Map<string, InjuryAccum> {
       acc = { weeks: new Set(), teamCount: new Map() };
       accum.set(gsisId, acc);
     }
-    acc.weeks.add(week);
+    if (hasWeek) acc.weeks.add(week);
     if (team) {
       acc.teamCount.set(team, (acc.teamCount.get(team) ?? 0) + 1);
     }
@@ -448,12 +529,13 @@ async function loadInjuryData(
 
   for (const season of seasons) {
     const url = `${BASE}/injuries/injuries_${season}.csv`;
-    let csv: string;
-    try {
-      csv = await fetchCsv(url);
-    } catch {
-      continue;
-    }
+    // Injury reports only soften the load denominator, so a missing season
+    // degrades gracefully. It still must be visible: the old silent skip read
+    // identically to a season where nobody was ever listed as injured.
+    const csv = await fetchSeasonCsv(url, `injuries_${season}`, {
+      required: false,
+    });
+    if (csv === undefined) continue;
 
     for (const [gsisId, acc] of accumulateInjuryReports(parseCsv(csv))) {
       let pm = result.get(gsisId);
@@ -554,6 +636,12 @@ interface PickSeason {
   cumulativeSnapShare: number;
   retained: boolean;
   injuryReportWeeks?: number;
+  /** Team games missed after the player disappeared for the rest of the season */
+  seasonEndingAbsenceGames?: number;
+  /** Present when the player's primary team rested through its finale */
+  restGame?: RestGameSlice;
+  /** Denominator behind `cumulativeSnapShare`; only travels with `restGame` */
+  loadDenominator?: number;
   currentTeam?: string;
 }
 
@@ -874,6 +962,14 @@ async function main() {
         .filter((y) => y >= FIRST_DRAFT_YEAR),
     ),
   ].sort((a, b) => a - b);
+  // Without this, an empty list wrote `season-window.json` with undefined
+  // bounds (JSON.stringify drops them), and the year selector and sitemap
+  // silently lost every class instead of the run failing here.
+  if (draftYears.length === 0) {
+    throw new Error(
+      `No draft classes at or after ${FIRST_DRAFT_YEAR} in ${draftRows.length} draft_picks rows`,
+    );
+  }
   console.log(`  Draft classes: ${draftYears[0]}–${draftYears.at(-1)}`);
 
   console.log('Fetching nflverse players (headshots + positions)...');
