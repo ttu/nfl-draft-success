@@ -115,15 +115,37 @@ function getPlayerPeakRole(
 }
 
 /**
- * Map mean seasonal score weight to a representative Role for badges and filters.
- * Starter band (mean ≥ 3.5) uses peak role so Core Starter vs Starter when healthy
- * stays consistent with the player’s best seasons.
+ * Band edges on the 0–4 badge value (see {@link getPlayerAverageScoreWeight}).
+ *
+ * The top edge is not 3.5, and the reason is worth keeping. Once the badge began
+ * dividing by the rookie window rather than by seasons played, 3.5 meant a
+ * first-rounder needed 4.4 core-starter seasons out of five to be called one —
+ * four perfect years score 16 ÷ 5 = 3.2 and missed. That left 93 picks who
+ * started every season they played badged below Core Starter, Sheldon Richardson
+ * (four core seasons for the Jets, then traded) among them. The score already
+ * charges the year the team did not get; having the badge charge it twice turned
+ * a value measure into a mislabelling.
+ *
+ * 3.2 is exactly "core starter for four of your five contract years", and it
+ * restores the Core Starter population to what it was before the denominator
+ * moved — 26.5% of scored picks against 26.3% before. Narrowing that population
+ * by a fifth was a side effect of the denominator change, never its intent.
+ */
+const DEPTH_BAND = 0.5;
+const CONTRIBUTOR_BAND = 1.5;
+const SIGNIFICANT_BAND = 2.5;
+export const CORE_STARTER_BAND = 3.2;
+
+/**
+ * Map the badge value to a representative Role for badges and filters. The top
+ * band uses peak role so Core Starter vs Starter when healthy stays consistent
+ * with the player’s best seasons.
  */
 function averageScoreWeightToRole(avgWeight: number, peakRole: Role): Role {
-  if (avgWeight < 0.5) return 'non_contributor';
-  if (avgWeight < 1.5) return 'depth';
-  if (avgWeight < 2.5) return 'contributor';
-  if (avgWeight < 3.5) return 'significant_contributor';
+  if (avgWeight < DEPTH_BAND) return 'non_contributor';
+  if (avgWeight < CONTRIBUTOR_BAND) return 'depth';
+  if (avgWeight < SIGNIFICANT_BAND) return 'contributor';
+  if (avgWeight < CORE_STARTER_BAND) return 'significant_contributor';
   if (peakRole === 'core_starter' || peakRole === 'starter_when_healthy') {
     return peakRole;
   }

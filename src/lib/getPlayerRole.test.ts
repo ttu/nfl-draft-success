@@ -316,6 +316,66 @@ describe('role badge shares the score’s window denominator', () => {
 });
 
 /**
+ * The top band's edge, once the badge started dividing by the rookie window.
+ *
+ * At 3.5 a first-rounder needed 4.4 core-starter seasons out of five to be
+ * called one, so four perfect years scored 3.20 and missed: 93 picks who
+ * started every season they played were badged below Core Starter, Sheldon
+ * Richardson (four core seasons, then traded) among them. That is a labelling
+ * error, not a judgement — the score already charges the missing year.
+ *
+ * 3.20 is "core starter for four of your five contract years" (16 ÷ 5), and
+ * restores the Core Starter population to what it was before the denominator
+ * changed: 26.5% of scored picks against 26.3% previously. It was never the
+ * intent of that change to cut the population by a fifth.
+ */
+describe('top band edge', () => {
+  const opts = { draftingTeamOnly: true } as const;
+
+  it('badges four core seasons of a five-year window — the Richardson case', () => {
+    const richardson = agedPick(1, 6, [
+      perfect(LATEST_SEASON - 5),
+      perfect(LATEST_SEASON - 4),
+      perfect(LATEST_SEASON - 3),
+      perfect(LATEST_SEASON - 2),
+    ]);
+    expect(getPlayerAverageScoreWeight(richardson, opts)).toBeCloseTo(3.2);
+    expect(getPlayerRole(richardson, opts)).toBe('core_starter');
+  });
+
+  it('still refuses the badge to a pick who gave three of five', () => {
+    const threeOfFive = agedPick(1, 6, [
+      perfect(LATEST_SEASON - 5),
+      perfect(LATEST_SEASON - 4),
+      perfect(LATEST_SEASON - 3),
+    ]);
+    expect(getPlayerAverageScoreWeight(threeOfFive, opts)).toBeCloseTo(2.4);
+    expect(getPlayerRole(threeOfFive, opts)).toBe('contributor');
+  });
+
+  it('keeps a pick who declined out of the top band — the Ingram case', () => {
+    // Two full seasons, then a rotational one at half the snaps, then gone:
+    // 4 + 4 + 3 over a four-year window.
+    const ingram = agedPick(2, 5, [
+      perfect(LATEST_SEASON - 4),
+      perfect(LATEST_SEASON - 3),
+      makeSeason({
+        year: LATEST_SEASON - 2,
+        gamesPlayed: 17,
+        snapShare: 0.51,
+      }),
+    ]);
+    expect(getPlayerAverageScoreWeight(ingram, opts)).toBeCloseTo(2.75);
+    expect(getPlayerRole(ingram, opts)).toBe('significant_contributor');
+  });
+
+  it('keeps the one-and-done first-rounder out of it', () => {
+    const rosen = agedPick(1, 5, [perfect(LATEST_SEASON - 4)]);
+    expect(getPlayerRole(rosen, opts)).toBe('depth');
+  });
+});
+
+/**
  * Score and role are memoized per pick. These pin the behaviour a memo can
  * plausibly break: results must not leak between `draftingTeamOnly` settings,
  * between distinct picks, or change when a call is repeated.

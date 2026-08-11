@@ -36,7 +36,7 @@ Classification order (first match wins). Let **cumulative snap share** mean `sna
 
 Together, **Depth** (10–20%) and **Contributor** (up to the SC threshold) cover usage below Significant Contributor.
 
-**Overall classification (badges, filters, draft-class buckets):** Each season's role weight (0–4) summed and divided by the **rookie-contract window** in drafting-team mode (seasons played in career mode) — the same denominator the 0–100 score uses — then mapped to a representative role. A mixed career (starter years plus an injured or inactive one) scores below a steady peak, and a pick who left mid-window is charged for the years his team did not get. For the top band (≥ 3.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
+**Overall classification (badges, filters, draft-class buckets):** Each season's role weight (0–4) summed and divided by the **rookie-contract window** in drafting-team mode (seasons played in career mode) — the same denominator the 0–100 score uses — then mapped to a representative role. A mixed career (starter years plus an injured or inactive one) scores below a steady peak, and a pick who left mid-window is charged for the years his team did not get. For the top band (≥ 3.2), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
 
 **Rolling draft score:** Not the role weight. The team score is the mean of the **continuous 0–100 pick score** (`getPlayerDraftScore`) across picks with at least one played season; see `docs/calculations.md` §7.1. Role weights drive badges and Core Starter %, not the headline number.
 

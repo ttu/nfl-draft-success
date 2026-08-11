@@ -238,7 +238,7 @@ Steps 4–6 apply after any earlier branch fails (e.g. `cumulativeSnapShare` bel
 
 **Functions:** `getPlayerAverageScoreWeight`, `getPlayerRole` in `src/lib/getPlayerRole.ts`
 
-**Definition:** Each season gets a **score weight** (0–4) from its classified role. The pick’s **badge value** is those weights summed and divided by the rookie window (§4.2 step 3) — the same denominator the 0–100 score uses. **Overall role** (UI badge, filters, draft-class counts) maps that value to a representative `Role`, with thresholds at 0.5 / 1.5 / 2.5 / 3.5 on the 0–4 scale. If the mean is in the top band (≥ 3.5), Core Starter vs Starter when healthy is taken from the **peak** single-season role so both weight-4 roles stay distinguishable.
+**Definition:** Each season gets a **score weight** (0–4) from its classified role. The pick’s **badge value** is those weights summed and divided by the rookie window (§4.2 step 3) — the same denominator the 0–100 score uses. **Overall role** (UI badge, filters, draft-class counts) maps that value to a representative `Role`, with thresholds at 0.5 / 1.5 / 2.5 / **3.2** on the 0–4 scale. If the value is in the top band (≥ 3.2), Core Starter vs Starter when healthy is taken from the **peak** single-season role so both weight-4 roles stay distinguishable.
 
 ### 4.1 Role Hierarchy (low to high)
 
@@ -256,7 +256,7 @@ Used for peak comparison and mapping; score weights collapse the two starter rol
 1. **Season filter:** `getFilteredSeasons` — played seasons only, minus any apprentice seasons (§7.3b); if `draftingTeamOnly` is true, only those where `retained === true`.
 2. **Per season:** `classifyRole` → map to score weight via `ROLE_SCORE_WEIGHTS`.
 3. **Mean:** Sum those weights and divide by **the same denominator the score uses** — `scoredSeasonCount` (the rookie window, §7.3a) in drafting-team mode, seasons played in career mode (`getPlayerAverageScoreWeight`).
-4. **Representative role:** Map mean to Non-Contributor / Depth / Contributor / Significant Contributor, or (if mean ≥ 3.5) use peak season among `{core_starter, starter_when_healthy}` (`getPlayerRole`).
+4. **Representative role:** Map mean to Non-Contributor / Depth / Contributor / Significant Contributor, or (if the value ≥ 3.2, `CORE_STARTER_BAND`) use peak season among `{core_starter, starter_when_healthy}` (`getPlayerRole`).
 
 **Why the window applies to the badge too.** Both readings must divide by the same thing or they contradict each other on screen. While this averaged over seasons _played_, a pick who started as a rookie and was then gone kept a Core Starter badge beside a score of 17 — his unplayed years vanished from the badge but not from the score. Josh Rosen (2018 R1, one season for Arizona) read Core Starter at a score of 17.7; he now reads Depth. Because the badge feeds `coreStarterCount`, the disagreement reached the team metrics as well: correcting it moved league Core Starter rates by roughly a quarter (e.g. 0.351 → 0.270) while leaving every score and rank untouched.
 
