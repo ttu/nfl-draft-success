@@ -43,12 +43,21 @@ snapShare = (sum of share[game] for all games) / gamesPlayed
 
 **Numerator (`playerNum`):** For each game row with snaps &gt; 0, add player scrimmage snaps (offense + defense; kickers/punters/long snappers also add ST snaps), same rules as `playerSnapsForCumulativeLoad` in `src/lib/snapCountTotals.ts`.
 
-**Denominator (single-franchise seasons):** Sum team snap capacity **for every game that franchise played** in that season (from `snap_counts`, one row per `(game_id, team)`):
+**Denominator (single-franchise seasons):** Sum team snap capacity **for every game that franchise played** in that season, **matched to the player's own phase**. Capacity is read across every row of a `(game_id, team)`, since a row only carries the phases its own player was on the field for.
 
-- **Non-specialists:** Sum of `team_offense_snaps + team_defense_snaps` per game (from percentages on any row for that game).
-- **Specialists (K, P, LS / SPEC):** Sum of scrimmage capacity **plus** team special-teams capacity per game (so numerator and denominator stay comparable).
+- **Offensive players:** Sum of `team_offense_snaps` per game.
+- **Defensive players:** Sum of `team_defense_snaps` per game.
+- **Specialists (K, P, LS / SPEC):** Sum of scrimmage capacity **plus** team special-teams capacity, because their numerator spans every phase too.
 
-Franchise codes are normalized (`src/lib/nflverseFranchise.ts`). Let `teamSeasonDen` be that full-season total for the player’s **primary team** (most snaps).
+Phase comes from the snaps the player actually took (`loadPhaseOf`), not his position label: labels are occasionally wrong, and a player who switched sides would otherwise be judged against the wrong phase for part of his career. Ties fall to offence, which only happens when a non-specialist took no scrimmage snaps at all and the numerator is zero either way.
+
+**Why phase-matched.** A player accumulates snaps in one phase only, so the denominator has to be that phase. Two reasons, one historical and one structural.
+
+Historically the denominator was inverted from a single player row per team-game, which carried only the phases _that_ player was on the field for. nflverse lists an offensive player first in most team-games, so offensive players were divided by offensive capacity — accidentally phase-matched, and correct. Defenders were the ones who suffered: measured across full-season, every-game, essentially-every-snap players, offensive load ran p5 **0.998** while defensive load ran p5 **0.919**, an 8.1-point tail with Tyrann Mathieu (DB, ARI 2018) reading **87%** of a season he never missed a snap of. Phase-matching closes that tail to 0.2 points.
+
+Structurally, the point is that the old numbers were right _by accident of CSV row order_, not by construction — a reordering upstream would have silently moved them. Summing capacity across every row of a team-game removes that accident, but then a combined offence **+** defence denominator caps every player at roughly half of whatever he plays (Quenton Nelson, who took all 1136 of Indianapolis's offensive snaps in 2018, would report 51%) and folds his team's own snap split into his personal number. Phase-matching is what makes reading capacity correctly safe to do.
+
+Franchise codes are normalized (`src/lib/nflverseFranchise.ts`). Let `teamSeasonDen` be that full-season, phase-matched total for the player’s **primary team** (most snaps).
 
 ```
 cumulativeSnapShare = sum(playerNum) / teamSeasonDen

@@ -5,6 +5,22 @@
 
 const PCT_EPS = 1e-9;
 
+/** Team offensive snap capacity for one game, inverted from a player's share. */
+export function teamOffensePlaysFromRow(
+  offenseSnaps: number,
+  offensePct: number,
+): number {
+  return offensePct > PCT_EPS ? offenseSnaps / offensePct : 0;
+}
+
+/** Team defensive snap capacity for one game, inverted from a player's share. */
+export function teamDefensePlaysFromRow(
+  defenseSnaps: number,
+  defensePct: number,
+): number {
+  return defensePct > PCT_EPS ? defenseSnaps / defensePct : 0;
+}
+
 /** Team offensive + defensive snap capacity for one game (derived from any player row). */
 export function teamScrimmagePlaysFromRow(
   offenseSnaps: number,
@@ -12,9 +28,10 @@ export function teamScrimmagePlaysFromRow(
   defenseSnaps: number,
   defensePct: number,
 ): number {
-  const teamOff = offensePct > PCT_EPS ? offenseSnaps / offensePct : 0;
-  const teamDef = defensePct > PCT_EPS ? defenseSnaps / defensePct : 0;
-  return teamOff + teamDef;
+  return (
+    teamOffensePlaysFromRow(offenseSnaps, offensePct) +
+    teamDefensePlaysFromRow(defenseSnaps, defensePct)
+  );
 }
 
 /** Team special-teams snap capacity for one game. */

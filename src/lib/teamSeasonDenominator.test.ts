@@ -9,6 +9,74 @@ import {
   resolveTeamGamesDenominator,
 } from './teamSeasonDenominator';
 
+describe('phase-matched capacity', () => {
+  /** One team-game: 70 offensive plays, 60 defensive plays, 25 ST plays. */
+  const teamGame = (gameId: string, team = 'IND') => [
+    {
+      game_id: gameId,
+      team,
+      week: '1',
+      // A lineman: every offensive snap, no defensive snaps.
+      offense_snaps: '70',
+      offense_pct: '1',
+      defense_snaps: '0',
+      defense_pct: '0',
+      st_snaps: '0',
+      st_pct: '0',
+    },
+    {
+      game_id: gameId,
+      team,
+      week: '1',
+      // A linebacker: every defensive snap, no offensive snaps.
+      offense_snaps: '0',
+      offense_pct: '0',
+      defense_snaps: '60',
+      defense_pct: '1',
+      st_snaps: '25',
+      st_pct: '1',
+    },
+  ];
+
+  it('reports offensive and defensive capacity separately', () => {
+    const t = buildTeamSeasonDenominatorTotals(teamGame('g1'));
+    expect(t.offByTeam.get('IND')).toBeCloseTo(70);
+    expect(t.defByTeam.get('IND')).toBeCloseTo(60);
+    // The combined bases stay available for specialists and existing callers.
+    expect(t.scrimByTeam.get('IND')).toBeCloseTo(130);
+    expect(t.fullByTeam.get('IND')).toBeCloseTo(155);
+  });
+
+  it('carries the split onto each team-week, so a rest game subtracts one phase', () => {
+    const t = buildTeamSeasonDenominatorTotals(teamGame('g1'));
+    const cap = t.capacityByTeamWeek.get('IND|1');
+    expect(cap?.off).toBeCloseTo(70);
+    expect(cap?.def).toBeCloseTo(60);
+    expect(cap?.scrim).toBeCloseTo(130);
+  });
+
+  it('lets a never-off-the-field lineman read a full season, not half of one', () => {
+    // Two games, an ironman guard playing all 140 offensive snaps. Measured
+    // against offensive capacity he is at 100%; against offense+defense he
+    // would report 54%, which is what the mixed-phase denominator produced.
+    const rows = [...teamGame('g1'), ...teamGame('g2')];
+    const t = buildTeamSeasonDenominatorTotals(rows);
+    const off = t.offByTeam.get('IND') ?? 0;
+    const scrim = t.scrimByTeam.get('IND') ?? 0;
+    expect(140 / off).toBeCloseTo(1);
+    expect(140 / scrim).toBeLessThan(0.6);
+  });
+
+  it('sums the phase across rows, so one row missing a phase cannot halve it', () => {
+    // Only the offensive row present for g2: defensive capacity for that game
+    // is unknown and contributes nothing, rather than being invented.
+    const rows = [...teamGame('g1'), teamGame('g2')[0]];
+    const t = buildTeamSeasonDenominatorTotals(rows);
+    expect(t.offByTeam.get('IND')).toBeCloseTo(140);
+    expect(t.defByTeam.get('IND')).toBeCloseTo(60);
+  });
+});
+
 describe('buildTeamSeasonDenominatorTotals', () => {
   it('sums each team’s per-game scrim once per (game, team)', () => {
     const rows = [
@@ -483,6 +551,10 @@ describe('per-week capacity', () => {
     const { capacityByTeamWeek } = buildTeamSeasonDenominatorTotals(rows);
 
     expect(capacityByTeamWeek.get('BAL|18')).toEqual({
+      // Only an offensive row is present, so defensive capacity is unknown
+      // rather than assumed — the phase split is carried explicitly.
+      off: 60,
+      def: 0,
       scrim: 60,
       full: 60 + 20,
     });

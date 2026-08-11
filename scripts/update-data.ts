@@ -18,14 +18,20 @@ import {
 } from '../src/lib/perGameSnapShare';
 import {
   playerSnapsForCumulativeLoad,
-  teamDenominatorForCumulativeLoad,
+  teamDefensePlaysFromRow,
+  teamOffensePlaysFromRow,
+  teamStPlaysFromRow,
 } from '../src/lib/snapCountTotals';
 import { normalizeNflverseTeam } from '../src/lib/nflverseFranchise';
 import {
   buildTeamSeasonDenominatorTotals,
+  fullSeasonDenominatorFor,
+  gameDenominatorFor,
+  loadPhaseOf,
   resolveCumulativeLoadShare,
   resolveCumulativeLoadWithInjury,
   resolveTeamGamesDenominator,
+  type TeamGameCapacity,
   type TeamSeasonDenominatorTotals,
 } from '../src/lib/teamSeasonDenominator';
 import { detectRestGames, type RestGame } from '../src/lib/restGame';
@@ -143,7 +149,17 @@ interface PlayerSnapAccum {
   gamesPlayed: number;
   shareSum: number;
   cumNum: number;
-  cumDen: number;
+  /**
+   * Games-played denominators on each phase, kept in parallel because the
+   * phase a season belongs to is only known once every row is in. Specialists
+   * accumulate scrimmage+ST into {@link cumDenFull} instead.
+   */
+  cumDenOff: number;
+  cumDenDef: number;
+  cumDenFull: number;
+  /** Scrimmage snaps by phase, which decide the phase for the whole season. */
+  offSnaps: number;
+  defSnaps: number;
   teamSnaps: Map<string, number>;
   /** Weeks the player took a snap, for season-ending absence detection */
   weeks: Set<number>;
@@ -160,8 +176,34 @@ interface PlayerRestAccum {
   playerGames: number;
   shareSum: number;
   playerSnaps: number;
-  /** His own denominator contribution, for the games-played (traded) basis */
-  cumDen: number;
+  /** His own denominator contribution, per phase, for the games-played basis */
+  cumDenOff: number;
+  cumDenDef: number;
+  cumDenFull: number;
+}
+
+/** The three parallel per-phase denominators either accumulator carries. */
+interface PhaseDenominators {
+  cumDenOff: number;
+  cumDenDef: number;
+  cumDenFull: number;
+}
+
+/**
+ * Pick the games-played denominator matching the phase the player's season
+ * belongs to — the same choice `fullSeasonDenominatorFor` makes against the
+ * full-season totals, so the two bases never disagree about which phase a
+ * player is measured on.
+ */
+function phaseDenominator(
+  d: PhaseDenominators | undefined,
+  isSpec: boolean,
+  offSnaps: number,
+  defSnaps: number,
+): number {
+  if (!d) return 0;
+  if (isSpec) return d.cumDenFull;
+  return loadPhaseOf(offSnaps, defSnaps) === 'def' ? d.cumDenDef : d.cumDenOff;
 }
 
 /**
@@ -189,21 +231,25 @@ function perGameDenominator(params: {
   defPct: number;
   st: number;
   stPct: number;
-}): number {
-  const { totals, team, week, isSpec } = params;
+}): TeamGameCapacity {
+  const { totals, team, week } = params;
   const capacity = team
     ? totals.capacityByTeamWeek.get(`${normalizeTeam(team)}|${week}`)
     : undefined;
-  if (capacity) return isSpec ? capacity.full : capacity.scrim;
-  return teamDenominatorForCumulativeLoad(
-    params.off,
-    params.offPct,
-    params.def,
-    params.defPct,
-    params.st,
-    params.stPct,
-    isSpec,
-  );
+  if (capacity) return capacity;
+
+  // Fallback for a row whose week cannot be keyed: invert this player's own
+  // percentages. Only the phase he played is recoverable that way, which is
+  // exactly the phase his load will divide by.
+  const offCap = teamOffensePlaysFromRow(params.off, params.offPct);
+  const defCap = teamDefensePlaysFromRow(params.def, params.defPct);
+  const scrim = offCap + defCap;
+  return {
+    off: offCap,
+    def: defCap,
+    scrim,
+    full: scrim + teamStPlaysFromRow(params.st, params.stPct),
+  };
 }
 
 function accumulatePlayerSnaps(
@@ -247,7 +293,11 @@ function accumulatePlayerSnaps(
         gamesPlayed: 0,
         shareSum: 0,
         cumNum: 0,
-        cumDen: 0,
+        cumDenOff: 0,
+        cumDenDef: 0,
+        cumDenFull: 0,
+        offSnaps: 0,
+        defSnaps: 0,
         teamSnaps: new Map(),
         weeks: new Set(),
         restByTeam: new Map(),
@@ -272,7 +322,11 @@ function accumulatePlayerSnaps(
     acc.gamesPlayed += 1;
     acc.shareSum += share;
     acc.cumNum += playerSnaps;
-    acc.cumDen += playerDen;
+    acc.offSnaps += off;
+    acc.defSnaps += def;
+    acc.cumDenOff += playerDen.off;
+    acc.cumDenDef += playerDen.def;
+    acc.cumDenFull += playerDen.full;
     if (team) {
       acc.teamSnaps.set(team, (acc.teamSnaps.get(team) ?? 0) + snaps);
 
@@ -282,12 +336,16 @@ function accumulatePlayerSnaps(
           playerGames: 0,
           shareSum: 0,
           playerSnaps: 0,
-          cumDen: 0,
+          cumDenOff: 0,
+          cumDenDef: 0,
+          cumDenFull: 0,
         };
         rest.playerGames += 1;
         rest.shareSum += share;
         rest.playerSnaps += playerSnaps;
-        rest.cumDen += playerDen;
+        rest.cumDenOff += playerDen.off;
+        rest.cumDenDef += playerDen.def;
+        rest.cumDenFull += playerDen.full;
         acc.restByTeam.set(nt, rest);
       }
     }
@@ -333,13 +391,28 @@ function restGameSlice(params: {
   const { rest, acc, team, useFullSeasonDen, isSpec, totals } = params;
   const played = acc.restByTeam.get(team);
   const capacity = totals.capacityByTeamWeek.get(`${team}|${rest.week}`);
-  const teamCapacity = (isSpec ? capacity?.full : capacity?.scrim) ?? 0;
+  // The same phase the season's denominator used, or the subtraction would
+  // take a defensive game out of an offensive denominator.
+  const teamCapacity = capacity
+    ? gameDenominatorFor({
+        capacity,
+        isSpecialist: isSpec,
+        offenseSnaps: acc.offSnaps,
+        defenseSnaps: acc.defSnaps,
+      })
+    : 0;
+  const playedDen = phaseDenominator(
+    played,
+    isSpec,
+    acc.offSnaps,
+    acc.defSnaps,
+  );
 
   return {
     playerGames: played?.playerGames ?? 0,
     playerShareSum: played?.shareSum ?? 0,
     playerSnaps: played?.playerSnaps ?? 0,
-    teamSnaps: useFullSeasonDen ? teamCapacity : (played?.cumDen ?? 0),
+    teamSnaps: useFullSeasonDen ? teamCapacity : playedDen,
   };
 }
 
@@ -356,9 +429,17 @@ function finalizePlayerSeason(
     meta?.position,
   );
   const pt = primaryTeam ? normalizeTeam(primaryTeam) : '';
-  const fullSeasonTeamDen = isSpec
-    ? (totals.fullByTeam.get(pt) ?? 0)
-    : (totals.scrimByTeam.get(pt) ?? 0);
+  // His own phase's capacity: an offensive player can only ever take offensive
+  // snaps, so measuring him against offence + defence halves him however much
+  // he plays, and mixes his team's snap split into his own number.
+  const fullSeasonTeamDen = fullSeasonDenominatorFor({
+    totals,
+    team: pt,
+    isSpecialist: isSpec,
+    offenseSnaps: acc.offSnaps,
+    defenseSnaps: acc.defSnaps,
+  });
+  const cumDen = phaseDenominator(acc, isSpec, acc.offSnaps, acc.defSnaps);
   // A single-team season can be measured against the team's whole season;
   // a traded player's games do not share one denominator.
   const useFullSeasonDen =
@@ -377,7 +458,7 @@ function finalizePlayerSeason(
 
   const baseLoad = resolveCumulativeLoadShare({
     cumNum: acc.cumNum,
-    cumDenGamesPlayed: acc.cumDen,
+    cumDenGamesPlayed: cumDen,
     fullSeasonTeamDen,
     useFullSeasonDenominator: useFullSeasonDen,
   });
@@ -387,7 +468,7 @@ function finalizePlayerSeason(
     snapShare: acc.gamesPlayed > 0 ? acc.shareSum / acc.gamesPlayed : 0,
     cumulativeSnapShare: baseLoad,
     primaryTeam,
-    loadDenominator: useFullSeasonDen ? fullSeasonTeamDen : acc.cumDen,
+    loadDenominator: useFullSeasonDen ? fullSeasonTeamDen : cumDen,
     ...(rest
       ? {
           restGame: restGameSlice({
@@ -405,7 +486,7 @@ function finalizePlayerSeason(
           loadMeta: {
             cumNum: acc.cumNum,
             fullSeasonTeamDen,
-            cumDenGamesPlayed: acc.cumDen,
+            cumDenGamesPlayed: cumDen,
             useFullSeason: true,
             gameCount,
             seasonEndingAbsenceGames: absenceGames,

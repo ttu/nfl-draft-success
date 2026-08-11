@@ -1,6 +1,7 @@
 import { normalizeNflverseTeam } from './nflverseFranchise';
 import {
-  teamScrimmagePlaysFromRow,
+  teamDefensePlaysFromRow,
+  teamOffensePlaysFromRow,
   teamStPlaysFromRow,
 } from './snapCountTotals';
 
@@ -19,6 +20,13 @@ export interface SnapCountCsvRow {
 
 /** Totals from {@link buildTeamSeasonDenominatorTotals} for season load denominators */
 export interface TeamSeasonDenominatorTotals {
+  /**
+   * Full-season offensive capacity per franchise — the denominator for an
+   * offensive player, who can only ever accumulate offensive snaps.
+   */
+  offByTeam: Map<string, number>;
+  /** Full-season defensive capacity per franchise, likewise for defenders. */
+  defByTeam: Map<string, number>;
   scrimByTeam: Map<string, number>;
   fullByTeam: Map<string, number>;
   /** Distinct games (regular + postseason) per normalized franchise */
@@ -32,8 +40,22 @@ export interface TeamSeasonDenominatorTotals {
   capacityByTeamWeek: Map<string, TeamGameCapacity>;
 }
 
-/** Snap capacity of one team-game, on both denominator bases. */
+/**
+ * Snap capacity of one team-game, on every denominator basis.
+ *
+ * A player accumulates snaps in one phase only, so his load has to divide by
+ * that phase alone. Dividing an offensive player's snaps by `scrim` caps him at
+ * roughly half however much he plays: Quenton Nelson took every one of Indy's
+ * 1136 offensive snaps in 2018 and reported 51%. It also injects the team's
+ * own offense/defense split into a player-level number — two linemen who never
+ * left the field read 45.3% and 53.3% purely because of how often their
+ * defenses were on the pitch.
+ */
 export interface TeamGameCapacity {
+  /** Offensive plays — the denominator for an offensive player. */
+  off: number;
+  /** Defensive plays — the denominator for a defender. */
+  def: number;
   /** Offense + defense plays */
   scrim: number;
   /** Scrimmage plus special teams, the specialist basis */
@@ -128,18 +150,22 @@ export function gameCapacityOf(g: {
   stSnaps: number;
   stPct: number;
 }): TeamGameCapacity {
-  const scrim = teamScrimmagePlaysFromRow(
-    g.offSnaps,
-    g.offPct,
-    g.defSnaps,
-    g.defPct,
-  );
-  return { scrim, full: scrim + teamStPlaysFromRow(g.stSnaps, g.stPct) };
+  const off = teamOffensePlaysFromRow(g.offSnaps, g.offPct);
+  const def = teamDefensePlaysFromRow(g.defSnaps, g.defPct);
+  const scrim = off + def;
+  return {
+    off,
+    def,
+    scrim,
+    full: scrim + teamStPlaysFromRow(g.stSnaps, g.stPct),
+  };
 }
 
 export function buildTeamSeasonDenominatorTotals(
   rows: SnapCountCsvRow[],
 ): TeamSeasonDenominatorTotals {
+  const offByTeam = new Map<string, number>();
+  const defByTeam = new Map<string, number>();
   const scrimByTeam = new Map<string, number>();
   const fullByTeam = new Map<string, number>();
   const gameCountByTeam = new Map<string, number>();
@@ -149,8 +175,11 @@ export function buildTeamSeasonDenominatorTotals(
   for (const [key, g] of collectGameCapacities(rows)) {
     const rawTeam = key.slice(key.indexOf('|') + 1);
     const nt = normalizeNflverseTeam(rawTeam);
-    const { scrim, full } = gameCapacityOf(g);
+    const capacity = gameCapacityOf(g);
+    const { off, def, scrim, full } = capacity;
 
+    offByTeam.set(nt, (offByTeam.get(nt) ?? 0) + off);
+    defByTeam.set(nt, (defByTeam.get(nt) ?? 0) + def);
     scrimByTeam.set(nt, (scrimByTeam.get(nt) ?? 0) + scrim);
     fullByTeam.set(nt, (fullByTeam.get(nt) ?? 0) + full);
     gameCountByTeam.set(nt, (gameCountByTeam.get(nt) ?? 0) + 1);
@@ -162,17 +191,64 @@ export function buildTeamSeasonDenominatorTotals(
         weeksByTeam.set(nt, weeks);
       }
       weeks.add(g.week);
-      capacityByTeamWeek.set(`${nt}|${g.week}`, { scrim, full });
+      capacityByTeamWeek.set(`${nt}|${g.week}`, capacity);
     }
   }
 
   return {
+    offByTeam,
+    defByTeam,
     scrimByTeam,
     fullByTeam,
     gameCountByTeam,
     weeksByTeam,
     capacityByTeamWeek,
   };
+}
+
+/**
+ * Which phase's capacity a player's load divides by, from the snaps he actually
+ * took rather than his position label — labels are occasionally wrong, and a
+ * player who moved sides mid-career would otherwise be measured against the
+ * wrong phase for one of them. Ties fall to offence; they only arise when a
+ * non-specialist took no scrimmage snaps at all, where the numerator is zero
+ * either way.
+ */
+export function loadPhaseOf(offenseSnaps: number, defenseSnaps: number) {
+  return defenseSnaps > offenseSnaps ? ('def' as const) : ('off' as const);
+}
+
+/**
+ * The full-season denominator for one player: his own phase's capacity, or
+ * scrimmage-plus-ST for a kicker, punter or long snapper, whose numerator
+ * spans every phase.
+ */
+export function fullSeasonDenominatorFor(options: {
+  totals: TeamSeasonDenominatorTotals;
+  team: string;
+  isSpecialist: boolean;
+  offenseSnaps: number;
+  defenseSnaps: number;
+}): number {
+  const { totals, team, isSpecialist, offenseSnaps, defenseSnaps } = options;
+  if (isSpecialist) return totals.fullByTeam.get(team) ?? 0;
+  return loadPhaseOf(offenseSnaps, defenseSnaps) === 'def'
+    ? (totals.defByTeam.get(team) ?? 0)
+    : (totals.offByTeam.get(team) ?? 0);
+}
+
+/** The same choice against one team-game's capacity. */
+export function gameDenominatorFor(options: {
+  capacity: TeamGameCapacity;
+  isSpecialist: boolean;
+  offenseSnaps: number;
+  defenseSnaps: number;
+}): number {
+  const { capacity, isSpecialist, offenseSnaps, defenseSnaps } = options;
+  if (isSpecialist) return capacity.full;
+  return loadPhaseOf(offenseSnaps, defenseSnaps) === 'def'
+    ? capacity.def
+    : capacity.off;
 }
 
 /**

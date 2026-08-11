@@ -10,7 +10,50 @@ Every figure below was measured against `public/data/draft-*.json` as committed,
 
 ---
 
-## ⚠️ Blocker: every measured figure here rests on stale load data
+## ✅ Blocker cleared — and it turned up an eighth finding
+
+`pnpm update-data` has now run (2026-08-11). Everything below that was marked blocked has been **re-measured on corrected data**, and the original conclusions all held. The refresh also exposed a defect none of the seven findings had caught, now fixed:
+
+**Finding 8 — the load denominator was right by accident, and only for one side of the ball.**
+
+Sizing this correctly matters, because an earlier draft of this section overstated it. `dd4ada1` fixed how team capacity is _read_ but was released without regenerating data, so no user ever saw its output. The figures that make the mixed-phase denominator look catastrophic — Nelson at 51%, a 46.9%–52.3% spread — come from that **unreleased intermediate state**, not from anything shipped.
+
+What shipped was this. Capacity was inverted from a single player row per team-game, carrying only the phases that player played. nflverse lists an offensive player first in most team-games, so offensive players were divided by offensive capacity and were **already correct**. Defenders were not:
+
+```
+                        SHIPPED              PHASE-MATCHED
+  offensive players     p5 0.998, 0.2pts     p5 0.999, 0.1pts
+  defensive players     p5 0.919, 8.1pts     p5 0.998, 0.2pts
+  worst case            Tyrann Mathieu       —
+                        DB ARI 2018, 87.0%
+```
+
+(Full-season, every-game, essentially-every-snap players; `load ÷ avgSnap`, which should be 1.0.)
+
+So the live defect was **a noise tail on defenders** — about 5% of full-time defensive seasons under-read by up to 13 points — not a league-wide halving.
+
+**This change is therefore a general improvement, not an incident fix.** It does three things:
+
+1. Closes that defensive tail (8.1 points → 0.2).
+2. Makes `dd4ada1` releasable. Summing capacity across every row is correct, but on a combined offence+defence denominator it halves every player. Phase-matching is the prerequisite for shipping that fix at all.
+3. Removes a dependency on CSV row order. The shipped numbers were right because nflverse happens to list offence first — a reordering upstream would have moved them silently. Correct by construction now, not by luck.
+
+Nelson reads **100.0%**, Wirfs 100.0%, Mahomes 98.7%. Baselines sit on the scale the role thresholds were designed for — C 1.0, G 1.0, OT 0.999, QB 0.993, with rotational positions below (DT 0.691, RB 0.670) — and all **852 tests pass**, including the 16 that failed under the mixed-phase state.
+
+### Re-measured on corrected data
+
+| Finding                    | Original (stale)                 | Re-measured                                                                                    | Verdict              |
+| -------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------- | -------------------- |
+| **2** over-slot year drift | 2015 −3.29 → 2025 +7.63          | 2015 **−3.26** → 2025 **+7.62**                                                                | Confirmed, unchanged |
+| **3** correlation, n=32    | raw r=0.218, slot r=0.463        | raw **r=0.227** CI [−0.13, 0.53] spans zero; over slot **r=0.467** CI [0.14, 0.70] significant | Confirmed            |
+| **4** FB baseline          | p90 0.196, only clamped position | p90 **0.196**, still the only clamped position (RB 0.670, DT 0.691 clear)                      | Confirmed            |
+| **5** saturation           | 4.7% of played seasons           | **4.6%**                                                                                       | Confirmed            |
+
+**Revision to finding 4's floor.** The original 0.65 proposal is viable again now the scale is restored, but it sits only 0.02 below RB's 0.670 — one refresh of drift from silently clamping running backs. **0.50 is the better choice**: it still leaves zero fullback seasons in the Core Starter band while keeping a 25% margin under the lowest real position. Choose 0.50.
+
+---
+
+## Superseded: the stale-data blocker (kept for the record)
 
 Commit `dd4ada1` ("read a team-game's capacity from every row, not the first one") fixed `buildTeamSeasonDenominatorTotals`, which had been reading each team-game's snap capacity from the **first player row** for that `(game_id, team)` and inverting that one player's percentages. Players are offense-only or defense-only, so no single row carries both phases: whenever the first row happened to be an offensive player, `defense_pct` was 0 and that game's entire defensive capacity dropped out of the season denominator.
 
