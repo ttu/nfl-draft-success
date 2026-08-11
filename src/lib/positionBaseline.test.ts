@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  BASELINE_FLOOR,
   baselinePositions,
   getPositionBaseline,
   getPositionTierThresholds,
@@ -156,5 +157,50 @@ describe('baselinePositions', () => {
     expect(list.indexOf('C')).toBeLessThan(list.indexOf('RB'));
     // Exempt specialists have no derived baseline and are not listed.
     expect(list).not.toContain('K');
+  });
+});
+
+/**
+ * The floor is a guard against a degenerate sample, not a scoring input. Once it
+ * starts clamping positions that have a genuine p90, it silently under-credits
+ * every player at them — reintroducing exactly the positional bias §2.5 exists
+ * to remove, and doing it invisibly, since a floored baseline looks like any
+ * other number in the JSON.
+ *
+ * This nearly happened: `BASELINE_FLOOR` is an absolute constant, and when a
+ * denominator change halved every load it began clamping RB, DT and NT as well
+ * as FB. Nothing failed. These pin the invariant so a future rescale is caught
+ * by the suite rather than by reading the artifact.
+ */
+describe('BASELINE_FLOOR only ever catches genuinely part-time positions', () => {
+  /** Positions whose derived baseline sits at or below the floor. */
+  const clamped = baselinePositions().filter(
+    (p) => getPositionBaseline(p) <= BASELINE_FLOOR,
+  );
+
+  it('clamps fullback and nothing else', () => {
+    // FB's real p90 is ~0.20: the best fullback seasons are a fifth of a
+    // full-time workload, which is what the position is.
+    expect(clamped).toEqual(['FB']);
+  });
+
+  it('sits clear of the lowest genuinely rotational baseline', () => {
+    const lowestReal = Math.min(
+      ...baselinePositions()
+        .filter((p) => !clamped.includes(p))
+        .map((p) => getPositionBaseline(p)),
+    );
+    // Margin, not a bare inequality: a floor a hair under the lowest real
+    // position is one data refresh from clamping it.
+    expect(BASELINE_FLOOR).toBeLessThan(lowestReal * 0.9);
+  });
+
+  it('keeps the best fullback season out of the Core Starter band', () => {
+    // Andy Janovich 2016, the heaviest fullback usage in the dataset at ~31%
+    // of team snaps. Normalizing that to "full-time" made him a Core Starter,
+    // scored level with a franchise left tackle.
+    expect(normalizeSnapShareForPosition(0.309, 'FB')).toBeLessThan(
+      CORE_TIER_THRESHOLD,
+    );
   });
 });

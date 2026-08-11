@@ -27,8 +27,22 @@ import {
 export const QUALIFYING_GAMES_SHARE = 0.5;
 export const BASELINE_PERCENTILE = 0.9;
 export const MIN_QUALIFYING_SEASONS = 25;
-/** Guards tiny/odd samples from producing an implausibly low baseline. */
-export const BASELINE_FLOOR = 0.35;
+/**
+ * Guards tiny or genuinely part-time samples from producing an implausibly low
+ * baseline. A position's baseline is the divisor that turns its snap share into
+ * "share of a full-time starter", so a very low one declares a marginal role
+ * full-time: fullbacks p90 at ~0.20, and at a 0.35 floor the best fullback
+ * season in the dataset (Andy Janovich 2016, 31% of team snaps) normalized to
+ * 0.88 and scored as a Core Starter, level with a franchise left tackle.
+ *
+ * 0.50 puts a stop to that — no fullback season reaches the Core band — while
+ * staying a clear 25% below the lowest genuinely rotational baseline (RB, 0.67).
+ * That margin is the point: the floor is an absolute constant, so it does not
+ * move when the load scale does, and a value chosen to sit just under RB would
+ * be one data refresh from silently clamping running backs.
+ * `positionBaseline.test.ts` pins both properties.
+ */
+export const BASELINE_FLOOR = 0.5;
 
 const BASELINES: Record<string, number> = baselinesData.baselines;
 
