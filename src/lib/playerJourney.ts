@@ -81,7 +81,6 @@ export function getTeamJourney(pick: DraftPick): TeamStint[] {
       const role = classifyRole(
         snapShareForRoleTier(s, pick.position),
         gps,
-        s.gamesPlayed,
         pick.position,
       );
       if (isStrongerRole(role, bestRole)) bestRole = role;

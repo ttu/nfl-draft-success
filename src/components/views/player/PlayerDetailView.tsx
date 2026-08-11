@@ -19,7 +19,10 @@ import {
 } from '../../../lib/getPlayerRole';
 import { firstScoredYear } from '../../../lib/apprenticeship';
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
-import { formatOverSlot } from '../../../lib/formatOverSlot';
+import {
+  formatOverSlot,
+  isOverSlotPositive,
+} from '../../../lib/formatOverSlot';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
 import { scoredWindowYears } from '../../../lib/rookieWindow';
 import { isPlayedSeason, isUnplayedSeason } from '../../../lib/seasonPlayed';
@@ -460,7 +463,9 @@ function PlayerHeroVerdict({
           className="player-hero__overslot-value tnum"
           data-testid="player-over-slot"
           style={{
-            color: overSlot >= 0 ? 'var(--positive)' : 'var(--negative)',
+            color: isOverSlotPositive(overSlot)
+              ? 'var(--positive)'
+              : 'var(--negative)',
           }}
         >
           {formatOverSlot(overSlot)}
@@ -572,7 +577,6 @@ function SeasonRow({
   const seasonRole = classifyRole(
     snapShareForRoleTier(s, position),
     s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0,
-    s.gamesPlayed,
     position,
   );
   const snapPct = s.snapShare * 100;

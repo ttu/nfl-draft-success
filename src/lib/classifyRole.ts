@@ -32,6 +32,10 @@ export const SIGNIFICANT_TIER_THRESHOLD_SPECIALIST = 0.32;
  * kickers/punters/long snappers use `snapShare`.
  * gamesPlayedShare = gamesPlayed / teamGames. First match wins.
  *
+ * Raw `gamesPlayed` is deliberately not a parameter: availability enters only
+ * through `gamesPlayedShare`, which is the comparable form. A count alone
+ * cannot be judged without the schedule length behind it.
+ *
  * Between 10% and 35% load: **Depth** (10–20%) vs **Contributor** (20–35%) splits
  * limited / gadget usage from clear rotation snaps (specialists use a lower SC
  * floor; see `SIGNIFICANT_TIER_THRESHOLD_SPECIALIST`).
@@ -39,7 +43,6 @@ export const SIGNIFICANT_TIER_THRESHOLD_SPECIALIST = 0.32;
 export function classifyRole(
   cumulativeSnapShare: number,
   gamesPlayedShare: number,
-  _gamesPlayed: number,
   position?: string,
 ): Role {
   const scThreshold = isSpecialTeamsSpecialistPosition(undefined, position)

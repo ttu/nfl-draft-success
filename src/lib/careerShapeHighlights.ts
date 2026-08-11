@@ -105,7 +105,6 @@ export function seasonRole(season: Season, position: string): Role {
   return classifyRole(
     snapShareForRoleTier(season, position),
     season.teamGames > 0 ? season.gamesPlayed / season.teamGames : 0,
-    season.gamesPlayed,
     position,
   );
 }

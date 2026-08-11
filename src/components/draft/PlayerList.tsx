@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import type { DraftPick } from '../../types';
 import { getPlayerRole, getPlayerDraftScore } from '../../lib/getPlayerRole';
 import { getPlayerDraftSkill } from '../../lib/draftSlotBaseline';
-import { formatOverSlot } from '../../lib/formatOverSlot';
+import { formatOverSlot, isOverSlotPositive } from '../../lib/formatOverSlot';
 import { buildPlayerHref } from '../../lib/playerBackTarget';
 import {
   PlayerAvatar,
@@ -139,7 +139,9 @@ export function PlayerList({
                   fontSize: 12,
                   fontWeight: 600,
                   whiteSpace: 'nowrap',
-                  color: overSlot >= 0 ? 'var(--positive)' : 'var(--negative)',
+                  color: isOverSlotPositive(overSlot)
+                    ? 'var(--positive)'
+                    : 'var(--negative)',
                 }}
                 title="Draft value over slot — score above what this pick position predicted"
               >

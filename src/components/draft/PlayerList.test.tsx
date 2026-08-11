@@ -142,9 +142,13 @@ describe('PlayerList', () => {
     expect(screen.getByText(/→ NYG/)).toBeInTheDocument();
     // Departed players still carry the "Departed" chip
     expect(screen.getByText('Departed')).toBeInTheDocument();
-    // ...and also show the role they held for the drafting team
-    // (drafting-team-only seasons classify this player as a Core Starter).
-    expect(screen.getByText('Core Starter')).toBeInTheDocument();
+    // ...and also show the role they held for the drafting team. One starting
+    // season out of a four-year window he left after: the badge divides by the
+    // rookie window exactly as the score does, so this reads Depth, not Core
+    // Starter. A pick who gave the team one year of its deal should not wear
+    // the same chip as one who gave it four — see the denominator note on
+    // `getPlayerAverageScoreWeight`.
+    expect(screen.getByText('Depth')).toBeInTheDocument();
   });
 
   it('renders every pick when brandByDraftingTeam is set', () => {

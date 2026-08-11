@@ -107,7 +107,6 @@ function getPlayerPeakRole(
     const role = classifyRole(
       snapShareForRoleTier(s, pick.position),
       gamesPlayedShare,
-      s.gamesPlayed,
       pick.position,
     );
     if (ordinal(role) > ordinal(best)) best = role;
@@ -132,14 +131,23 @@ function averageScoreWeightToRole(avgWeight: number, peakRole: Role): Role {
 }
 
 /**
- * Mean of each season’s role weight (0–4). Drives draft score; down-weights
- * mixed or inactive years versus a single peak season.
+ * Mean of each season’s role weight (0–4). Drives the representative role badge;
+ * down-weights mixed or inactive years versus a single peak season.
+ *
+ * Divided by the same denominator as {@link getPlayerDraftScore} — the rookie
+ * window in drafting-team mode, seasons played in career mode. The two must
+ * agree: while this averaged over seasons *played*, a pick who started as a
+ * rookie and was then gone kept a Core Starter badge beside a score of 17,
+ * because his unplayed years vanished from the badge but not from the score.
+ * The badge also feeds `coreStarterRate`, so that disagreement reached the team
+ * metrics and not just the chip.
  */
 export function getPlayerAverageScoreWeight(
   pick: DraftPick,
   options?: GetPlayerRoleOptions,
 ): number {
-  const seasons = getFilteredSeasons(pick, options?.draftingTeamOnly);
+  const draftingTeamOnly = options?.draftingTeamOnly === true;
+  const seasons = getFilteredSeasons(pick, draftingTeamOnly);
   if (seasons.length === 0) return 0;
 
   let sum = 0;
@@ -148,12 +156,15 @@ export function getPlayerAverageScoreWeight(
     const role = classifyRole(
       snapShareForRoleTier(s, pick.position),
       gamesPlayedShare,
-      s.gamesPlayed,
       pick.position,
     );
     sum += ROLE_SCORE_WEIGHTS[role];
   }
-  return sum / seasons.length;
+
+  const denominator = draftingTeamOnly
+    ? scoredSeasonCount(pick, seasons.length)
+    : seasons.length;
+  return sum / denominator;
 }
 
 /**
@@ -162,10 +173,16 @@ export function getPlayerAverageScoreWeight(
  *   score(pick) = mean(getSeasonScore(season) for tracked seasons)
  *
  * where each season term is the position-adjusted, availability-weighted
- * {@link getSeasonScore}. Unlike {@link getPlayerAverageScoreWeight} (discrete
- * 0–4 role weights, used for role badges), this does not saturate — it
- * separates a full-snap starter from a part-time one. Drives the numeric
- * "Score" shown in the player, position, draft-year, and team-ranking views.
+ * {@link getSeasonScore}. Unlike {@link getPlayerAverageScoreWeight}, which
+ * collapses a season onto one of five discrete role weights, this separates a
+ * full-snap starter from a part-time one across most of the range. It does
+ * saturate at the top: the snap term is clamped to the position's full-time
+ * baseline, which pins the best ~5% of played seasons (9% at ≥0.95) at the
+ * maximum. That is deliberate — an unclamped ratio would let one position's
+ * outlier exceed 100 and break the over-slot subtraction — so above a full-time
+ * workload the score declines to rank starters against each other on snap count
+ * alone. Drives the numeric "Score" shown in the player, position, draft-year,
+ * and team-ranking views.
  */
 export function getPlayerDraftScore(
   pick: DraftPick,

@@ -9,7 +9,10 @@ import {
   teamFg,
 } from '../../design/Primitives';
 import { buildTeamHref } from '../../../lib/teamHref';
-import { formatOverSlot } from '../../../lib/formatOverSlot';
+import {
+  formatOverSlot,
+  isOverSlotPositive,
+} from '../../../lib/formatOverSlot';
 import { useIsMobile } from '../../../lib/useMediaQuery';
 import { teamNickname } from '../../../lib/teamNickname';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
@@ -708,7 +711,9 @@ function RankRow({
             className="mono tnum"
             style={{
               fontWeight: 600,
-              color: r.overSlot >= 0 ? 'var(--positive)' : 'var(--negative)',
+              color: isOverSlotPositive(r.overSlot)
+                ? 'var(--positive)'
+                : 'var(--negative)',
             }}
           >
             {formatOverSlot(r.overSlot)}

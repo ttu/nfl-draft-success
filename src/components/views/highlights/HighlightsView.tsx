@@ -2,7 +2,10 @@ import { memo, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PlayerAvatar, TeamLogo, teamColor } from '../../design/Primitives';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
-import { formatOverSlot } from '../../../lib/formatOverSlot';
+import {
+  formatOverSlot,
+  isOverSlotPositive,
+} from '../../../lib/formatOverSlot';
 import { activateOnKey } from '../../../lib/activateOnKey';
 import {
   HIGHLIGHT_LIST_SIZE,
@@ -44,7 +47,7 @@ function fromPlayerHighlight(h: PlayerHighlight): HighlightRowData {
     team: h.team,
     draftYear: h.draftYear,
     headline: formatOverSlot(h.overSlot),
-    tone: h.overSlot >= 0 ? 'high' : 'low',
+    tone: isOverSlotPositive(h.overSlot) ? 'high' : 'low',
     detail: `score ${h.score.toFixed(0)}`,
     headlineTitle: 'Draft score above or below what this draft slot predicted',
   };

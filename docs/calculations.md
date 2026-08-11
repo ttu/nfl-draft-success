@@ -183,7 +183,7 @@ The result is "share of a full-time starter's workload at this position," clampe
 
 ## 3. Role Classification (per season)
 
-**Function:** `classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?)` in `src/lib/classifyRole.ts`. The first argument is **`snapShareForRoleTier(season, position)`** (stored season load when appropriate, else average share for legacy JSON; kickers/punters/long snappers use `snapShare`), **position-adjusted** by dividing by the per-position baseline (§2.5) for non-exempt positions. Optional **`position`** selects the Significant Contributor floor: **0.35** by default, **0.32** for K/P/LS. The **`gamesPlayed`** argument is retained for call-site compatibility and is not used in classification.
+**Function:** `classifyRole(effectiveShare, gamesPlayedShare, position?)` in `src/lib/classifyRole.ts`. The first argument is **`snapShareForRoleTier(season, position)`** (stored season load when appropriate, else average share for legacy JSON; kickers/punters/long snappers use `snapShare`), **position-adjusted** by dividing by the per-position baseline (§2.5) for non-exempt positions. Optional **`position`** selects the Significant Contributor floor: **0.35** by default, **0.32** for K/P/LS. Raw `gamesPlayed` is deliberately not a parameter: availability enters only as `gamesPlayedShare`, since a game count cannot be judged without the schedule length behind it.
 
 Classification uses a **first-match-wins** order. All thresholds use `>=` (inclusive).
 
@@ -424,7 +424,7 @@ Raw nflverse data
     ↓
 gamesPlayedShare = gamesPlayed / teamGames
     ↓
-classifyRole(effectiveShare, gamesPlayedShare, gamesPlayed, position?) → per-season role
+classifyRole(effectiveShare, gamesPlayedShare, position?) → per-season role
     ↓
 getPlayerAverageScoreWeight(pick) → mean seasonal weight; getPlayerRole(pick) → representative role from mean (+ peak for starter label)
     ↓

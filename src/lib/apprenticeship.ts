@@ -30,7 +30,6 @@ function seasonRole(season: Season, position: string): Role {
   return classifyRole(
     snapShareForRoleTier(season, position),
     gamesPlayedShare,
-    season.gamesPlayed,
     position,
   );
 }

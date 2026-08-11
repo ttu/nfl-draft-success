@@ -54,7 +54,16 @@ describe('getPlayerRole', () => {
       makeDepthSeason({ year: 2023 }),
     ]);
     expect(getPlayerRole(pick)).toBe('significant_contributor');
-    expect(getPlayerRole(pick, { draftingTeamOnly: true })).toBe('depth');
+    // One depth season out of a five-year window the pick departed part-way
+    // through: the window denominator applies to the badge as it does to the
+    // score, which reads 3.5 here — a `depth` chip beside that was the
+    // disagreement fixed below.
+    expect(getPlayerRole(pick, { draftingTeamOnly: true })).toBe(
+      'non_contributor',
+    );
+    expect(getPlayerDraftScore(pick, { draftingTeamOnly: true })).toBeLessThan(
+      5,
+    );
   });
 
   it('pulls down representative role when a strong year is averaged with an inactive season', () => {
@@ -124,6 +133,19 @@ const seasonScore = (snap: number, gp: number, tg: number) =>
 const pickWith = (seasons: DraftPick['seasons']): DraftPick =>
   makePick({ overallPick: 5, seasons });
 
+/** A full workload, full availability season — weight 4, season score 100. */
+const perfect = (year: number) =>
+  makeSeason({ year, gamesPlayed: 17, snapShare: 1 });
+
+/** A pick of `round` drafted `age` seasons before the end of the data. */
+const agedPick = (round: number, age: number, seasons: DraftPick['seasons']) =>
+  makePick({
+    round,
+    overallPick: round === 1 ? 5 : 150,
+    draftYear: LATEST_SEASON - age + 1,
+    seasons,
+  });
+
 describe('getPlayerDraftScore', () => {
   it('does not saturate: two core starters are separated by real usage', () => {
     const fullTime = pickWith([
@@ -178,20 +200,6 @@ describe('getPlayerDraftScore', () => {
 
   describe('rookie-contract window (draftingTeamOnly)', () => {
     const opts = { draftingTeamOnly: true } as const;
-    const perfect = (year: number) =>
-      makeSeason({ year, gamesPlayed: 17, snapShare: 1 });
-    /** A pick of `round` drafted `age` seasons before the end of the data. */
-    const agedPick = (
-      round: number,
-      age: number,
-      seasons: DraftPick['seasons'],
-    ) =>
-      makePick({
-        round,
-        overallPick: round === 1 ? 5 : 150,
-        draftYear: LATEST_SEASON - age + 1,
-        seasons,
-      });
 
     it('divides a starter traded away mid-window by the full window — the Darnold case', () => {
       // Three perfect seasons, then gone: 300 / 5, not a mean of 100.
@@ -251,6 +259,59 @@ describe('getPlayerDraftScore', () => {
       const pick = agedPick(1, 5, [perfect(2021), perfect(2022)]);
       expect(getPlayerDraftScore(pick)).toBeCloseTo(100);
     });
+  });
+});
+
+/**
+ * The badge and the score must divide by the same thing. Both read their seasons
+ * from `getFilteredSeasons`, but the badge used to average over seasons *played*
+ * while the score divided by the rookie window — so a pick who started as a
+ * rookie and was then gone kept a Core Starter badge beside a score of 17.
+ * That badge also feeds `coreStarterRate`, so the disagreement reached the team
+ * metrics, not just the chip.
+ */
+describe('role badge shares the score’s window denominator', () => {
+  const opts = { draftingTeamOnly: true } as const;
+
+  it('demotes a one-and-done first-rounder — the Josh Rosen case', () => {
+    // One starting season, then gone: 4 / 5, not a mean of 4 over the one
+    // season he survived.
+    const rosen = agedPick(1, 5, [perfect(LATEST_SEASON - 4)]);
+    expect(getPlayerAverageScoreWeight(rosen, opts)).toBeCloseTo(0.8);
+    expect(getPlayerRole(rosen, opts)).toBe('depth');
+  });
+
+  it('keeps badge and score telling the same story', () => {
+    const rosen = agedPick(1, 5, [perfect(LATEST_SEASON - 4)]);
+    // A score this low may not sit beside the top badge.
+    expect(getPlayerDraftScore(rosen, opts)).toBeCloseTo(20);
+    expect(getPlayerRole(rosen, opts)).not.toBe('core_starter');
+  });
+
+  it('leaves a pick who played out his whole deal untouched', () => {
+    // The regression guard: a full window divides by 4 either way.
+    const stayed = agedPick(3, 5, [
+      perfect(LATEST_SEASON - 4),
+      perfect(LATEST_SEASON - 3),
+      perfect(LATEST_SEASON - 2),
+      perfect(LATEST_SEASON - 1),
+    ]);
+    expect(getPlayerAverageScoreWeight(stayed, opts)).toBeCloseTo(4);
+    expect(getPlayerRole(stayed, opts)).toBe('core_starter');
+  });
+
+  it('leaves a class whose window has not elapsed yet untouched', () => {
+    const rookie = agedPick(1, 1, [perfect(LATEST_SEASON)]);
+    expect(getPlayerAverageScoreWeight(rookie, opts)).toBeCloseTo(4);
+    expect(getPlayerRole(rookie, opts)).toBe('core_starter');
+  });
+
+  it('leaves the career lens on a plain mean over seasons played', () => {
+    // Career mode's numerator spans every team, so the drafting team's window
+    // is not a denominator it has any claim on.
+    const traded = agedPick(1, 5, [perfect(LATEST_SEASON - 4)]);
+    expect(getPlayerAverageScoreWeight(traded)).toBeCloseTo(4);
+    expect(getPlayerRole(traded)).toBe('core_starter');
   });
 });
 
