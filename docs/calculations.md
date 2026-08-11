@@ -238,7 +238,7 @@ Steps 4–6 apply after any earlier branch fails (e.g. `cumulativeSnapShare` bel
 
 **Functions:** `getPlayerAverageScoreWeight`, `getPlayerRole` in `src/lib/getPlayerRole.ts`
 
-**Definition:** Each season gets a **score weight** (0–4) from its classified role. The pick’s **draft value** is the **mean** of those weights across in-scope seasons. **Overall role** (UI badge, filters, draft-class counts) maps that mean to a representative `Role`, with thresholds at 0.5 / 1.5 / 2.5 / 3.5 on the 0–4 scale. If the mean is in the top band (≥ 3.5), Core Starter vs Starter when healthy is taken from the **peak** single-season role so both weight-4 roles stay distinguishable.
+**Definition:** Each season gets a **score weight** (0–4) from its classified role. The pick’s **badge value** is those weights summed and divided by the rookie window (§4.2 step 3) — the same denominator the 0–100 score uses. **Overall role** (UI badge, filters, draft-class counts) maps that value to a representative `Role`, with thresholds at 0.5 / 1.5 / 2.5 / 3.5 on the 0–4 scale. If the mean is in the top band (≥ 3.5), Core Starter vs Starter when healthy is taken from the **peak** single-season role so both weight-4 roles stay distinguishable.
 
 ### 4.1 Role Hierarchy (low to high)
 
@@ -253,10 +253,12 @@ Used for peak comparison and mapping; score weights collapse the two starter rol
 
 ### 4.2 Algorithm
 
-1. **Season filter:** If `draftingTeamOnly` is true, only consider seasons where `retained === true`.
+1. **Season filter:** `getFilteredSeasons` — played seasons only, minus any apprentice seasons (§7.3b); if `draftingTeamOnly` is true, only those where `retained === true`.
 2. **Per season:** `classifyRole` → map to score weight via `ROLE_SCORE_WEIGHTS`.
-3. **Mean:** Average weight across those seasons (`getPlayerAverageScoreWeight`).
+3. **Mean:** Sum those weights and divide by **the same denominator the score uses** — `scoredSeasonCount` (the rookie window, §7.3a) in drafting-team mode, seasons played in career mode (`getPlayerAverageScoreWeight`).
 4. **Representative role:** Map mean to Non-Contributor / Depth / Contributor / Significant Contributor, or (if mean ≥ 3.5) use peak season among `{core_starter, starter_when_healthy}` (`getPlayerRole`).
+
+**Why the window applies to the badge too.** Both readings must divide by the same thing or they contradict each other on screen. While this averaged over seasons _played_, a pick who started as a rookie and was then gone kept a Core Starter badge beside a score of 17 — his unplayed years vanished from the badge but not from the score. Josh Rosen (2018 R1, one season for Arizona) read Core Starter at a score of 17.7; he now reads Depth. Because the badge feeds `coreStarterCount`, the disagreement reached the team metrics as well: correcting it moved league Core Starter rates by roughly a quarter (e.g. 0.351 → 0.270) while leaving every score and rank untouched.
 
 ### 4.3 Option: draftingTeamOnly
 
@@ -325,35 +327,48 @@ Retention for metrics uses the **most recent season** only:
 ### 7.1 Score Formula
 
 ```
-score = sum(player role weight) / totalPicks
+score(team) = mean( getPlayerDraftScore(pick) for scored picks )
 ```
 
 Where:
 
-- **Player role weight:** The mean of that pick’s per-season weights (see §4), not the representative overall role alone.
-- **totalPicks:** Total number of picks by the team across all draft classes.
+- **`getPlayerDraftScore(pick)`** is the continuous 0–100 pick score of §7.1a — not the discrete 0–4 role weight, which drives badges only (§4).
+- **scored picks** are those with at least one played season row (`pickHasSeasonSnapData`). Picks from a class that has not played yet are excluded from **both** halves rather than counted as zero, so a draft class still awaiting its rookie season does not read as a failure. In the shipped data only the 2026 class is excluded, and uniformly across all teams.
 
-**Range:** 0.0–4.0 (all Core Starter seasons → 4.0 per season mean; all Non-Contributors → 0.0)
+**Range:** 0–100.
+
+#### 7.1a Per-pick score
+
+```
+score(pick) = sum( getSeasonScore(season) ) / denominator
+```
+
+- **`getSeasonScore`** (§7 preamble) is `clamp(0.7 · positionAdjustedLoad + 0.3 · availability) × 100`.
+- **denominator** is the rookie-contract window (`scoredSeasonCount`, §7.3a) in drafting-team mode, and seasons played in career mode.
 
 ### 7.2 Auxiliary Metrics
 
-| Metric          | Formula                         |
-| --------------- | ------------------------------- |
-| coreStarterRate | `coreStarterCount / totalPicks` |
-| retentionRate   | `retentionCount / totalPicks`   |
+| Metric          | Formula                              |
+| --------------- | ------------------------------------ |
+| coreStarterRate | `coreStarterCount / scoredPickCount` |
+| retentionRate   | `retentionCount / scoredPickCount`   |
 
-Same retention logic as draft class metrics (most recent season per pick).
+`coreStarterCount` counts picks whose **representative role** (§4) is Core Starter — which, like the score, divides by the rookie window in drafting-team mode, so a pick who started as a rookie and then left does not carry the badge. Retention uses the most recent season per pick, as in draft class metrics.
 
 ### 7.3 Example
 
-Team drafts 10 players across 5 years:
+A team's four scored picks in the window:
 
-- 2 Core Starters (4 each) → 8
-- 3 Significant Contributors (3 each) → 9
-- 2 Depth (1 each) → 2
-- 3 Non-Contributors (0 each) → 0
+| Pick                               | Season scores  | Denominator | Pick score |
+| ---------------------------------- | -------------- | ----------- | ---------- |
+| Full-time starter, all four years  | 92, 95, 90, 91 | 4           | 92.0       |
+| Starter for two years, then traded | 88, 84         | 4 (window)  | 43.0       |
+| Rotational contributor, four years | 41, 45, 38, 44 | 4           | 42.0       |
+| Never played beyond a rookie year  | 6              | 4 (window)  | 1.5        |
 
-Score = (8 + 9 + 2 + 0) / 10 = **1.9**
+Team score = (92.0 + 43.0 + 42.0 + 1.5) / 4 = **44.6**
+
+The second pick shows why the denominator is the window rather than seasons played: two strong years score 43, not 86, because the drafting team paid for four.
 
 ### 7.3b Apprenticeship (quarterbacks who sat behind a veteran)
 
@@ -422,27 +437,47 @@ Apprentice seasons (§7.3b) are the one exception kept despite being in neither 
 - Core Starter
 - Starter When Healthy
 - Significant Contributor
+- Contributor
 - Depth
 
-**Non-Contributor** is excluded from contributor count.
+**Non-Contributor** is the only excluded role, being the only one with weight 0.
+
+Note the word does double duty: **Contributor** is both one tier (§3, load in [0.20, SCmin)) and the name of this aggregate over every non-zero tier. `contributorRoleCount` in §6.1 is the tier; `contributorCount` is the aggregate.
 
 ---
 
 ## 9. Summary: Calculation Flow
 
+Two parallel readings share the same inputs and the same denominator: a **continuous 0–100 score** (the headline number) and a **discrete 0–4 role weight** (the badge). They diverge only in how a season is summarised — `getSeasonScore` keeps the shares, `ROLE_SCORE_WEIGHTS` collapses them onto five tiers.
+
 ```
 Raw nflverse data
     ↓
-[update-data.ts] → gamesPlayed, snapShare, teamGames, retained per season
+[update-data.ts] → gamesPlayed, snapShare, cumulativeSnapShare, teamGames,
+                   retained, restGame per season          (§1.1–1.6)
     ↓
-gamesPlayedShare = gamesPlayed / teamGames
+stampDraftYear() → subtracts any rest game               (§1.6)
     ↓
-classifyRole(effectiveShare, gamesPlayedShare, position?) → per-season role
+snapShareForRoleTier(season, position)                   (§1.2, §2.5)
+  = min(load, avgSnap) ÷ positionBaseline, clamped to 1
+gamesPlayedShare = gamesPlayed / teamGames               (§2)
     ↓
-getPlayerAverageScoreWeight(pick) → mean seasonal weight; getPlayerRole(pick) → representative role from mean (+ peak for starter label)
+    ├─ getSeasonScore  = 0.7·share + 0.3·availability, ×100      (§7.1a)
+    │      ↓
+    │  getPlayerDraftScore(pick) = Σ season scores ÷ window      (§7.1a)
+    │      ↓                                    (scoredSeasonCount, §7.3a)
+    │  − expectedScoreForPick(overallPick) → over slot            (§7.4)
+    │
+    └─ classifyRole(share, gamesPlayedShare, position?)           (§3)
+           ↓
+       getPlayerAverageScoreWeight(pick) = Σ weights ÷ same window (§4)
+           ↓
+       getPlayerRole(pick) → representative role (+ peak for the
+                             Core Starter / Starter-when-healthy split)
     ↓
-getDraftClassMetrics() → counts, rates per draft class
-getRollingDraftScore() → score, coreStarterRate, retentionRate across classes
+getDraftClassMetrics()  → counts and rates per draft class        (§6)
+getRollingDraftScore()  → score, skillScore, coreStarterRate,
+                          retentionRate across classes            (§7)
 ```
 
 ---

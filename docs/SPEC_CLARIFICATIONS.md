@@ -36,11 +36,11 @@ Classification order (first match wins). Let **cumulative snap share** mean `sna
 
 Together, **Depth** (10–20%) and **Contributor** (up to the SC threshold) cover usage below Significant Contributor.
 
-**Overall classification (badges, filters, draft-class buckets):** Derived from the **mean** of each season’s role weight (0–4), then mapped to a representative role. A mixed career (e.g. starter years plus an injured or inactive year) scores below a steady peak. For the top band (mean ≥ 3.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
+**Overall classification (badges, filters, draft-class buckets):** Each season's role weight (0–4) summed and divided by the **rookie-contract window** in drafting-team mode (seasons played in career mode) — the same denominator the 0–100 score uses — then mapped to a representative role. A mixed career (starter years plus an injured or inactive one) scores below a steady peak, and a pick who left mid-window is charged for the years his team did not get. For the top band (≥ 3.5), Core Starter vs Starter when healthy follows the player’s **peak** single-season role among in-scope seasons.
 
-**Rolling draft score:** Uses the same **mean seasonal weight** per pick (not the peak-only weight).
+**Rolling draft score:** Not the role weight. The team score is the mean of the **continuous 0–100 pick score** (`getPlayerDraftScore`) across picks with at least one played season; see `docs/calculations.md` §7.1. Role weights drive badges and Core Starter %, not the headline number.
 
-**Core Starter %:** Share of picks whose **representative** overall role (from mean seasonal weights) is Core Starter — same rule as draft-class “Core starters” counts.
+**Core Starter %:** Share of **scored** picks whose representative overall role is Core Starter — same rule, and same window denominator, as draft-class “Core starters” counts.
 
 ## Apprenticeship (quarterbacks)
 
@@ -84,9 +84,10 @@ Include with partial data. Metrics computed from available games. `teamGames` = 
 
 ## Rolling draft score
 
-- Score per player = **mean** of that player’s per-season role weights (0–4)
-- Team Score = (sum of player scores) / (total picks)
-- Display: Rolling draft score (with selected season span), Core Starter %, Retention %
+- Score per player = sum of that player’s per-season scores (`0.7·load + 0.3·availability`, ×100) ÷ the **rookie-contract window**, on a 0–100 scale
+- Team Score = (sum of player scores) / (**scored** picks — those with at least one played season)
+- Over slot = pick score − what its draft slot alone predicted, averaged per team; reported alongside the score, not folded into it
+- Display: Rolling draft score (with selected season span), Over slot, Core Starter %, Retention %
 
 ## JSON Field Names
 
