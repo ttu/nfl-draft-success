@@ -24,7 +24,7 @@ import {
   isOverSlotPositive,
 } from '../../../lib/formatOverSlot';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
-import { scoredWindowYears } from '../../../lib/rookieWindow';
+import { rookieWindow, scoredWindowYears } from '../../../lib/rookieWindow';
 import { isPlayedSeason, isUnplayedSeason } from '../../../lib/seasonPlayed';
 import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
@@ -240,6 +240,7 @@ function PlayerDetailViewImpl({
               playedSeasons={sortedSeasons.length}
               apprenticeSeasons={apprenticeYears.size}
               windowYears={windowYears.length}
+              contractYears={rookieWindow(pick.round)}
             />
           </div>
         </div>
@@ -487,16 +488,46 @@ function PlayerHeroVerdict({
  * column, gets a different number from the headline, and concludes the page is
  * broken.
  */
+/**
+ * How to name the divisor under the career table. Only the middle case is a
+ * plain rookie window; the other two would state a contract term that does not
+ * exist, which is the same distinction `ScoreBreakdown`'s `describeDenominator`
+ * draws for the maths panel.
+ */
+function describeCareerDenominator(
+  windowYears: number,
+  contractYears: number,
+  apprenticeSeasons: number,
+): string {
+  const s = (n: number) => (n === 1 ? '' : 's');
+  // An apprenticeship shortens the window — Love's is 2 — and the divisor is 3
+  // only because his seasons floor it. Say what the divisor is, and why the
+  // rows above outnumber it.
+  if (apprenticeSeasons > 0) {
+    return `the ${windowYears} season${s(windowYears)} since he won the job · first ${apprenticeSeasons} spent learning behind a veteran`;
+  }
+  // A pick who outlasted his rookie deal is divided by his actual tenure, which
+  // `scoredSeasonCount` floors at his retained seasons. Quenton Nelson's eight
+  // years are not "an 8-season rookie window" — no round carries one.
+  if (windowYears > contractYears) {
+    return `${windowYears} seasons with the drafting team, past his ${contractYears}-season rookie window`;
+  }
+  return `a ${windowYears}-season rookie window`;
+}
+
 function CareerCountNote({
   countedSeasons,
   playedSeasons,
   apprenticeSeasons,
   windowYears,
+  contractYears,
 }: {
   countedSeasons: number;
   playedSeasons: number;
   apprenticeSeasons: number;
   windowYears: number;
+  /** What the round's rookie deal actually entitled the team to: 5, or 4. */
+  contractYears: number;
 }) {
   const s = (n: number) => (n === 1 ? '' : 's');
   if (windowYears === 0) {
@@ -510,23 +541,8 @@ function CareerCountNote({
   return (
     <span data-testid="rookie-window-note">
       {countedSeasons} of {playedSeasons} season{s(playedSeasons)} counted ·
-      divided by
-      {apprenticeSeasons > 0 ? (
-        // Not "a 3-season rookie window". An apprenticeship shortens the window
-        // — Love's is 2 — and the divisor is 3 only because his seasons floor
-        // it, so naming a window here would state a contract term that does not
-        // exist. Say what the divisor is, and why the rows above outnumber it.
-        <>
-          {' the '}
-          {windowYears} season{s(windowYears)} since he won the job · first{' '}
-          {apprenticeSeasons} spent learning behind a veteran
-        </>
-      ) : (
-        <>
-          {windowYears === 8 || windowYears === 11 ? ' an ' : ' a '}
-          {windowYears}-season rookie window
-        </>
-      )}
+      divided by{' '}
+      {describeCareerDenominator(windowYears, contractYears, apprenticeSeasons)}
       {countedSeasons < playedSeasons - apprenticeSeasons && (
         // The ✕ in the Score column carries the same meaning, but it only
         // explains itself through a title tooltip — which needs a second of

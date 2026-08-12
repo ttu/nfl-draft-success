@@ -308,6 +308,27 @@ describe('PlayerDetailView rookie window', () => {
     );
   });
 
+  it('does not invent a contract term for a pick who outlasted his deal', () => {
+    // Quenton Nelson's shape: eight seasons with the drafting team against a
+    // five-year window. The divisor is eight because his tenure floors it, and
+    // calling that "an 8-season rookie window" states a contract nobody signs.
+    // `ScoreBreakdown` already words this correctly; the career table did not.
+    const ironman: DraftPick = makePick({
+      playerName: 'Stayed Put',
+      round: 1,
+      draftYear: 2018,
+      seasons: Array.from({ length: 8 }, (_, i) =>
+        makeSeason({ year: 2018 + i, gamesPlayed: 17, snapShare: 1 }),
+      ),
+    });
+    renderPick(ironman);
+    const note = screen.getByTestId('rookie-window-note');
+    expect(note).toHaveTextContent(
+      /8 seasons with the drafting team, past his 5-season rookie window/i,
+    );
+    expect(note).not.toHaveTextContent(/8-season rookie window/i);
+  });
+
   it('marks seasons played elsewhere as not counting', () => {
     // The common case by far: the row exists and shows a real score, but it
     // belongs to another team and is not in the total above it.
