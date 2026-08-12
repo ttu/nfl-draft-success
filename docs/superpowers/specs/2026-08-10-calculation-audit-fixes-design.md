@@ -198,7 +198,36 @@ span 2013-2025   top5 unchanged   largest rank shift: CAR, 2 places
 
 So the **team rankings are sound**. The defect is in the **per-pick** figure: the signed over-slot in `PlayerList` and the "Over slot" column compare a 2025 rookie against a 2015 veteran on a scale that differs by ~11 points. Two picks with identical careers, ten years apart, do not read alike.
 
-### Fix — maturity-conditioned expectation
+### ⚠️ Revised after measurement — the ~11 points are three things, and only one is a defect
+
+The framing above attributes the whole spread to maturity. Measured properly, it does not survive. Decomposition:
+
+**1. A genuine era trend — the largest share, and not a defect.** Rookies simply play more than they used to. Mean rookie-season score by draft class:
+
+```
+2013  37.7    2016  41.2    2019  41.3    2022  42.8    2025  45.0
+2014  37.8    2017  39.8    2020  42.4    2023  42.8
+2015  38.0    2018  43.1    2021  41.0    2024  41.8
+```
+
+Roughly +6 points from 2013–15 to 2022–25. The curve is fit across 2013–2022 pooled, so it encodes a decade-averaged era: early classes read negative and recent ones positive partly because the league changed, not because those front offices drafted worse. Correcting this would erase a real difference, not an artifact.
+
+**2. A maturity effect — real, small, and the only correctable part.** Measured _paired_, each mature pick against its own eventual score (so round composition cancels):
+
+```
+age 1  n=2037  +2.84      age 3  n=2037  +2.22
+age 2  n=2037  +4.04      age 4  n=2037  +0.44
+```
+
+An immature pick reads 2–4 points above where it settles. Applying these as offsets moves the worst year bias from 7.63 to **4.79** — a genuine improvement, and clearly not the whole story.
+
+**3. Genuine class-to-class variation.** Mature classes, where the maturity offset is zero by construction, still scatter from −3.32 (2015) to +4.22 (2022). Their mean is ≈ −0.5, which is what a well-fitted curve should give. That scatter is signal about draft classes differing, and should stay.
+
+**Survivorship was ruled out.** Every class 2013–2025 has 100% of its picks scored; only 2026 (unplayed) is excluded, and uniformly.
+
+**Revised recommendation.** Build the age offsets from part 2 — a small, evidenced correction — and leave parts 1 and 3 alone. Do _not_ build the per-age curve machinery described below expecting it to flatten the spread to ±1.5; that target was set against a misdiagnosis and is unreachable without deleting real signal. Whether over-slot should additionally be made era-relative (fitting the curve on a rolling window rather than pooled) is a separate product decision, not a bug fix: it would make a 2013 steal and a 2025 steal comparable to each other while making neither comparable to an absolute bar.
+
+### Original plan — maturity-conditioned expectation
 
 Make the expectation a function of both slot and how far into its window the pick is:
 
