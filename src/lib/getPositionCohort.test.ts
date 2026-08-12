@@ -23,6 +23,63 @@ const classes = (year: number, picks: DraftPick[]): DraftClass[] => [
   makeDraftClass({ year, picks }),
 ];
 
+/**
+ * The number and the chip beside it have to answer the same question.
+ *
+ * Wyatt Teller rendered as `82 · DEPTH`: 82 was his load across a career that
+ * turned into Pro Bowls in Cleveland, while Depth was Buffalo's verdict, who
+ * drafted him and traded him after a year for nothing much. Both are true, and
+ * together in one row they read as a contradiction. The app credits a pick to
+ * the team that drafted it, so the load follows that lens too.
+ */
+describe('avgLoad respects the drafting-team lens', () => {
+  const traded = makePick({
+    playerId: 'teller',
+    position: 'G',
+    round: 5,
+    seasons: [
+      makeSeason({ year: 2021, snapShare: 0.2, cumulativeSnapShare: 0.2 }),
+      makeSeason({
+        year: 2022,
+        snapShare: 1,
+        cumulativeSnapShare: 1,
+        retained: false,
+      }),
+      makeSeason({
+        year: 2023,
+        snapShare: 1,
+        cumulativeSnapShare: 1,
+        retained: false,
+      }),
+    ],
+  });
+
+  it('counts only drafting-team seasons when that is the lens', () => {
+    expect(avgLoad(traded, { draftingTeamOnly: true })).toBeCloseTo(0.2);
+  });
+
+  it('spans the whole career in career mode', () => {
+    expect(avgLoad(traded, { draftingTeamOnly: false })).toBeCloseTo(
+      (0.2 + 1 + 1) / 3,
+    );
+  });
+
+  it('defaults to the career reading when no lens is given', () => {
+    expect(avgLoad(traded)).toBeCloseTo((0.2 + 1 + 1) / 3);
+  });
+
+  it('is 0 when the pick never played for the team that drafted him', () => {
+    const gone = makePick({
+      playerId: 'gone',
+      position: 'G',
+      seasons: [
+        makeSeason({ year: 2021, cumulativeSnapShare: 0.9, retained: false }),
+      ],
+    });
+    expect(avgLoad(gone, { draftingTeamOnly: true })).toBe(0);
+  });
+});
+
 describe('avgLoad', () => {
   it('averages cumulativeSnapShare across seasons', () => {
     expect(avgLoad(pick('a', 'WR', [0.4, 0.8]))).toBeCloseTo(0.6);

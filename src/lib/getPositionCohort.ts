@@ -20,11 +20,23 @@ export interface PositionCohort {
 /**
  * Mean season load for a pick — the average of each season's cumulative snap
  * share (falling back to that season's snap share when cumulative is absent).
- * Unlike the draft score this is not `draftingTeamOnly`-filtered: it summarizes
- * a player's on-field volume across their whole career for cohort comparison.
+ *
+ * Follows the same lens as the role chip shown beside it. This used to be
+ * career-wide regardless, which put a career number next to a drafting-team
+ * verdict: Wyatt Teller read `82 · DEPTH`, the 82 earned over six Pro Bowl
+ * seasons in Cleveland and the Depth earned in Buffalo, who drafted him and
+ * moved him after a year for nothing much. Both true, and contradictory in one
+ * row. The app credits a pick to the team that drafted it, so the load does too.
  */
-export function avgLoad(pick: DraftPick): number {
-  const seasons = playedSeasons(pick);
+export function avgLoad(
+  pick: DraftPick,
+  options?: GetPlayerRoleOptions,
+): number {
+  const played = playedSeasons(pick);
+  const seasons =
+    options?.draftingTeamOnly === true
+      ? played.filter((s) => s.retained)
+      : played;
   if (seasons.length === 0) return 0;
   const total = seasons.reduce(
     (a, s) => a + (s.cumulativeSnapShare ?? s.snapShare ?? 0),
@@ -35,8 +47,8 @@ export function avgLoad(pick: DraftPick): number {
 
 /**
  * Builds the "this position's class, ranked by load" cohort for a player detail
- * view: every same-position pick from the target's draft year, ranked by career
- * load and capped at `limit`, plus the target's 1-based rank within that list
+ * view: every same-position pick from the target's draft year, ranked by load
+ * on the caller's lens and capped at `limit`, plus the target's 1-based rank within that list
  * (0 when the target sits outside the capped list).
  */
 export function getPositionCohort(
@@ -54,7 +66,7 @@ export function getPositionCohort(
   const members = classmates
     .map((p) => ({
       pick: p,
-      load: avgLoad(p),
+      load: avgLoad(p, options),
       role: getPlayerRole(p, options),
     }))
     .sort((a, b) => b.load - a.load)
