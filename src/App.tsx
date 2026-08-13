@@ -494,10 +494,6 @@ function AppContent() {
     hasSelectedTeam: selectedTeam != null,
   });
 
-  /** Team detail is the only view rendering the draft↔win correlation row. */
-  const needsCorrelation =
-    !isPlayerView && activeView === ActiveView.TeamDetail;
-
   const [dark, setDark] = useDarkMode();
 
   useLayoutEffect(() => {
@@ -533,6 +529,24 @@ function AppContent() {
     () => !loadLandingIntroDismissed(),
   );
   const [showInfoView, setShowInfoView] = useState(false);
+
+  /**
+   * Who reads the draft↔win correlation: the team detail view's row, and the
+   * methodology modal's validation section.
+   *
+   * The modal used to be left out, and it fails silently — `correlation` stays
+   * null and `ValidationSection` renders nothing at all, so opening Info from
+   * the rankings page (where most readers are) simply had no "does drafting
+   * predict winning?" section, scatter and coefficients included, with no gap
+   * or error to suggest one was missing.
+   *
+   * Still deliberately not fetched on first paint: these two files are ~28 KB
+   * that the rankings page's first paint would otherwise compete for and never
+   * spend. Opening the modal is what arms it.
+   */
+  const needsCorrelation =
+    (!isPlayerView && activeView === ActiveView.TeamDetail) || showInfoView;
+
   const [dataLastUpdatedDate, setDataLastUpdatedDate] = useState(() =>
     formatDataLastUpdatedDate(MIN_DATETIME_ISO),
   );

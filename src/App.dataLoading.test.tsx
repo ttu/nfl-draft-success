@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { DraftClass } from './types';
 import { makeDraftClass, makePick, makeSeason } from './test/factories';
@@ -97,6 +97,34 @@ describe('Data loading priority', () => {
         <App />
       </MemoryRouter>,
     );
+
+    await waitFor(() => {
+      expect(loadTeamSuccess).toHaveBeenCalled();
+      expect(loadLaggedRankings).toHaveBeenCalled();
+    });
+  });
+
+  /**
+   * The methodology's "does drafting predict winning?" section reads the same
+   * two files as the team view, but the fetch was gated on the team view alone.
+   * Opening Info from anywhere else — the rankings page, which is where most
+   * readers are — left the correlation null, and the whole section, scatter and
+   * both coefficients included, silently rendered nothing.
+   *
+   * The fetch must still not happen on first paint: that deferral is the point
+   * of the gate, and the test above pins it.
+   */
+  it('fetches correlation data when the methodology modal is opened', async () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByLabelText('Team draft rankings');
+    expect(loadLaggedRankings).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Methodology' }));
 
     await waitFor(() => {
       expect(loadTeamSuccess).toHaveBeenCalled();
