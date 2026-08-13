@@ -5,6 +5,7 @@ import {
   buildCorrelation,
   teamStory,
   classifyCorrelation,
+  pearsonInterval,
   type ScoreEntry,
 } from './draftSuccessCorrelation';
 import type { TeamSuccess } from './teamSuccess';
@@ -230,5 +231,56 @@ describe('classifyCorrelation', () => {
     expect(classifyCorrelation(0.2).strength).toBe('weak');
     expect(classifyCorrelation(-0.37).strength).toBe('moderate');
     expect(classifyCorrelation(0.8).strength).toBe('strong');
+  });
+
+  /**
+   * The bands are large-sample rules of thumb. There are 32 teams, where the
+   * 95% interval on r is roughly ±0.35, so "weak" was being printed for values
+   * the data cannot separate from zero — the raw-score r of 0.227 among them.
+   */
+  it('reports no relationship when the interval spans zero', () => {
+    // r = 0.227, n = 32: the shipped raw-score figure. CI ≈ [-0.13, 0.53].
+    expect(classifyCorrelation(0.227, 32).strength).toBe('no');
+    // The same r on a sample large enough to resolve it is a real weak signal.
+    expect(classifyCorrelation(0.227, 400).strength).toBe('weak');
+  });
+
+  it('keeps the magnitude band once the interval clears zero', () => {
+    // r = 0.467, n = 32: over slot. CI ≈ [0.14, 0.70] — excludes zero.
+    expect(classifyCorrelation(0.467, 32).strength).toBe('moderate');
+    expect(classifyCorrelation(0.467, 32).direction).toBe('positive');
+  });
+
+  it('falls back to the magnitude band when no sample size is given', () => {
+    expect(classifyCorrelation(0.2).strength).toBe('weak');
+  });
+});
+
+describe('pearsonInterval', () => {
+  it('brackets the estimate', () => {
+    const ci = pearsonInterval(0.467, 32);
+    expect(ci).not.toBeNull();
+    expect(ci!.lo).toBeLessThan(0.467);
+    expect(ci!.hi).toBeGreaterThan(0.467);
+  });
+
+  it('matches the Fisher z interval for the shipped figures', () => {
+    expect(pearsonInterval(0.467, 32)!.lo).toBeCloseTo(0.14, 1);
+    expect(pearsonInterval(0.467, 32)!.hi).toBeCloseTo(0.7, 1);
+    expect(pearsonInterval(0.227, 32)!.lo).toBeCloseTo(-0.13, 1);
+    expect(pearsonInterval(0.227, 32)!.hi).toBeCloseTo(0.53, 1);
+  });
+
+  it('narrows as the sample grows', () => {
+    const small = pearsonInterval(0.4, 20)!;
+    const large = pearsonInterval(0.4, 500)!;
+    expect(large.hi - large.lo).toBeLessThan(small.hi - small.lo);
+  });
+
+  it('returns null where the transform is undefined', () => {
+    // n < 4 leaves no degrees of freedom; |r| = 1 sends the transform to ±∞.
+    expect(pearsonInterval(0.5, 3)).toBeNull();
+    expect(pearsonInterval(1, 32)).toBeNull();
+    expect(pearsonInterval(-1, 32)).toBeNull();
   });
 });

@@ -34,6 +34,12 @@ export interface CorrelationResult {
   pearsonR: number;
   /** Pearson r between over slot and regular-season win rate (the headline). */
   skillPearsonR: number;
+  /** Teams in both inputs — the n behind both coefficients, and their intervals. */
+  teamCount: number;
+  /** 95% interval on {@link pearsonR}; null when it cannot be computed. */
+  pearsonInterval: CorrelationInterval | null;
+  /** 95% interval on {@link skillPearsonR}; null when it cannot be computed. */
+  skillPearsonInterval: CorrelationInterval | null;
   topIndexPlayoffRatio: TopIndexPlayoffRatio;
 }
 
@@ -92,10 +98,17 @@ export function buildCorrelation(
     of: topTeams.length,
   };
 
+  const pearsonR = pearson(scoreValues, winPctValues);
+  const skillPearsonR = pearson(overSlotValues, winPctValues);
+  const teamCount = joined.length;
+
   return {
     rows,
-    pearsonR: pearson(scoreValues, winPctValues),
-    skillPearsonR: pearson(overSlotValues, winPctValues),
+    pearsonR,
+    skillPearsonR,
+    teamCount,
+    pearsonInterval: pearsonInterval(pearsonR, teamCount),
+    skillPearsonInterval: pearsonInterval(skillPearsonR, teamCount),
     topIndexPlayoffRatio,
   };
 }
@@ -164,22 +177,58 @@ export function teamStory(row: CorrelationRow): string[] {
 export type CorrelationStrength = 'no' | 'weak' | 'moderate' | 'strong';
 export type CorrelationDirection = 'positive' | 'negative';
 
+/** A correlation's 95% confidence interval. */
+export interface CorrelationInterval {
+  lo: number;
+  hi: number;
+}
+
+/**
+ * 95% confidence interval for a Pearson r, via the Fisher z transform.
+ *
+ * Returns null where the transform is undefined: fewer than four pairs leaves
+ * no degrees of freedom, and |r| = 1 sends z to infinity.
+ */
+export function pearsonInterval(
+  r: number,
+  n: number,
+): CorrelationInterval | null {
+  if (!Number.isFinite(r) || n < 4 || Math.abs(r) >= 1) return null;
+  const z = 0.5 * Math.log((1 + r) / (1 - r));
+  const se = 1 / Math.sqrt(n - 3);
+  return { lo: Math.tanh(z - 1.96 * se), hi: Math.tanh(z + 1.96 * se) };
+}
+
 /**
  * Band a correlation coefficient into a plain-language strength and direction,
  * so the methodology copy describes whatever the current window's real `r`
- * turns out to be — instead of asserting a fixed narrative. Magnitude bands
- * follow the usual weak/moderate/strong rule of thumb.
+ * turns out to be — instead of asserting a fixed narrative.
+ *
+ * Pass `n` wherever it is known. The magnitude bands are large-sample rules of
+ * thumb, and this league has 32 teams: the 95% interval on r is roughly ±0.35
+ * wide there, so the raw-score r of 0.227 was being described as a "weak"
+ * relationship when the data cannot separate it from zero at all. When the
+ * interval spans zero the strength is `no`, whatever the magnitude — the honest
+ * reading of a coefficient that thirty-two points cannot resolve.
  */
-export function classifyCorrelation(r: number): {
+export function classifyCorrelation(
+  r: number,
+  n?: number,
+): {
   strength: CorrelationStrength;
   direction: CorrelationDirection;
 } {
+  const direction: CorrelationDirection = r < 0 ? 'negative' : 'positive';
+  const interval = n === undefined ? null : pearsonInterval(r, n);
+  if (interval && interval.lo <= 0 && interval.hi >= 0) {
+    return { strength: 'no', direction };
+  }
   const abs = Math.abs(r);
   let strength: CorrelationStrength = 'no';
   if (abs >= 0.5) strength = 'strong';
   else if (abs >= 0.3) strength = 'moderate';
   else if (abs >= 0.1) strength = 'weak';
-  return { strength, direction: r < 0 ? 'negative' : 'positive' };
+  return { strength, direction };
 }
 
 /**

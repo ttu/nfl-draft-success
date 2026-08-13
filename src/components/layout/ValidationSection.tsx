@@ -17,6 +17,23 @@ function formatCoefficient(r: number): string {
 }
 
 /**
+ * A coefficient with its 95% interval, e.g. `0.47 (95% CI 0.14 to 0.70)`.
+ *
+ * Shown because a bare r on 32 teams reads far more precisely than it is: the
+ * interval on the over-slot figure runs from a weak relationship to a strong
+ * one, and the raw-score figure's spans zero entirely. A reader given the
+ * interval can judge that; one given only the point estimate cannot.
+ */
+function formatWithInterval(
+  r: number,
+  interval: { lo: number; hi: number } | null,
+): string {
+  const point = formatCoefficient(r);
+  if (!interval) return point;
+  return `${point} (95% CI ${formatCoefficient(interval.lo)} to ${formatCoefficient(interval.hi)})`;
+}
+
+/**
  * The methodology's "does the score predict winning?" panel: a real scatter of
  * every team's early-window drafting against its *later* win rate, and an honest
  * read of that lagged correlation. It draws the distinction the data insists on
@@ -47,17 +64,25 @@ export function ValidationSection({
   );
 }
 
-/** Honest, data-driven read of the lagged correlation. */
-function relationshipCopy(pearsonR: number): {
+/**
+ * Honest, data-driven read of the lagged correlation.
+ *
+ * Takes the sample size so the wording answers to the interval, not just the
+ * magnitude: on 32 teams a coefficient whose interval spans zero is not a weak
+ * relationship, it is one this data cannot establish either way.
+ */
+function relationshipCopy(
+  pearsonR: number,
+  teamCount: number,
+): {
   relation: string;
   explanation: string;
 } {
-  const { strength, direction } = classifyCorrelation(pearsonR);
+  const { strength, direction } = classifyCorrelation(pearsonR, teamCount);
   if (strength === 'no') {
     return {
-      relation: 'essentially no linear relationship',
-      explanation:
-        'A good draft can pay off directly (picks who become stars) or indirectly (young talent traded for veterans), but over this window the two wash out: drafting and later winning move largely independently, with scheme, health and coaching carrying the rest.',
+      relation: 'no relationship this sample can establish',
+      explanation: `With ${teamCount} teams the confidence interval on that figure still spans zero, so the honest reading is that these seasons cannot separate drafting from later winning. A good draft can pay off directly (picks who become stars) or indirectly (young talent traded for veterans), and scheme, health and coaching carry weight the draft never touches.`,
     };
   }
   const relation = `a ${strength} ${direction} relationship`;
@@ -82,8 +107,15 @@ function ValidationPanel({
   correlation: CorrelationResult;
   windows: LaggedWindows;
 }) {
-  const { pearsonR, skillPearsonR, topIndexPlayoffRatio } = correlation;
-  const { relation, explanation } = relationshipCopy(skillPearsonR);
+  const {
+    pearsonR,
+    skillPearsonR,
+    teamCount,
+    pearsonInterval,
+    skillPearsonInterval,
+    topIndexPlayoffRatio,
+  } = correlation;
+  const { relation, explanation } = relationshipCopy(skillPearsonR, teamCount);
   const draftLabel = formatYearRange(windows.draftFrom, windows.draftTo);
   const winLabel = formatYearRange(windows.winFrom, windows.winTo);
 
@@ -92,11 +124,11 @@ function ValidationPanel({
       <div className="validation__figures">
         <Figure
           value={formatCoefficient(skillPearsonR)}
-          label={`Pearson r · over slot → win ${winLabel}`}
+          label={`Pearson r · over slot → win ${winLabel} · n=${teamCount}`}
         />
         <Figure
           value={formatCoefficient(pearsonR)}
-          label={`Pearson r · raw usage → win ${winLabel}`}
+          label={`Pearson r · raw usage → win ${winLabel} · n=${teamCount}`}
         />
         <Figure
           value={`${topIndexPlayoffRatio.made} / ${topIndexPlayoffRatio.of}`}
@@ -113,11 +145,20 @@ function ValidationPanel({
       <p className="validation__prose">
         We compare each team's <b>{draftLabel}</b> drafting against its{' '}
         <b>{winLabel}</b> win rate — the seasons that followed. Raw playing time
-        barely moves with winning ({formatCoefficient(pearsonR)}): bad teams
-        hand snaps to rookies, so volume tracks losing about as much as winning.
-        But <b>over slot</b> — draft value above what each pick's position
-        predicted — shows <b>{relation}</b> ({formatCoefficient(skillPearsonR)}
-        ). {explanation}
+        barely moves with winning (
+        {formatWithInterval(pearsonR, pearsonInterval)}
+        ): bad teams hand snaps to rookies, so volume tracks losing about as
+        much as winning. But <b>over slot</b> — draft value above what each
+        pick's position predicted — shows <b>{relation}</b> (
+        {formatWithInterval(skillPearsonR, skillPearsonInterval)}).{' '}
+        {explanation}
+      </p>
+      <p className="validation__prose validation__caveat">
+        Both figures rest on {teamCount} teams, which is all the teams there
+        are. That is a small sample for a correlation: the interval above is
+        wide because thirty-two points cannot pin one down, and it will stay
+        wide however many seasons are added, since the league is not getting
+        bigger. Read the intervals, not the point estimates.
       </p>
     </div>
   );
