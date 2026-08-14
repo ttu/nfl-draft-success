@@ -55,8 +55,8 @@ statement about the rookie year, which is exactly the data a recent class has);
 "longest availability streak ÷ seasons" is not a headline anyone can read).
 
 The floors are load-bearing, not decorative: without them, iron men is topped by
-any rookie who dressed 17 times, and late bloomers by anyone with two seasons and
-a good second one.
+any rookie who dressed 17 times, and late bloomers by anyone whose rookie year
+never happened.
 
 ### Retention ignores `draftingTeamOnly`
 
@@ -73,9 +73,10 @@ This is enforced by the signature rather than a comment:
 
 ### Accepted trade-off
 
-Late bloomers reads raw `playedSeasons`, not `getFilteredSeasons`. That is a
-deliberate divergence from every other consumer of season data, documented at
-the call site and in the page footnote. See _Apprenticeship divergence_ below.
+Late bloomers reads raw `playedSeasons` rather than `getFilteredSeasons`, then
+drops apprentice seasons itself via `withoutApprenticeSeasons`. It measures usage
+rather than score, so the scoring filter is the wrong tool — but it agrees with
+that filter about quarterbacks. See _Apprenticeship divergence_ below.
 
 ## Metric definitions
 
@@ -113,12 +114,12 @@ Shared conventions for both new bands:
 
 ### Career shape
 
-| List             | Metric                                                          | Gates                                                                                                                           | Tie-breaks                                                                 | Display                       |
-| ---------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------- |
-| Day-one starters | Role share in the season where `year === pick.draftYear`        | that season was played, and his second season (if he has played one) is still `core_starter`                                    | higher whole-career score, then later `overallPick`                        | `88% · rookie year`           |
-| Late bloomers    | Peak **full-time** season role share − rookie-season role share | ≥ `MIN_BLOOM_SEASONS` (3) played seasons, a played rookie season, and ≥ `MIN_SUSTAINED_PEAK_SEASONS` (2) `core_starter` seasons | higher peak share, then more seasons held at peak                          | `2 yrs full-time · 12% → 88%` |
-| Iron men         | Longest run of consecutive qualifying seasons                   | streak ≥ `MIN_IRON_MAN_STREAK` (3)                                                                                              | higher mean role share over the streak                                     | `5 straight · '21–'25`        |
-| Snakebit         | `Σ (teamGames − gamesPlayed)` over **active-career** seasons    | ≥ 2 seasons, ≥ `MIN_SNAKEBIT_GAMES` (8) career games, full-time when active                                                     | shorter active career (same misses from fewer seasons is the sharper loss) | `91% when active · 38 missed` |
+| List             | Metric                                                                    | Gates                                                                                                                                                                                       | Tie-breaks                                                                 | Display                       |
+| ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------- |
+| Day-one starters | Role share in the season where `year === pick.draftYear`                  | that season was played, and his second season (if he has played one) is still `core_starter`                                                                                                | higher whole-career score, then later `overallPick`                        | `88% · rookie year`           |
+| Late bloomers    | Peak **full-time** season role share − first **wait** season's role share | ≥ `MIN_BLOOM_SEASONS` (3) played seasons after apprentice seasons are dropped, ≥ `MIN_WAIT_SEASONS` (2) leading wait seasons, and ≥ `MIN_SUSTAINED_PEAK_SEASONS` (2) `core_starter` seasons | higher peak share, then more seasons held at peak                          | `2 yrs buried · 12% → 88%`    |
+| Iron men         | Longest run of consecutive qualifying seasons                             | streak ≥ `MIN_IRON_MAN_STREAK` (3)                                                                                                                                                          | higher mean role share over the streak                                     | `5 straight · '21–'25`        |
+| Snakebit         | `Σ (teamGames − gamesPlayed)` over **active-career** seasons              | ≥ 2 seasons, ≥ `MIN_SNAKEBIT_GAMES` (8) career games, full-time when active                                                                                                                 | shorter active career (same misses from fewer seasons is the sharper loss) | `91% when active · 38 missed` |
 
 **Day-one starters** requires the job to have **held**. Jonathan Mingo took 90%
 of the snaps as a rookie and 42% the year after: he won a starting job and lost
@@ -139,10 +140,37 @@ inverts that, ranking a two-year starter over a decade-long one. Pick number
 settles only what the career total leaves level, still favouring the later pick.
 The real-data list opens DeAndre Hopkins, Joel Bitonio, Keenan Allen.
 
-**Late bloomers** requires a played rookie season because the metric is a rise
-_from_ somewhere. A pick whose first season is his third year on the roster has
-no baseline, and treating a missing rookie year as 0% would manufacture a rise
-out of an absence.
+**Late bloomers** requires a **wait**, not merely a rise. The career must open
+with at least `MIN_WAIT_SEASONS` (2) consecutive _wait seasons_ — seasons he was
+available for (`gamesPlayed / teamGames >= WAIT_AVAILABILITY_SHARE`, 0.5) and was
+still used below `WAIT_TIER_CEILING` (`SIGNIFICANT_TIER_THRESHOLD`, 0.35). The
+first of them sets the baseline the rise is measured from; the rookie season as
+such is no longer read at all.
+
+Without that gate the list ranked a rise from anywhere: **883 picks qualified**
+across 2013–2025, and the visible top twenty was a wall of identical `+100`s
+(Travis Kelce, J.C. Tretter, Jaylon Smith, Grant Delpit) — nearly all of them
+players whose rookie year never happened. Kelce is the case that names the
+problem: one game as a rookie, then a decade of full-time football. He did not
+wait behind anyone; he was hurt, and reading that year as a 0% baseline
+manufactures a bloom out of an absence.
+
+So a season under the availability floor is **stepped over**: it is not a wait
+season, it does not end the run of them, and it cannot set the baseline. Kelce's
+rookie year disappears and his 2014 breakout ends the wait at zero, dropping him
+off the list; a player hurt _between_ two buried seasons keeps his wait intact.
+Keying on availability rather than on injury fields needs no injury data and so
+treats injury, IR, holdouts, and healthy inactives alike.
+
+The wait must **lead** the career, mirroring `apprenticeSeasonCount`: a starter
+benched mid-career and restored is a different story. And it is measured on
+seasons that survive `withoutApprenticeSeasons` — see _Apprenticeship
+divergence_.
+
+Under the gate 45 picks qualify, enough to fill the 20 rows, and the rises spread
+0.61–0.99 instead of saturating. The real-data list opens Kaden Elliss
+(`2 yrs buried · 1% → 100%`), E.J. Speed, Josh Metellus, Kyle Van Noy,
+Zack Baun, Jordan Poyer.
 
 It also requires the bloom to **last**: at least `MIN_SUSTAINED_PEAK_SEASONS`
 (2) seasons classifying `core_starter`, and the peak share is taken from those
@@ -158,15 +186,13 @@ from full-time seasons stops a partial season inflating anyone else's rise.
 `core_starter` is the right tier to ask for because it already requires the
 player to have been there for half the games.
 
-Its rise **saturates**: a player who took no rookie snap and later started
-full-time scores the maximum +100, and against real data the entire top 20 is
-that shape. The list therefore ranks rise, then peak share, then the number of
-seasons he _held_ the peak (share ≥ `CORE_TIER_THRESHOLD`), and prints that last
-count in its detail line — otherwise every visible row reads identically and the
-ordering looks arbitrary even though it is not. With the tie-breaks in place the
-real-data list opens Travis Kelce (12 seasons full-time), then Patrick Mahomes
-(8) — which is also the clearest possible vindication of the apprenticeship
-divergence below.
+Rises still **bunch** near the top — a player buried at 2% who later starts
+full-time scores near the maximum however long he lasted — so the list ranks
+rise, then peak share, then the number of seasons he _held_ the peak (share ≥
+`CORE_TIER_THRESHOLD`). The detail line prints the **wait** rather than that last
+count: the headline already carries the rise, so the half worth keeping when a
+narrow screen truncates the line is how long he sat, which is why the row is on
+this list at all.
 
 **Iron men** — a season qualifies when it is both _available_ and _real_:
 
@@ -280,12 +306,23 @@ Display: `PIT · 14 of 16 kept (88%)`.
 who sat behind a veteran is not scored for the wait (`apprenticeship.ts`). Every
 scoring path in the app routes through it.
 
-Late bloomers deliberately does not. The wait is the metric: filtering those
-seasons out erases the rookie-year baseline and with it every Jordan
-Love-shaped career, which is the exact population the list exists to surface.
-Rising after sitting is not a failure in either lens — it is the headline. This
-must be stated in the page footnote, not only in code, so the page does not
-appear to contradict the player view.
+Late bloomers **agrees** with that filter, and calls
+`withoutApprenticeSeasons(pick, career)` itself before reading anything. A
+quarterback who sat behind a veteran and then took the job did not climb out of a
+hole; he walked the normal path of the one position where exactly one player
+takes the snaps. Counting those seasons as a wait makes every developed
+quarterback a late bloomer by construction, which says nothing about him.
+
+What is left has to stand on its own: a vindicated apprentice appears here only
+if he was buried _after_ taking over. In practice that removes Jordan Love-shaped
+careers from the list entirely, and on the current window leaves one quarterback
+(Logan Thomas, whose bench years were never a vindicated apprenticeship with the
+drafting team). That is the intended reading, not an accident of the filter.
+
+The list still diverges from the scoring path in the other direction — it reads
+`playedSeasons` rather than `getFilteredSeasons`, because it measures usage and
+availability rather than score. The page footnote states the quarterback rule
+plainly, so the page does not appear to contradict the player view.
 
 All other lists in both bands use `playedSeasons` directly as well (they measure
 availability and usage, not score), except the two `getSeasonScore` means in "got
@@ -295,7 +332,8 @@ away", which are computed over explicitly selected season sets.
 
 - **`src/lib/careerShapeHighlights.ts`** — `getCareerShapeHighlights(draftClasses, teams, options)`
   returning `{ dayOneStarters, lateBloomers, ironMen, snakebit }`, plus
-  `MIN_BLOOM_SEASONS`, `MIN_IRON_MAN_STREAK`, `MIN_SNAKEBIT_GAMES` and
+  `MIN_BLOOM_SEASONS`, `MIN_WAIT_SEASONS`, `WAIT_TIER_CEILING`,
+  `WAIT_AVAILABILITY_SHARE`, `MIN_IRON_MAN_STREAK`, `MIN_SNAKEBIT_GAMES` and
   `FULL_AVAILABILITY_GAMES_SHARE` as named exports so tests assert against the
   constant rather than a literal.
 - **`src/lib/retentionHighlights.ts`** — `getRetentionHighlights(draftClasses, teams)`
@@ -377,7 +415,11 @@ Band order: Value → Career shape → Retention → the existing core-starters 
   snakebit, or alter a rookie-year share.
 - A full-time special-teamer with 17 games and depth-level usage must not rank as
   an iron man.
-- An apprentice QB must appear among late bloomers.
+- A vindicated apprentice QB must **not** appear among late bloomers; a QB whose
+  wait was never a vindicated apprenticeship with the drafting team still can.
+- A player who missed most of his first season and was full-time thereafter must
+  not appear among late bloomers — the absent year is neither a wait season nor a
+  baseline.
 - A pick traded before ever playing must not appear in "got away" (no retained
   baseline).
 - A player whose post-exit seasons are all depth must not appear in "got away"
@@ -387,12 +429,9 @@ Band order: Value → Career shape → Retention → the existing core-starters 
   score, streak, or games total.
 - A season missed in full (played season, zero games, zero snaps) must count
   toward snakebit's missed-games total while staying out of its snap-share mean,
-  must break an iron-man streak, and — when it is the rookie year — is a real
-  late-bloomer baseline of 0%, not a missing one. A rookie who never took a snap
-  and later started is the archetype the list exists for, and the top of that
-  list should be expected to fill with maximal rises for exactly that reason.
-  The gate is that the rookie season _row_ exists and was played, not that it
-  contained snaps.
+  must break an iron-man streak, and is never a late-bloomer baseline — under the
+  availability floor it is stepped over, because a season he did not play is not
+  a season he waited through.
 - A player who leaves the drafting team and later returns has non-contiguous
   post-exit seasons; "got away" reads them as a set, not a suffix, so both
   spells count toward the post-exit mean.
@@ -408,8 +447,8 @@ TDD per `AGENTS.local.md`: tests first, then implementation.
 - `src/lib/careerShapeHighlights.test.ts` — one case per gate and per tie-break,
   plus the rest-game, special-teamer, and apprentice-QB cases above. Two cases
   cover the fully-missed season specifically: it counts toward snakebit's missed
-  games without entering its snap-share mean, and it serves as a 0% rookie
-  baseline for late bloomers. Assertions read `value`, not `detail`. Fixtures
+  games without entering its snap-share mean, and it is stepped over by the
+  late-bloomer wait. Assertions read `value`, not `detail`. Fixtures
   build `DraftPick` objects directly, as the existing highlight tests do.
 - `src/lib/retentionHighlights.test.ts` — the four "got away" gates, the keeper
   definition, the `MIN_KEEPERS` floor, the current-team label from an unplayed

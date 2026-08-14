@@ -5,6 +5,7 @@ import {
   MIN_BLOOM_SEASONS,
   MIN_IRON_MAN_STREAK,
   MIN_SNAKEBIT_GAMES,
+  MIN_WAIT_SEASONS,
 } from './careerShapeHighlights';
 import { makePick, makeSeason, makeTeam } from '../test/factories';
 import type { DraftClass, DraftPick } from '../types';
@@ -102,9 +103,9 @@ describe('late bloomers', () => {
     });
   }
 
-  it('ranks by the rise from rookie year to peak', () => {
+  it('ranks by the rise from the first buried season to peak', () => {
     const big = career(10, [0.1, 0.3, 0.9, 0.9]);
-    const small = career(11, [0.5, 0.6, 0.7, 0.7]);
+    const small = career(11, [0.2, 0.2, 0.7, 0.7]);
 
     const { lateBloomers } = getCareerShapeHighlights(
       classOf(small, big),
@@ -113,7 +114,7 @@ describe('late bloomers', () => {
 
     expect(lateBloomers.map((r) => r.pick.overallPick)).toEqual([10, 11]);
     expect(lateBloomers[0].headline).toBe('+80');
-    expect(lateBloomers[0].detail).toBe('2 yrs full-time · 10% → 90%');
+    expect(lateBloomers[0].detail).toBe('2 yrs buried · 10% → 90%');
   });
 
   it('requires MIN_BLOOM_SEASONS played seasons', () => {
@@ -125,50 +126,133 @@ describe('late bloomers', () => {
     expect(lateBloomers).toEqual([]);
   });
 
-  it('treats a snapless rookie year as a real 0% baseline', () => {
-    const sat = makePick({
-      overallPick: 13,
-      teamId: 'A',
-      draftYear: 2021,
-      seasons: [
-        makeSeason({ year: 2021, gamesPlayed: 0, snapShare: 0 }),
-        makeSeason({ year: 2022, snapShare: 0.5 }),
-        makeSeason({ year: 2023, snapShare: 0.95 }),
-        makeSeason({ year: 2024, snapShare: 0.95 }),
-      ],
-    });
-
-    const { lateBloomers } = getCareerShapeHighlights(classOf(sat), teams);
-
-    expect(lateBloomers[0].headline).toBe('+95');
-  });
-
-  it('skips a pick with no rookie season to rise from', () => {
-    const noBaseline = makePick({
-      overallPick: 14,
-      teamId: 'A',
-      draftYear: 2021,
-      seasons: [
-        makeSeason({ year: 2022, snapShare: 0.2 }),
-        makeSeason({ year: 2023, snapShare: 0.6 }),
-        makeSeason({ year: 2024, snapShare: 0.95 }),
-      ],
-    });
+  it('requires MIN_WAIT_SEASONS buried seasons before the bloom', () => {
+    const straightIn = career(13, [0.1, 0.9, 0.9, 0.9]);
 
     const { lateBloomers } = getCareerShapeHighlights(
-      classOf(noBaseline),
+      classOf(straightIn),
+      teams,
+    );
+
+    expect(MIN_WAIT_SEASONS).toBe(2);
+    expect(lateBloomers).toEqual([]);
+  });
+
+  it('requires the wait to lead the career', () => {
+    const benchedMidCareer = career(14, [0.9, 0.1, 0.1, 0.9, 0.9]);
+
+    const { lateBloomers } = getCareerShapeHighlights(
+      classOf(benchedMidCareer),
       teams,
     );
 
     expect(lateBloomers).toEqual([]);
   });
 
+  it('does not read a season he missed as a season he waited', () => {
+    // Travis Kelce: one game as a rookie, then a full-time career. He did not
+    // wait behind anyone; he was hurt, and an absent year is not a baseline.
+    const hurtThenGood = makePick({
+      overallPick: 15,
+      teamId: 'A',
+      draftYear: 2021,
+      seasons: [
+        makeSeason({ year: 2021, gamesPlayed: 1, snapShare: 0 }),
+        makeSeason({ year: 2022, snapShare: 0.9 }),
+        makeSeason({ year: 2023, snapShare: 0.95 }),
+        makeSeason({ year: 2024, snapShare: 0.95 }),
+      ],
+    });
+
+    const { lateBloomers } = getCareerShapeHighlights(
+      classOf(hurtThenGood),
+      teams,
+    );
+
+    expect(lateBloomers).toEqual([]);
+  });
+
+  it('steps over an absent season without breaking the wait', () => {
+    const hurtMidWait = makePick({
+      overallPick: 16,
+      teamId: 'A',
+      draftYear: 2021,
+      seasons: [
+        makeSeason({ year: 2021, snapShare: 0.05 }),
+        makeSeason({ year: 2022, gamesPlayed: 2, snapShare: 0.8 }),
+        makeSeason({ year: 2023, snapShare: 0.1 }),
+        makeSeason({ year: 2024, snapShare: 0.9 }),
+        makeSeason({ year: 2025, snapShare: 0.9 }),
+      ],
+    });
+
+    const { lateBloomers } = getCareerShapeHighlights(
+      classOf(hurtMidWait),
+      teams,
+    );
+
+    expect(lateBloomers[0].headline).toBe('+85');
+    expect(lateBloomers[0].detail).toBe('2 yrs buried · 5% → 90%');
+  });
+
   it('skips a career that never rose', () => {
-    const flat = career(15, [0.9, 0.8, 0.7]);
+    const flat = career(17, [0.9, 0.8, 0.7]);
 
     const { lateBloomers } = getCareerShapeHighlights(classOf(flat), teams);
 
     expect(lateBloomers).toEqual([]);
+  });
+});
+
+describe('late bloomers ignore a quarterback learning to play', () => {
+  /** A retained QB who sat `benchYears` seasons and then held the job. */
+  function apprenticeQb(overallPick: number, benchYears: number): DraftPick {
+    return makePick({
+      overallPick,
+      position: 'QB',
+      teamId: 'A',
+      draftYear: 2021,
+      seasons: [
+        ...Array.from({ length: benchYears }, (_, i) =>
+          makeSeason({ year: 2021 + i, snapShare: 0.05 }),
+        ),
+        ...Array.from({ length: 3 }, (_, i) =>
+          makeSeason({ year: 2021 + benchYears + i, snapShare: 0.95 }),
+        ),
+      ],
+    });
+  }
+
+  it('does not count the bench years a starting quarterback earned', () => {
+    const love = apprenticeQb(18, 2);
+
+    const { lateBloomers } = getCareerShapeHighlights(classOf(love), teams);
+
+    expect(lateBloomers).toEqual([]);
+  });
+
+  it('still blooms a quarterback whose wait was never vindicated bench time', () => {
+    // Sat two seasons on another roster, so the apprenticeship rule — which
+    // only forgives seasons with the drafting team — leaves the wait in place.
+    const journeyman = makePick({
+      overallPick: 19,
+      position: 'QB',
+      teamId: 'A',
+      draftYear: 2021,
+      seasons: [
+        makeSeason({ year: 2021, snapShare: 0.05, retained: false }),
+        makeSeason({ year: 2022, snapShare: 0.05, retained: false }),
+        makeSeason({ year: 2023, snapShare: 0.9 }),
+        makeSeason({ year: 2024, snapShare: 0.9 }),
+      ],
+    });
+
+    const { lateBloomers } = getCareerShapeHighlights(
+      classOf(journeyman),
+      teams,
+    );
+
+    expect(lateBloomers[0].headline).toBe('+86');
   });
 });
 
@@ -485,19 +569,24 @@ describe('activeCareerSeasons', () => {
 });
 
 describe('late bloomer tie-breaks', () => {
-  /** Rookie year with no snaps, then `peaks` seasons at full usage. */
+  /** Two buried seasons, then `peaks` seasons at full usage. */
   function bloomer(overallPick: number, peaks: number): DraftPick {
     return makePick({
       overallPick,
       teamId: 'A',
       draftYear: 2021,
       seasons: [
-        makeSeason({ year: 2021, gamesPlayed: 0, teamGames: 17, snapShare: 0 }),
+        makeSeason({
+          year: 2021,
+          gamesPlayed: 17,
+          teamGames: 17,
+          snapShare: 0,
+        }),
         makeSeason({
           year: 2022,
           gamesPlayed: 17,
           teamGames: 17,
-          snapShare: 0.5,
+          snapShare: 0.2,
         }),
         ...Array.from({ length: peaks }, (_, i) =>
           makeSeason({
@@ -595,24 +684,30 @@ describe('late bloomers must stay bloomed', () => {
       seasons: [
         makeSeason({
           year: 2021,
-          gamesPlayed: 8,
+          gamesPlayed: 9,
           teamGames: 17,
           snapShare: 0.05,
         }),
         makeSeason({
           year: 2022,
+          gamesPlayed: 9,
+          teamGames: 17,
+          snapShare: 0.1,
+        }),
+        makeSeason({
+          year: 2023,
           gamesPlayed: 17,
           teamGames: 17,
           snapShare: 0.82,
         }),
         makeSeason({
-          year: 2023,
+          year: 2024,
           gamesPlayed: 5,
           teamGames: 17,
           snapShare: 0.99,
         }),
         makeSeason({
-          year: 2024,
+          year: 2025,
           gamesPlayed: 12,
           teamGames: 17,
           snapShare: 0.1,
@@ -635,15 +730,15 @@ describe('late bloomers must stay bloomed', () => {
       seasons: [
         makeSeason({
           year: 2021,
-          gamesPlayed: 8,
+          gamesPlayed: 9,
           teamGames: 17,
           snapShare: 0.1,
         }),
         makeSeason({
           year: 2022,
-          gamesPlayed: 17,
+          gamesPlayed: 9,
           teamGames: 17,
-          snapShare: 0.7,
+          snapShare: 0.15,
         }),
         makeSeason({
           year: 2023,
@@ -653,6 +748,12 @@ describe('late bloomers must stay bloomed', () => {
         }),
         makeSeason({
           year: 2024,
+          gamesPlayed: 17,
+          teamGames: 17,
+          snapShare: 0.7,
+        }),
+        makeSeason({
+          year: 2025,
           gamesPlayed: 4,
           teamGames: 17,
           snapShare: 0.99,
@@ -662,7 +763,7 @@ describe('late bloomers must stay bloomed', () => {
 
     const { lateBloomers } = getCareerShapeHighlights(classOf(cameo), teams);
 
-    expect(lateBloomers[0].detail).toBe('2 yrs full-time · 10% → 70%');
+    expect(lateBloomers[0].detail).toBe('2 yrs buried · 10% → 70%');
   });
 });
 

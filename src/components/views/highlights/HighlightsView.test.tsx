@@ -58,7 +58,9 @@ const defaultHighlights: LeagueHighlights = {
   busts: [valueRow('d-bust', 'Default Bust', -20)],
   mostCoreStarters: null,
   dayOneStarters: [ranked('d-day', 'Danny Dayone', '82%', 'rookie year')],
-  lateBloomers: [ranked('d-bloom', 'Larry Bloom', '+64', '18% → 82%')],
+  lateBloomers: [
+    ranked('d-bloom', 'Larry Bloom', '+64', '2 yrs buried · 18% → 82%'),
+  ],
   ironMen: [ranked('d-iron', 'Ike Iron', '4', "full seasons · '21–'24")],
   snakebit: [ranked('d-snake', 'Stan Snake', '21', '84% when active')],
   gotAway: [ranked('d-away', 'Gary Gone', '+31', '40 → 71 with CHI')],
@@ -249,10 +251,12 @@ describe('HighlightsView', () => {
     expect(screen.getByText(/7 of 8 keepers/)).toBeInTheDocument();
   });
 
-  it('explains why an apprentice season counts here', () => {
+  it('explains what blooming late requires', () => {
     renderView();
 
-    expect(screen.getByText(/sat before he started/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/available for and barely used in/i),
+    ).toBeInTheDocument();
   });
 
   it('says the lists count snaps, not how well anyone played', () => {

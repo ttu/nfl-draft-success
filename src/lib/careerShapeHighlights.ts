@@ -1,5 +1,10 @@
 import type { DraftClass, DraftPick, Role, Season, Team } from '../types';
-import { classifyRole, CORE_TIER_THRESHOLD } from './classifyRole';
+import { withoutApprenticeSeasons } from './apprenticeship';
+import {
+  classifyRole,
+  CORE_TIER_THRESHOLD,
+  SIGNIFICANT_TIER_THRESHOLD,
+} from './classifyRole';
 import { getSeasonScore } from './getSeasonScore';
 import { normalizeSnapShareForPosition } from './positionBaseline';
 import { isAtLeastRole } from './roleDisplay';
@@ -33,8 +38,36 @@ export interface CareerShapeHighlights {
   snakebit: RankedPlayer[];
 }
 
-/** Played seasons needed before a rise from rookie year to peak means anything. */
+/** Played seasons needed before a rise from the bench to a peak means anything. */
 export const MIN_BLOOM_SEASONS = 3;
+
+/**
+ * Seasons a player must open his career buried before rising counts as blooming.
+ *
+ * Without it the list was a rise from *anywhere*, and against real data 883
+ * picks qualified — the top twenty a wall of identical `+100`s, most of them
+ * players whose rookie year simply never happened. Blooming late means having
+ * waited, and one quiet rookie season is not a wait; it is a rookie season.
+ */
+export const MIN_WAIT_SEASONS = 2;
+
+/**
+ * Usage below which a season counts as waiting: anything short of a significant
+ * contributor's share, i.e. he was on the roster and not really on the field.
+ */
+export const WAIT_TIER_CEILING = SIGNIFICANT_TIER_THRESHOLD;
+
+/**
+ * Share of team games a player must have been there for before a low-usage
+ * season reads as waiting rather than as missing.
+ *
+ * Travis Kelce is the case that forced this: one game as a rookie, then a
+ * decade of full-time football. Counting that year as a 0% baseline manufactures
+ * a +100 bloom out of an absence — he was hurt, not buried. Seasons under this
+ * floor are stepped over entirely (see {@link leadingWaitSeasons}), which needs
+ * no injury data and so treats injury, IR, and inactives alike.
+ */
+export const WAIT_AVAILABILITY_SHARE = 0.5;
 
 /**
  * Full-time seasons a late bloomer must hold before the rise counts as blooming.
@@ -225,26 +258,56 @@ function careerScoreOf(seasons: Season[], position: string): number {
 /**
  * A late-bloomer row with the two quantities that break its ties.
  *
- * The rise saturates: a player who never took a rookie snap and later started
- * full-time scores the maximum, and against real data the whole list is that
- * shape. Peak share and the number of seasons he *held* the peak are what
- * separate a twelve-year star from a one-year wonder.
+ * Rises bunch near the top — a player buried at 2% who later starts full-time
+ * scores close to the maximum however long he lasted. Peak share and the number
+ * of seasons he *held* the peak are what separate a twelve-year star from a
+ * one-year wonder.
  */
 interface LateBloomerRow extends RankedPlayer {
   peakShare: number;
   sustainedSeasons: number;
 }
 
-/** The rise from rookie-year usage to career-peak usage, when there was one. */
+/**
+ * The run of seasons a career opens buried: available for the season, and still
+ * used below {@link WAIT_TIER_CEILING}.
+ *
+ * Seasons he was mostly absent for are **stepped over** rather than counted or
+ * treated as the end of the wait — a year lost to injury in the middle of a wait
+ * did not end it, and a year lost at the start of one never began it. The run
+ * ends at the first season he was both available for and genuinely used in.
+ */
+function leadingWaitSeasons(seasons: Season[], position: string): Season[] {
+  const wait: Season[] = [];
+  for (const season of seasons) {
+    const available =
+      season.teamGames > 0 &&
+      season.gamesPlayed / season.teamGames >= WAIT_AVAILABILITY_SHARE;
+    if (!available) continue;
+    if (snapShareForRoleTier(season, position) >= WAIT_TIER_CEILING) break;
+    wait.push(season);
+  }
+  return wait;
+}
+
+/** The rise from a career spent waiting to career-peak usage, when there was one. */
 function lateBloomerRow(
   base: RankedPlayerBase,
-  seasons: Season[],
+  career: Season[],
 ): LateBloomerRow | null {
-  const rookie = rookieSeason(base.pick);
-  if (rookie === undefined || seasons.length < MIN_BLOOM_SEASONS) return null;
+  // A quarterback's bench years are the position's normal development path, not
+  // a career he had to climb out of, so they leave the career the same way every
+  // scoring path in the app already drops them. What is left has to stand on its
+  // own: a vindicated apprentice only blooms here if he was buried *after*
+  // taking over.
+  const seasons = withoutApprenticeSeasons(base.pick, career);
+  if (seasons.length < MIN_BLOOM_SEASONS) return null;
 
   const position = base.pick.position;
-  const rookieShare = snapShareForRoleTier(rookie, position);
+
+  const wait = leadingWaitSeasons(seasons, position);
+  if (wait.length < MIN_WAIT_SEASONS) return null;
+  const waitShare = snapShareForRoleTier(wait[0], position);
 
   // The peak has to be a job he held, not a week he had. Only seasons that
   // classify `core_starter` count — that tier already requires he was there for
@@ -257,26 +320,21 @@ function lateBloomerRow(
   const peakShare = Math.max(
     ...peakSeasons.map((s) => snapShareForRoleTier(s, position)),
   );
-  const rise = peakShare - rookieShare;
+  const rise = peakShare - waitShare;
   if (rise <= 0) return null;
-
-  // The rise saturates at +100, so the top of this list is a wall of identical
-  // numbers. Printing the seasons he held the peak shows the reader what the
-  // tie-break already knows — why a twelve-year star sits above a one-year one.
-  const sustainedSeasons = peakSeasons.length;
 
   return {
     ...base,
     value: rise,
     headline: `+${Math.round(rise * 100)}`,
-    // Sustained seasons lead: the headline already prints the rise, so when a
-    // narrow screen truncates this line it should lose the redundant half, not
-    // the one thing that distinguishes rows tied at +100.
-    detail: `${sustainedSeasons} yr${
-      sustainedSeasons === 1 ? '' : 's'
-    } full-time · ${pct(rookieShare)} → ${pct(peakShare)}`,
+    // The wait leads: the headline already prints the rise, so when a narrow
+    // screen truncates this line it should lose the redundant half, and how long
+    // he sat is the half that says why he is on this list at all.
+    detail: `${wait.length} yr${wait.length === 1 ? '' : 's'} buried · ${pct(
+      waitShare,
+    )} → ${pct(peakShare)}`,
     peakShare,
-    sustainedSeasons,
+    sustainedSeasons: peakSeasons.length,
   };
 }
 
@@ -360,9 +418,9 @@ function snakebitRow(
  * The four career-shape highlights across the loaded window.
  *
  * Every list reads {@link playedSeasons} directly rather than
- * `getFilteredSeasons`: these measure usage and availability, not score, and
- * late bloomers depends on seeing the apprentice seasons the scoring path
- * deliberately drops. See the design spec's *Apprenticeship divergence*.
+ * `getFilteredSeasons`: these measure usage and availability, not score. Late
+ * bloomers then drops apprentice seasons on its own, because a quarterback
+ * learning the job is not a career he had to climb out of.
  */
 export function getCareerShapeHighlights(
   draftClasses: DraftClass[],

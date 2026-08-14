@@ -88,9 +88,10 @@ const CAREER_SHAPE_LISTS: RankedListSpec[] = [
   {
     key: 'lateBloomers',
     kicker: 'Late bloomers',
-    note: 'rise from rookie year to peak',
+    note: 'rise from the bench to peak',
     accent: 'core',
-    headlineTitle: 'Snap-share points gained from rookie year to peak',
+    headlineTitle:
+      'Snap-share points gained from the seasons he sat to his peak',
   },
   {
     key: 'ironMen',
@@ -243,16 +244,18 @@ function HighlightsViewImpl({
         <p>
           Career shape ignores the score and reads the career itself: how much
           of his rookie year a player was on the field, how far he climbed from
-          that first year to his best one, how long he went without missing a
-          week, and how many weeks were taken from a player who started whenever
-          he dressed. One difference is worth naming. A player who{' '}
-          <em>sat before he started</em> counts that quiet rookie year here,
-          because the rise from it is the whole point — while the draft score
-          elsewhere forgives an apprentice season rather than counting it
-          against him. Retention looks at who stayed: a pick who found a
-          starting job somewhere else is charged to the team that let him go,
-          and the retention rate counts only the picks worth keeping, so cutting
-          a miss early never looks like a failure to keep anyone.
+          the seasons he spent buried to his best one, how long he went without
+          missing a week, and how many weeks were taken from a player who
+          started whenever he dressed. Blooming late means having waited, so it
+          takes two seasons a player was{' '}
+          <em>available for and barely used in</em> before a rise counts — a
+          year he missed is not a year he waited, and a quarterback&rsquo;s
+          bench seasons do not count at all, because sitting to learn is that
+          position&rsquo;s normal path rather than a hole to climb out of.
+          Retention looks at who stayed: a pick who found a starting job
+          somewhere else is charged to the team that let him go, and the
+          retention rate counts only the picks worth keeping, so cutting a miss
+          early never looks like a failure to keep anyone.
         </p>
         <p>
           One limit worth stating plainly. Every number here counts snaps and
