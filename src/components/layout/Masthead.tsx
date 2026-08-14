@@ -54,9 +54,9 @@ export function Masthead({
     ...(active === 'team'
       ? [{ id: 'team' as const, label: 'Team', onClick: goTeam }]
       : []),
+    { id: 'highlights', label: 'Highlights', onClick: goHighlights },
     { id: 'year', label: 'Draft Year', onClick: goYear },
     { id: 'pos', label: 'Position', onClick: goPos },
-    { id: 'highlights', label: 'Highlights', onClick: goHighlights },
   ];
 
   return (
