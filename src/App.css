@@ -874,7 +874,135 @@ button {
 
 /* ─── Highlights ──────────────────────────────────────────── */
 .highlights-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px;
+}
+.highlights-hero__intro {
   max-width: 720px;
+}
+
+/* ─── Spotlights: the one steal and the one bust ──────────── */
+.highlights-spotlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 28px 48px 0;
+}
+.highlight-spotlight {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px 20px;
+  padding: 20px 26px 22px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--paper);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.highlight-spotlight:hover {
+  border-color: var(--ink-3);
+  transform: translateY(-2px);
+}
+.highlight-spotlight:focus-visible {
+  outline: 2px solid var(--ox);
+  outline-offset: 2px;
+}
+/* The tinted wash behind the number, sized to the card so it never clips. */
+.highlight-spotlight::after {
+  content: '';
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  width: 200px;
+  height: 200px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.highlight-spotlight--high::after {
+  background: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--positive) 12%, transparent) 0%,
+    transparent 70%
+  );
+}
+.highlight-spotlight--low::after {
+  background: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--negative) 12%, transparent) 0%,
+    transparent 70%
+  );
+}
+.highlight-spotlight > * {
+  position: relative;
+  z-index: 1;
+}
+.highlight-spotlight__kicker {
+  grid-column: 1 / -1;
+  margin-bottom: 6px;
+}
+.kicker--high {
+  color: var(--positive);
+}
+.kicker--low {
+  color: var(--negative);
+}
+.highlight-spotlight__id {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.highlight-spotlight__who {
+  display: block;
+  min-width: 0;
+}
+.highlight-spotlight__name {
+  display: block;
+  font-family: var(--f-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.highlight-spotlight__value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.highlight-spotlight__num {
+  font-family: var(--f-serif);
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+.highlight-spotlight__num--high {
+  color: var(--positive);
+}
+.highlight-spotlight__num--low {
+  color: var(--negative);
+}
+.highlight-spotlight__label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-4);
 }
 .highlights-lists {
   display: grid;
@@ -1040,12 +1168,13 @@ button {
 .highlight-row__score--low {
   color: var(--negative);
 }
+/* Sits in the hero beside the headline, so it carries no page margin of its own. */
 .highlight-leader {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 20px 48px 0;
-  padding: 16px 20px;
+  max-width: 480px;
+  padding: 14px 18px;
   border: 1px solid var(--rule);
   border-radius: 12px;
   background: var(--paper);
@@ -1082,7 +1211,7 @@ button {
 }
 .highlight-leader__name {
   font-family: var(--f-display);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.1;
@@ -1100,12 +1229,6 @@ button {
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--positive);
-}
-.highlight-leader__label {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-4);
 }
 .highlight-leader__empty {
   margin-top: 8px;
@@ -1128,6 +1251,14 @@ button {
   margin-bottom: 0;
 }
 @media (max-width: 900px) {
+  .highlights-hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .highlights-spotlights {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 0;
+  }
   .highlights-lists {
     grid-template-columns: 1fr;
     padding: 24px 24px 0;
@@ -1136,8 +1267,26 @@ button {
     padding: 24px 24px 0;
   }
   .highlight-leader {
-    margin: 20px 24px 0;
+    max-width: none;
     flex-wrap: wrap;
+  }
+  .highlight-spotlight__name {
+    font-size: 22px;
+  }
+  .highlight-spotlight__num {
+    font-size: 42px;
+  }
+}
+/* Narrow phones: the number would squeeze the name to an ellipsis beside it. */
+@media (max-width: 560px) {
+  .highlight-spotlight {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px 20px 20px;
+  }
+  .highlight-spotlight__value {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 10px;
   }
   .highlights-foot {
     padding: 20px 24px 32px;

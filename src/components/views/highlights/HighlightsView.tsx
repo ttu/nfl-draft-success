@@ -182,21 +182,15 @@ function HighlightsViewImpl({
     <section className="highlights-view" aria-label="Draft highlights">
       <section className="page-hero">
         <div className="highlights-hero">
-          <div className="kicker" style={{ marginBottom: 12 }}>
-            Draft highlights · {seasonTag(startYear)} → {seasonTag(endYear)}
-          </div>
-          <h1 className="page-hero__headline">
-            The <em>steals</em>, the busts, the bodies, the ones who left.
-          </h1>
-          <p className="page-hero__lede">
-            The picks and teams that stand out across the window — who beat what
-            their draft slot predicted and who fell short of it, who arrived
-            ready and who took years to get there, who never missed a week and
-            who spent his career hurt, and which teams kept the players worth
-            keeping.
-          </p>
+          <HeroIntro startYear={startYear} endYear={endYear} />
+          <TeamLeader
+            highlight={mostCoreStarters}
+            onTeamSelect={onTeamSelect}
+          />
         </div>
       </section>
+
+      <Spotlights steals={steals} busts={busts} />
 
       <HighlightBand title="Value">
         <PlayerList
@@ -228,8 +222,6 @@ function HighlightsViewImpl({
           onTeamSelect={onTeamSelect}
         />
       </HighlightBand>
-
-      <TeamLeader highlight={mostCoreStarters} onTeamSelect={onTeamSelect} />
 
       <div className="highlights-foot">
         <p>
@@ -270,6 +262,132 @@ function HighlightsViewImpl({
   );
 }
 
+/** The headline half of the hero; the leader card sits beside it. */
+function HeroIntro({
+  startYear,
+  endYear,
+}: {
+  startYear: number;
+  endYear: number;
+}) {
+  return (
+    <div className="highlights-hero__intro">
+      <div className="kicker" style={{ marginBottom: 12 }}>
+        Draft highlights · {seasonTag(startYear)} → {seasonTag(endYear)}
+      </div>
+      <h1 className="page-hero__headline">
+        The <em>steals</em>, the busts, the bodies, the ones who left.
+      </h1>
+      <p className="page-hero__lede">
+        The picks and teams that stand out across the window — who beat their
+        draft slot and who fell short, who arrived ready and who took years, and
+        which teams kept the players worth keeping.
+      </p>
+    </div>
+  );
+}
+
+/** Navigate to a player's page, remembering this page as the back target. */
+function useOpenPlayer(playerId: string) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  return () =>
+    navigate(buildPlayerHref(playerId, location.pathname + location.search));
+}
+
+/**
+ * The one steal and the one bust that define the window, sized so they read
+ * before the lists do. Either side is dropped when its list is empty, and the
+ * band disappears entirely when neither has a pick.
+ */
+function Spotlights({
+  steals,
+  busts,
+}: {
+  steals: PlayerHighlight[];
+  busts: PlayerHighlight[];
+}) {
+  const topSteal = steals[0];
+  const topBust = busts[0];
+
+  if (!topSteal && !topBust) return null;
+
+  return (
+    <section
+      className="highlights-spotlights"
+      aria-label="Steal and bust of the window"
+    >
+      {topSteal && (
+        <Spotlight
+          kicker="Steal of the window"
+          highlight={topSteal}
+          tone="high"
+        />
+      )}
+      {topBust && (
+        <Spotlight
+          kicker="Biggest bust of the window"
+          highlight={topBust}
+          tone="low"
+        />
+      )}
+    </section>
+  );
+}
+
+function Spotlight({
+  kicker,
+  highlight,
+  tone,
+}: {
+  kicker: string;
+  highlight: PlayerHighlight;
+  tone: 'high' | 'low';
+}) {
+  const { pick, team, draftYear, score, overSlot } = highlight;
+  const openPlayer = useOpenPlayer(pick.playerId);
+
+  return (
+    <button
+      type="button"
+      className={`highlight-spotlight highlight-spotlight--${tone}`}
+      aria-label={`View ${pick.playerName}`}
+      onClick={openPlayer}
+    >
+      <span className={`highlight-spotlight__kicker kicker kicker--${tone}`}>
+        {kicker}
+      </span>
+      <span className="highlight-spotlight__id">
+        <PlayerAvatar
+          teamId={pick.teamId}
+          name={pick.playerName}
+          src={pick.headshotUrl}
+          size={64}
+        />
+        <span className="highlight-spotlight__who">
+          <span className="highlight-spotlight__name">{pick.playerName}</span>
+          <PlayerMeta
+            pick={pick}
+            team={team}
+            draftYear={draftYear}
+            detail={`score ${score.toFixed(0)}`}
+          />
+        </span>
+      </span>
+      <span className="highlight-spotlight__value">
+        <span
+          className={`highlight-spotlight__num tnum highlight-spotlight__num--${tone}`}
+          title="Draft score above or below what this draft slot predicted"
+        >
+          {formatOverSlot(overSlot)}
+        </span>
+        <span className="highlight-spotlight__label mono">vs draft slot</span>
+      </span>
+    </button>
+  );
+}
+
 function PlayerList({
   kicker,
   note,
@@ -289,7 +407,10 @@ function PlayerList({
     expanded || !canExpand ? items : items.slice(0, HIGHLIGHT_LIST_SIZE);
 
   return (
-    <article className={`highlight-list highlight-list--${accent}`}>
+    <article
+      className={`highlight-list highlight-list--${accent}`}
+      aria-label={kicker}
+    >
       <div className="highlight-list__head">
         <div className="kicker">{kicker}</div>
         <div className="highlight-list__note mono">{note}</div>
@@ -360,13 +481,8 @@ function PlayerRow({
   row: HighlightRowData;
   accent: 'core' | 'non';
 }) {
-  const navigate = useNavigate();
-  const location = useLocation();
   const { pick, team, draftYear, detail, headline, tone, headlineTitle } = row;
-  const openPlayer = () =>
-    navigate(
-      buildPlayerHref(pick.playerId, location.pathname + location.search),
-    );
+  const openPlayer = useOpenPlayer(pick.playerId);
 
   return (
     <li>
@@ -422,7 +538,10 @@ function TeamRateList({
   onTeamSelect: (teamId: string) => void;
 }) {
   return (
-    <article className="highlight-list highlight-list--core">
+    <article
+      className="highlight-list highlight-list--core"
+      aria-label={kicker}
+    >
       <div className="highlight-list__head">
         <div className="kicker">{kicker}</div>
         <div className="highlight-list__note mono">{note}</div>
@@ -496,7 +615,7 @@ function TeamLeader({
   highlight: TeamHighlight | null;
   onTeamSelect: (teamId: string) => void;
 }) {
-  const kicker = 'Most core starters';
+  const kicker = 'Most core starters produced';
 
   if (!highlight) {
     return (
@@ -532,9 +651,6 @@ function TeamLeader({
       </div>
       <div className="highlight-leader__count">
         <span className="highlight-leader__num tnum">{count}</span>
-        <span className="highlight-leader__label mono">
-          core starters produced
-        </span>
       </div>
     </div>
   );

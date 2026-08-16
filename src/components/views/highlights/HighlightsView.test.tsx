@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { HighlightsView } from './HighlightsView';
 import type { LeagueHighlights } from '../../../lib/getLeagueHighlights';
@@ -88,74 +88,136 @@ function renderView(highlights: Partial<LeagueHighlights> = {}) {
   );
 }
 
+/** Two steals, one bust and a leading team — the fully populated value band. */
+const standoutHighlights: Partial<LeagueHighlights> = {
+  steals: [
+    {
+      pick: samplePick({
+        playerName: 'Sam Steal',
+        round: 5,
+        overallPick: 150,
+      }),
+      team: lions,
+      draftYear: 2022,
+      score: 88,
+      overSlot: 52.1,
+    },
+    {
+      pick: samplePick({
+        playerId: 'p1b',
+        playerName: 'Second Steal',
+        round: 4,
+        overallPick: 120,
+      }),
+      team: lions,
+      draftYear: 2021,
+      score: 80,
+      overSlot: 37.4,
+    },
+  ],
+  busts: [
+    {
+      pick: samplePick({
+        playerId: 'p2',
+        playerName: 'Bill Bust',
+        round: 1,
+        overallPick: 3,
+        teamId: 'CHI',
+      }),
+      team: makeTeam({ id: 'CHI', name: 'Chicago Bears' }),
+      draftYear: 2021,
+      score: 12,
+      overSlot: -71.3,
+    },
+  ],
+  mostCoreStarters: {
+    teamId: 'PHI',
+    team: makeTeam({ id: 'PHI', name: 'Philadelphia Eagles' }),
+    count: 9,
+  },
+};
+
+/** The list card with this kicker, so a spotlight copy cannot satisfy a row assertion. */
+const list = (kicker: string) =>
+  within(screen.getByRole('article', { name: kicker }));
+
+const spotlights = () =>
+  within(screen.getByRole('region', { name: /steal and bust of the window/i }));
+
 describe('HighlightsView', () => {
   it('renders ranked steal and bust lists plus the most-core-starters leader', () => {
-    const highlights: Partial<LeagueHighlights> = {
-      steals: [
-        {
-          pick: samplePick({
-            playerName: 'Sam Steal',
-            round: 5,
-            overallPick: 150,
-          }),
-          team: lions,
-          draftYear: 2022,
-          score: 88,
-          overSlot: 52.1,
-        },
-        {
-          pick: samplePick({
-            playerId: 'p1b',
-            playerName: 'Second Steal',
-            round: 4,
-            overallPick: 120,
-          }),
-          team: lions,
-          draftYear: 2021,
-          score: 80,
-          overSlot: 37.4,
-        },
-      ],
-      busts: [
-        {
-          pick: samplePick({
-            playerId: 'p2',
-            playerName: 'Bill Bust',
-            round: 1,
-            overallPick: 3,
-            teamId: 'CHI',
-          }),
-          team: makeTeam({ id: 'CHI', name: 'Chicago Bears' }),
-          draftYear: 2021,
-          score: 12,
-          overSlot: -71.3,
-        },
-      ],
-      mostCoreStarters: {
-        teamId: 'PHI',
-        team: makeTeam({ id: 'PHI', name: 'Philadelphia Eagles' }),
-        count: 9,
-      },
-    };
-    renderView(highlights);
+    renderView(standoutHighlights);
 
-    expect(screen.getByText('Steals of the window')).toBeInTheDocument();
-    expect(screen.getByText('Sam Steal')).toBeInTheDocument();
-    expect(screen.getByText('Second Steal')).toBeInTheDocument();
+    const steals = list('Steals of the window');
+    expect(steals.getByText('Sam Steal')).toBeInTheDocument();
+    expect(steals.getByText('Second Steal')).toBeInTheDocument();
     // Over slot leads each row; the raw score sits on the meta line.
-    expect(screen.getByText('+52.1')).toBeInTheDocument();
-    expect(screen.getByText('+37.4')).toBeInTheDocument();
-    expect(screen.getByText(/R5 #150/)).toBeInTheDocument();
-    expect(screen.getByText(/score 88/)).toBeInTheDocument();
+    expect(steals.getByText('+52.1')).toBeInTheDocument();
+    expect(steals.getByText('+37.4')).toBeInTheDocument();
+    expect(steals.getByText(/R5 #150/)).toBeInTheDocument();
+    expect(steals.getByText(/score 88/)).toBeInTheDocument();
 
-    expect(screen.getByText('Biggest busts')).toBeInTheDocument();
-    expect(screen.getByText('Bill Bust')).toBeInTheDocument();
-    expect(screen.getByText('−71.3')).toBeInTheDocument();
-    expect(screen.getByText(/score 12/)).toBeInTheDocument();
+    const busts = list('Biggest busts');
+    expect(busts.getByText('Bill Bust')).toBeInTheDocument();
+    expect(busts.getByText('−71.3')).toBeInTheDocument();
+    expect(busts.getByText(/score 12/)).toBeInTheDocument();
 
-    expect(screen.getByText('Most core starters')).toBeInTheDocument();
+    expect(screen.getByText('Most core starters produced')).toBeInTheDocument();
     expect(screen.getByText('Philadelphia Eagles')).toBeInTheDocument();
     expect(screen.getByText('9')).toBeInTheDocument();
+  });
+
+  it('leads with the top steal and bust as full-width spotlights', () => {
+    renderView(standoutHighlights);
+
+    const top = spotlights();
+    expect(top.getByText('Steal of the window')).toBeInTheDocument();
+    expect(top.getByText('Sam Steal')).toBeInTheDocument();
+    expect(top.getByText('+52.1')).toBeInTheDocument();
+    expect(top.getByText(/R5 #150/)).toBeInTheDocument();
+    expect(top.getByText(/score 88/)).toBeInTheDocument();
+
+    expect(top.getByText('Biggest bust of the window')).toBeInTheDocument();
+    expect(top.getByText('Bill Bust')).toBeInTheDocument();
+    expect(top.getByText('−71.3')).toBeInTheDocument();
+
+    // The runner-up steal stays in the list; only the leader is spotlit.
+    expect(top.queryByText('Second Steal')).not.toBeInTheDocument();
+  });
+
+  it('opens the player behind a spotlight', () => {
+    renderView(standoutHighlights);
+
+    expect(
+      spotlights().getByRole('button', { name: 'View Sam Steal' }),
+    ).toBeInTheDocument();
+  });
+
+  it('drops a spotlight when its list has no picks', () => {
+    renderView({ ...standoutHighlights, busts: [] });
+
+    const top = spotlights();
+    expect(top.getByText('Steal of the window')).toBeInTheDocument();
+    expect(
+      top.queryByText('Biggest bust of the window'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows no spotlight band at all when both value lists are empty', () => {
+    renderView({ steals: [], busts: [] });
+
+    expect(
+      screen.queryByRole('region', { name: /steal and bust of the window/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('puts the most-core-starters leader in the hero, above the bands', () => {
+    renderView(standoutHighlights);
+
+    const leader = screen.getByRole('button', {
+      name: 'View Philadelphia Eagles',
+    });
+    expect(leader.closest('.page-hero')).not.toBeNull();
   });
 
   it('collapses long lists to three rows and expands on demand', () => {
@@ -177,8 +239,12 @@ describe('HighlightsView', () => {
     renderView({ steals, busts: [], mostCoreStarters: null });
 
     // Collapsed: only the first three steals are shown.
-    expect(screen.getByText('Steal 0')).toBeInTheDocument();
-    expect(screen.getByText('Steal 2')).toBeInTheDocument();
+    expect(
+      list('Steals of the window').getByText('Steal 0'),
+    ).toBeInTheDocument();
+    expect(
+      list('Steals of the window').getByText('Steal 2'),
+    ).toBeInTheDocument();
     expect(screen.queryByText('Steal 3')).not.toBeInTheDocument();
 
     const toggle = screen.getByRole('button', { name: /show top 12/i });
