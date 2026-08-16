@@ -33,3 +33,46 @@ describe('remote image loading', () => {
     expect(screen.getByText('TS')).toBeInTheDocument();
   });
 });
+
+/**
+ * The headshot URLs in our data point at full studio originals — 3400×2450,
+ * ~5 MB each. Painting those into a 44 px circle cost ~840 ms of decode per
+ * viewport resize on the highlights page; requesting the crop we actually show
+ * brings it to ~4 ms.
+ */
+describe('headshot sizing', () => {
+  const ORIGINAL =
+    'https://static.www.nfl.com/image/upload/f_auto,q_auto/league/skoecv9k14idjai4ok42';
+
+  it('requests a crop scaled to the avatar rather than the full original', () => {
+    render(
+      <PlayerAvatar name="Trey Smith" teamId="KC" src={ORIGINAL} size={44} />,
+    );
+
+    expect(screen.getByAltText('Trey Smith')).toHaveAttribute(
+      'src',
+      'https://static.www.nfl.com/image/upload/f_auto,q_auto,w_96,h_96,c_fill,g_face/league/skoecv9k14idjai4ok42',
+    );
+  });
+
+  it('scales the request with the avatar, so the detail hero stays sharp', () => {
+    render(
+      <PlayerAvatar name="Trey Smith" teamId="KC" src={ORIGINAL} size={104} />,
+    );
+
+    expect(screen.getByAltText('Trey Smith').getAttribute('src')).toContain(
+      'w_256,h_256',
+    );
+  });
+
+  it('still renders a headshot from a host it cannot resize', () => {
+    render(
+      <PlayerAvatar name="Trey Smith" teamId="KC" src="https://x/h.png" />,
+    );
+
+    expect(screen.getByAltText('Trey Smith')).toHaveAttribute(
+      'src',
+      'https://x/h.png',
+    );
+  });
+});

@@ -3,6 +3,7 @@ import { TEAM_COLORS, getTeamLogoUrl } from '../../data/teamColors';
 import { TEAMS } from '../../data/teams';
 import type { Role } from '../../types';
 import { cx } from '../../lib/cx';
+import { sizedHeadshotUrl } from '../../lib/sizedHeadshotUrl';
 
 // Pure design helpers colocated with the primitives that use them; the
 // fast-refresh rule only concerns component exports.
@@ -257,9 +258,11 @@ export function PlayerAvatar({
     >
       {src ? (
         // Deferred: list views mount hundreds of these, nearly all off-screen.
+        // Sized: the raw URLs are full studio originals, and decoding those to
+        // fill a 44 px circle dominates every viewport resize.
         <img
           className="player-avatar__img"
-          src={src}
+          src={sizedHeadshotUrl(src, size)}
           alt={name}
           loading="lazy"
           decoding="async"
