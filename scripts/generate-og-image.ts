@@ -12,7 +12,14 @@ async function main() {
   const svgPath = path.join(process.cwd(), 'public', 'og-image.svg');
   const outPath = path.join(process.cwd(), 'public', 'og-image.png');
   const svg = fs.readFileSync(svgPath);
-  await sharp.default(svg).png().toFile(outPath);
+  // Flatten onto the SVG's own background colour: LinkedIn's image proxy drops
+  // PNGs that carry an alpha channel, which left the shared card thumbnail
+  // blank even though the file itself served fine.
+  await sharp
+    .default(svg)
+    .flatten({ background: '#1a1a1a' })
+    .png()
+    .toFile(outPath);
   console.log('Generated', outPath);
 }
 

@@ -207,10 +207,21 @@
       property="og:description"
       content="Compare NFL draft outcomes for all 32 teams. Pick a season span and explore snap share, retention, and rolling scores—by team, draft year, or position."
     />
+    <!--
+      `?v=2` is deliberate. LinkedIn caches a scrape per image URL, and the
+      first version of this card was an RGBA PNG its image proxy refused,
+      leaving the thumbnail blank; the query makes it fetch the flattened PNG
+      as a new asset instead of replaying that cached failure.
+    -->
     <meta
       property="og:image"
-      content="https://www.nfldraftsuccess.com/og-image.png"
+      content="https://www.nfldraftsuccess.com/og-image.png?v=2"
     />
+    <meta
+      property="og:image:secure_url"
+      content="https://www.nfldraftsuccess.com/og-image.png?v=2"
+    />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
@@ -230,7 +241,7 @@
     />
     <meta
       name="twitter:image"
-      content="https://www.nfldraftsuccess.com/og-image.png"
+      content="https://www.nfldraftsuccess.com/og-image.png?v=2"
     />
     <meta
       name="twitter:image:alt"
