@@ -98,6 +98,7 @@ import {
   RankingsBoot,
 } from './components/views/team/TeamRankingsView';
 import { Footer } from './components/layout/Footer';
+import { DocumentHead } from './seo';
 import type { RosterPick } from './components/views/team/TeamDetailContent';
 
 const InfoView = lazy(() =>
@@ -747,6 +748,7 @@ function AppContent() {
 
   return (
     <main className="app">
+      <DocumentHead playerName={playerInfo?.pick.playerName} />
       <Masthead
         active={activeTab}
         dataLastUpdatedDate={dataLastUpdatedDate}

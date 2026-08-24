@@ -23,6 +23,26 @@ function isSameOrigin(url: string, baseURL: string | undefined): boolean {
   }
 }
 
+/**
+ * True when this run targets the Vite dev server, which answers every path from
+ * memory and has no built `dist/` behind it.
+ *
+ * Read from the environment rather than the `baseURL` fixture so the
+ * pre-render test can be *registered* conditionally instead of skipped inside
+ * the test body: a dev-server run then reports what it actually covered.
+ * `playwright.config.ts` resolves the same variable, defaulting to the dev
+ * server when it is unset.
+ */
+const DEV_SERVER_RUN = ((): boolean => {
+  const target = process.env.E2E_BASE_URL?.trim();
+  if (!target) return true;
+  try {
+    return new URL(target).port === '3273';
+  } catch {
+    return false;
+  }
+})();
+
 interface PageProblems {
   readonly consoleErrors: string[];
   readonly failedRequests: string[];
@@ -31,9 +51,10 @@ interface PageProblems {
 /**
  * Records same-origin subresource failures and console errors for the page.
  *
- * The main document is excluded: GitHub Pages answers any deep link with
- * `404.html` under an HTTP 404 status, which is the SPA fallback working as
- * intended, not a broken deployment.
+ * The main document is excluded: routes outside the sitemap — player pages,
+ * typos — are still answered with `404.html` under an HTTP 404 status, which is
+ * the SPA fallback working as intended, not a broken deployment. Sitemap routes
+ * get a page of their own; the test below holds them to a real 200.
  */
 function watchForProblems(
   page: Page,
@@ -96,21 +117,93 @@ test.describe('Deployment smoke', { tag: '@smoke' }, () => {
     expect(problems.consoleErrors).toEqual([]);
   });
 
-  test('deep link renders the app via the SPA fallback', async ({
+  test('deep link renders the team view and titles the document', async ({
     page,
     baseURL,
   }) => {
     const problems = watchForProblems(page, baseURL);
 
-    // A direct load — not client-side navigation — is the only thing that
-    // exercises `404.html`. Static hosts serve it with a 404 status, so the
-    // assertion is on rendered content rather than on `response.status()`.
     await page.goto('/DET?from=2021&to=2025');
 
     await expect(page.locator('.team-hero')).toBeVisible();
     await expect(page.locator('.team-hero__abbrev')).toHaveText('DET');
+    await expect(page).toHaveTitle(
+      'Detroit Lions Draft Results | NFL Draft Success',
+    );
     expect(problems.failedRequests).toEqual([]);
   });
+
+  /**
+   * The head has to keep up once the SPA takes over: every route renders the
+   * same component tree, so nothing remounts and the title, canonical and share
+   * card would otherwise stay on whichever page was loaded first.
+   */
+  test('client-side navigation moves the document head with it', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle('NFL Draft Success');
+
+    await page
+      .getByRole('link', { name: /Detroit Lions/ })
+      .first()
+      .click();
+
+    await expect(page).toHaveTitle(
+      'Detroit Lions Draft Results | NFL Draft Success',
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://www.nfldraftsuccess.com/DET',
+    );
+  });
+
+  /**
+   * What the sitemap is for. Before `scripts/seo/prerender-routes.ts` these URLs had
+   * no file of their own, so the host answered each with `404.html`: a browser
+   * rendered the right page, a crawler read the 404 status and dropped it, and
+   * every shared link unfurled the landing page's card.
+   */
+  const prerenderTest = DEV_SERVER_RUN ? test.skip : test;
+  prerenderTest(
+    'serves a pre-rendered page for each kind of sitemap route',
+    async ({ request }) => {
+      const routes = [
+        { path: '/', title: 'NFL Draft Success' },
+        {
+          path: '/DET',
+          title: 'Detroit Lions Draft Results | NFL Draft Success',
+        },
+        {
+          path: '/year/2025',
+          title: '2025 NFL Draft Class Results | NFL Draft Success',
+        },
+        {
+          path: '/position/QB',
+          title: 'QB Draft Picks by Year | NFL Draft Success',
+        },
+        {
+          path: '/highlights',
+          title: 'Draft Steals &amp; Busts | NFL Draft Success',
+        },
+      ];
+
+      for (const { path, title } of routes) {
+        const response = await request.get(path);
+        expect(response.status(), `${path} should be served, not 404`).toBe(
+          200,
+        );
+
+        const html = await response.text();
+        expect(html, `${path} should carry its own title`).toContain(
+          `<title>${title}</title>`,
+        );
+        expect(html, `${path} should canonicalise to itself`).toContain(
+          `href="https://www.nfldraftsuccess.com${path}"`,
+        );
+      }
+    },
+  );
 
   test('publishes draft data and surfaces the synced date', async ({
     page,

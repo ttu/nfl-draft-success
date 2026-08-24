@@ -27,12 +27,19 @@ src/
     *.tsx         # e.g. TeamSelector used across views
   lib/            # Calculation logic (role classification, metrics)
   data/           # Team metadata, data loading helpers
+  seo/            # Indexable routes: per-route metadata, runtime <head>
 public/
   data/           # JSON files (draft-2013.json … draft-2026.json)
 scripts/
   update-data.ts      # Fetch nflverse, transform, write JSON
   generate-og-image.ts # Generate OG image for social sharing
+  seo/                # Sitemap + one pre-rendered page per route
 ```
+
+`src/seo/` is the one folder that groups by feature rather than by kind: it owns
+both a React component and build-time logic, because a crawler and a visitor
+have to be shown the same metadata for a URL. See
+[development.md](development.md#static-routes--seo).
 
 ## Build & Runtime
 

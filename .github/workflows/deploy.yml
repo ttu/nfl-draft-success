@@ -33,13 +33,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # `prerender-routes` (the last step of `pnpm run build`) emits a page per
+      # sitemap route plus the `404.html` SPA fallback, so the artifact is
+      # complete as built — nothing to copy in here.
       - name: Build
         run: pnpm run build
         env:
           BASE_PATH: /
-
-      - name: Add SPA fallback for direct URL loads
-        run: cp dist/index.html dist/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
