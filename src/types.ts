@@ -41,6 +41,39 @@ export interface Season {
    */
   seasonEndingAbsenceGames?: number;
   /**
+   * Weeks the player spent on a reserve list — the direct IR measurement, from
+   * nflverse weekly rosters. Present only when non-zero, and only from 2016 on.
+   *
+   * This and `seasonEndingAbsenceGames` are two answers to the same question
+   * and are never both present on a season: from 2016 the roster feed is
+   * reliable and this field is written, before 2016 it is not and the snap-shape
+   * heuristic is. Which one a season carries tells you which era it came from.
+   * See `src/lib/reserveWeeks.ts` and `scripts/update-data.ts`.
+   *
+   * Warning for consumers: this records what the roster feed said, not that the
+   * score was adjusted for it. The load forgiveness only applies on seasons
+   * scored against a full-season denominator, so a traded or multi-franchise
+   * season can carry reserve weeks with no change to its load at all.
+   */
+  reserveWeeks?: number;
+  /**
+   * Games the load denominator actually forgave for injury — the authoritative
+   * figure, present only when non-zero.
+   *
+   * `| missedWeeks ∩ (injuryReportWeeks' weeks ∪ reserveWeeks' weeks) |`, from
+   * `src/lib/absenceWeeks.ts`. Consumers must read this field rather than
+   * recompute anything from `injuryReportWeeks` / `reserveWeeks`: those are
+   * counts of documented weeks, not of games lost, and any re-derivation from
+   * them will disagree with the score being displayed. Ronnie Stanley 2021
+   * carried 6 injury-report weeks and 11 reserve weeks and had 16 games
+   * forgiven: the max is 11, and the sum only lands on 17 by counting weeks he
+   * was documented but not absent.
+   *
+   * Absent on seasons not scored against a full-season denominator (traded
+   * seasons), where nothing is forgiven however much injury is documented.
+   */
+  excusedGames?: number;
+  /**
    * The franchise's final regular-season game, when a clinched playoff team
    * rested through it. Present only for such seasons.
    *

@@ -316,19 +316,32 @@ export function resolveCumulativeLoadShare(options: {
 }
 
 /**
- * Reduce full-season denominator for weeks we treat as injury-excused absences,
- * so Load is not penalized for games missed while on the report (capped by
- * actual games missed vs `teamGames`).
+ * Reduce the full-season denominator by the games a player lost to a documented
+ * injury, so Load is not penalized for time he could not have played.
  *
- * Two signals, whichever is stronger: weeks on the injury report, and games
- * missed from a season-ending absence (see {@link ./seasonEndingAbsence}),
- * which is the only signal for a player who went on IR and so vanished from the
- * report altogether. They are not summed — both describe the same absence.
+ * Two inputs, and they are maxed because both are counts of *games missed*:
+ * `excusedGames` from {@link ./absenceWeeks}, and `seasonEndingAbsenceGames`
+ * from {@link ./seasonEndingAbsence}, the 2013–2015 fallback for seasons with
+ * no reserve feed to intersect.
+ *
+ * The injury-report and reserve week counts used to be maxed in here alongside
+ * them. That was wrong: they were never alternative estimates of one absence
+ * but consecutive halves of it, because placing a player on injured reserve
+ * removes him from the weekly report. {@link ./absenceWeeks} now unions those
+ * week sets and intersects them with the weeks he actually missed, and hands
+ * the single number over. That intersection is what makes forgiveness monotone
+ * in evidence: another documented week can only widen the union and so can
+ * only forgive more, while no week without documented injury behind it is ever
+ * forgiven at all.
  */
 export function injuryAdjustedFullSeasonDenominator(options: {
   fullSeasonTeamDen: number;
   gameCount: number;
-  injuryReportWeeks: number;
+  /**
+   * Games missed with documented injury evidence — see
+   * {@link ./absenceWeeks#excusedAbsenceGames}.
+   */
+  excusedGames: number;
   /** Games missed after a player disappeared for the rest of the season */
   seasonEndingAbsenceGames?: number;
   teamGames: number;
@@ -342,7 +355,7 @@ export function injuryAdjustedFullSeasonDenominator(options: {
   const {
     fullSeasonTeamDen,
     gameCount,
-    injuryReportWeeks,
+    excusedGames,
     seasonEndingAbsenceGames = 0,
     teamGames,
     gamesPlayed,
@@ -353,14 +366,21 @@ export function injuryAdjustedFullSeasonDenominator(options: {
 
   // Games missed are counted over the schedule the rest rule leaves behind. A
   // rested finale is erased downstream, so excusing it here as well would
-  // discount the same absence twice — the same reason the two injury signals
-  // are maxed rather than summed.
+  // discount the same absence twice.
   const missedGames = Math.max(
     0,
     teamGames - restTeamGames - (gamesPlayed - restPlayerGames),
   );
+  // The `missedGames` cap is redundant for `excusedGames`, which is a subset of
+  // the missed weeks by construction. It is currently unreachable on the
+  // heuristic path too: `seasonEndingAbsenceGames` is computed in
+  // `loadSnapData` (scripts/update-data.ts) over the same rest-adjusted team
+  // weeks that bound `missedGames` here, so it can't exceed what the cap
+  // compares it against — measured at 0 of 24,794 stored seasons where it
+  // binds. Kept anyway as cheap defence-in-depth against a future signal that
+  // is not so bounded.
   const excusedWeeks = Math.min(
-    Math.max(0, injuryReportWeeks, seasonEndingAbsenceGames),
+    Math.max(0, excusedGames, seasonEndingAbsenceGames),
     missedGames,
   );
   if (excusedWeeks <= 0 || gameCount <= 0 || fullSeasonTeamDen <= 0) {
@@ -392,7 +412,11 @@ export function resolveCumulativeLoadWithInjury(options: {
   cumDenGamesPlayed: number;
   fullSeasonTeamDen: number;
   useFullSeasonDenominator: boolean;
-  injuryReportWeeks: number;
+  /**
+   * Games missed with documented injury evidence — see
+   * {@link ./absenceWeeks#excusedAbsenceGames}.
+   */
+  excusedGames: number;
   /** Games missed after a player disappeared for the rest of the season */
   seasonEndingAbsenceGames?: number;
   teamGames: number;
@@ -406,13 +430,13 @@ export function resolveCumulativeLoadWithInjury(options: {
   const seasonEndingAbsenceGames = options.seasonEndingAbsenceGames ?? 0;
   const applyInjuryAdjustmentToFullSeasonDen =
     options.useFullSeasonDenominator &&
-    (options.injuryReportWeeks > 0 || seasonEndingAbsenceGames > 0) &&
+    (options.excusedGames > 0 || seasonEndingAbsenceGames > 0) &&
     options.gameCount > 0;
   const fullDen = applyInjuryAdjustmentToFullSeasonDen
     ? injuryAdjustedFullSeasonDenominator({
         fullSeasonTeamDen: options.fullSeasonTeamDen,
         gameCount: options.gameCount,
-        injuryReportWeeks: options.injuryReportWeeks,
+        excusedGames: options.excusedGames,
         seasonEndingAbsenceGames,
         teamGames: options.teamGames,
         gamesPlayed: options.gamesPlayed,
@@ -432,16 +456,4 @@ export function resolveCumulativeLoadWithInjury(options: {
     }),
     denominator: useFullSeason ? fullDen : options.cumDenGamesPlayed,
   };
-}
-
-/**
- * Full-season load share with optional injury adjustment, share only.
- *
- * @deprecated Prefer {@link resolveCumulativeLoadWithInjury}, which also reports
- * the denominator a rest game has to be subtracted from.
- */
-export function resolveCumulativeLoadShareWithInjury(
-  options: Parameters<typeof resolveCumulativeLoadWithInjury>[0],
-): number {
-  return resolveCumulativeLoadWithInjury(options).share;
 }

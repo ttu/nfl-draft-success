@@ -358,6 +358,30 @@ describe('iron men', () => {
 
     expect(ironMen[0].value).toBe(3);
   });
+
+  it('breaks the streak on a reserve stint', () => {
+    const hurt = makePick({
+      overallPick: 26,
+      teamId: 'A',
+      draftYear: 2021,
+      seasons: [
+        fullSeason(2021),
+        fullSeason(2022),
+        makeSeason({
+          year: 2023,
+          gamesPlayed: 16,
+          teamGames: 16,
+          snapShare: 0.9,
+          reserveWeeks: 4,
+        }),
+        fullSeason(2024),
+      ],
+    });
+
+    const { ironMen } = getCareerShapeHighlights(classOf(hurt), teams);
+
+    expect(ironMen).toEqual([]);
+  });
 });
 
 describe('snakebit', () => {
@@ -388,6 +412,34 @@ describe('snakebit', () => {
 
     expect(snakebit[0].value).toBe(20);
     expect(snakebit[0].headline).toBe('20');
+    expect(snakebit[0].detail).toBe('90% when active');
+  });
+
+  it('treats reserve weeks as evidence of injury toward the missed-games total', () => {
+    const hurt = makePick({
+      overallPick: 33,
+      teamId: 'A',
+      draftYear: 2021,
+      seasons: [
+        makeSeason({
+          year: 2021,
+          gamesPlayed: 17,
+          teamGames: 17,
+          snapShare: 0.9,
+        }),
+        makeSeason({
+          year: 2022,
+          gamesPlayed: 8,
+          teamGames: 17,
+          snapShare: 0.9,
+          reserveWeeks: 11,
+        }),
+      ],
+    });
+
+    const { snakebit } = getCareerShapeHighlights(classOf(hurt), teams);
+
+    expect(snakebit[0].value).toBe(9);
     expect(snakebit[0].detail).toBe('90% when active');
   });
 

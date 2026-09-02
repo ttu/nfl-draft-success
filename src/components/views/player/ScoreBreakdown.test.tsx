@@ -21,7 +21,8 @@ const injuredQb: DraftPick = makePick({
       snapShare: 0.6525,
       cumulativeSnapShare: 0.4842,
       injuryReportWeeks: 2,
-      seasonEndingAbsenceGames: 12,
+      reserveWeeks: 12,
+      excusedGames: 12,
     }),
     makeSeason({
       year: 2024,
@@ -29,7 +30,7 @@ const injuredQb: DraftPick = makePick({
       snapShare: 0.9255,
       cumulativeSnapShare: 0.8815,
       injuryReportWeeks: 6,
-      seasonEndingAbsenceGames: 2,
+      excusedGames: 2,
     }),
     makeSeason({
       year: 2025,
@@ -37,7 +38,8 @@ const injuredQb: DraftPick = makePick({
       snapShare: 0.115,
       cumulativeSnapShare: 0.0444,
       injuryReportWeeks: 3,
-      seasonEndingAbsenceGames: 12,
+      reserveWeeks: 12,
+      excusedGames: 12,
     }),
   ],
 });
@@ -124,8 +126,8 @@ describe('ScoreBreakdown', () => {
       seasonScores.reduce((a, b) => a + b, 0),
       5,
     );
-    // 129.4 ÷ 3 = 43.1, which rounds to the 43 the hero shows.
-    expect(total / 3).toBeCloseTo(43.1, 1);
+    // 129.5 ÷ 3 = 43.17, which rounds to the 43 the hero shows.
+    expect(total / 3).toBeCloseTo(43.17, 2);
   });
 
   it('calls a tenure past the rookie deal what it is, not a longer window', () => {
@@ -180,7 +182,9 @@ describe('ScoreBreakdown', () => {
     const notes = screen.getAllByTestId('score-breakdown-injury');
     expect(notes).toHaveLength(3);
     expect(notes[2]).toHaveTextContent(/12 excused/);
-    expect(notes[2]).toHaveTextContent(/12 games after his last snap/);
+    expect(notes[2]).toHaveTextContent(
+      /games he missed while on the injury report or on injured reserve/,
+    );
     expect(notes[2]).toHaveTextContent(/Availability is not adjusted/);
   });
 
@@ -425,5 +429,82 @@ describe('ScoreBreakdown rested finale', () => {
     expect(
       screen.queryByTestId('score-breakdown-rest'),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe('ScoreBreakdown injury wording', () => {
+  const injuredIn = (o: Partial<Parameters<typeof makeSeason>[0]> = {}) =>
+    makePick({
+      draftYear: 2019,
+      seasons: [
+        makeSeason({
+          year: 2019,
+          gamesPlayed: 5,
+          teamGames: 16,
+          snapShare: 0.992,
+          cumulativeSnapShare: 0.992,
+          ...o,
+        }),
+      ],
+    });
+
+  /** The note reports games excused, never a week count. */
+  const injuryNote = (pick: DraftPick) => {
+    renderBreakdown(pick);
+    fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+    return screen.getAllByTestId('score-breakdown-injury')[0];
+  };
+
+  it('says how many missed games the reserve list documented', () => {
+    const note = injuryNote(injuredIn({ reserveWeeks: 11, excusedGames: 11 }));
+
+    expect(note).toHaveTextContent(
+      '11 excused (games he missed while on injured reserve)',
+    );
+    // Never the week counts themselves: they measure documentation, not games.
+    expect(note).not.toHaveTextContent('11 weeks on injured reserve');
+  });
+
+  it('names both sources when both documented part of the absence', () => {
+    const note = injuryNote(
+      injuredIn({ injuryReportWeeks: 4, reserveWeeks: 8, excusedGames: 11 }),
+    );
+
+    // The union of the two, intersected with the games he missed — the note
+    // must not read as a contest one of them won, nor invite adding them.
+    expect(note).toHaveTextContent(
+      '11 excused (games he missed while on the injury report or on injured reserve)',
+    );
+  });
+
+  it('names only the injury report when that is the whole record', () => {
+    const note = injuryNote(
+      injuredIn({ injuryReportWeeks: 11, excusedGames: 9 }),
+    );
+
+    expect(note).toHaveTextContent(
+      '9 excused (games he missed while on the injury report)',
+    );
+  });
+
+  it('keeps the snap-shape wording for a pre-2016 season', () => {
+    const note = injuryNote(
+      makePick({
+        draftYear: 2014,
+        seasons: [
+          makeSeason({
+            year: 2014,
+            gamesPlayed: 5,
+            teamGames: 16,
+            snapShare: 0.992,
+            cumulativeSnapShare: 0.992,
+            injuryReportWeeks: 2,
+            seasonEndingAbsenceGames: 11,
+          }),
+        ],
+      }),
+    );
+
+    expect(note).toHaveTextContent('11 excused (games after his last snap)');
   });
 });

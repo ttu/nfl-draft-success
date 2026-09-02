@@ -147,12 +147,18 @@ export function seasonRole(season: Season, position: string): Role {
  * effectively all of it, and was doing something when he was. Without the role
  * half, the list ranks core special-teamers, who dress every week by job
  * description.
+ *
+ * The absence check reads both `seasonEndingAbsenceGames` (pre-2016) and
+ * `reserveWeeks` (2016+) — the two are era-exclusive, never both populated, so
+ * this is a max over at most one real value. Without `reserveWeeks`, a season
+ * spent partly on IR but finished at full games-played would read as durable.
  */
 function isIronManSeason(season: Season, position: string): boolean {
   const available =
     season.teamGames > 0 &&
     season.gamesPlayed / season.teamGames >= FULL_AVAILABILITY_GAMES_SHARE &&
-    (season.seasonEndingAbsenceGames ?? 0) < MIN_SEASON_ENDING_ABSENCE_GAMES;
+    Math.max(season.seasonEndingAbsenceGames ?? 0, season.reserveWeeks ?? 0) <
+      MIN_SEASON_ENDING_ABSENCE_GAMES;
   return (
     available &&
     isAtLeastRole(seasonRole(season, position), 'significant_contributor')
@@ -355,17 +361,21 @@ function ironManRow(
 
 /**
  * Whether a season carries any evidence that absence was injury rather than
- * choice: time on the official injury report, or a year that ended early.
+ * choice: time on the official injury report, a year that ended early, or —
+ * for 2016+, where that heuristic goes dark — a stint on reserve.
  *
  * Without this the list ranks benchings. A quarterback who lost his job is
  * absent for every game after it, which looks identical to a torn ACL in
  * `gamesPlayed` alone — and putting him on a list meant to say "he was good, he
- * was hurt" says the opposite of what it means to.
+ * was hurt" says the opposite of what it means to. Reserve status is the
+ * cleanest evidence yet that a season was not one: a released player carries a
+ * different status and scores zero reserve weeks.
  */
 function wasHurt(season: Season): boolean {
   return (
     (season.injuryReportWeeks ?? 0) > 0 ||
-    (season.seasonEndingAbsenceGames ?? 0) > 0
+    (season.seasonEndingAbsenceGames ?? 0) > 0 ||
+    (season.reserveWeeks ?? 0) > 0
   );
 }
 

@@ -30,10 +30,35 @@ import { playedSeasons } from './seasonPlayed';
  * the reader to look for an adjustment that never happened.
  */
 export interface InjuryAdjustmentExplanation {
+  /**
+   * Weeks he appeared on the weekly injury report. A *displayed* stat only:
+   * being listed does not mean sitting out, so this counts report presence
+   * rather than games lost and no longer sizes the forgiveness.
+   */
   injuryReportWeeks: number;
+  /**
+   * Games between his last snap and the end of the season — the pre-2016
+   * snap-shape heuristic, and on those seasons the figure that *does* size the
+   * forgiveness, because there is no reserve feed to intersect.
+   */
   seasonEndingAbsenceGames: number;
-  /** The larger of the two signals, capped at games actually missed. */
+  /**
+   * Weeks he spent on a reserve list. Like `injuryReportWeeks`, a displayed
+   * stat: it is a week count, not a count of games lost.
+   */
+  reserveWeeks: number;
+  /**
+   * Games the Load denominator actually forgave — `Season.excusedGames` (the
+   * weeks he missed that were documented as injured), or the season-ending
+   * heuristic on pre-2016 seasons, whichever the denominator used.
+   */
   excusedGames: number;
+  /**
+   * Which figure sized `excusedGames`, and so which one the note may name:
+   * `'documented-weeks'` for the missed ∩ documented intersection, or
+   * `'season-ending-absence'` for the pre-2016 snap-shape heuristic.
+   */
+  basis: 'documented-weeks' | 'season-ending-absence';
   /** Team games Load is measured against: `teamGames - excusedGames`. */
   loadDenominatorGames: number;
 }
@@ -115,28 +140,53 @@ function clamp01(v: number): number {
 }
 
 /**
- * Games an injury excused from this season's Load denominator, mirroring the
- * expression `update-data.ts` applies when it writes `cumulativeSnapShare`.
+ * Games an injury excused from this season's Load denominator, read from the
+ * season rather than re-derived, so the panel cannot print a figure the score
+ * disagrees with.
  *
- * The two signals describe the same absence from different angles — weeks on
- * the injury report, and games between a last snap and the end of the season —
- * so the larger wins and they are never added. A player on IR leaves the weekly
- * report entirely, which is why the second signal exists at all.
+ * `Season.excusedGames` is the authoritative count: the weeks he missed that
+ * were documented by the injury report or the reserve list. Re-deriving it here
+ * from `injuryReportWeeks` and `reserveWeeks` is not possible — those are week
+ * counts, and a player is routinely listed in a week he plays — which is why
+ * the data script stores the intersection instead.
+ *
+ * Pre-2016 seasons have no reserve feed to intersect, so they carry
+ * `seasonEndingAbsenceGames` instead and the denominator `max()`es it in; this
+ * mirrors that, and records which of the two it took in `basis`.
  */
-function explainInjury(s: Season): InjuryAdjustmentExplanation | undefined {
+function explainInjury(
+  s: Season,
+  position: string,
+): InjuryAdjustmentExplanation | undefined {
   const injuryReportWeeks = s.injuryReportWeeks ?? 0;
   const seasonEndingAbsenceGames = s.seasonEndingAbsenceGames ?? 0;
-  if (injuryReportWeeks === 0 && seasonEndingAbsenceGames === 0)
+  const reserveWeeks = s.reserveWeeks ?? 0;
+  const documentedExcusedGames = s.excusedGames ?? 0;
+  if (
+    injuryReportWeeks === 0 &&
+    seasonEndingAbsenceGames === 0 &&
+    reserveWeeks === 0 &&
+    documentedExcusedGames === 0
+  )
     return undefined;
   // A season with no snaps has a Load of zero whatever the denominator, so
   // there is no forgiveness to describe. Reporting "1 week excused" against a
   // player who missed all nineteen games advertises an adjustment that did
   // nothing, which reads as the score having been softened when it was not.
-  if (s.gamesPlayed === 0) return undefined;
+  //
+  // Snaps, not games, is the test: a rookie who dressed for one game and never
+  // took a snap still prints Load 0.0%, so the note would sit beside a figure
+  // the excusal demonstrably did not move.
+  if (s.gamesPlayed === 0 || rawSnapShareForRoleTier(s, position) === 0)
+    return undefined;
 
+  // The same expression the denominator applies: the documented intersection
+  // and the pre-2016 heuristic are both counts of games missed, so the larger
+  // wins, and the cap only ever binds on the heuristic — the intersection is a
+  // subset of the missed weeks by construction.
   const missedGames = Math.max(0, s.teamGames - s.gamesPlayed);
   const excusedGames = Math.min(
-    Math.max(injuryReportWeeks, seasonEndingAbsenceGames),
+    Math.max(documentedExcusedGames, seasonEndingAbsenceGames),
     missedGames,
   );
   if (excusedGames === 0) return undefined;
@@ -144,7 +194,12 @@ function explainInjury(s: Season): InjuryAdjustmentExplanation | undefined {
   return {
     injuryReportWeeks,
     seasonEndingAbsenceGames,
+    reserveWeeks,
     excusedGames,
+    basis:
+      seasonEndingAbsenceGames > documentedExcusedGames
+        ? 'season-ending-absence'
+        : 'documented-weeks',
     loadDenominatorGames: s.teamGames - excusedGames,
   };
 }
@@ -173,7 +228,7 @@ function explainSeason(
     // Taken from the scorer rather than recomposed from the terms above, so the
     // number shown here is the number the rest of the app used.
     score: getSeasonScore(s, position),
-    injury: explainInjury(s),
+    injury: explainInjury(s, position),
     restedFinale: s.restGame != null,
   };
 }

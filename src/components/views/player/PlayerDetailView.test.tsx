@@ -109,7 +109,7 @@ describe('PlayerDetailView current-team indicator', () => {
 
 describe('PlayerDetailView season-ending injury marker', () => {
   // Nick Bosa 2020: ACL in week 2, straight to IR, so zero injury-report weeks.
-  // The marker is what explains a forgiven Load with an empty IR wks cell.
+  // The marker is what explains a forgiven Load with an empty Report wks cell.
   const injured: DraftPick = {
     ...kicker,
     position: 'DE',
@@ -151,7 +151,7 @@ describe('PlayerDetailView season-ending injury marker', () => {
     expect(marker).toHaveAccessibleDescription(/season ended by injury/i);
   });
 
-  it('names the games missed so the empty IR wks cell makes sense', () => {
+  it('names the games missed so the empty Report wks cell makes sense', () => {
     renderInjured();
     expect(
       screen.getByTestId('season-ending-injury-2024'),
@@ -161,6 +161,60 @@ describe('PlayerDetailView season-ending injury marker', () => {
   it('leaves seasons the player finished unmarked', () => {
     renderInjured();
     expect(screen.queryByTestId('season-ending-injury-2025')).toBeNull();
+  });
+});
+
+describe('PlayerDetailView reserve weeks', () => {
+  const reserveSeasons = makePick({
+    seasons: [
+      makeSeason({
+        year: 2019,
+        gamesPlayed: 5,
+        teamGames: 16,
+        snapShare: 0.992,
+        cumulativeSnapShare: 0.992,
+        reserveWeeks: 11,
+      }),
+      makeSeason({
+        year: 2020,
+        gamesPlayed: 0,
+        teamGames: 16,
+        snapShare: 0,
+        cumulativeSnapShare: 0,
+        reserveWeeks: 16,
+      }),
+    ],
+  });
+
+  function renderReserve() {
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={reserveSeasons}
+          draftYear={2018}
+          draftClasses={[
+            makeDraftClass({ year: 2018, picks: [reserveSeasons] }),
+          ]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+  }
+
+  it('labels a season lost entirely to reserve', () => {
+    renderReserve();
+    expect(screen.getByText('injured')).toBeInTheDocument();
+    // The season still counts — no uncounted mark.
+    expect(
+      screen.queryByTestId('season-uncounted-2020'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('keeps the IR marker on a post-2015 reserve season', () => {
+    // The era gate stops writing seasonEndingAbsenceGames from 2016, so a marker
+    // keyed only on that field would vanish from the best-covered decade.
+    renderReserve();
+    expect(screen.getByTestId('season-ending-injury-2019')).toBeInTheDocument();
   });
 });
 

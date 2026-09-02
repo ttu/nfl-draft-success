@@ -339,6 +339,37 @@ function SeasonBreakdown({ season }: { season: SeasonScoreExplanation }) {
 }
 
 /**
+ * What the forgiveness covered: the games he missed with documented injury
+ * behind them.
+ *
+ * Named as one thing because it *is* one thing. The rule unions the injury
+ * report with the reserve list — a player on IR leaves the report, so the two
+ * describe consecutive halves of one absence — and intersects that with the
+ * weeks he actually missed. There is no contest between signals to report the
+ * winner of, and naming a week count instead would print a number that is not
+ * the number of games excused.
+ *
+ * The evidence itself is tracked week by week (injury report, reserve list),
+ * but every element of that intersection is a week the team played a game he
+ * missed, so the count reported alongside this string is a game count. Say
+ * "games" here too, or the sentence gives one number two units.
+ */
+function excusedEvidence(
+  injury: NonNullable<SeasonScoreExplanation['injury']>,
+): string {
+  if (injury.basis === 'season-ending-absence') {
+    return 'games after his last snap';
+  }
+  if (injury.injuryReportWeeks === 0) {
+    return 'games he missed while on injured reserve';
+  }
+  if (injury.reserveWeeks === 0) {
+    return 'games he missed while on the injury report';
+  }
+  return 'games he missed while on the injury report or on injured reserve';
+}
+
+/**
  * Why Load is not simply avg snap × games played: an injury shrinks the
  * denominator it is measured against.
  *
@@ -356,14 +387,8 @@ function InjuryNote({
   gamesPlayed: number;
   teamGames: number;
 }) {
-  const { injuryReportWeeks, seasonEndingAbsenceGames, excusedGames } = injury;
-  // Name only the signal that won. Reporting both invites the reader to add
-  // them, which is exactly the mistake the max() is there to prevent.
-  const reportWeeks = `${injuryReportWeeks} week${injuryReportWeeks === 1 ? '' : 's'} on the injury report`;
-  const signal =
-    seasonEndingAbsenceGames > injuryReportWeeks
-      ? `${seasonEndingAbsenceGames} games after his last snap`
-      : reportWeeks;
+  const { excusedGames } = injury;
+  const evidence = excusedEvidence(injury);
 
   return (
     <p className="score-breakdown__injury" data-testid="score-breakdown-injury">
@@ -371,7 +396,7 @@ function InjuryNote({
       <strong className="tnum">
         {injury.loadDenominatorGames} of {teamGames}
       </strong>{' '}
-      team games — {excusedGames} excused ({signal}). Availability is not
+      team games — {excusedGames} excused ({evidence}). Availability is not
       adjusted:{' '}
       <span className="tnum">
         {gamesPlayed} of {teamGames}

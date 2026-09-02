@@ -26,6 +26,7 @@ import {
 import { getSeasonScore } from '../../../lib/getSeasonScore';
 import { rookieWindow, scoredWindowYears } from '../../../lib/rookieWindow';
 import { isPlayedSeason, isUnplayedSeason } from '../../../lib/seasonPlayed';
+import { isInjuredOutSeason } from '../../../lib/injuredSeason';
 import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
 import { activateOnKey } from '../../../lib/activateOnKey';
@@ -274,7 +275,12 @@ function PlayerDetailViewImpl({
                   <th className="right career-load">Load</th>
                   <th>Role</th>
                   <th className="right">Score</th>
-                  <th className="right hide-mobile">IR wks</th>
+                  <th
+                    className="right hide-mobile"
+                    title="Weeks on the weekly injury report. Time on injured reserve leaves the weekly report, so those weeks show up as the IR marker beside the year instead — a player can read 0 here and still have missed the season."
+                  >
+                    Report wks
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -635,6 +641,14 @@ function SeasonRow({
           // through a hover tooltip, which is not where a key belongs.
           <span className="role-chip learning">learning</span>
         )}
+        {isInjuredOutSeason(s) && (
+          // Same problem the `learning` chip solves, same solution: Role is the
+          // column readers scan, and "non-contributor" beside a zero is a
+          // verdict on a player who never got on the field to earn one. Unlike
+          // `learning` this season is still counted — no ✕ — because the team
+          // really did lose the year.
+          <span className="role-chip injured">injured</span>
+        )}
       </td>
       <td className="right mono tnum player-career__score">
         {Math.round(getSeasonScore(s, position))}
@@ -788,20 +802,35 @@ function WindowGapRow({ year }: { year: number }) {
   );
 }
 
+function pluralize(count: number, noun: string): string {
+  return count === 1 ? noun : `${noun}s`;
+}
+
 /**
- * Flags a season an injury cut short. Players placed on IR drop off the weekly
- * injury report, so these are exactly the seasons where "IR wks" reads 0 while
- * Load has been forgiven — without the marker that pairing looks like a bug.
+ * Flags a season an injury cut short or wiped out. Players placed on IR drop
+ * off the weekly injury report, so these are exactly the seasons where
+ * "Report wks" reads 0 while Load has been forgiven — without the marker that
+ * pairing looks like a bug.
+ *
+ * Two signals feed it, and only one is ever present: reserve weeks from 2016,
+ * the snap-shape heuristic before. The tooltip follows whichever spoke, because
+ * their units differ — weeks on a list, against games after a last snap — and a
+ * reserve stint need not have ended the season at all.
  */
 function SeasonEndingInjuryMarker({ season }: { season: Season }) {
+  const reserveWeeks = season.reserveWeeks ?? 0;
   const missed = season.seasonEndingAbsenceGames ?? 0;
-  if (missed <= 0) return null;
+  if (reserveWeeks <= 0 && missed <= 0) return null;
+  const label =
+    reserveWeeks >= missed
+      ? `${reserveWeeks} ${pluralize(reserveWeeks, 'week')} on injured reserve`
+      : `Season ended by injury — missed the final ${missed} ${pluralize(missed, 'game')}`;
   return (
     <abbr
       className="season-ending-injury"
       data-testid={`season-ending-injury-${season.year}`}
-      aria-label="Season ended by injury"
-      title={`Season ended by injury — missed the final ${missed} ${missed === 1 ? 'game' : 'games'}`}
+      aria-label="Season affected by injury"
+      title={label}
     >
       IR
     </abbr>

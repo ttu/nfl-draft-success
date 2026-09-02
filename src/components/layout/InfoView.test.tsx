@@ -41,7 +41,9 @@ describe('InfoView', () => {
     // tier shifts down with it.
     expect(picker).toHaveValue('RB');
     expect(screen.queryByText('≥ 65%')).not.toBeInTheDocument();
-    expect(screen.getAllByText('≥ 44%')).toHaveLength(2);
+    expect(screen.getAllByText('≥ 43%')).toHaveLength(2);
+    // 43%/23%, not 44%/24%: the RB full-time baseline regenerated at 0.667
+    // (was 0.670), which drops these tiers across a rounding boundary.
     expect(screen.getByText('≥ 23%')).toBeInTheDocument();
   });
 

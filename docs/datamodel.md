@@ -31,6 +31,8 @@ erDiagram
         boolean retained
         int injuryReportWeeks_optional
         int seasonEndingAbsenceGames_optional
+        int reserveWeeks_optional
+        int excusedGames_optional
     }
 ```
 
@@ -57,6 +59,10 @@ export interface Season {
   injuryReportWeeks?: number;
   /** Team games missed after the player's last snap — an injury that ended his season. Present only when non-zero; a player on IR leaves the injury report, so these seasons have no `injuryReportWeeks`. */
   seasonEndingAbsenceGames?: number;
+  /** Weeks on a reserve list (nflverse weekly rosters) — the direct IR measurement. Present only when non-zero, and only from 2016 on. Era-exclusive with `seasonEndingAbsenceGames`: a season carries one or the other, never both — 2016+ writes `reserveWeeks`, 2013–2015 writes `seasonEndingAbsenceGames`. */
+  reserveWeeks?: number;
+  /** Games the load denominator actually forgave for injury: `| missedWeeks ∩ (injury-report weeks ∪ reserve weeks) |` (see `src/lib/absenceWeeks.ts`). Present only when non-zero. The authoritative figure — consumers must read this rather than re-derive it from `injuryReportWeeks` / `reserveWeeks`, which count documented weeks, not games lost, and disagree with the stored score. */
+  excusedGames?: number;
 }
 
 export interface DraftPick {

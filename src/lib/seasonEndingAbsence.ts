@@ -1,11 +1,18 @@
 /**
- * Detecting season-ending absences from snap data alone.
+ * Detecting season-ending absences from snap data alone — the pre-2016 fallback.
  *
  * The nflverse injury feed is the weekly practice/game-status report, and a
  * player placed on IR drops off the 53-man roster and off that report entirely.
  * The worst injuries therefore leave no trace in `injuryReportWeeks` (Nick Bosa
  * has zero 2020 rows despite tearing his ACL in week 2). Snap counts still show
  * the shape of it: the player appears every week, then never again.
+ *
+ * From 2016 this is superseded by `src/lib/reserveWeeks.ts`, which measures the
+ * same absence directly from roster status instead of inferring it, and is not
+ * blind to an injury that starts a season rather than ending one — this rule
+ * returns 0 whenever the player came back. Only 2013-2015 still relies on it,
+ * because the weekly roster feed is unreliable that far back; see
+ * FIRST_RESERVE_SEASON in `scripts/update-data.ts` for the evidence.
  */
 
 /**

@@ -2722,18 +2722,27 @@ button {
 .player-career__role-cell {
   white-space: nowrap;
 }
+/* Centre the two chips on each other. `Non-Contributor` carries a 1px dashed
+   border and the annotation chips do not, so baseline alignment left the
+   annotation 2px shorter and sitting 2px low beside it. */
+.player-career__role-cell .role-chip {
+  vertical-align: middle;
+}
 
-/* Why an apprentice season does not count, said beside its Role chip rather
-   than only in the ✕'s tooltip. Built as a `role-chip` so it sits in the Role
-   column as an equal rather than as loose text the eye reads as leftover
-   markup. Muted, because it annotates the chip beside it — the season's real
+/* Why a season reads the way it does — an apprentice year that does not count,
+   or one lost to injured reserve — said beside its Role chip rather than only
+   in the ✕'s tooltip. Built as a `role-chip` so each sits in the Role column as
+   an equal rather than as loose text the eye reads as leftover markup. Both are
+   muted, because they annotate the chip beside them — the season's real
    classification — instead of replacing it. */
-.role-chip.learning {
+.role-chip.learning,
+.role-chip.injured {
   margin-left: 6px;
   color: var(--ink-3);
   background: var(--paper-2);
 }
-.role-chip.learning::before {
+.role-chip.learning::before,
+.role-chip.injured::before {
   background: var(--ink-4);
 }
 .season-uncounted-mark {
@@ -3984,6 +3993,17 @@ button {
   }
   .player-career .role-chip::before {
     display: none;
+  }
+  /* On a phone the Role column is too narrow to hold a role chip and its
+     annotation side by side: kept on one line the `injured` chip spilled out of
+     the cell and over the Score column. `normal` only permits the break — where
+     the column is wide enough the two still share a line. */
+  .player-career__role-cell {
+    white-space: normal;
+  }
+  .player-career .role-chip.learning,
+  .player-career .role-chip.injured {
+    margin: 2px 0 0 4px;
   }
   .player-charts {
     padding: 8px 16px 24px;

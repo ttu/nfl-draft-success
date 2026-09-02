@@ -39,7 +39,8 @@ const richardson = () =>
         snapShare: 0.6525,
         cumulativeSnapShare: 0.4842,
         injuryReportWeeks: 2,
-        seasonEndingAbsenceGames: 12,
+        reserveWeeks: 12,
+        excusedGames: 12,
       }),
       season({
         year: 2024,
@@ -47,7 +48,7 @@ const richardson = () =>
         snapShare: 0.9255,
         cumulativeSnapShare: 0.8815,
         injuryReportWeeks: 6,
-        seasonEndingAbsenceGames: 2,
+        excusedGames: 2,
       }),
       season({
         year: 2025,
@@ -55,7 +56,8 @@ const richardson = () =>
         snapShare: 0.115,
         cumulativeSnapShare: 0.0444,
         injuryReportWeeks: 3,
-        seasonEndingAbsenceGames: 12,
+        reserveWeeks: 12,
+        excusedGames: 12,
       }),
     ],
   });
@@ -266,7 +268,7 @@ describe('explainDraftScore', () => {
       const rows = seasonRows(explainDraftScore(richardson(), true)!);
 
       expect(rows[0].baselineExempt).toBe(false);
-      expect(rows[0].positionBaseline).toBeCloseTo(0.993, 3);
+      expect(rows[0].positionBaseline).toBeCloseTo(0.992, 3);
       expect(rows[0].normalizedShare).toBeCloseTo(
         rows[0].rawShare / rows[0].positionBaseline,
         6,
@@ -295,45 +297,124 @@ describe('explainDraftScore', () => {
   });
 
   describe('injury adjustment', () => {
-    it('excuses the larger of the two signals, never their sum', () => {
+    it('reports the stored excusal, not a figure re-derived from week counts', () => {
       const rows = seasonRows(explainDraftScore(richardson(), true)!);
       const y2023 = rows.find((r) => r.year === 2023)!;
 
-      // max(2 report weeks, 12 games after last snap) = 12, not 14.
+      // 2 report weeks and 12 reserve weeks, and the denominator forgave 12 —
+      // the weeks he missed that were documented. Neither the max (12 by
+      // coincidence here) nor the sum (14) is what is being read: the panel
+      // takes `excusedGames` straight off the season.
       expect(y2023.injury).toEqual({
         injuryReportWeeks: 2,
-        seasonEndingAbsenceGames: 12,
+        seasonEndingAbsenceGames: 0,
+        reserveWeeks: 12,
         excusedGames: 12,
+        basis: 'documented-weeks',
         loadDenominatorGames: 5,
       });
     });
 
-    it('caps excused games at the games actually missed', () => {
+    it('never re-derives an excusal from injury-report weeks alone', () => {
       const p = pick({
         seasons: [
           season({
             gamesPlayed: 15,
             teamGames: 17,
+            // Listed nine weeks, but he played in all but two of them, so the
+            // intersection with the weeks he missed forgave one game.
             injuryReportWeeks: 9,
+            excusedGames: 1,
           }),
         ],
       });
       const rows = seasonRows(explainDraftScore(p, true)!);
 
-      // Only two games were missed, so nine report weeks cannot excuse nine.
+      expect(rows[0].injury?.excusedGames).toBe(1);
+      expect(rows[0].injury?.loadDenominatorGames).toBe(16);
+    });
+
+    it('falls back to the season-ending heuristic on a pre-2016 season', () => {
+      // No reserve feed before 2016, so nothing to intersect: the denominator
+      // maxes in `seasonEndingAbsenceGames` and the panel must follow it.
+      const p = pick({
+        draftYear: 2014,
+        seasons: [
+          season({
+            year: 2014,
+            gamesPlayed: 4,
+            teamGames: 16,
+            injuryReportWeeks: 2,
+            seasonEndingAbsenceGames: 12,
+          }),
+        ],
+      });
+      const rows = seasonRows(explainDraftScore(p, true)!);
+
+      expect(rows[0].injury?.excusedGames).toBe(12);
+      expect(rows[0].injury?.basis).toBe('season-ending-absence');
+      expect(rows[0].injury?.loadDenominatorGames).toBe(4);
+    });
+
+    it('caps the pre-2016 heuristic at the games actually missed', () => {
+      const p = pick({
+        draftYear: 2014,
+        seasons: [
+          season({
+            year: 2014,
+            gamesPlayed: 14,
+            teamGames: 16,
+            seasonEndingAbsenceGames: 9,
+          }),
+        ],
+      });
+      const rows = seasonRows(explainDraftScore(p, true)!);
+
+      // The heuristic is inferred from snap shape, not measured, so it can
+      // overshoot; only two games were missed.
       expect(rows[0].injury?.excusedGames).toBe(2);
-      expect(rows[0].injury?.loadDenominatorGames).toBe(15);
+      expect(rows[0].injury?.loadDenominatorGames).toBe(14);
     });
 
     it('omits the adjustment for a season with no snaps to forgive', () => {
       const p = pick({
         seasons: [
-          season({ gamesPlayed: 0, snapShare: 0, injuryReportWeeks: 1 }),
+          season({
+            gamesPlayed: 0,
+            snapShare: 0,
+            injuryReportWeeks: 1,
+            excusedGames: 17,
+          }),
         ],
       });
       const rows = seasonRows(explainDraftScore(p, true)!);
 
       // Load is 0 against any denominator, so there is no adjustment to claim.
+      expect(rows[0].injury).toBeUndefined();
+    });
+
+    it('omits the adjustment when he dressed but never took a snap', () => {
+      const p = pick({
+        draftYear: 2013,
+        position: 'TE',
+        seasons: [
+          season({
+            year: 2013,
+            gamesPlayed: 1,
+            teamGames: 17,
+            snapShare: 0,
+            cumulativeSnapShare: 0,
+            injuryReportWeeks: 6,
+            seasonEndingAbsenceGames: 14,
+            excusedGames: 5,
+          }),
+        ],
+      });
+      const rows = seasonRows(explainDraftScore(p, true)!);
+
+      // He was active for one game and played none of it, so Load reads 0.0%
+      // against any denominator. Claiming games were excused next to a Load
+      // the excusal never moved reads as the score having been softened.
       expect(rows[0].injury).toBeUndefined();
     });
 
@@ -343,7 +424,7 @@ describe('explainDraftScore', () => {
       expect(rows[0].injury).toBeUndefined();
     });
 
-    it('omits the adjustment when the signals excuse nothing', () => {
+    it('omits the adjustment when the documented weeks excused nothing', () => {
       const p = pick({
         seasons: [
           season({ gamesPlayed: 17, teamGames: 17, injuryReportWeeks: 3 }),
@@ -351,8 +432,60 @@ describe('explainDraftScore', () => {
       });
       const rows = seasonRows(explainDraftScore(p, true)!);
 
-      // He missed no games, so there is nothing to excuse and no claim to make.
+      // He was listed three weeks and played every game, so the intersection
+      // is empty and there is no claim to make.
       expect(rows[0].injury).toBeUndefined();
+    });
+  });
+
+  describe('explainInjury with reserve weeks', () => {
+    const injuredSeason = (o: Partial<Season> = {}) =>
+      season({
+        year: 2019,
+        gamesPlayed: 5,
+        teamGames: 16,
+        snapShare: 0.992,
+        cumulativeSnapShare: 0.992,
+        retained: true,
+        reserveWeeks: 11,
+        excusedGames: 11,
+        ...o,
+      });
+
+    it('explains a season whose only signal is reserve weeks', () => {
+      const rows = seasonRows(
+        explainDraftScore(
+          pick({ draftYear: 2019, seasons: [injuredSeason()] }),
+          true,
+        )!,
+      );
+      const y2019 = rows.find((r) => r.year === 2019)!;
+
+      expect(y2019.injury).toBeDefined();
+      expect(y2019.injury?.reserveWeeks).toBe(11);
+      expect(y2019.injury?.excusedGames).toBe(11);
+      expect(y2019.injury?.loadDenominatorGames).toBe(5);
+    });
+
+    it('still says nothing about a season with no snaps', () => {
+      // A wholly-missed season has a Load of zero whatever the denominator, so
+      // there is no forgiveness to describe. It gets the `injured` chip instead.
+      const rows = seasonRows(
+        explainDraftScore(
+          pick({
+            draftYear: 2019,
+            seasons: [
+              injuredSeason({
+                gamesPlayed: 0,
+                reserveWeeks: 16,
+                excusedGames: 16,
+              }),
+            ],
+          }),
+          true,
+        )!,
+      );
+      expect(rows.find((r) => r.year === 2019)!.injury).toBeUndefined();
     });
   });
 

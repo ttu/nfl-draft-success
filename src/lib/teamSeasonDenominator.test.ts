@@ -4,7 +4,6 @@ import {
   buildTeamSeasonDenominatorTotals,
   injuryAdjustedFullSeasonDenominator,
   resolveCumulativeLoadShare,
-  resolveCumulativeLoadShareWithInjury,
   resolveCumulativeLoadWithInjury,
   resolveTeamGamesDenominator,
 } from './teamSeasonDenominator';
@@ -211,13 +210,13 @@ describe('buildTeamSeasonDenominatorTotals', () => {
 });
 
 describe('injuryAdjustedFullSeasonDenominator', () => {
-  it('subtracts average per-game capacity for excused missed games (capped by injury weeks)', () => {
+  it('subtracts average per-game capacity for excused missed games', () => {
     const fullDen = 1700;
     const gameCount = 17;
     const adjusted = injuryAdjustedFullSeasonDenominator({
       fullSeasonTeamDen: fullDen,
       gameCount,
-      injuryReportWeeks: 7,
+      excusedGames: 7,
       teamGames: 17,
       gamesPlayed: 10,
       cumDenGamesPlayed: 600,
@@ -226,11 +225,14 @@ describe('injuryAdjustedFullSeasonDenominator', () => {
     expect(adjusted).toBeCloseTo(fullDen - Math.min(7, 7) * avg, 5);
   });
 
-  it('caps excused weeks by missed games, not injury total alone', () => {
+  it('caps the excusal at games missed, however large the signal', () => {
+    // `excusedGames` is a subset of the missed weeks by construction, so this
+    // cap cannot bind on that path. It still guards the 2013–2015 heuristic,
+    // which counts games rather than intersecting week sets.
     const adjusted = injuryAdjustedFullSeasonDenominator({
       fullSeasonTeamDen: 1000,
       gameCount: 10,
-      injuryReportWeeks: 10,
+      excusedGames: 10,
       teamGames: 17,
       gamesPlayed: 15,
       cumDenGamesPlayed: 100,
@@ -247,7 +249,7 @@ describe('injuryAdjustedFullSeasonDenominator', () => {
     const adjusted = injuryAdjustedFullSeasonDenominator({
       fullSeasonTeamDen: fullDen,
       gameCount,
-      injuryReportWeeks: 0,
+      excusedGames: 0,
       seasonEndingAbsenceGames: 14,
       teamGames: 16,
       gamesPlayed: 2,
@@ -257,13 +259,16 @@ describe('injuryAdjustedFullSeasonDenominator', () => {
     expect(adjusted).toBeCloseTo(fullDen - 14 * avg, 5);
   });
 
-  it('takes the stronger of the two absence signals rather than summing them', () => {
+  it('takes the stronger of the intersection and the pre-2016 heuristic', () => {
+    // Both are counts of games missed to injury, so they describe the same
+    // absence and are never summed. The heuristic covers 2013–2015, where the
+    // reserve feed does not exist and the week sets are too thin to intersect.
     const fullDen = 1700;
     const gameCount = 17;
     const adjusted = injuryAdjustedFullSeasonDenominator({
       fullSeasonTeamDen: fullDen,
       gameCount,
-      injuryReportWeeks: 3,
+      excusedGames: 3,
       seasonEndingAbsenceGames: 5,
       teamGames: 17,
       gamesPlayed: 12,
@@ -279,7 +284,7 @@ describe('injuryAdjustedFullSeasonDenominator', () => {
     const adjusted = injuryAdjustedFullSeasonDenominator({
       fullSeasonTeamDen: fullDen,
       gameCount,
-      injuryReportWeeks: 0,
+      excusedGames: 0,
       seasonEndingAbsenceGames: 9,
       teamGames: 17,
       gamesPlayed: 15,
@@ -287,50 +292,6 @@ describe('injuryAdjustedFullSeasonDenominator', () => {
     });
     const avg = fullDen / gameCount;
     expect(adjusted).toBeCloseTo(fullDen - 2 * avg, 5);
-  });
-});
-
-describe('resolveCumulativeLoadShareWithInjury', () => {
-  it('increases load vs raw full-season when injury weeks align with missed games', () => {
-    const raw = resolveCumulativeLoadShare({
-      cumNum: 100,
-      cumDenGamesPlayed: 400,
-      fullSeasonTeamDen: 2000,
-      useFullSeasonDenominator: true,
-    });
-    const adj = resolveCumulativeLoadShareWithInjury({
-      cumNum: 100,
-      cumDenGamesPlayed: 400,
-      fullSeasonTeamDen: 2000,
-      useFullSeasonDenominator: true,
-      injuryReportWeeks: 5,
-      teamGames: 17,
-      gamesPlayed: 12,
-      gameCount: 17,
-    });
-    expect(adj).toBeGreaterThan(raw);
-  });
-
-  it('adjusts a season-ending absence even with no injury report weeks', () => {
-    const raw = resolveCumulativeLoadShare({
-      cumNum: 100,
-      cumDenGamesPlayed: 200,
-      fullSeasonTeamDen: 1600,
-      useFullSeasonDenominator: true,
-    });
-    const adj = resolveCumulativeLoadShareWithInjury({
-      cumNum: 100,
-      cumDenGamesPlayed: 200,
-      fullSeasonTeamDen: 1600,
-      useFullSeasonDenominator: true,
-      injuryReportWeeks: 0,
-      seasonEndingAbsenceGames: 14,
-      teamGames: 16,
-      gamesPlayed: 2,
-      gameCount: 16,
-    });
-    expect(raw).toBeCloseTo(100 / 1600, 5);
-    expect(adj).toBeCloseTo(100 / 200, 5);
   });
 });
 
@@ -425,7 +386,7 @@ describe('rest games and the injury adjustment', () => {
     const adjusted = injuryAdjustedFullSeasonDenominator({
       fullSeasonTeamDen: 1700,
       gameCount: 17,
-      injuryReportWeeks: 3,
+      excusedGames: 3,
       teamGames: 17,
       gamesPlayed: 16,
       cumDenGamesPlayed: 1600,
@@ -442,7 +403,7 @@ describe('rest games and the injury adjustment', () => {
     const adjusted = injuryAdjustedFullSeasonDenominator({
       fullSeasonTeamDen: fullDen,
       gameCount: 17,
-      injuryReportWeeks: 5,
+      excusedGames: 5,
       teamGames: 17,
       gamesPlayed: 13,
       cumDenGamesPlayed: 1300,
@@ -458,7 +419,7 @@ describe('rest games and the injury adjustment', () => {
     const adjusted = injuryAdjustedFullSeasonDenominator({
       fullSeasonTeamDen: 1700,
       gameCount: 17,
-      injuryReportWeeks: 4,
+      excusedGames: 4,
       teamGames: 17,
       gamesPlayed: 17,
       cumDenGamesPlayed: 1700,
@@ -477,7 +438,7 @@ describe('resolveCumulativeLoadWithInjury', () => {
       cumDenGamesPlayed: 1000,
       fullSeasonTeamDen: 1700,
       useFullSeasonDenominator: true,
-      injuryReportWeeks: 0,
+      excusedGames: 0,
       teamGames: 17,
       gamesPlayed: 17,
       gameCount: 17,
@@ -495,7 +456,7 @@ describe('resolveCumulativeLoadWithInjury', () => {
       cumDenGamesPlayed: 1000,
       fullSeasonTeamDen: fullDen,
       useFullSeasonDenominator: true,
-      injuryReportWeeks: 4,
+      excusedGames: 4,
       teamGames: 17,
       gamesPlayed: 13,
       gameCount: 17,
@@ -511,13 +472,73 @@ describe('resolveCumulativeLoadWithInjury', () => {
       cumDenGamesPlayed: 900,
       fullSeasonTeamDen: 1700,
       useFullSeasonDenominator: false,
-      injuryReportWeeks: 0,
+      excusedGames: 0,
       teamGames: 17,
       gamesPlayed: 9,
       gameCount: 17,
     });
 
     expect(result).toEqual({ share: 400 / 900, denominator: 900 });
+  });
+});
+
+describe('excusedGames as the injury signal', () => {
+  // Derwin James 2019: 11 weeks on IR, returned for the last 5 games, and
+  // absent from the weekly injury report for the whole season. The reserve
+  // weeks he missed are the whole of the intersection.
+  const james2019 = {
+    cumNum: 500,
+    cumDenGamesPlayed: 504,
+    fullSeasonTeamDen: 1600,
+    useFullSeasonDenominator: true,
+    excusedGames: 0,
+    seasonEndingAbsenceGames: 0,
+    teamGames: 16,
+    gamesPlayed: 5,
+    gameCount: 16,
+  };
+
+  it('adjusts the denominator when the reserve stint is the only evidence', () => {
+    const before = resolveCumulativeLoadWithInjury(james2019);
+    const after = resolveCumulativeLoadWithInjury({
+      ...james2019,
+      excusedGames: 11,
+    });
+    expect(before.share).toBeCloseTo(500 / 1600, 5);
+    // 11 of 16 games excused takes 1600 down to 500 — but the function floors
+    // the result at `cumDenGamesPlayed` (504 here), so 504 is the answer, not
+    // 500. Read `injuryAdjustedFullSeasonDenominator`'s closing
+    // `Math.max(adjusted, cumDenGamesPlayed)` before changing this number.
+    expect(after.denominator).toBeCloseTo(504, 5);
+    // Which lands him on the 0.992 the spec predicts for James 2019.
+    expect(after.share).toBeCloseTo(500 / 504, 5);
+    expect(after.share).toBeGreaterThan(before.share);
+  });
+
+  it('forgives a full season split across the report and the reserve list', () => {
+    // Ronnie Stanley 2021: injury-report weeks 1–6, then IR for 7–18, which is
+    // 16 of the 17 games. `max()` of the two counts forgave 11 of them; the
+    // union of the week sets, intersected with the games he missed, forgives
+    // all 16. He played only week 1.
+    const fullDen = 1700;
+    const got = injuryAdjustedFullSeasonDenominator({
+      fullSeasonTeamDen: fullDen,
+      gameCount: 17,
+      excusedGames: 16,
+      teamGames: 17,
+      gamesPlayed: 1,
+      cumDenGamesPlayed: 0,
+    });
+    expect(got).toBeCloseTo(fullDen - 16 * (fullDen / 17), 5);
+  });
+
+  it('leaves a season with no signal untouched', () => {
+    const got = resolveCumulativeLoadWithInjury({
+      ...james2019,
+      gamesPlayed: 16,
+      excusedGames: 0,
+    });
+    expect(got.denominator).toBeCloseTo(1600, 5);
   });
 });
 

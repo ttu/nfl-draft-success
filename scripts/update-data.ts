@@ -39,12 +39,30 @@ import type { RestGameSlice } from '../src/types';
 import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
 import { seasonEndingAbsenceGames } from '../src/lib/seasonEndingAbsence';
 import { resolveLatestPlayedSeason } from '../src/lib/latestPlayedSeason';
+import { accumulateReserveWeeks } from '../src/lib/reserveWeeks';
+import { excusedAbsenceGames } from '../src/lib/absenceWeeks';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 /** First season nflverse publishes snap counts for. */
 const FIRST_SNAP_SEASON = 2012;
 /** First season nflverse publishes an injury report for. */
 const FIRST_INJURY_SEASON = 2009;
+/**
+ * First season nflverse weekly rosters record reserve status reliably.
+ *
+ * Not a publication date — the releases go back to 2012 — but a quality floor.
+ * Before 2016 only ~200-250 players per season carry any reserve week against
+ * a league reality of 500-700, and their weeks are placed wrong: the mean
+ * reserve week is 6.8, ahead of the season's midpoint, when injuries in fact
+ * accumulate towards the end (2016+ seasons mean 10.0). Tyler Eifert's 2014,
+ * a week-1 injury that ended his year, is a single row. Luke Joeckel's 2013 IR
+ * stint is recorded against weeks 1-5, the weeks he played.
+ *
+ * Applied to 2013-2015 the reserve signal strips excusal from 150 player-seasons
+ * and grants it to 40 — data loss, not correction. Those seasons keep the
+ * snap-shape heuristic in `src/lib/seasonEndingAbsence.ts` instead.
+ */
+const FIRST_RESERVE_SEASON = 2016;
 /**
  * Earliest draft class this site tracks.
  *
@@ -120,6 +138,12 @@ interface SeasonLoadMeta {
   gameCount: number;
   /** Team games missed after the player disappeared for the rest of the season */
   seasonEndingAbsenceGames: number;
+  /**
+   * Team weeks the player did not appear in, already rest-adjusted. Carried as
+   * weeks rather than a count because the excusal intersects them with the
+   * documented-injury weeks; see {@link ../src/lib/absenceWeeks}.
+   */
+  missedWeeks: number[];
 }
 
 interface SeasonSnapData {
@@ -455,6 +479,9 @@ function finalizePlayerSeason(
   const absenceGames = useFullSeasonDen
     ? seasonEndingAbsenceGames({ playerWeeks: acc.weeks, teamWeeks })
     : 0;
+  // A bye week is not in `teamWeeks`, so it can never read as missed — which is
+  // why the excusal needs no special rule for byes.
+  const missedWeeks = [...teamWeeks].filter((week) => !acc.weeks.has(week));
 
   const baseLoad = resolveCumulativeLoadShare({
     cumNum: acc.cumNum,
@@ -490,6 +517,7 @@ function finalizePlayerSeason(
             useFullSeason: true,
             gameCount,
             seasonEndingAbsenceGames: absenceGames,
+            missedWeeks,
           },
         }
       : {}),
@@ -564,6 +592,11 @@ async function loadSnapData(
 
 interface InjurySeasonData {
   injuryReportWeeks: number;
+  /**
+   * The weeks behind `injuryReportWeeks`. The count is a displayed stat; the
+   * set is what the excusal intersects with the weeks actually missed.
+   */
+  injuryWeeks: Set<number>;
   primaryTeam: string;
 }
 
@@ -626,12 +659,55 @@ async function loadInjuryData(
       }
       pm.set(season, {
         injuryReportWeeks: acc.weeks.size,
+        injuryWeeks: acc.weeks,
         primaryTeam: primaryTeamOf(acc.teamCount),
       });
     }
   }
 
   return result;
+}
+
+/**
+ * Load reserve weeks: gsis_id -> season -> the weeks spent on a reserve list.
+ *
+ * The heaviest fetch in this script — roughly 13MB per season — because the
+ * weekly roster release carries every player on every roster for every week.
+ *
+ * `loadedSeasons` names the seasons whose CSV actually arrived. The fetch is
+ * tolerant, so "no reserve rows for this player" and "the feed never spoke for
+ * this season" are otherwise indistinguishable — and they must not be, because
+ * the second case has to fall back to the pre-2016 heuristic.
+ */
+async function loadReserveData(seasons: number[]): Promise<{
+  byPlayer: Map<string, Map<number, Set<number>>>;
+  loadedSeasons: Set<number>;
+}> {
+  const byPlayer = new Map<string, Map<number, Set<number>>>();
+  const loadedSeasons = new Set<number>();
+
+  for (const season of seasons) {
+    const url = `${BASE}/weekly_rosters/roster_weekly_${season}.csv`;
+    // Same tolerance as injuries: reserve weeks only soften a denominator, so a
+    // season that has not published yet must read as "nobody was on reserve",
+    // never as a build failure.
+    const csv = await fetchSeasonCsv(url, `roster_weekly_${season}`, {
+      required: false,
+    });
+    if (csv === undefined) continue;
+    loadedSeasons.add(season);
+
+    for (const [gsisId, weeks] of accumulateReserveWeeks(parseCsv(csv))) {
+      let pm = byPlayer.get(gsisId);
+      if (!pm) {
+        pm = new Map();
+        byPlayer.set(gsisId, pm);
+      }
+      pm.set(season, weeks);
+    }
+  }
+
+  return { byPlayer, loadedSeasons };
 }
 
 /** Load headshots and position meta from nflverse players */
@@ -717,8 +793,12 @@ interface PickSeason {
   cumulativeSnapShare: number;
   retained: boolean;
   injuryReportWeeks?: number;
+  /** Weeks spent on a reserve list; only from FIRST_RESERVE_SEASON */
+  reserveWeeks?: number;
   /** Team games missed after the player disappeared for the rest of the season */
   seasonEndingAbsenceGames?: number;
+  /** Games the load denominator actually forgave; see {@link ../src/types}. */
+  excusedGames?: number;
   /** Present when the player's primary team rested through its finale */
   restGame?: RestGameSlice;
   /** Denominator behind `cumulativeSnapShare`; only travels with `restGame` */
@@ -786,15 +866,122 @@ function resolveRetained(params: {
   );
 }
 
+/**
+ * The era gate: does this season take its injury signal from the roster feed?
+ *
+ * `seasonEndingAbsenceGames` is computed unconditionally in loadSnapData and
+ * carried on loadMeta, so this is where it stops being written: from
+ * FIRST_RESERVE_SEASON the roster feed measures the same absence directly and
+ * better, and a season must never carry both — which one it carries is how a
+ * reader tells the eras apart.
+ *
+ * The condition is "the reserve feed actually spoke for this season", not
+ * merely "this season is recent enough that it should have". The roster fetch
+ * is tolerant of a missing or failed CSV, so gating on the year alone would let
+ * one 404 strip *both* signals from a season — zero reserve weeks and a
+ * suppressed heuristic — which is worse than either era's own behaviour. When
+ * the feed is silent the season falls back to the pre-2016 heuristic.
+ */
+function usesReserveSignal(
+  season: number,
+  loadedReserveSeasons: ReadonlySet<number>,
+): boolean {
+  return season >= FIRST_RESERVE_SEASON && loadedReserveSeasons.has(season);
+}
+
+/**
+ * Games this season's load forgives: the weeks he missed that the injury report
+ * or the reserve list documents as injury.
+ *
+ * The two feeds are unioned, not maxed, because a player placed on injured
+ * reserve is removed from the weekly injury report — they are consecutive
+ * halves of one absence. Ronnie Stanley 2021 is the shape: injury report weeks
+ * 1–6, reserve weeks 7–18, no overlap, 16 games missed. `max()` forgave 11; the
+ * union forgives all 16. Week 8 was Baltimore's bye and is in neither set,
+ * which is exactly why intersecting with `missedWeeks` — built from the team's
+ * own weeks — needs no special rule for byes.
+ *
+ * `undefined` loadMeta means the season is not scored against a full-season
+ * denominator (traded, or no primary team), where there is nothing to forgive.
+ */
+function excusedGamesForSeason(params: {
+  loadMeta?: SeasonLoadMeta;
+  injuryWeeks?: ReadonlySet<number>;
+  /** Only supplied when the era gate lets the reserve feed speak. */
+  reserveWeeks?: ReadonlySet<number>;
+}): number {
+  const { loadMeta, injuryWeeks, reserveWeeks } = params;
+  if (!loadMeta) return 0;
+  return excusedAbsenceGames({
+    missedWeeks: loadMeta.missedWeeks,
+    injuryWeeks,
+    reserveWeeks,
+  });
+}
+
+/** The injury figures one season stores, and the one its denominator uses. */
+interface SeasonInjurySignals {
+  /** Weeks on the weekly injury report — a displayed stat only. */
+  injuryReportWeeks: number;
+  /** Weeks on a reserve list — a displayed stat only, and era-gated. */
+  reserveWeeks: number;
+  /** The 2013–2015 fallback; never written alongside `reserveWeeks`. */
+  absenceGames: number;
+  /** What the denominator actually forgives; see {@link excusedGamesForSeason}. */
+  excusedGames: number;
+}
+
+/**
+ * Resolve one season's injury signals, applying the era gate in one place.
+ *
+ * The injury report speaks in every season. The reserve feed speaks only from
+ * FIRST_RESERVE_SEASON and only where its CSV actually loaded, and where it
+ * does, the pre-2016 snap-shape heuristic falls silent — see
+ * {@link usesReserveSignal}.
+ */
+function resolveInjurySignals(params: {
+  season: number;
+  loadMeta?: SeasonLoadMeta;
+  injData?: InjurySeasonData;
+  playerReserve?: Map<number, Set<number>>;
+  loadedReserveSeasons: ReadonlySet<number>;
+}): SeasonInjurySignals {
+  const { season, loadMeta, injData, playerReserve, loadedReserveSeasons } =
+    params;
+  const useReserve = usesReserveSignal(season, loadedReserveSeasons);
+  const reserveWeeks = useReserve ? playerReserve?.get(season) : undefined;
+
+  return {
+    injuryReportWeeks: injData?.injuryReportWeeks ?? 0,
+    reserveWeeks: reserveWeeks?.size ?? 0,
+    absenceGames: useReserve ? 0 : (loadMeta?.seasonEndingAbsenceGames ?? 0),
+    excusedGames: excusedGamesForSeason({
+      loadMeta,
+      injuryWeeks: injData?.injuryWeeks,
+      reserveWeeks,
+    }),
+  };
+}
+
 /** Build one season record for a pick, resolving denominators and retention. */
 function buildPickSeason(params: {
   season: number;
   teamId: string;
   playerSnaps?: Map<number, SeasonSnapData>;
   playerInjuries?: Map<number, InjurySeasonData>;
+  playerReserve?: Map<number, Set<number>>;
+  loadedReserveSeasons: ReadonlySet<number>;
   lookups: SeasonLookups;
 }): PickSeason {
-  const { season, teamId, playerSnaps, playerInjuries, lookups } = params;
+  const {
+    season,
+    teamId,
+    playerSnaps,
+    playerInjuries,
+    playerReserve,
+    loadedReserveSeasons,
+    lookups,
+  } = params;
 
   const data = playerSnaps?.get(season);
   const injData = playerInjuries?.get(season);
@@ -811,8 +998,14 @@ function buildPickSeason(params: {
     normalizeTeam,
   });
   const snapShare = data?.snapShare ?? 0;
-  const injuryReportWeeks = injData?.injuryReportWeeks ?? 0;
-  const absenceGames = data?.loadMeta?.seasonEndingAbsenceGames ?? 0;
+  const { injuryReportWeeks, reserveWeeks, absenceGames, excusedGames } =
+    resolveInjurySignals({
+      season,
+      loadMeta: data?.loadMeta,
+      injData,
+      playerReserve,
+      loadedReserveSeasons,
+    });
 
   const restGame = data?.restGame;
   let cumulativeSnapShare = data?.cumulativeSnapShare ?? snapShare;
@@ -823,8 +1016,8 @@ function buildPickSeason(params: {
       cumDenGamesPlayed: data.loadMeta.cumDenGamesPlayed,
       fullSeasonTeamDen: data.loadMeta.fullSeasonTeamDen,
       useFullSeasonDenominator: true,
-      injuryReportWeeks,
-      seasonEndingAbsenceGames: data.loadMeta.seasonEndingAbsenceGames,
+      excusedGames,
+      seasonEndingAbsenceGames: absenceGames,
       teamGames,
       gamesPlayed,
       gameCount: data.loadMeta.gameCount,
@@ -865,6 +1058,8 @@ function buildPickSeason(params: {
     retained,
     ...(injuryReportWeeks > 0 ? { injuryReportWeeks } : {}),
     ...(absenceGames > 0 ? { seasonEndingAbsenceGames: absenceGames } : {}),
+    ...(reserveWeeks > 0 ? { reserveWeeks } : {}),
+    ...(excusedGames > 0 ? { excusedGames } : {}),
     // The denominator only travels with a rest game, which is the one thing
     // that needs to reopen the ratio.
     ...(restGame ? { restGame, loadDenominator } : {}),
@@ -876,6 +1071,9 @@ function buildPickSeason(params: {
 interface PickSources {
   snapData: Map<string, Map<number, SeasonSnapData>>;
   injuryData: Map<string, Map<number, InjurySeasonData>>;
+  reserveData: Map<string, Map<number, Set<number>>>;
+  /** Seasons whose weekly-roster CSV actually loaded; see {@link loadReserveData}. */
+  loadedReserveSeasons: ReadonlySet<number>;
   headshots: Map<string, string>;
   lookups: SeasonLookups;
   /** Newest season with played games, derived from the snap-count releases. */
@@ -905,6 +1103,7 @@ function buildDraftPick(
 
   const playerSnaps = sources.snapData.get(pfrId);
   const playerInjuries = gsisId ? sources.injuryData.get(gsisId) : undefined;
+  const playerReserve = gsisId ? sources.reserveData.get(gsisId) : undefined;
 
   const seasons: PickSeason[] = [];
   for (let s = year; s <= sources.maxSeason; s++) {
@@ -914,6 +1113,8 @@ function buildDraftPick(
         teamId,
         playerSnaps,
         playerInjuries,
+        playerReserve,
+        loadedReserveSeasons: sources.loadedReserveSeasons,
         lookups: sources.lookups,
       }),
     );
@@ -1069,12 +1270,21 @@ async function main() {
   console.log(`Fetching injuries (${FIRST_INJURY_SEASON}–${maxSeason})...`);
   const injuryData = await loadInjuryData(injurySeasons);
 
+  const reserveSeasons = seasonRange(FIRST_RESERVE_SEASON, maxSeason);
+  console.log(
+    `Fetching weekly rosters (${FIRST_RESERVE_SEASON}–${maxSeason})...`,
+  );
+  const { byPlayer: reserveData, loadedSeasons: loadedReserveSeasons } =
+    await loadReserveData(reserveSeasons);
+
   console.log(`Fetching ${rosterSeason} rosters (offseason departures)...`);
   const roster = await loadOffseasonRoster(rosterSeason);
 
   const sources: PickSources = {
     snapData,
     injuryData,
+    reserveData,
+    loadedReserveSeasons,
     headshots,
     lookups,
     maxSeason,
