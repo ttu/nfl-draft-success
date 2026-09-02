@@ -18,22 +18,29 @@ export function parsePositionParam(
  * Selects the active high-level view from route/state signals. Routes are
  * mutually exclusive, and order matters: a `/year/:y` route wins over a
  * `/position/:p` route, which wins over a `/highlights` route, which wins over
- * a `/:teamId` route, which falls back to the team-rankings landing view.
+ * a `/rosters` route, which wins over a `/roster/:teamId` route, which wins
+ * over a `/:teamId` route, which falls back to the team-rankings landing view.
  */
 export function determineActiveView({
   isYearView,
   isPositionView,
   isHighlightsView = false,
+  isRosterRankingsView = false,
+  isRosterView = false,
   hasSelectedTeam,
 }: {
   isYearView: boolean;
   isPositionView: boolean;
   isHighlightsView?: boolean;
+  isRosterRankingsView?: boolean;
+  isRosterView?: boolean;
   hasSelectedTeam: boolean;
 }): ActiveView {
   if (isYearView) return ActiveView.DraftYears;
   if (isPositionView) return ActiveView.Position;
   if (isHighlightsView) return ActiveView.Highlights;
+  if (isRosterRankingsView) return ActiveView.RosterRankings;
+  if (isRosterView && hasSelectedTeam) return ActiveView.Roster;
   if (hasSelectedTeam) return ActiveView.TeamDetail;
   return ActiveView.TeamRankings;
 }

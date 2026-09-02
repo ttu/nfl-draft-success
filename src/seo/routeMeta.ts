@@ -69,6 +69,16 @@ function teamMeta(teamId: string): RouteMeta | null {
   };
 }
 
+function rosterMeta(teamId: string): RouteMeta | null {
+  const team = teamsById.get(teamId);
+  if (!team) return null;
+  return {
+    title: `${team.name} Current Roster | ${SITE_NAME}`,
+    description: `Every ${team.name} player drafted since ${YEAR_MIN} who is on the roster now, with his career average draft success score, role and seasons played.`,
+    canonicalPath: `/roster/${team.id}`,
+  };
+}
+
 function yearMeta(yearSegment: string): RouteMeta | null {
   if (!/^\d{4}$/.test(yearSegment)) return null;
   const year = Number(yearSegment);
@@ -105,6 +115,12 @@ const HIGHLIGHTS_META: RouteMeta = {
   canonicalPath: '/highlights',
 };
 
+const ROSTERS_META: RouteMeta = {
+  title: `Current Roster Rankings | ${SITE_NAME}`,
+  description: `All 32 NFL rosters ranked by the players they have on them today: the average draft success score of every tracked draftee from ${YEAR_SPAN}.`,
+  canonicalPath: '/rosters',
+};
+
 /**
  * Metadata for a location pathname. Anything unrecognised — an unknown team, a
  * year outside the published classes, a stray path — falls back to the site
@@ -123,6 +139,7 @@ export function resolveRouteMeta(
 
   if (segments.length === 1) {
     if (segments[0] === 'highlights') return HIGHLIGHTS_META;
+    if (segments[0] === 'rosters') return ROSTERS_META;
     return teamMeta(segments[0]) ?? DEFAULT_ROUTE_META;
   }
 
@@ -131,6 +148,7 @@ export function resolveRouteMeta(
     if (prefix === 'year') return yearMeta(value) ?? DEFAULT_ROUTE_META;
     if (prefix === 'position') return positionMeta(value) ?? DEFAULT_ROUTE_META;
     if (prefix === 'player') return playerMeta(value, options.playerName);
+    if (prefix === 'roster') return rosterMeta(value) ?? DEFAULT_ROUTE_META;
   }
 
   return DEFAULT_ROUTE_META;

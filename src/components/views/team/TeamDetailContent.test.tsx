@@ -26,7 +26,10 @@ const draftClasses: DraftClass[] = [
   makeDraftClass({ year: 2022, picks: [makePick(20, TEAM)] }),
 ];
 
-function renderView(overrides: Partial<TeamDetailContentProps> = {}) {
+function renderView(
+  overrides: Partial<TeamDetailContentProps> = {},
+  initialEntries: string[] = ['/'],
+) {
   const props: TeamDetailContentProps = {
     rollingDraftScore: {
       score: 62.5,
@@ -59,7 +62,7 @@ function renderView(overrides: Partial<TeamDetailContentProps> = {}) {
     ...overrides,
   };
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={initialEntries}>
       <TeamDetailContent {...props} />
     </MemoryRouter>,
   );
@@ -149,6 +152,18 @@ describe('TeamDetailContent side-rail breakdowns', () => {
       name: /open external depth chart/i,
     });
     expect(link).toHaveAttribute('href', 'https://example.com/depth');
+  });
+
+  it('links the team hero to the current roster', () => {
+    renderView();
+    const link = screen.getByRole('link', { name: /Current roster/ });
+    expect(link.getAttribute('href')).toBe(`/roster/${TEAM}`);
+  });
+
+  it('preserves the current year-range query string in the current-roster link', () => {
+    renderView({}, [`/${TEAM}?from=2020&to=2025`]);
+    const link = screen.getByRole('link', { name: /Current roster/ });
+    expect(link.getAttribute('href')).toBe(`/roster/${TEAM}?from=2020&to=2025`);
   });
 });
 

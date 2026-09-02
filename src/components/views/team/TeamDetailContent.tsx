@@ -1,4 +1,5 @@
 import { memo, useCallback, useMemo, type CSSProperties } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { TEAMS } from '../../../data/teams';
 import {
   TeamLogo,
@@ -211,6 +212,11 @@ const TeamHero = memo(function TeamHero({
   const team = TEAMS.find((t) => t.id === selectedTeam);
   const color = teamColor(selectedTeam);
   const fg = teamFg(color);
+  // Preserve the current year-range query string, matching how Masthead's
+  // Roster tab navigates — otherwise the round trip through /roster/:teamId
+  // and back silently resets it to the default window.
+  const { search } = useLocation();
+  const rosterHref = `/roster/${selectedTeam}${search}`;
 
   return (
     <section
@@ -286,6 +292,9 @@ const TeamHero = memo(function TeamHero({
           <button type="button" className="fab-link" onClick={onShowRankings}>
             ← Back to rankings
           </button>
+          <Link className="fab-link" to={rosterHref}>
+            Current roster →
+          </Link>
           {depthChartUrl && (
             <a
               className="fab-link"

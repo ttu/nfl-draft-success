@@ -27,10 +27,15 @@ export function buildSiteRoutes(positions: string[]): SiteRoute[] {
   const routes: SiteRoute[] = [
     { path: '/', priority: '1.0' },
     { path: '/highlights', priority: '0.9' },
+    { path: '/rosters', priority: '0.9' },
   ];
 
   for (const team of TEAMS) {
     routes.push({ path: `/${encodeURIComponent(team.id)}`, priority: '0.9' });
+    routes.push({
+      path: `/roster/${encodeURIComponent(team.id)}`,
+      priority: '0.8',
+    });
   }
   for (let year = min; year <= max; year++) {
     routes.push({ path: `/year/${year}`, priority: '0.85' });

@@ -1318,6 +1318,15 @@ button {
   border-collapse: collapse;
   font-size: 13px;
 }
+.roster-board__col-rank {
+  width: 56px;
+}
+.roster-board__col-score {
+  width: 100px;
+}
+.roster-board__col-players {
+  width: 80px;
+}
 .rankings-table thead tr {
   background: var(--paper);
   border-bottom: 1px solid var(--ink);
@@ -1944,6 +1953,15 @@ button {
 }
 .roster-table tr:hover {
   background: var(--paper-3);
+}
+/* On the current-roster page only the player name is a link — the whole row
+   does not navigate, so it should not offer the PlayerList row's click
+   affordance. */
+.roster-view .roster-table tr {
+  cursor: default;
+}
+.roster-view .roster-table tr:hover {
+  background: none;
 }
 .pick-tag {
   color: var(--ink-3);
@@ -3422,6 +3440,9 @@ button {
     grid-template-columns: 1fr 280px;
     gap: 24px;
   }
+  .roster-view {
+    padding: 24px 24px 40px;
+  }
   .year-masthead {
     padding: 24px 24px;
     gap: 24px;
@@ -3733,6 +3754,30 @@ button {
   .rankings-table col.col-hide-mobile {
     width: 0 !important;
   }
+  /* Narrow widths cannot fit the board’s natural column widths, and an auto
+     layout answers that by overflowing the wrap — which puts the Players
+     column out of reach entirely. A fixed layout holds the two figures to a
+     budget instead and wraps the team names into whatever is left. */
+  .roster-board {
+    table-layout: fixed;
+  }
+  .roster-board__col-rank {
+    width: 40px;
+  }
+  .roster-board__col-score {
+    width: 66px;
+  }
+  .roster-board__col-players {
+    width: 50px;
+  }
+  .roster-board .score-big {
+    font-size: 14px;
+  }
+  /* Column heads must wrap here rather than run over their neighbours: the
+     fixed layout no longer widens a column to fit its label. */
+  .roster-board th {
+    white-space: normal;
+  }
   .rankings-foot {
     padding: 16px;
   }
@@ -3763,6 +3808,9 @@ button {
   .team-body {
     padding: 18px 16px;
     grid-template-columns: 1fr;
+  }
+  .roster-view {
+    padding: 18px 16px 32px;
   }
   .year-masthead {
     padding: 18px 16px;
@@ -4129,5 +4177,105 @@ button {
   }
   .score-breakdown__term + .score-breakdown__term {
     margin-top: 6px;
+  }
+}
+
+/* ---- Current roster view ---- */
+.roster-view {
+  padding: 32px 48px 48px;
+}
+.roster-view__head {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+.roster-view__title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.roster-view__title {
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+.roster-view__stats {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.roster-view__caveat {
+  margin: 10px 0 0;
+  max-width: 62ch;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-4);
+}
+.roster-view__empty {
+  color: var(--ink-3);
+  font-size: 13px;
+  padding: 24px 0;
+}
+.roster-group {
+  margin-bottom: 26px;
+}
+.roster-group__title {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--team);
+}
+.roster-group__meta {
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-bottom: 6px;
+}
+.roster-table__origin {
+  width: 210px;
+  text-align: right;
+}
+.roster-table__origin,
+.roster-table__seasons,
+.roster-table__awaiting {
+  font-size: 11px;
+  color: var(--ink-4);
+  white-space: nowrap;
+}
+.roster-table__seasons {
+  text-align: right;
+  width: 56px;
+}
+.roster-table__role {
+  width: 150px;
+  text-align: right;
+}
+/* Desktop shows draft origin, seasons and role as their own columns, so the
+   name cell's copies of them stay hidden until those columns collapse. */
+.roster-row__meta,
+.roster-row__role {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .roster-view__title {
+    font-size: 18px;
+  }
+  .roster-table__origin,
+  .roster-table__seasons,
+  .roster-table__role {
+    display: none;
+  }
+  .roster-row__role {
+    display: block;
+    margin-top: 4px;
+  }
+  .roster-row__meta {
+    display: block;
+    font-size: 10px;
+    color: var(--ink-4);
+  }
+  .roster-table__awaiting {
+    font-size: 10px;
   }
 }

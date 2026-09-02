@@ -1,11 +1,14 @@
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, useMatch } from 'react-router-dom';
 import { DRAFT_YEAR_BOUNDS } from '../../lib/draftYearBounds';
 import { formatYearRange } from '../../lib/laggedWindow';
 
-export type MastheadTab = 'rankings' | 'team' | 'year' | 'pos' | 'highlights';
+export type MastheadTab =
+  'rankings' | 'team' | 'year' | 'pos' | 'highlights' | 'roster' | 'rosters';
 
 interface MastheadProps {
   active: MastheadTab;
+  teamId?: string;
   dataLastUpdatedDate: string;
   /** Year range to use when current URL has no from/to (e.g. on /year/{y}). */
   fallbackRange?: { from: number; to: number };
@@ -16,6 +19,7 @@ interface MastheadProps {
 
 export function Masthead({
   active,
+  teamId,
   dataLastUpdatedDate,
   fallbackRange,
   onShowInfo,
@@ -25,6 +29,34 @@ export function Masthead({
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const yearMatch = useMatch('/year/:draftYear');
+  const activeTabRef = useRef<HTMLButtonElement>(null);
+
+  /**
+   * Keep the current tab visible in a nav too wide for its space.
+   *
+   * The bar scrolls horizontally with its scrollbar hidden, so a tab past the
+   * right edge is not merely off-screen — it is silently half-cut, which reads
+   * as a broken label rather than as something to scroll to. The team Roster
+   * tab is last and the likeliest to land there.
+   */
+  useEffect(() => {
+    const tab = activeTabRef.current;
+    const nav = tab?.parentElement;
+    if (!tab) return;
+
+    const reveal = () =>
+      tab.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    reveal();
+
+    // One pass is not enough: the web font swaps in and the synced-data block
+    // resolves after first paint, and each re-measure can push the tab back
+    // over the edge it was just scrolled inside. Re-reveal on every resize.
+    if (typeof ResizeObserver === 'undefined' || !nav) return;
+    const observer = new ResizeObserver(reveal);
+    observer.observe(nav);
+    observer.observe(tab);
+    return () => observer.disconnect();
+  }, [active]);
 
   // Effective range: URL search wins, else fallback, else nothing.
   const urlFrom = searchParams.get('from');
@@ -39,24 +71,38 @@ export function Masthead({
       : '';
 
   const goRankings = () => navigate({ pathname: '/', search });
-  const goTeam = () => navigate({ pathname: '/', search });
+  const goTeam = () =>
+    navigate({ pathname: teamId != null ? `/${teamId}` : '/', search });
+  const goRoster = () =>
+    teamId != null && navigate({ pathname: `/roster/${teamId}`, search });
   const goYear = () => {
     const y = effectiveTo ?? '2026';
     navigate({ pathname: `/year/${y}`, search });
   };
   const goPos = () => navigate({ pathname: '/position/QB', search });
   const goHighlights = () => navigate({ pathname: '/highlights', search });
+  const goRosters = () => navigate({ pathname: '/rosters', search });
+
+  // Team and Roster are two views of one open team, so they appear together.
+  // Roster needs the id to link to and is dropped without one.
+  const inTeamContext =
+    teamId != null || active === 'team' || active === 'roster';
 
   const tabs: Array<{ id: MastheadTab; label: string; onClick: () => void }> = [
     { id: 'rankings', label: 'Rankings', onClick: goRankings },
-    // The Team tab points at a specific team's detail view, so it only makes
-    // sense once a team is selected — i.e. when it is itself the active tab.
-    ...(active === 'team'
+    ...(inTeamContext
       ? [{ id: 'team' as const, label: 'Team', onClick: goTeam }]
       : []),
     { id: 'highlights', label: 'Highlights', onClick: goHighlights },
     { id: 'year', label: 'Draft Year', onClick: goYear },
     { id: 'pos', label: 'Position', onClick: goPos },
+    { id: 'rosters', label: 'Rosters', onClick: goRosters },
+    // The open team's roster sits beside the league-wide board rather than
+    // beside its Team tab: the two are the same page at two scopes, and
+    // reading one straight after the other is what the pairing is for.
+    ...(inTeamContext && teamId != null
+      ? [{ id: 'roster' as const, label: 'Roster', onClick: goRoster }]
+      : []),
   ];
 
   return (
@@ -80,6 +126,7 @@ export function Masthead({
           <button
             key={t.id}
             type="button"
+            ref={t.id === active ? activeTabRef : undefined}
             className={t.id === active ? 'is-active' : ''}
             onClick={t.onClick}
           >

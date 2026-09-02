@@ -78,6 +78,18 @@ describe('resolveRouteMeta', () => {
     expect(resolveRouteMeta('/some/deep/path')).toEqual(DEFAULT_ROUTE_META);
   });
 
+  it('describes a team roster route', () => {
+    const meta = resolveRouteMeta('/roster/BUF');
+    expect(meta.canonicalPath).toBe('/roster/BUF');
+    expect(meta.title).toContain('Buffalo Bills');
+    expect(meta.title).toContain('Roster');
+    expect(meta).not.toEqual(DEFAULT_ROUTE_META);
+  });
+
+  it('falls back to the defaults for an unknown roster team', () => {
+    expect(resolveRouteMeta('/roster/ZZZ')).toEqual(DEFAULT_ROUTE_META);
+  });
+
   it('drops any query string or hash from the canonical path', () => {
     expect(resolveRouteMeta('/TB?from=2021&to=2025#roster').canonicalPath).toBe(
       '/TB',
@@ -89,5 +101,13 @@ describe('canonicalUrl', () => {
   it('joins the canonical path onto the production origin', () => {
     expect(canonicalUrl('/TB')).toBe(`${SITE_ORIGIN}/TB`);
     expect(canonicalUrl('/')).toBe(`${SITE_ORIGIN}/`);
+  });
+});
+
+describe('/rosters', () => {
+  it('gets its own title rather than the site default', () => {
+    const meta = resolveRouteMeta('/rosters');
+    expect(meta.canonicalPath).toBe('/rosters');
+    expect(meta.title).not.toBe(DEFAULT_ROUTE_META.title);
   });
 });

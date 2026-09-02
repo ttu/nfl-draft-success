@@ -131,6 +131,16 @@ const HighlightsView = lazy(() =>
     default: m.HighlightsView,
   })),
 );
+const RosterView = lazy(() =>
+  import('./components/views/team/RosterView').then((m) => ({
+    default: m.RosterView,
+  })),
+);
+const RosterRankingsView = lazy(() =>
+  import('./components/views/team/RosterRankingsView').then((m) => ({
+    default: m.RosterRankingsView,
+  })),
+);
 
 const YEAR_MIN = DRAFT_YEAR_BOUNDS.min;
 const YEAR_MAX = DRAFT_YEAR_BOUNDS.max;
@@ -153,6 +163,8 @@ const ACTIVE_VIEW_TAB: Record<ActiveView, MastheadTab> = {
   [ActiveView.DraftYears]: 'year',
   [ActiveView.Position]: 'pos',
   [ActiveView.Highlights]: 'highlights',
+  [ActiveView.Roster]: 'roster',
+  [ActiveView.RosterRankings]: 'rosters',
 };
 
 /**
@@ -463,6 +475,32 @@ function usePlayerLookup(
   return { playerLookupClasses, playerInfo };
 }
 
+/**
+ * Every shipped draft class, loaded only on the roster route.
+ *
+ * A current roster is a fact about today, not a slice of the year selector, so
+ * it cannot be built from the range `useDraftClassLoader` fetched. `loadData`
+ * caches per file, so the wider set is paid for once a session.
+ */
+function useRosterClasses(needsRosterClasses: boolean): DraftClass[] | null {
+  const [rosterClasses, setRosterClasses] = useState<DraftClass[] | null>(null);
+
+  useEffect(() => {
+    if (!needsRosterClasses) return;
+    let cancelled = false;
+    loadDataForYears(generateYearArray(YEAR_MIN, YEAR_MAX))
+      .then((all) => {
+        if (!cancelled) setRosterClasses(all);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [needsRosterClasses]);
+
+  return needsRosterClasses ? rosterClasses : null;
+}
+
 type AppRouteParams = {
   teamId?: string;
   draftYear?: string;
@@ -480,6 +518,8 @@ function AppContent() {
   const playerMatch = useMatch('/player/:playerId');
   const isPlayerView = !!playerMatch && !!playerId;
   const isHighlightsView = !!useMatch('/highlights');
+  const isRosterView = !!useMatch('/roster/:teamId');
+  const isRosterRankingsView = !!useMatch('/rosters');
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const routeYearValid = isRouteYearValid(draftYearParam, yearBounds);
@@ -492,6 +532,8 @@ function AppContent() {
     isYearView,
     isPositionView,
     isHighlightsView,
+    isRosterRankingsView,
+    isRosterView,
     hasSelectedTeam: selectedTeam != null,
   });
 
@@ -502,6 +544,14 @@ function AppContent() {
       navigate(`/year/${LATEST_COMPLETED_YEAR}`, { replace: true });
     }
   }, [draftYearParam, routeYearValid, navigate]);
+
+  useLayoutEffect(() => {
+    if (isRosterView && selectedTeam == null) {
+      navigate('/', { replace: true });
+    }
+  }, [isRosterView, selectedTeam, navigate]);
+
+  const rosterClasses = useRosterClasses(isRosterView || isRosterRankingsView);
 
   const { startYear, endYear } = useResolvedYearRange(
     forcedSingleYear,
@@ -657,6 +707,10 @@ function AppContent() {
     navigate(`/?from=${startYear}&to=${endYear}`);
   }, [navigate, startYear, endYear]);
 
+  const handleShowRosters = useCallback(() => {
+    navigate(`/rosters?from=${startYear}&to=${endYear}`);
+  }, [navigate, startYear, endYear]);
+
   const previousLocation = usePreviousLocation();
 
   const playerBackTarget = resolvePlayerBackTarget(
@@ -756,6 +810,7 @@ function AppContent() {
         onShowInfo={handleShowMethodology}
         dark={dark}
         onToggleDark={handleToggleDark}
+        teamId={selectedTeam ?? undefined}
       />
 
       {renderSubbar({
@@ -771,6 +826,7 @@ function AppContent() {
         selectedTeam,
         selectedTeamName: selectedTeamData?.name,
         onShowRankings: handleShowRankings,
+        onShowRosters: handleShowRosters,
         canonicalPosition,
         playerName: playerInfo?.pick.playerName,
         playerBackLabel: playerBackTarget.label,
@@ -827,6 +883,7 @@ function AppContent() {
           positionOptions,
           handlePositionChange,
           playerInfo,
+          rosterClasses,
         })}
       </div>
 
@@ -863,6 +920,8 @@ interface SubbarArgs {
   selectedTeam: string | null;
   selectedTeamName: string | undefined;
   onShowRankings: () => void;
+  /** Up one level from a team's roster: the league-wide board. */
+  onShowRosters: () => void;
   canonicalPosition: string | null;
   playerName?: string;
   playerBackLabel?: string;
@@ -883,6 +942,7 @@ function renderSubbar(a: SubbarArgs) {
     selectedTeam,
     selectedTeamName,
     onShowRankings,
+    onShowRosters,
     canonicalPosition,
     playerName,
     playerBackLabel,
@@ -930,6 +990,32 @@ function renderSubbar(a: SubbarArgs) {
           latestCompletedYear={LATEST_COMPLETED_YEAR}
           onChange={onRangeChange}
         />
+      </Subbar>
+    );
+  }
+  if (activeView === ActiveView.RosterRankings) {
+    return (
+      <Subbar>
+        <button className="subbar__crumb" onClick={onShowRankings}>
+          ← Rankings
+        </button>
+        <span className="subbar__slash">/</span>
+        <span className="subbar__crumb-active">Current rosters</span>
+      </Subbar>
+    );
+  }
+  if (activeView === ActiveView.Roster) {
+    return (
+      <Subbar>
+        <button className="subbar__crumb" onClick={onShowRosters}>
+          ← Rosters
+        </button>
+        <span className="subbar__slash">/</span>
+        <span className="subbar__crumb-active">
+          {selectedTeamName ?? selectedTeam}
+        </span>
+        <span className="subbar__slash">/</span>
+        <span className="subbar__crumb-active">Roster</span>
       </Subbar>
     );
   }
@@ -1033,6 +1119,7 @@ interface RenderMainArgs {
   positionOptions: string[];
   handlePositionChange: (pos: string) => void;
   playerInfo: { pick: DraftPick; draftYear: number } | null;
+  rosterClasses: DraftClass[] | null;
 }
 
 function renderPlayerView(a: RenderMainArgs) {
@@ -1083,9 +1170,37 @@ function renderTeamRankings(a: RenderMainArgs) {
   );
 }
 
+function renderRosterView(a: RenderMainArgs) {
+  if (!a.selectedTeam || !a.rosterClasses) {
+    return <LoadingSpinner message="Loading roster…" />;
+  }
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <RosterView teamId={a.selectedTeam} draftClasses={a.rosterClasses} />
+    </Suspense>
+  );
+}
+
+function renderRosterRankings(a: RenderMainArgs) {
+  if (!a.rosterClasses) {
+    return <LoadingSpinner message="Loading rosters…" />;
+  }
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <RosterRankingsView draftClasses={a.rosterClasses} />
+    </Suspense>
+  );
+}
+
 function renderMainContent(a: RenderMainArgs) {
   if (a.isPlayerView) {
     return renderPlayerView(a);
+  }
+  if (a.activeView === ActiveView.RosterRankings) {
+    return renderRosterRankings(a);
+  }
+  if (a.activeView === ActiveView.Roster) {
+    return renderRosterView(a);
   }
   if (a.activeView === ActiveView.TeamRankings) {
     const rankingsView = renderTeamRankings(a);
@@ -1175,6 +1290,8 @@ function App() {
       <Route path="/year/:draftYear" element={<AppContent />} />
       <Route path="/highlights" element={<AppContent />} />
       <Route path="/player/:playerId" element={<AppContent />} />
+      <Route path="/rosters" element={<AppContent />} />
+      <Route path="/roster/:teamId" element={<AppContent />} />
       <Route path="/:teamId" element={<AppContent />} />
     </Routes>
   );

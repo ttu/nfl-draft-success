@@ -61,6 +61,28 @@ describe('determineActiveView', () => {
       }),
     ).toBe(ActiveView.Highlights);
   });
+  it('selects the roster view when on a roster route', () => {
+    expect(
+      determineActiveView({
+        isYearView: false,
+        isPositionView: false,
+        isRosterView: true,
+        hasSelectedTeam: true,
+      }),
+    ).toBe(ActiveView.Roster);
+  });
+
+  it('lets a year route win over a roster route', () => {
+    expect(
+      determineActiveView({
+        isYearView: true,
+        isPositionView: false,
+        isRosterView: true,
+        hasSelectedTeam: true,
+      }),
+    ).toBe(ActiveView.DraftYears);
+  });
+
   it('prefers Position and DraftYears over Highlights', () => {
     expect(
       determineActiveView({

@@ -50,9 +50,11 @@ export function getAnalyticsNeeds({
       };
     case ActiveView.Highlights:
       return { ...NONE, leagueHighlights: true };
-    // Draft-year and position views render straight from the draft classes.
+    // Draft-year, position, and roster views render straight from the draft classes.
     case ActiveView.DraftYears:
     case ActiveView.Position:
+    case ActiveView.Roster:
+    case ActiveView.RosterRankings:
       return NONE;
   }
 }

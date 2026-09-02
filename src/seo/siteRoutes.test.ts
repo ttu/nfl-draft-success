@@ -19,10 +19,13 @@ describe('buildSiteRoutes', () => {
     const { min, max } = DRAFT_YEAR_BOUNDS;
 
     expect(paths).toContain('/highlights');
-    for (const team of TEAMS) expect(paths).toContain(`/${team.id}`);
+    for (const team of TEAMS) {
+      expect(paths).toContain(`/${team.id}`);
+      expect(paths).toContain(`/roster/${team.id}`);
+    }
     for (let y = min; y <= max; y++) expect(paths).toContain(`/year/${y}`);
     for (const p of positions) expect(paths).toContain(`/position/${p}`);
-    expect(paths).toHaveLength(2 + TEAMS.length + (max - min + 1) + 3);
+    expect(paths).toHaveLength(3 + TEAMS.length * 2 + (max - min + 1) + 3);
   });
 
   it('emits no duplicate paths', () => {
@@ -33,6 +36,13 @@ describe('buildSiteRoutes', () => {
   it('percent-encodes positions that need it', () => {
     const paths = buildSiteRoutes(['DB/S']).map((r) => r.path);
     expect(paths).toContain('/position/DB%2FS');
+  });
+
+  it('publishes a roster route for every team', () => {
+    const paths = buildSiteRoutes(['QB']).map((r) => r.path);
+    for (const team of TEAMS) {
+      expect(paths).toContain(`/roster/${team.id}`);
+    }
   });
 
   it('only advertises routes that resolve to their own metadata', () => {
@@ -47,5 +57,12 @@ describe('buildSiteRoutes', () => {
         );
       }
     }
+  });
+});
+
+describe('the league-wide rosters board', () => {
+  it('is published as its own indexable route', () => {
+    const paths = buildSiteRoutes(['QB']).map((r) => r.path);
+    expect(paths).toContain('/rosters');
   });
 });

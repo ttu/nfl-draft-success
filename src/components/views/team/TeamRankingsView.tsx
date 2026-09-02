@@ -13,6 +13,7 @@ import {
   formatOverSlot,
   isOverSlotPositive,
 } from '../../../lib/formatOverSlot';
+import { StatBlock } from '../../design/StatBlock';
 import { useIsMobile } from '../../../lib/useMediaQuery';
 import { teamNickname } from '../../../lib/teamNickname';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
@@ -484,42 +485,6 @@ function RankingsTableHead({
         <th className="right hide-mobile">Retained</th>
       </tr>
     </thead>
-  );
-}
-
-function StatBlock({
-  label,
-  value,
-  sub,
-  accent,
-  href,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  accent?: boolean;
-  /** When set, the value becomes a link to that team's page. */
-  href?: string;
-}) {
-  const valueClass = `statblock__value${accent ? ' statblock__value--accent' : ''} tnum`;
-  return (
-    <div>
-      <div className="kicker" style={{ marginBottom: 8 }}>
-        {label}
-      </div>
-      {href ? (
-        <Link
-          to={href}
-          className={`${valueClass} statblock__value--link`}
-          aria-label={`${label}: view ${value}`}
-        >
-          {value}
-        </Link>
-      ) : (
-        <div className={valueClass}>{value}</div>
-      )}
-      {sub && <div className="statblock__sub">{sub}</div>}
-    </div>
   );
 }
 
