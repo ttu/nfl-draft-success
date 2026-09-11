@@ -3,10 +3,15 @@ import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { RosterView } from './RosterView';
+import { ROSTER_SEASON } from '../../../lib/currentRoster';
 import { DRAFT_YEAR_BOUNDS } from '../../../lib/draftYearBounds';
 import { makeDraftClass, makePick, makeSeason } from '../../../test/factories';
 
-const CURRENT = DRAFT_YEAR_BOUNDS.max;
+// The roster snapshot row is written for ROSTER_SEASON — one past the newest
+// PLAYED season — which is not the newest draft class. The two coincided until
+// 2026's snap counts published; fixtures keyed to DRAFT_YEAR_BOUNDS.max broke
+// the moment they drifted apart.
+const CURRENT = ROSTER_SEASON;
 
 const upcoming = (overrides: { retained: boolean; currentTeam?: string }) =>
   makeSeason({
@@ -50,7 +55,9 @@ const classes = [
     ],
   }),
   makeDraftClass({
-    year: CURRENT,
+    // The freshest draft class, whose picks have no rows until they play —
+    // keyed to the newest DRAFT CLASS, not the roster snapshot year.
+    year: DRAFT_YEAR_BOUNDS.max,
     picks: [
       makePick({
         overallPick: 4,

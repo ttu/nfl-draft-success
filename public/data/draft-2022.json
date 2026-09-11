@@ -430,7 +430,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false,
+          "currentTeam": "LV"
         }
       ]
     },
@@ -1452,7 +1453,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "KC"
+          "currentTeam": "LAC"
         }
       ]
     },
@@ -2759,7 +2760,7 @@
       "round": 2,
       "overallPick": 45,
       "teamId": "BAL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rnsae4ly9l4xzuszzfdi",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zhwq0frk3h6ni3uw4btp",
       "seasons": [
         {
           "year": 2022,
@@ -2813,8 +2814,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "MIA"
+          "retained": false
         }
       ]
     },
@@ -3507,7 +3507,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false,
+          "currentTeam": "CLE"
         }
       ]
     },
@@ -3631,7 +3632,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         }
       ]
     },
@@ -3776,7 +3777,7 @@
       "round": 2,
       "overallPick": 61,
       "teamId": "SF",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x8ndvrqtk5q076kwedxg",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z0rbarktd2j64zhoav02",
       "seasons": [
         {
           "year": 2022,
@@ -4208,7 +4209,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false,
+          "currentTeam": "KC"
         }
       ]
     },
@@ -4327,7 +4329,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false
+          "retained": false,
+          "currentTeam": "WAS"
         }
       ]
     },
@@ -4338,7 +4341,7 @@
       "round": 3,
       "overallPick": 70,
       "teamId": "JAX",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y1i2juo53q38pudbpkpv",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wwf5gmaohjdyvpigwu5e",
       "seasons": [
         {
           "year": 2022,
@@ -4372,15 +4375,6 @@
           "teamGames": 21,
           "snapShare": 0.07666666666666667,
           "cumulativeSnapShare": 0.07666666666666667,
-          "retained": false,
-          "currentTeam": "NE"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
           "retained": false,
           "currentTeam": "NE"
         }
@@ -4918,6 +4912,15 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NYG"
         }
       ]
     },
@@ -6235,7 +6238,7 @@
       "round": 3,
       "overallPick": 102,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ctza0keuuokbbxk2kg2p",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/iop376y4dj0sxvhznh3f",
       "seasons": [
         {
           "year": 2022,
@@ -6270,15 +6273,6 @@
           "cumulativeSnapShare": 0.0034904013961605585,
           "retained": false,
           "currentTeam": "ARI"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "ATL"
         }
       ]
     },
@@ -6774,7 +6768,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "NYG"
+          "currentTeam": "JAX"
         }
       ]
     },
@@ -7072,6 +7066,15 @@
           "injuryReportWeeks": 1,
           "reserveWeeks": 17,
           "currentTeam": "CAR"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CLE"
         }
       ]
     },
@@ -7381,7 +7384,7 @@
       "round": 4,
       "overallPick": 121,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ah12ltwvgwl9few2ktqj",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/v1787861967/league/ah12ltwvgwl9few2ktqj",
       "seasons": [
         {
           "year": 2022,
@@ -7490,7 +7493,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false
+          "retained": false,
+          "currentTeam": "NO"
         }
       ]
     },
@@ -7548,7 +7552,7 @@
       "round": 4,
       "overallPick": 124,
       "teamId": "CLE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mjbedpfmnc77xw6ffihp",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/irts9o3l9mzopvyg7c25",
       "seasons": [
         {
           "year": 2022,
@@ -7582,15 +7586,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NYJ"
         }
       ]
     },
@@ -7601,7 +7596,7 @@
       "round": 4,
       "overallPick": 125,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jlhjonsu8idqrcj6tune",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z5fkw0w6ylpkumdxcpcv",
       "seasons": [
         {
           "year": 2022,
@@ -7646,7 +7641,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false
+          "retained": false,
+          "currentTeam": "PHI"
         }
       ]
     },
@@ -8010,6 +8006,15 @@
           },
           "loadDenominator": 877,
           "currentTeam": "LAC"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NE"
         }
       ]
     },
@@ -8282,7 +8287,7 @@
       "round": 4,
       "overallPick": 136,
       "teamId": "CIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/o5wcq92vpoiqddixdbyb",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ez7oydk1ozqz8cw50y91",
       "seasons": [
         {
           "year": 2022,
@@ -8325,8 +8330,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "TEN"
+          "retained": false
         }
       ]
     },
@@ -8507,7 +8511,7 @@
     },
     {
       "playerId": "TomxZa00",
-      "playerName": "Zach Tom",
+      "playerName": "Zach Bako-Bewele",
       "position": "OL",
       "round": 4,
       "overallPick": 140,
@@ -8574,7 +8578,7 @@
       "round": 4,
       "overallPick": 141,
       "teamId": "BAL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vmakhsdcrjdtw0psgslj",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mfeu7klqfh5ximkpkf1f",
       "seasons": [
         {
           "year": 2022,
@@ -8877,7 +8881,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "GB"
+          "currentTeam": "NYG"
         }
       ]
     },
@@ -9483,7 +9487,7 @@
       "round": 5,
       "overallPick": 156,
       "teamId": "CLE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rntmoum7ncnyo5j2bdei",
+      "headshotUrl": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/djggmwo5v8osoboiseo2",
       "seasons": [
         {
           "year": 2022,
@@ -9539,8 +9543,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "WAS"
+          "retained": false
         }
       ]
     },
@@ -9669,7 +9672,7 @@
       "round": 5,
       "overallPick": 159,
       "teamId": "IND",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uujdxrmmf5poiu5twqob",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fsvxbdkpnaondae99zbl",
       "seasons": [
         {
           "year": 2022,
@@ -9714,8 +9717,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "MIN"
+          "retained": false
         }
       ]
     },
@@ -10627,7 +10629,7 @@
       "round": 5,
       "overallPick": 175,
       "teamId": "LV",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z3fxoxyy9oyq2eprdx3t",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nsv9pnp9s8oaxaepftzk",
       "seasons": [
         {
           "year": 2022,
@@ -10659,15 +10661,6 @@
           "teamGames": 17,
           "snapShare": 0.2866666666666666,
           "cumulativeSnapShare": 0.20072976018247432,
-          "retained": false,
-          "currentTeam": "MIA"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
           "retained": false,
           "currentTeam": "MIA"
         }
@@ -10781,7 +10774,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "CAR"
+          "currentTeam": "DAL"
         }
       ]
     },
@@ -11252,7 +11245,7 @@
       "round": 6,
       "overallPick": 186,
       "teamId": "CHI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/b6vrvm3sbykrka1mr9jp",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xavwevdxxjoneavs1mxl",
       "seasons": [
         {
           "year": 2022,
@@ -11304,7 +11297,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "SF"
+          "currentTeam": "TEN"
         }
       ]
     },
@@ -11763,7 +11756,7 @@
       "round": 6,
       "overallPick": 195,
       "teamId": "LAC",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tfqzkqts7g8qatnx3bt4",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/u3uyixtjb60xtwwth40a",
       "seasons": [
         {
           "year": 2022,
@@ -11813,8 +11806,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "MIA"
+          "retained": false
         }
       ]
     },
@@ -12104,15 +12096,6 @@
           "reserveWeeks": 8,
           "excusedGames": 8,
           "currentTeam": "ATL"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NYG"
         }
       ]
     },
@@ -12222,8 +12205,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "DEN"
+          "retained": false
         }
       ]
     },
@@ -12347,7 +12329,7 @@
       "round": 6,
       "overallPick": 205,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/da3gpuvmzfoc7tnn5nut",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mfiu08h46jezawozpma8",
       "seasons": [
         {
           "year": 2022,
@@ -13283,7 +13265,7 @@
       "round": 6,
       "overallPick": 221,
       "teamId": "SF",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nelvuunkw7ml35g4wtuv",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sauvxksfrf2vm2nhsjjd",
       "seasons": [
         {
           "year": 2022,
@@ -13325,15 +13307,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "PHI"
         }
       ]
     },
@@ -13444,7 +13417,7 @@
       "round": 7,
       "overallPick": 224,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/f8azhstrxgcphfi3evto",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y9nbijy8p3twagggyodh",
       "seasons": [
         {
           "year": 2022,
@@ -13488,7 +13461,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         }
       ]
     },
@@ -13578,15 +13551,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "CAR"
         }
       ]
     },
@@ -13648,7 +13612,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false
+          "retained": false,
+          "currentTeam": "ATL"
         }
       ]
     },
@@ -14175,7 +14140,7 @@
       "round": 7,
       "overallPick": 237,
       "teamId": "DET",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zwpd9vdwfhvdzpm0qfmb",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ftkp0eabjmqrbftyddyo",
       "seasons": [
         {
           "year": 2022,
@@ -14212,15 +14177,6 @@
           "cumulativeSnapShare": 0.08093228115250505,
           "retained": false,
           "currentTeam": "SF"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "TB"
         }
       ]
     },
@@ -14381,7 +14337,7 @@
       "round": 7,
       "overallPick": 241,
       "teamId": "PIT",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zlcmvcyi6laaklmjv1j2",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qnyw1gqkqfll2lxppzlv",
       "seasons": [
         {
           "year": 2022,
@@ -14493,7 +14449,7 @@
       "round": 7,
       "overallPick": 243,
       "teamId": "KC",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vxmoq9pwno4z14gldecd",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/k3ayxrquehkikudpu0e4",
       "seasons": [
         {
           "year": 2022,
@@ -14616,7 +14572,7 @@
       "round": 7,
       "overallPick": 245,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/glytc2q32qsae8ormcvn",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rap8q8mkdtzgq9erggm9",
       "seasons": [
         {
           "year": 2022,
@@ -15218,7 +15174,7 @@
       "round": 7,
       "overallPick": 256,
       "teamId": "ARI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qrtxcr7qawedod3zcxdh",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ulrqjbgiw7ukufjd1yez",
       "seasons": [
         {
           "year": 2022,
@@ -15263,8 +15219,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NE"
+          "retained": false
         }
       ]
     },
@@ -15275,7 +15230,7 @@
       "round": 7,
       "overallPick": 257,
       "teamId": "ARI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/auuwluzhdqthflbvwxsu",
+      "headshotUrl": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/yvwrtyodxsqbsduru5o6",
       "seasons": [
         {
           "year": 2022,
@@ -15328,7 +15283,7 @@
       "round": 7,
       "overallPick": 258,
       "teamId": "GB",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tkjitxda1ufeev3tzpuk",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/k6s7xiugz2wgqjc7zsny",
       "seasons": [
         {
           "year": 2022,
@@ -15540,7 +15495,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false,
+          "currentTeam": "BAL"
         }
       ]
     },

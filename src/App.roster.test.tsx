@@ -2,10 +2,15 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { DraftClass } from './types';
+import { ROSTER_SEASON } from './lib/currentRoster';
 import { DRAFT_YEAR_BOUNDS } from './lib/draftYearBounds';
 import { makeDraftClass, makePick, makeSeason } from './test/factories';
 
-const CURRENT = DRAFT_YEAR_BOUNDS.max;
+// The roster snapshot row is written for ROSTER_SEASON — one past the newest
+// PLAYED season — which is not the newest draft class. The two coincided until
+// 2026's snap counts published; fixtures keyed to DRAFT_YEAR_BOUNDS.max broke
+// the moment they drifted apart.
+const CURRENT = ROSTER_SEASON;
 
 /** The "where he stands" row update-data writes for the season ahead. */
 const upcoming = makeSeason({

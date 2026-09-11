@@ -1321,15 +1321,6 @@
           "cumulativeSnapShare": 0.014222222222222223,
           "retained": false,
           "currentTeam": "LV"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "PIT"
         }
       ]
     },
@@ -1671,6 +1662,15 @@
           },
           "loadDenominator": 334.16666666666674,
           "currentTeam": "LAC"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NYG"
         }
       ]
     },
@@ -3547,7 +3547,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ATL"
+          "currentTeam": "LV"
         }
       ]
     },
@@ -4048,8 +4048,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "MIA"
+          "retained": true
         }
       ]
     },
@@ -4141,7 +4140,7 @@
       "round": 2,
       "overallPick": 59,
       "teamId": "CAR",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lbndz0pvhcolsfoqycuv",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/a2yarai1371wellve3nq",
       "seasons": [
         {
           "year": 2021,
@@ -4188,15 +4187,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "MIA"
         }
       ]
     },
@@ -4923,7 +4913,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false
+          "retained": true
         }
       ]
     },
@@ -5727,7 +5717,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "JAX"
+          "currentTeam": "ARI"
         }
       ]
     },
@@ -6187,6 +6177,15 @@
           "cumulativeSnapShare": 0.0009191176470588235,
           "retained": false,
           "currentTeam": "PIT"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "ATL"
         }
       ]
     },
@@ -6623,8 +6622,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "LAC"
+          "retained": false
         }
       ]
     },
@@ -6808,6 +6806,15 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "WAS"
         }
       ]
     },
@@ -7082,6 +7089,15 @@
           "injuryReportWeeks": 11,
           "excusedGames": 1,
           "currentTeam": "MIA"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "TB"
         }
       ]
     },
@@ -7147,15 +7163,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "PHI"
         }
       ]
     },
@@ -7448,15 +7455,6 @@
           "reserveWeeks": 2,
           "excusedGames": 5,
           "currentTeam": "NYJ"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "DET"
         }
       ]
     },
@@ -7535,7 +7533,7 @@
       "round": 4,
       "overallPick": 108,
       "teamId": "ATL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hc9vwsdsfelwxfxxeasb",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/btpudohpy5mnzimqn2xm",
       "seasons": [
         {
           "year": 2021,
@@ -7715,7 +7713,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "NE"
+          "currentTeam": "TEN"
         }
       ]
     },
@@ -7726,7 +7724,7 @@
       "round": 4,
       "overallPick": 111,
       "teamId": "CIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jt2s0db4sognkfwjmzhg",
+      "headshotUrl": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/kvkvhvbvcebjkevxjdhd",
       "seasons": [
         {
           "year": 2021,
@@ -7788,7 +7786,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "SF"
+          "currentTeam": "ATL"
         }
       ]
     },
@@ -8576,6 +8574,15 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "LAR"
         }
       ]
     },
@@ -9001,7 +9008,7 @@
       "round": 4,
       "overallPick": 130,
       "teamId": "LAR",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/toslxinwiwnk7etw4tkx",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oqn1nnmeqppzkymivtfe",
       "seasons": [
         {
           "year": 2021,
@@ -9051,15 +9058,6 @@
           "cumulativeSnapShare": 0,
           "retained": false,
           "injuryReportWeeks": 2,
-          "currentTeam": "CAR"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
           "currentTeam": "CAR"
         }
       ]
@@ -9399,7 +9397,7 @@
       "round": 4,
       "overallPick": 136,
       "teamId": "ARI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/m4jq4nxx4nwauuobcznx",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mcmzfcisg5pkfulsp0tr",
       "seasons": [
         {
           "year": 2021,
@@ -9451,15 +9449,6 @@
           "reserveWeeks": 6,
           "excusedGames": 9,
           "currentTeam": "CIN"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "MIA"
         }
       ]
     },
@@ -9710,6 +9699,15 @@
           "retained": false,
           "injuryReportWeeks": 1,
           "currentTeam": "IND"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CHI"
         }
       ]
     },
@@ -10206,8 +10204,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "PHI"
+          "retained": false
         }
       ]
     },
@@ -10567,7 +10564,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false
+          "retained": false,
+          "currentTeam": "CHI"
         }
       ]
     },
@@ -10729,7 +10727,7 @@
       "round": 5,
       "overallPick": 156,
       "teamId": "PIT",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hfsetloxapzfasw9d3o0",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ezdwpy005v0doz6sobcp",
       "seasons": [
         {
           "year": 2021,
@@ -10784,8 +10782,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "MIN"
+          "retained": false
         }
       ]
     },
@@ -10972,7 +10969,7 @@
       "round": 5,
       "overallPick": 160,
       "teamId": "BAL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pqt6kpecarjlibgm23g6",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zk3pwwjf6sbjixdiwjj3",
       "seasons": [
         {
           "year": 2021,
@@ -11395,15 +11392,6 @@
           "cumulativeSnapShare": 0.27999999999999997,
           "retained": false,
           "currentTeam": "ATL"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "JAX"
         }
       ]
     },
@@ -11871,7 +11859,7 @@
       "round": 5,
       "overallPick": 174,
       "teamId": "LAR",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gurqlivegjoarvj6f3e4",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nqyyjsk3zyn0t7lttprh",
       "seasons": [
         {
           "year": 2021,
@@ -11923,15 +11911,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "TEN"
         }
       ]
     },
@@ -12167,7 +12146,7 @@
       "round": 5,
       "overallPick": 178,
       "teamId": "GB",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mfdfjjyyoivhou6i5tre",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/u7t0oehb31vg2xcz7z1q",
       "seasons": [
         {
           "year": 2021,
@@ -12227,15 +12206,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "SEA"
         }
       ]
     },
@@ -12439,6 +12409,15 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "PIT"
         }
       ]
     },
@@ -12847,6 +12826,15 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "WAS"
         }
       ]
     },
@@ -12992,8 +12980,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "TEN"
+          "retained": false
         }
       ]
     },
@@ -13065,7 +13052,7 @@
       "round": 6,
       "overallPick": 192,
       "teamId": "DAL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ch9htn9niarr01wxnuf5",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jfyxrdrkpytiahvsoatj",
       "seasons": [
         {
           "year": 2021,
@@ -13115,15 +13102,6 @@
           "retained": false,
           "injuryReportWeeks": 1,
           "currentTeam": "SEA"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "JAX"
         }
       ]
     },
@@ -13245,15 +13223,6 @@
           "cumulativeSnapShare": 0.006289308176100629,
           "retained": false,
           "currentTeam": "KC"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "PHI"
         }
       ]
     },
@@ -13333,7 +13302,7 @@
       "round": 6,
       "overallPick": 196,
       "teamId": "NYG",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cwvxh10m5jw2gkbahtck",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/egwohqryh9q3pa7erynt",
       "seasons": [
         {
           "year": 2021,
@@ -13386,15 +13355,6 @@
           "year": 2025,
           "gamesPlayed": 2,
           "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "CIN"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
@@ -13940,7 +13900,7 @@
       "round": 6,
       "overallPick": 206,
       "teamId": "NO",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xkvlxilpogxnwufpuzmy",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xdlyslqtyq9dgyvhj9sw",
       "seasons": [
         {
           "year": 2021,
@@ -13997,8 +13957,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NYJ"
+          "retained": false
         }
       ]
     },
@@ -14228,6 +14187,15 @@
           "reserveWeeks": 10,
           "excusedGames": 12,
           "currentTeam": "NYG"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "SF"
         }
       ]
     },
@@ -15397,7 +15365,7 @@
       "round": 7,
       "overallPick": 230,
       "teamId": "LV",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jdstqkmytx1eycdnss8o",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/d1cei9wk9zuoz5gkvuqd",
       "seasons": [
         {
           "year": 2021,
@@ -15701,7 +15669,8 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false
+          "retained": false,
+          "currentTeam": "LV"
         }
       ]
     },
@@ -16057,15 +16026,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "SF"
         }
       ]
     },
@@ -17037,6 +16997,15 @@
           "cumulativeSnapShare": 0,
           "retained": false,
           "currentTeam": "ARI"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "MIN"
         }
       ]
     },

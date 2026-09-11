@@ -1099,7 +1099,7 @@
       "round": 1,
       "overallPick": 10,
       "teamId": "NYG",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yolqz0wu1oqgsnby8kfj",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/szrv0msliekcbdfulpzb",
       "seasons": [
         {
           "year": 2016,
@@ -1217,15 +1217,6 @@
           "teamGames": 19,
           "snapShare": 0.01,
           "cumulativeSnapShare": 0.0008258396035969903,
-          "retained": false,
-          "currentTeam": "SF"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
           "retained": false,
           "currentTeam": "SF"
         }
@@ -3701,6 +3692,15 @@
           "cumulativeSnapShare": 0.2784797900659026,
           "retained": false,
           "currentTeam": "JAX"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "KC"
         }
       ]
     },
@@ -5039,6 +5039,15 @@
           "retained": false,
           "injuryReportWeeks": 6,
           "currentTeam": "TEN"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "MIN"
         }
       ]
     },
@@ -10459,6 +10468,15 @@
           "retained": false,
           "injuryReportWeeks": 1,
           "currentTeam": "LAR"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "BAL"
         }
       ]
     },
@@ -11809,6 +11827,14 @@
           "retained": false,
           "injuryReportWeeks": 1,
           "currentTeam": "WAS"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
         }
       ]
     },
@@ -14932,7 +14958,7 @@
       "round": 4,
       "overallPick": 137,
       "teamId": "GB",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x7qwohbwr0envw1daioc",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lwrt3rztaeonuykkrfh1",
       "seasons": [
         {
           "year": 2016,
@@ -15030,15 +15056,6 @@
           "cumulativeSnapShare": 0,
           "retained": false,
           "reserveWeeks": 17
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "PIT"
         }
       ]
     },
@@ -21412,7 +21429,7 @@
       "round": 6,
       "overallPick": 201,
       "teamId": "JAX",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zljq6177ohvxucfq7fl9",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cz7oluypd7ahkdrr8net",
       "seasons": [
         {
           "year": 2016,
@@ -21513,15 +21530,6 @@
           "cumulativeSnapShare": 0.04640151515151515,
           "retained": false,
           "currentTeam": "TEN"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NYG"
         }
       ]
     },

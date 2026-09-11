@@ -1438,6 +1438,15 @@
           "reserveWeeks": 9,
           "excusedGames": 9,
           "currentTeam": "DET"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CHI"
         }
       ]
     },
@@ -5629,7 +5638,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "ARI"
+          "currentTeam": "TEN"
         }
       ]
     },
@@ -6220,7 +6229,7 @@
       "round": 3,
       "overallPick": 65,
       "teamId": "LV",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rqxrx8jaicanbflr0izp",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/s3cp5zcmlnrolrof84aq",
       "seasons": [
         {
           "year": 2018,
@@ -6289,15 +6298,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "SF"
         }
       ]
     },
@@ -7146,6 +7146,15 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "JAX"
         }
       ]
     },
@@ -7156,7 +7165,7 @@
       "round": 3,
       "overallPick": 75,
       "teamId": "KC",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ebicyogss0j86zd8cpwi",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dbzhxihrdflpqcgcn7z4",
       "seasons": [
         {
           "year": 2018,
@@ -7257,8 +7266,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "IND"
+          "retained": false
         }
       ]
     },
@@ -9547,7 +9555,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "NO"
+          "currentTeam": "WAS"
         }
       ]
     },
@@ -9824,6 +9832,15 @@
           "cumulativeSnapShare": 0.22043325526932087,
           "retained": false,
           "currentTeam": "WAS"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "TEN"
         }
       ]
     },
@@ -13542,7 +13559,7 @@
       "round": 5,
       "overallPick": 144,
       "teamId": "TB",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qupxjfqxueke4sgmlrk3",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/unqrnkfpqg7juhlbyp4v",
       "seasons": [
         {
           "year": 2018,
@@ -13643,15 +13660,6 @@
             "teamSnaps": 68
           },
           "loadDenominator": 274.31578947368416,
-          "currentTeam": "HOU"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
           "currentTeam": "HOU"
         }
       ]
@@ -15090,6 +15098,15 @@
           },
           "loadDenominator": 394.7519252160521,
           "currentTeam": "PHI"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "SF"
         }
       ]
     },
@@ -15720,6 +15737,15 @@
           "cumulativeSnapShare": 0.04414224441512561,
           "retained": false,
           "currentTeam": "LV"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NO"
         }
       ]
     },
@@ -16266,7 +16292,7 @@
       "round": 5,
       "overallPick": 174,
       "teamId": "GB",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xkdli55uvkkffiq6fwnu",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vvk5v3hfjw0tevqxrhnf",
       "seasons": [
         {
           "year": 2018,
@@ -16358,15 +16384,6 @@
           "retained": false,
           "injuryReportWeeks": 1,
           "currentTeam": "PIT"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "DAL"
         }
       ]
     },
@@ -16879,6 +16896,15 @@
           },
           "loadDenominator": 427.7934352009055,
           "currentTeam": "HOU"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "LV"
         }
       ]
     },
@@ -17492,6 +17518,15 @@
           "retained": false,
           "injuryReportWeeks": 2,
           "currentTeam": "ATL"
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CHI"
         }
       ]
     },
@@ -19241,7 +19276,7 @@
       "round": 6,
       "overallPick": 208,
       "teamId": "DAL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/esfxvl8f7kl9othclvl0",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cf6fmi91zijiovftx9qk",
       "seasons": [
         {
           "year": 2018,
@@ -19321,15 +19356,6 @@
           "injuryReportWeeks": 3,
           "excusedGames": 3,
           "currentTeam": "MIA"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "DET"
         }
       ]
     },

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { DRAFT_YEAR_BOUNDS } from './draftYearBounds';
 import {
   getCurrentTeamForPick,
   getCurrentRoster,
@@ -7,10 +8,13 @@ import {
   hasRosterSnapshot,
   ROSTER_SEASON,
 } from './currentRoster';
-import { DRAFT_YEAR_BOUNDS } from './draftYearBounds';
 import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
-const CURRENT = DRAFT_YEAR_BOUNDS.max;
+// The roster snapshot row is written for ROSTER_SEASON — one past the newest
+// PLAYED season — which is not the newest draft class. The two coincided until
+// 2026's snap counts published; fixtures keyed to DRAFT_YEAR_BOUNDS.max broke
+// the moment they drifted apart.
+const CURRENT = ROSTER_SEASON;
 
 /** The synthetic "where he stands" row update-data writes for the season ahead. */
 const upcoming = (overrides: { retained: boolean; currentTeam?: string }) =>
@@ -62,14 +66,20 @@ describe('getCurrentTeamForPick', () => {
   });
 
   it('places a rookie with no season rows on his drafting team', () => {
-    const pick = makePick({ teamId: 'KC', draftYear: CURRENT, seasons: [] });
+    // Keyed to the newest DRAFT CLASS, which is what that exception tests —
+    // not the roster snapshot year the fixtures above use.
+    const pick = makePick({
+      teamId: 'KC',
+      draftYear: DRAFT_YEAR_BOUNDS.max,
+      seasons: [],
+    });
     expect(getCurrentTeamForPick(pick)).toBe('KC');
   });
 
   it('does not place an older pick with no season rows on any roster', () => {
     const pick = makePick({
       teamId: 'KC',
-      draftYear: CURRENT - 3,
+      draftYear: DRAFT_YEAR_BOUNDS.max - 3,
       seasons: [],
     });
     expect(getCurrentTeamForPick(pick)).toBeUndefined();
@@ -160,7 +170,7 @@ describe('getCurrentRoster', () => {
   it('leaves score and role undefined for a player who has not played', () => {
     const classes = [
       makeDraftClass({
-        year: CURRENT,
+        year: DRAFT_YEAR_BOUNDS.max,
         picks: [makePick({ overallPick: 1, teamId: 'BUF', seasons: [] })],
       }),
     ];
@@ -254,7 +264,7 @@ describe('groupRosterByPosition', () => {
         ],
       }),
       makeDraftClass({
-        year: CURRENT,
+        year: DRAFT_YEAR_BOUNDS.max,
         picks: [
           makePick({
             overallPick: 4,
