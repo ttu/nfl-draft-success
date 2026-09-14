@@ -770,7 +770,24 @@ async function loadOffseasonRoster(
 
   const teamByGsisId = new Map<string, string>();
   const teamByPfrId = new Map<string, string>();
+  let skipped = 0;
   for (const row of rows) {
+    // A roster listing is not the same as being on the roster. `RET` and `CUT`
+    // rows name the team a player retired with or was released by, and the
+    // league keeps listing them there: Adam Thielen appears against MIN with
+    // `RET` because he signed a one-day contract to retire a Viking, years
+    // after last playing for them. Counting those put retired and released
+    // players on rosters — and, because a roster row decides whether a pick
+    // reads as retained, in the draft score's denominator too.
+    //
+    // Everything else stays: practice squad (`DEV`), reserve/IR (`RES`),
+    // inactive and exempt are all people under contract, which is what the
+    // roster pages say they show.
+    const status = (row.status ?? '').trim().toUpperCase();
+    if (status === 'RET' || status === 'CUT') {
+      skipped += 1;
+      continue;
+    }
     const team = normalizeTeam(row.team ?? '');
     if (!team) continue;
     const gsisId = (row.gsis_id ?? '').trim();
@@ -779,7 +796,8 @@ async function loadOffseasonRoster(
     if (pfrId) teamByPfrId.set(pfrId, team);
   }
   console.log(
-    `  ${rows.length} ${season} roster rows (${teamByGsisId.size} by gsis, ${teamByPfrId.size} by pfr)`,
+    `  ${rows.length} ${season} roster rows, ${skipped} retired or released ` +
+      `(${teamByGsisId.size} by gsis, ${teamByPfrId.size} by pfr)`,
   );
   return { season, teamByGsisId, teamByPfrId };
 }

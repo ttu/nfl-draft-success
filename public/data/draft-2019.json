@@ -2832,7 +2832,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         }
       ]
     },
@@ -5322,15 +5322,6 @@
           "teamGames": 17,
           "snapShare": 0.04,
           "cumulativeSnapShare": 0.0016863406408094434,
-          "retained": false,
-          "currentTeam": "DAL"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
           "retained": false,
           "currentTeam": "DAL"
         }
@@ -8835,14 +8826,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -20560,15 +20543,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "LV"
         }
       ]
     },

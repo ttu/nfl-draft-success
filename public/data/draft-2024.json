@@ -1480,8 +1480,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NO"
+          "retained": false
         }
       ]
     },
@@ -3904,7 +3903,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         }
       ]
     },
@@ -6273,7 +6272,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         }
       ]
     },
@@ -7314,8 +7313,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "TB"
+          "retained": false
         }
       ]
     },
@@ -7687,8 +7685,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NE"
+          "retained": false
         }
       ]
     },
@@ -7717,15 +7714,6 @@
           "cumulativeSnapShare": 0.0015585142838508796,
           "retained": false,
           "currentTeam": "NE"
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NYG"
         }
       ]
     },
@@ -7960,8 +7948,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "SF"
+          "retained": false
         }
       ]
     },
@@ -8037,7 +8024,7 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "currentTeam": "GB"
+          "currentTeam": "HOU"
         }
       ]
     },
@@ -8978,7 +8965,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         }
       ]
     },
@@ -9157,15 +9144,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "GB"
         }
       ]
     },
@@ -9239,8 +9217,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "PIT"
+          "retained": false
         }
       ]
     },
@@ -9431,8 +9408,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "NO"
+          "retained": false
         }
       ]
     },
@@ -9567,15 +9543,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "BAL"
         }
       ]
     },
@@ -9611,8 +9578,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "PHI"
+          "retained": false
         }
       ]
     },
@@ -9778,7 +9744,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         }
       ]
     },
@@ -10025,15 +9991,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false,
-          "currentTeam": "BAL"
         }
       ]
     },
