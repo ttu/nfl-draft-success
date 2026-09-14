@@ -49,7 +49,9 @@ const renderView = (ui: ReactElement) =>
 
 describe('RosterRankingsView', () => {
   it('lists every team, best roster score first', () => {
-    renderView(<RosterRankingsView draftClasses={classes} />);
+    renderView(
+      <RosterRankingsView draftClasses={classes} freeAgentClasses={[]} />,
+    );
 
     const rows = screen.getAllByRole('row').slice(1);
     expect(rows).toHaveLength(TEAMS.length);
@@ -58,7 +60,9 @@ describe('RosterRankingsView', () => {
   });
 
   it('links each team to its own roster page', () => {
-    renderView(<RosterRankingsView draftClasses={classes} />);
+    renderView(
+      <RosterRankingsView draftClasses={classes} freeAgentClasses={[]} />,
+    );
 
     const table = screen.getByRole('table');
     expect(within(table).getByRole('link', { name: /KC/ })).toHaveAttribute(
@@ -68,7 +72,9 @@ describe('RosterRankingsView', () => {
   });
 
   it('shows an em dash for a team with no scored players', () => {
-    renderView(<RosterRankingsView draftClasses={classes} />);
+    renderView(
+      <RosterRankingsView draftClasses={classes} freeAgentClasses={[]} />,
+    );
 
     const rows = screen.getAllByRole('row').slice(1);
     const last = rows[rows.length - 1];
@@ -84,7 +90,9 @@ describe('RosterRankingsView', () => {
       }),
     ];
 
-    renderView(<RosterRankingsView draftClasses={stale} />);
+    renderView(
+      <RosterRankingsView draftClasses={stale} freeAgentClasses={[]} />,
+    );
 
     expect(screen.getByText(/has not been published yet/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
@@ -93,7 +101,9 @@ describe('RosterRankingsView', () => {
 
 describe('RosterRankingsView hero', () => {
   it('leads with the top roster, the league average, and the players counted', () => {
-    renderView(<RosterRankingsView draftClasses={classes} />);
+    renderView(
+      <RosterRankingsView draftClasses={classes} freeAgentClasses={[]} />,
+    );
 
     const hero = screen.getByRole('region', { name: 'Current rosters' });
     expect(within(hero).getByText('KC')).toBeInTheDocument();

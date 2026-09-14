@@ -1,4 +1,4 @@
-import type { DraftClass, DraftPick, Role } from '../types';
+import type { Acquisition, DraftClass, FreeAgentClass, Role } from '../types';
 import { DRAFT_YEAR_BOUNDS } from './draftYearBounds';
 import { getPlayerDraftScore, getPlayerRole } from './getPlayerRole';
 import { isUnplayedSeason, playedSeasons } from './seasonPlayed';
@@ -10,16 +10,16 @@ import {
   type PositionGroupId,
 } from './positionGroup';
 
-/** One tracked draftee on a team's current roster. */
+/** One tracked player on a team's current roster, drafted or not. */
 export interface RosterEntry {
-  pick: DraftPick;
+  pick: Acquisition;
   draftYear: number;
   /** Career mean season score (0–100), or undefined when nothing has been played. */
   score: number | undefined;
   /** Career role badge, or undefined when nothing has been played. */
   role: Role | undefined;
   seasonsPlayed: number;
-  /** True when another team drafted him. */
+  /** True when he arrived from elsewhere — drafted or signed by another team. */
   acquired: boolean;
 }
 
@@ -61,7 +61,7 @@ export const ROSTER_SEASON = LATEST_SEASON + 1;
  * them. That check is genuinely about the newest *draft class*, so it keeps
  * comparing against `DRAFT_YEAR_BOUNDS.max`.
  */
-export function getCurrentTeamForPick(pick: DraftPick): string | undefined {
+export function getCurrentTeamForPick(pick: Acquisition): string | undefined {
   const current = pick.seasons.find(
     (s) => s.year === ROSTER_SEASON && isUnplayedSeason(s),
   );
@@ -91,32 +91,45 @@ export function hasRosterSnapshot(draftClasses: DraftClass[]): boolean {
 }
 
 /**
- * Every tracked draftee currently on `teamId`, drafted by anyone.
+ * Every tracked player currently on `teamId` — drafted by anyone, or undrafted.
+ *
+ * A roster is a roster: who is here now, however they arrived. Both populations
+ * are tested the same way, against the team they are on today rather than the
+ * one that acquired them, so a trade or a signing moves the credit with the
+ * player.
  *
  * Scores in career mode — the mean of the seasons he actually played, for any
  * team. The question this page asks is how good the player has been, not what
  * his drafting team got out of him, so the rookie-window denominator that
- * `draftingTeamOnly` applies would be the wrong measure here.
+ * `draftingTeamOnly` applies would be the wrong measure here. That also means
+ * an undrafted player is scored on the same basis as a pick, which is what lets
+ * them share one list and one average.
  */
 export function getCurrentRoster(
   draftClasses: DraftClass[],
+  freeAgentClasses: FreeAgentClass[],
   teamId: string,
 ): RosterEntry[] {
   const entries: RosterEntry[] = [];
-  for (const dc of draftClasses) {
-    for (const pick of dc.picks) {
-      if (getCurrentTeamForPick(pick) !== teamId) continue;
-      const seasonsPlayed = playedSeasons(pick).length;
-      entries.push({
-        pick,
-        draftYear: dc.year,
-        score: seasonsPlayed > 0 ? getPlayerDraftScore(pick) : undefined,
-        role: seasonsPlayed > 0 ? getPlayerRole(pick) : undefined,
-        seasonsPlayed,
-        acquired: pick.teamId !== teamId,
-      });
-    }
-  }
+
+  const add = (pick: Acquisition, classYear: number) => {
+    if (getCurrentTeamForPick(pick) !== teamId) return;
+    const seasonsPlayed = playedSeasons(pick).length;
+    entries.push({
+      pick,
+      draftYear: classYear,
+      score: seasonsPlayed > 0 ? getPlayerDraftScore(pick) : undefined,
+      role: seasonsPlayed > 0 ? getPlayerRole(pick) : undefined,
+      seasonsPlayed,
+      acquired: pick.teamId !== teamId,
+    });
+  };
+
+  for (const dc of draftClasses)
+    for (const pick of dc.picks) add(pick, dc.year);
+  for (const fc of freeAgentClasses)
+    for (const player of fc.freeAgents) add(player, fc.year);
+
   return entries;
 }
 

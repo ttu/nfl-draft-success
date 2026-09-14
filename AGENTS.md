@@ -52,6 +52,7 @@ Guide for AI-assisted development on NFL Draft Retention & Role Tracker. All rel
 | [docs/architecture.md](docs/architecture.md)               | Tech stack, folder layout         |
 | [docs/development.md](docs/development.md)                 | Setup, scripts                    |
 | [docs/plans/](docs/plans/)                                 | Implementation plans              |
+| [docs/TODO.md](docs/TODO.md)                               | Deferred work, with the reasoning |
 
 ---
 

@@ -37,6 +37,7 @@ vi.mock('./lib/loadData', () => ({
     rankings: [],
   })),
   loadDataMeta: vi.fn(async () => null),
+  loadFreeAgentsForYears: vi.fn(async () => []),
 }));
 
 const { default: App } = await import('./App');

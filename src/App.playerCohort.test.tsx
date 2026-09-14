@@ -79,6 +79,7 @@ vi.mock('./lib/loadData', () => ({
     rankings: [],
   })),
   loadDataMeta: vi.fn(async () => null),
+  loadFreeAgentsForYears: vi.fn(async () => []),
 }));
 
 // Import App AFTER the mock is registered.

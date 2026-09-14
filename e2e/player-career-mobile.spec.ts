@@ -14,7 +14,7 @@ const PHONE_WIDTHS = [390, 360, 320];
 
 async function openPlayerCareer(page: Page) {
   await page.goto('/DET?from=2021&to=2025');
-  await page.locator('.roster-table tbody tr').first().click();
+  await page.locator('#team-roster .roster-table tbody tr').first().click();
   await expect(page.locator('.player-career table')).toBeVisible();
 }
 

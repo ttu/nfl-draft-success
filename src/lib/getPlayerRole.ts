@@ -1,4 +1,4 @@
-import type { DraftPick, Role } from '../types';
+import type { Acquisition, Role } from '../types';
 import { withoutApprenticeSeasons } from './apprenticeship';
 import { classifyRole } from './classifyRole';
 import { getSeasonScore } from './getSeasonScore';
@@ -36,7 +36,7 @@ function ordinal(r: Role): number {
  * `explainDraftScore` all read their seasons from here.
  */
 export function getFilteredSeasons(
-  pick: DraftPick,
+  pick: Acquisition,
   draftingTeamOnly: boolean | undefined,
 ) {
   const played = withoutApprenticeSeasons(pick, playedSeasons(pick));
@@ -63,12 +63,12 @@ export interface GetPlayerRoleOptions {
  * objects; if that ever changes, this cache goes stale.
  */
 const scoreByPick = [
-  new WeakMap<DraftPick, number>(),
-  new WeakMap<DraftPick, number>(),
+  new WeakMap<Acquisition, number>(),
+  new WeakMap<Acquisition, number>(),
 ] as const;
 const roleByPick = [
-  new WeakMap<DraftPick, Role>(),
-  new WeakMap<DraftPick, Role>(),
+  new WeakMap<Acquisition, Role>(),
+  new WeakMap<Acquisition, Role>(),
 ] as const;
 
 // Lookups are written out at each call site rather than behind a
@@ -86,7 +86,7 @@ const roleByPick = [
  * A row for an upcoming season does not count: a pick whose only row says
  * where he will line up is still awaiting data, not tracked.
  */
-export function pickHasSeasonSnapData(pick: DraftPick): boolean {
+export function pickHasSeasonSnapData(pick: Acquisition): boolean {
   return playedSeasons(pick).length > 0;
 }
 
@@ -95,7 +95,7 @@ export function pickHasSeasonSnapData(pick: DraftPick): boolean {
  * Starter when healthy when average score is in the starter band.
  */
 function getPlayerPeakRole(
-  pick: DraftPick,
+  pick: Acquisition,
   options?: GetPlayerRoleOptions,
 ): Role {
   const seasons = getFilteredSeasons(pick, options?.draftingTeamOnly);
@@ -165,7 +165,7 @@ function averageScoreWeightToRole(avgWeight: number, peakRole: Role): Role {
  * metrics and not just the chip.
  */
 export function getPlayerAverageScoreWeight(
-  pick: DraftPick,
+  pick: Acquisition,
   options?: GetPlayerRoleOptions,
 ): number {
   const draftingTeamOnly = options?.draftingTeamOnly === true;
@@ -207,7 +207,7 @@ export function getPlayerAverageScoreWeight(
  * and team-ranking views.
  */
 export function getPlayerDraftScore(
-  pick: DraftPick,
+  pick: Acquisition,
   options?: GetPlayerRoleOptions,
 ): number {
   const draftingTeamOnly = options?.draftingTeamOnly === true;
@@ -221,7 +221,7 @@ export function getPlayerDraftScore(
 }
 
 function computePlayerDraftScore(
-  pick: DraftPick,
+  pick: Acquisition,
   draftingTeamOnly: boolean,
 ): number {
   const seasons = getFilteredSeasons(pick, draftingTeamOnly);
@@ -252,7 +252,7 @@ function computePlayerDraftScore(
  * (Core Starter vs Starter when healthy).
  */
 export function getPlayerRole(
-  pick: DraftPick,
+  pick: Acquisition,
   options?: GetPlayerRoleOptions,
 ): Role {
   const draftingTeamOnly = options?.draftingTeamOnly === true;
@@ -265,7 +265,7 @@ export function getPlayerRole(
   return value;
 }
 
-function computePlayerRole(pick: DraftPick, draftingTeamOnly: boolean): Role {
+function computePlayerRole(pick: Acquisition, draftingTeamOnly: boolean): Role {
   const seasons = getFilteredSeasons(pick, draftingTeamOnly);
   if (seasons.length === 0) return 'non_contributor';
 

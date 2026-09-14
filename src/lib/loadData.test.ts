@@ -4,8 +4,11 @@ import {
   loadDataForYears,
   loadDataMeta,
   loadDefaultRankings,
+  loadFreeAgentClass,
+  loadFreeAgentsForYears,
   resetDataCache,
 } from './loadData';
+import { LATEST_SEASON } from './rookieWindow';
 import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
 beforeEach(() => {
@@ -120,6 +123,127 @@ describe('loadDataForYears', () => {
 
     const result = await loadDataForYears([2025, 2023, 2024]);
     expect(result.map((d) => d.year)).toEqual([2023, 2024, 2025]);
+  });
+});
+
+describe('loadFreeAgentClass', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  it('loads and stamps a free agent class', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      okResponse({
+        year: 2021,
+        freeAgents: [
+          {
+            playerId: 'a',
+            playerName: 'A',
+            position: 'ZZ',
+            teamId: 'BUF',
+            seasons: [makeSeason({ year: 2021 })],
+          },
+        ],
+      }),
+    );
+
+    const [cls] = await loadFreeAgentsForYears([2021]);
+
+    expect(cls.year).toBe(2021);
+    expect(cls.freeAgents[0].draftYear).toBe(2021);
+  });
+
+  it('resolves a missing year (404) to an empty class rather than rejecting', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+    } as Response);
+
+    await expect(loadFreeAgentClass('2026')).resolves.toEqual({
+      year: 2026,
+      freeAgents: [],
+    });
+  });
+
+  it('does not swallow a real failure on a year that has data', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+    } as Response);
+
+    await expect(loadFreeAgentClass('2021')).rejects.toThrow(
+      'Failed to load free agent data for 2021: 500',
+    );
+  });
+
+  it('lets a missing year resolve to an empty class within a batch, so the rest of the range still loads', async () => {
+    vi.mocked(fetch).mockImplementation((input) => {
+      const year = Number(String(input).match(/fa-(\d+)/)?.[1]);
+      if (year === 2026) {
+        return Promise.resolve({ ok: false, status: 404 } as Response);
+      }
+      return Promise.resolve(
+        okResponse({
+          year,
+          freeAgents: [
+            {
+              playerId: `p${year}`,
+              playerName: `P${year}`,
+              position: 'ZZ',
+              teamId: 'BUF',
+              seasons: [],
+            },
+          ],
+        }),
+      );
+    });
+
+    const result = await loadFreeAgentsForYears([2025, 2026]);
+
+    expect(result.map((c) => c.year)).toEqual([2025, 2026]);
+    expect(result[0].freeAgents).toHaveLength(1);
+    expect(result[1].freeAgents).toEqual([]);
+  });
+
+  it('never requests a class newer than the latest played season', async () => {
+    // `fa-{year}.json` only exists once a season's worth of snaps has been
+    // published, so the file for the season now being played is never written.
+    // Asking for it anyway relies on the host answering 404 — and a dev server
+    // or any SPA-fallback host answers 200 with HTML instead, which throws on
+    // parse and, through `Promise.all`, loses every other year in the batch.
+    vi.mocked(fetch).mockImplementation((input) => {
+      const year = Number(String(input).match(/fa-(\d+)/)?.[1]);
+      return Promise.resolve(
+        okResponse({ year, freeAgents: [] }) as unknown as Response,
+      );
+    });
+
+    await loadFreeAgentsForYears([2024, 2025, LATEST_SEASON + 1]);
+
+    const requested = vi
+      .mocked(fetch)
+      .mock.calls.map((c) => String(c[0]))
+      .filter((u) => u.includes('fa-'));
+    expect(requested.some((u) => u.includes(`fa-${LATEST_SEASON + 1}`))).toBe(
+      false,
+    );
+    expect(requested).toHaveLength(2);
+  });
+
+  it('still returns an empty class for a year it declines to request', async () => {
+    // Callers map over the classes they asked for; a silently missing entry
+    // would be a second bug wearing the first one's clothes.
+    vi.mocked(fetch).mockImplementation((input) => {
+      const year = Number(String(input).match(/fa-(\d+)/)?.[1]);
+      return Promise.resolve(
+        okResponse({ year, freeAgents: [] }) as unknown as Response,
+      );
+    });
+
+    const result = await loadFreeAgentsForYears([2025, LATEST_SEASON + 1]);
+
+    expect(result.map((c) => c.year)).toEqual([2025, LATEST_SEASON + 1]);
+    expect(result[1].freeAgents).toEqual([]);
   });
 });
 

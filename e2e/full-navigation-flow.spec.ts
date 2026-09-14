@@ -76,7 +76,7 @@ test.describe('Full navigation flow', () => {
       await expect(page.locator('.class-grid .class-card')).toHaveCount(3);
 
       await expect(
-        page.getByRole('heading', { name: /^Current roster/ }),
+        page.getByRole('heading', { name: /^Everyone they brought in/ }),
       ).toBeVisible();
       await expect(
         page.getByRole('checkbox', { name: /Show departed players/i }),

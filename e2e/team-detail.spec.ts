@@ -20,13 +20,15 @@ test.describe('Team detail view', () => {
   });
 
   test('shows roster player rows with role chips', async ({ page }) => {
-    const rows = page.locator('.roster-table tbody tr');
+    const rows = page.locator('#team-roster .roster-table tbody tr');
     expect(await rows.count()).toBeGreaterThan(0);
     await expect(rows.first().locator('.role-chip')).toBeVisible();
   });
 
   test('player rows show name, position, and pick number', async ({ page }) => {
-    const firstRow = page.locator('.roster-table tbody tr').first();
+    const firstRow = page
+      .locator('#team-roster .roster-table tbody tr')
+      .first();
     await expect(firstRow.locator('.pos-chip')).not.toBeEmpty();
     await expect(firstRow.locator('.pick-tag')).toContainText(/R\d+·\d+/);
     // The player name cell is the flexible column between pos-chip and role.
@@ -36,7 +38,7 @@ test.describe('Team detail view', () => {
   test('clicking a player row opens the player detail view', async ({
     page,
   }) => {
-    await page.locator('.roster-table tbody tr').first().click();
+    await page.locator('#team-roster .roster-table tbody tr').first().click();
     await expect(page.locator('.player-view')).toBeVisible();
     await expect(page.locator('.player-hero__name')).not.toBeEmpty();
     const careerTable = page.locator('.player-career table');

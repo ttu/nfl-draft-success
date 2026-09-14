@@ -184,6 +184,84 @@ describe('PlayerList', () => {
     expect(screen.getAllByRole('row')).toHaveLength(2);
   });
 
+  it('tags a free agent UDFA rather than showing a round', () => {
+    const freeAgentPicks = [
+      {
+        pick: {
+          playerId: 'fa1',
+          playerName: 'Undrafted Starter',
+          position: 'WR',
+          teamId: 'KC',
+          draftYear: 2020,
+          seasons: [makeSeason({ year: 2020, teamGames: 16, snapShare: 0.7 })],
+        },
+        draftYear: 2020,
+      },
+    ];
+    render(<PlayerList picks={freeAgentPicks} teamId="KC" />);
+
+    // Short enough to fit the column the pick tags already size, which is why
+    // the phone no longer has to hide it.
+    expect(screen.getByText('UDFA')).toBeInTheDocument();
+    expect(screen.queryByText(/round/i)).not.toBeInTheDocument();
+  });
+
+  it('marks the undrafted tag cell so it can be styled apart from a pick', () => {
+    const freeAgentPicks = [
+      {
+        pick: {
+          playerId: 'fa1',
+          playerName: 'Undrafted Starter',
+          position: 'WR',
+          teamId: 'KC',
+          draftYear: 2020,
+          seasons: [makeSeason({ year: 2020, teamGames: 16, snapShare: 0.7 })],
+        },
+        draftYear: 2020,
+      },
+    ];
+    const { container } = render(
+      <PlayerList picks={freeAgentPicks} teamId="KC" />,
+    );
+
+    expect(container.querySelector('.pick-tag--undrafted')).not.toBeNull();
+  });
+
+  it('leaves a drafted row’s tag cell unmarked, so it keeps showing', () => {
+    const { container } = render(<PlayerList picks={mockPicks} teamId="KC" />);
+    expect(container.querySelector('.pick-tag--undrafted')).toBeNull();
+  });
+
+  it('never claims a draft slot in the over-slot tooltip of a free agent row', () => {
+    const freeAgentPicks = [
+      {
+        pick: {
+          playerId: 'fa1',
+          playerName: 'Undrafted Starter',
+          position: 'WR',
+          teamId: 'KC',
+          draftYear: 2020,
+          seasons: [makeSeason({ year: 2020, teamGames: 16, snapShare: 0.7 })],
+        },
+        draftYear: 2020,
+      },
+    ];
+    const { container } = render(
+      <PlayerList picks={freeAgentPicks} teamId="KC" />,
+    );
+
+    const cell = container.querySelector('.roster-table__overslot');
+    expect(cell?.getAttribute('title')).toMatch(/undrafted free agents/i);
+    expect(cell?.getAttribute('title')).not.toMatch(/pick position/i);
+  });
+
+  it('keeps the draft-slot tooltip on a drafted row', () => {
+    const { container } = render(<PlayerList picks={mockPicks} teamId="KC" />);
+
+    const cell = container.querySelector('.roster-table__overslot');
+    expect(cell?.getAttribute('title')).toMatch(/pick position/i);
+  });
+
   it('makes each player name a real link, so the row is keyboard-reachable', () => {
     render(<PlayerList picks={mockPicks} teamId="KC" />);
     const link = screen.getByRole('link', { name: /Patrick Mahomes/ });

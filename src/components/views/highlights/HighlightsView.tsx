@@ -7,6 +7,7 @@ import {
   isOverSlotPositive,
 } from '../../../lib/formatOverSlot';
 import { activateOnKey } from '../../../lib/activateOnKey';
+import { isDraftPick } from '../../../lib/acquisition';
 import {
   HIGHLIGHT_LIST_SIZE,
   type LeagueHighlights,
@@ -19,7 +20,11 @@ import type {
   RankedPlayer,
 } from '../../../lib/careerShapeHighlights';
 import type { TeamRateHighlight } from '../../../lib/retentionHighlights';
-import type { DraftPick, Team } from '../../../types';
+import type { Acquisition, Team } from '../../../types';
+import type {
+  FreeAgentHighlight,
+  FreeAgentHighlights,
+} from '../../../lib/getFreeAgentHighlights';
 
 /**
  * What every highlight row needs, whatever list it came from. Each list adapts
@@ -27,7 +32,7 @@ import type { DraftPick, Team } from '../../../types';
  * list it is rendering.
  */
 interface HighlightRowData {
-  pick: DraftPick;
+  pick: Acquisition;
   team: Team | undefined;
   draftYear: number;
   /** Right-hand column, e.g. `+12.4` or `5`. */
@@ -50,6 +55,25 @@ function fromPlayerHighlight(h: PlayerHighlight): HighlightRowData {
     tone: isOverSlotPositive(h.overSlot) ? 'high' : 'low',
     detail: `score ${h.score.toFixed(0)}`,
     headlineTitle: 'Draft score above or below what this draft slot predicted',
+  };
+}
+
+/**
+ * The undrafted band: ranked on raw score, so the score is the headline and the
+ * residual rides along in the meta line. Its tooltip names what the residual is
+ * measured against, because the bands above it measure against a draft slot and
+ * the two are not the same bar.
+ */
+function fromFreeAgentHighlight(h: FreeAgentHighlight): HighlightRowData {
+  return {
+    pick: h.player,
+    team: h.team,
+    draftYear: h.draftYear,
+    headline: h.score.toFixed(0),
+    tone: 'high',
+    detail: `${formatOverSlot(h.overSlot)} vs undrafted average`,
+    headlineTitle:
+      'Draft score. Undrafted players are ranked on score, not against a draft slot they never had',
   };
 }
 
@@ -165,6 +189,8 @@ function RankedLists({
 
 export interface HighlightsViewProps {
   highlights: LeagueHighlights;
+  /** The window's best undrafted players; null until their classes resolve. */
+  freeAgentHighlights: FreeAgentHighlights | null;
   startYear: number;
   endYear: number;
   onTeamSelect: (teamId: string) => void;
@@ -172,6 +198,7 @@ export interface HighlightsViewProps {
 
 function HighlightsViewImpl({
   highlights,
+  freeAgentHighlights,
   startYear,
   endYear,
   onTeamSelect,
@@ -208,6 +235,22 @@ function HighlightsViewImpl({
           emptyLabel={NO_PICKS_LABEL}
         />
       </HighlightBand>
+
+      {/* Rendered only once the classes are in: an empty band would claim the
+          league produced no undrafted players worth naming. */}
+      {freeAgentHighlights && (
+        <HighlightBand title="Undrafted">
+          <PlayerList
+            kicker="Best undrafted players"
+            note="top scorers who went undrafted"
+            accent="core"
+            items={freeAgentHighlights.bestUndrafted.map(
+              fromFreeAgentHighlight,
+            )}
+            emptyLabel="No undrafted players in this window."
+          />
+        </HighlightBand>
+      )}
 
       <HighlightBand title="Career shape">
         <RankedLists specs={CAREER_SHAPE_LISTS} highlights={highlights} />
@@ -462,7 +505,7 @@ function PlayerMeta({
         {pick.position} · {seasonTag(draftYear)} ·
       </span>
       <span className="nowrap">
-        R{pick.round} #{pick.overallPick}
+        {isDraftPick(pick) ? `R${pick.round} #${pick.overallPick}` : 'UDFA'}
       </span>
       <span className="nowrap">
         <TeamLogo teamId={pick.teamId} size={14} ring={false} />

@@ -133,6 +133,53 @@ export interface DraftPick {
   seasons: Season[];
 }
 
+/**
+ * A player who debuted undrafted, grouped into the class of the season he
+ * first took a snap — not the season he was signed, and not necessarily his
+ * `rookie_season`.
+ *
+ * Deliberately `DraftPick` minus `round` and `overallPick` — the absence of
+ * `round` is what {@link isDraftPick} discriminates on, so no `kind` tag is
+ * stored and no data migration is needed. `seasons` is the identical shape, so
+ * every season-level library (load, role tiering, injury forgiveness, reserve
+ * weeks, rest games) applies unchanged.
+ */
+export interface FreeAgent {
+  playerId: string;
+  playerName: string;
+  position: string;
+  teamId: string;
+  /**
+   * The class year he belongs to: the season he **debuted**, meaning the first
+   * season he took a snap. Deliberately *not* his `rookie_season`, which the
+   * cohort rule uses only to decide eligibility: the two differ for a player
+   * who spent his first year on a practice squad, and `rookie_season` would
+   * open his scored window on seasons his team never had him on the field.
+   * Named to match `DraftPick.draftYear` because the scoring engine measures
+   * elapsed seasons from this field for picks and free agents alike. Stamped
+   * from the enclosing class by `stampFreeAgentYear`, not stored in
+   * `fa-{year}.json`.
+   */
+  draftYear: number;
+  espnId?: string;
+  headshotUrl?: string;
+  seasons: Season[];
+}
+
+/** One year's undrafted cohort, as stored in `public/data/fa-{year}.json`. */
+export interface FreeAgentClass {
+  year: number;
+  freeAgents: FreeAgent[];
+}
+
+/**
+ * Any player a team added: drafted or undrafted. The scoring engine operates on
+ * this, so the two populations share one implementation of load, role tiering
+ * and score, and differ only where they genuinely differ — the contract window
+ * and the expectation they are measured against.
+ */
+export type Acquisition = DraftPick | FreeAgent;
+
 export interface Team {
   id: string;
   name: string;
@@ -186,6 +233,22 @@ export interface PositionBaselinesData {
   method: string;
   /** Full-time-starter snap share per draft position label (0–1]. */
   baselines: Record<string, number>;
+}
+
+/** Written by `scripts/derive-fa-baseline.ts` as `src/data/fa-baseline.json`. */
+export interface FreeAgentBaselineData {
+  /** UTC calendar date `YYYY-MM-DD` when the baseline was derived. */
+  generatedAt: string;
+  /** Human-readable description of the derivation method. */
+  method: string;
+  /** Earliest mature class year contributing to the fit. */
+  matureFrom: number;
+  /** Latest mature class year contributing to the fit. */
+  matureTo: number;
+  /** Number of scored undrafted free agents the baseline was computed from. */
+  playerCount: number;
+  /** Mean score of the mature undrafted cohort, on the 0–100 scale. */
+  expected: number;
 }
 
 /**

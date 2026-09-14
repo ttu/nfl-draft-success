@@ -8,7 +8,14 @@ import {
   hasRosterSnapshot,
   ROSTER_SEASON,
 } from './currentRoster';
-import { makeDraftClass, makePick, makeSeason } from '../test/factories';
+import {
+  makeDraftClass,
+  makeFreeAgent,
+  makePick,
+  makeSeason,
+} from '../test/factories';
+import { stampFreeAgentYear } from './freeAgentClass';
+import { isDraftPick } from './acquisition';
 
 // The roster snapshot row is written for ROSTER_SEASON — one past the newest
 // PLAYED season — which is not the newest draft class. The two coincided until
@@ -132,8 +139,10 @@ describe('getCurrentRoster', () => {
         ],
       }),
     ];
-    const roster = getCurrentRoster(classes, 'BUF');
-    expect(roster.map((e) => e.pick.overallPick)).toEqual([1, 2]);
+    const roster = getCurrentRoster(classes, [], 'BUF');
+    expect(
+      roster.map((e) => (isDraftPick(e.pick) ? e.pick.overallPick : null)),
+    ).toEqual([1, 2]);
     expect(roster.map((e) => e.acquired)).toEqual([false, true]);
     expect(roster[0].draftYear).toBe(CURRENT - 2);
   });
@@ -159,7 +168,7 @@ describe('getCurrentRoster', () => {
         ],
       }),
     ];
-    const [entry] = getCurrentRoster(classes, 'BUF');
+    const [entry] = getCurrentRoster(classes, [], 'BUF');
     expect(entry.seasonsPlayed).toBe(2);
     // Two identical full seasons: the mean is one season's score, not a
     // rookie-window-divided fraction of it.
@@ -174,7 +183,7 @@ describe('getCurrentRoster', () => {
         picks: [makePick({ overallPick: 1, teamId: 'BUF', seasons: [] })],
       }),
     ];
-    const [entry] = getCurrentRoster(classes, 'BUF');
+    const [entry] = getCurrentRoster(classes, [], 'BUF');
     expect(entry.seasonsPlayed).toBe(0);
     expect(entry.score).toBeUndefined();
     expect(entry.role).toBeUndefined();
@@ -275,11 +284,115 @@ describe('groupRosterByPosition', () => {
         ],
       }),
     ];
-    const groups = groupRosterByPosition(getCurrentRoster(classes, 'BUF'));
+    const groups = groupRosterByPosition(getCurrentRoster(classes, [], 'BUF'));
     expect(groups.map((g) => g.id)).toEqual(['QB', 'DB']);
     expect(groups[0].label).toBe('Quarterbacks');
     // Best score first; the player awaiting data goes last.
-    expect(groups[0].entries.map((e) => e.pick.overallPick)).toEqual([3, 2, 4]);
+    expect(
+      groups[0].entries.map((e) =>
+        isDraftPick(e.pick) ? e.pick.overallPick : null,
+      ),
+    ).toEqual([3, 2, 4]);
     expect(groups[1].meanScore).toBeGreaterThan(80);
+  });
+});
+
+describe('getCurrentRoster with undrafted players', () => {
+  const undraftedClass = (
+    year: number,
+    members: {
+      id: string;
+      teamId: string;
+      upcoming: ReturnType<typeof upcoming>;
+    }[],
+  ) =>
+    stampFreeAgentYear({
+      year,
+      freeAgents: members.map((m) =>
+        makeFreeAgent({
+          playerId: m.id,
+          playerName: m.id,
+          teamId: m.teamId,
+          seasons: [makeSeason({ year }), m.upcoming],
+        }),
+      ),
+    });
+
+  it('lists an undrafted player on the team he is on now', () => {
+    const roster = getCurrentRoster(
+      [],
+      [
+        undraftedClass(CURRENT - 2, [
+          {
+            id: 'Stayed',
+            teamId: 'BUF',
+            upcoming: upcoming({ retained: true }),
+          },
+          {
+            id: 'Left',
+            teamId: 'BUF',
+            upcoming: upcoming({ retained: false, currentTeam: 'KC' }),
+          },
+        ]),
+      ],
+      'BUF',
+    );
+
+    expect(roster.map((e) => e.pick.playerName)).toEqual(['Stayed']);
+    expect(isDraftPick(roster[0].pick)).toBe(false);
+  });
+
+  it('credits the team he plays for now, not the one that signed him', () => {
+    const roster = getCurrentRoster(
+      [],
+      [
+        undraftedClass(CURRENT - 2, [
+          {
+            id: 'Moved',
+            teamId: 'JAX',
+            upcoming: upcoming({ retained: false, currentTeam: 'BUF' }),
+          },
+        ]),
+      ],
+      'BUF',
+    );
+
+    expect(roster).toHaveLength(1);
+    // Same rule a traded pick follows: the credit moves with the player.
+    expect(roster[0].acquired).toBe(true);
+  });
+
+  it('scores him alongside the picks, in one list', () => {
+    const roster = getCurrentRoster(
+      [
+        makeDraftClass({
+          year: CURRENT - 2,
+          picks: [
+            makePick({
+              overallPick: 1,
+              teamId: 'BUF',
+              seasons: [
+                makeSeason({ year: CURRENT - 2 }),
+                upcoming({ retained: true }),
+              ],
+            }),
+          ],
+        }),
+      ],
+      [
+        undraftedClass(CURRENT - 2, [
+          {
+            id: 'Undrafted',
+            teamId: 'BUF',
+            upcoming: upcoming({ retained: true }),
+          },
+        ]),
+      ],
+      'BUF',
+    );
+
+    expect(roster).toHaveLength(2);
+    expect(roster.every((e) => e.score !== undefined)).toBe(true);
+    expect(rosterMeanScore(roster)).toBeGreaterThan(0);
   });
 });

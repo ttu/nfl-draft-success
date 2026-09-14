@@ -1,4 +1,5 @@
-import type { DraftPick, Season } from '../types';
+import type { Acquisition, Season } from '../types';
+import { isDraftPick, acquisitionWindow } from './acquisition';
 import { apprenticeSeasonCount } from './apprenticeship';
 import {
   getSeasonScore,
@@ -6,7 +7,7 @@ import {
   AVAILABILITY_WEIGHT,
 } from './getSeasonScore';
 import { getPlayerDraftScore, getFilteredSeasons } from './getPlayerRole';
-import { expectedScoreForPick } from './draftSlotBaseline';
+import { expectedScoreForAcquisition } from './overSlot';
 import {
   rawSnapShareForRoleTier,
   snapShareForRoleTier,
@@ -15,11 +16,7 @@ import {
   getPositionBaseline,
   isBaselineExemptPosition,
 } from './positionBaseline';
-import {
-  rookieWindow,
-  scoredSeasonCount,
-  scoredWindowYears,
-} from './rookieWindow';
+import { scoredSeasonCount, scoredWindowYears } from './rookieWindow';
 import { playedSeasons } from './seasonPlayed';
 
 /**
@@ -128,8 +125,14 @@ export interface DraftScoreExplanation {
   windowLength?: number;
   /** `total / denominator` — the headline score. */
   score: number;
-  overallPick: number;
-  /** What the draft slot alone predicted. */
+  /** The pick's draft slot; absent for an undrafted free agent. */
+  overallPick?: number;
+  /**
+   * What the acquisition route alone predicted: the draft-slot curve for a
+   * pick, the undrafted cohort's mean for a free agent. See
+   * {@link expectedScoreForAcquisition} — these are not expectations over the
+   * same population.
+   */
   expectedAtSlot: number;
   /** `score - expectedAtSlot`. */
   overSlot: number;
@@ -245,7 +248,7 @@ function explainSeason(
  * with the drafting team in drafting-team mode.
  */
 export function explainDraftScore(
-  pick: DraftPick,
+  pick: Acquisition,
   draftingTeamOnly: boolean,
 ): DraftScoreExplanation | null {
   const played = playedSeasons(pick);
@@ -303,7 +306,7 @@ export function explainDraftScore(
     0,
   );
   const score = getPlayerDraftScore(pick, { draftingTeamOnly });
-  const expectedAtSlot = expectedScoreForPick(pick.overallPick);
+  const expectedAtSlot = expectedScoreForAcquisition(pick);
 
   return {
     rows,
@@ -320,10 +323,10 @@ export function explainDraftScore(
     // years — the same length `scoredSeasonCount` uses, so the panel's stated
     // window and its divisor cannot disagree.
     windowLength: draftingTeamOnly
-      ? Math.max(0, rookieWindow(pick.round) - apprenticeSeasons)
+      ? Math.max(0, acquisitionWindow(pick) - apprenticeSeasons)
       : undefined,
     score,
-    overallPick: pick.overallPick,
+    overallPick: isDraftPick(pick) ? pick.overallPick : undefined,
     expectedAtSlot,
     overSlot: score - expectedAtSlot,
   };

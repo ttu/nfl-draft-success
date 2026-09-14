@@ -6,7 +6,8 @@ import {
   type SeasonScoreExplanation,
 } from '../../../lib/explainDraftScore';
 import { splitTrailingFaRun } from '../../../lib/playerJourney';
-import type { DraftPick } from '../../../types';
+import { isDraftPick } from '../../../lib/acquisition';
+import type { Acquisition } from '../../../types';
 
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
 const pts = (v: number) => v.toFixed(1);
@@ -40,12 +41,13 @@ export function ScoreBreakdown({
   pick,
   draftingTeamOnly,
 }: {
-  pick: DraftPick;
+  pick: Acquisition;
   draftingTeamOnly: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const explanation = explainDraftScore(pick, draftingTeamOnly);
   if (!explanation) return null;
+  const isPick = isDraftPick(pick);
 
   const {
     rows,
@@ -97,12 +99,13 @@ export function ScoreBreakdown({
         <div className="score-breakdown__body" data-testid="score-breakdown">
           <ol className="score-breakdown__seasons">
             {shownRows.map((row) => (
-              <BreakdownRow key={row.year} row={row} />
+              <BreakdownRow key={row.year} row={row} isPick={isPick} />
             ))}
             {faRun.length > 0 && (
               <FreeAgentRunEntry
                 fromYear={faRun[0].year}
                 toYear={faRun[faRun.length - 1].year}
+                isPick={isPick}
               />
             )}
           </ol>
@@ -118,6 +121,7 @@ export function ScoreBreakdown({
                 usesRookieWindow,
                 windowLength,
                 apprenticeSeasons,
+                isPick,
               )}
             </span>
             <span className="score-breakdown__sum-result mono tnum">
@@ -132,9 +136,24 @@ export function ScoreBreakdown({
           </div>
 
           <div className="score-breakdown__overslot mono tnum">
-            {pts(dividedScore)} − {pts(shownExpected)} expected at pick{' '}
-            {explanation.overallPick} ={' '}
-            <strong>{formatOverSlot(shownOverSlot)}</strong> over slot
+            {isPick && explanation.overallPick != null ? (
+              <>
+                {pts(dividedScore)} − {pts(shownExpected)} expected at pick{' '}
+                {explanation.overallPick} ={' '}
+                <strong>{formatOverSlot(shownOverSlot)}</strong> over slot
+              </>
+            ) : (
+              // Not a like-for-like bar with a draft slot's expectation: the
+              // undrafted cohort's mean is the population's own average, only
+              // over players who took a snap, so it reads centered on zero by
+              // construction — see `expectedScoreForFreeAgent`.
+              <>
+                {pts(dividedScore)} compared with what undrafted free agents
+                earn on average ({pts(shownExpected)}) ={' '}
+                <strong>{formatOverSlot(shownOverSlot)}</strong> vs. that
+                average
+              </>
+            )}
           </div>
         </div>
       )}
@@ -145,32 +164,44 @@ export function ScoreBreakdown({
 function denominatorLabel(
   denominator: number,
   usesRookieWindow: boolean,
-  windowLength?: number,
+  windowLength: number | undefined,
   apprenticeSeasons = 0,
+  isPick = true,
 ): string {
+  const s = (n: number) => (n === 1 ? '' : 's');
   if (!usesRookieWindow) {
-    return `${denominator} season${denominator === 1 ? '' : 's'} played`;
+    return `${denominator} season${s(denominator)} played`;
   }
   // Said in terms of the apprenticeship rather than the window, because the
   // window is the confusing part here: it has been shortened by the bench
   // years, and "past his 2-season rookie window" invites the reader to hunt for
   // a contract term that does not exist.
   if (apprenticeSeasons > 0) {
-    return `${denominator} season${denominator === 1 ? '' : 's'} since he won the job, after ${apprenticeSeasons} on the bench`;
+    return `${denominator} season${s(denominator)} since he won the job, after ${apprenticeSeasons} on the bench`;
   }
-  // A clamped denominator is the one readers query most: a pick drafted last
-  // year is measured against one season, not five, and saying only "5-season
-  // window" next to a division by 1 reads as an error.
+  // A clamped denominator is the one readers query most: a pick (or free
+  // agent) whose career just started is measured against one season, not the
+  // full window, and saying only "N-season window" next to a division by 1
+  // reads as an error.
   if (windowLength !== undefined && denominator < windowLength) {
-    return `${denominator} season${denominator === 1 ? '' : 's'} elapsed, of a ${windowLength}-season rookie window`;
+    return isPick
+      ? `${denominator} season${s(denominator)} elapsed, of a ${windowLength}-season rookie window`
+      : `${denominator} season${s(denominator)} elapsed, of his ${windowLength}-season undrafted window`;
   }
-  // A pick who outlasted his rookie deal is divided by his actual tenure, not
-  // by the window — calling six seasons a "6-season rookie window" would state
-  // a contract term that does not exist for his round.
+  // A player who outlasted his window is divided by his actual tenure, not by
+  // the window — calling six seasons a "6-season rookie window" would state a
+  // contract term that does not exist for his round (or, for a free agent, at
+  // all).
   if (windowLength !== undefined && denominator > windowLength) {
-    return `${denominator} seasons with the drafting team, past his ${windowLength}-season rookie window`;
+    return isPick
+      ? `${denominator} seasons with the drafting team, past his ${windowLength}-season rookie window`
+      : `${denominator} seasons with the team, past his ${windowLength}-season undrafted window`;
   }
-  return `${denominator}-season rookie window`;
+  // A free agent's rookie deal runs three seasons (`FA_WINDOW`), not four or
+  // five — this is the plain, unclamped case.
+  return isPick
+    ? `${denominator}-season rookie window`
+    : `${denominator} season${s(denominator)}, an undrafted free agent's window`;
 }
 
 /** A season's score as the panel prints it: the sum of its two rounded terms. */
@@ -192,13 +223,21 @@ function isUncountedFreeAgentRow(row: ScoreExplanationRow): boolean {
   );
 }
 
+/** What an uncounted season didn't count toward — same team word `whereHeWas`
+ * would otherwise contradict for a player who was never drafted. */
+function teamScoreLabel(isPick: boolean): string {
+  return isPick ? "the drafting team's score" : "his team's score";
+}
+
 /** The years a career trailed off in, as one entry. See `FreeAgentRunRow`. */
 function FreeAgentRunEntry({
   fromYear,
   toYear,
+  isPick,
 }: {
   fromYear: number;
   toYear: number;
+  isPick: boolean;
 }) {
   return (
     <li
@@ -213,13 +252,19 @@ function FreeAgentRunEntry({
         <span className="score-breakdown__season-score mono tnum">—</span>
       </div>
       <div className="score-breakdown__uncounted-note">
-        Not on a roster — not counted toward the drafting team's score.
+        Not on a roster — not counted toward {teamScoreLabel(isPick)}.
       </div>
     </li>
   );
 }
 
-function BreakdownRow({ row }: { row: ScoreExplanationRow }) {
+function BreakdownRow({
+  row,
+  isPick,
+}: {
+  row: ScoreExplanationRow;
+  isPick: boolean;
+}) {
   if (row.kind === 'apprentice') {
     return (
       <li
@@ -231,7 +276,8 @@ function BreakdownRow({ row }: { row: ScoreExplanationRow }) {
           <span className="score-breakdown__season-score mono tnum">—</span>
         </div>
         <div className="score-breakdown__uncounted-note">
-          Learning behind a veteran — before the rookie window opens, so not
+          Learning behind a veteran — before{' '}
+          {isPick ? 'the rookie window' : 'his scored window'} opens, so not
           scored.
         </div>
       </li>
@@ -247,7 +293,7 @@ function BreakdownRow({ row }: { row: ScoreExplanationRow }) {
       </li>
     );
   }
-  return <SeasonBreakdown season={row} />;
+  return <SeasonBreakdown season={row} isPick={isPick} />;
 }
 
 /**
@@ -262,7 +308,13 @@ function whereHeWas(season: SeasonScoreExplanation): string {
     : 'Played for another team';
 }
 
-function SeasonBreakdown({ season }: { season: SeasonScoreExplanation }) {
+function SeasonBreakdown({
+  season,
+  isPick,
+}: {
+  season: SeasonScoreExplanation;
+  isPick: boolean;
+}) {
   const {
     year,
     counted,
@@ -331,7 +383,7 @@ function SeasonBreakdown({ season }: { season: SeasonScoreExplanation }) {
         </div>
       ) : (
         <div className="score-breakdown__uncounted-note">
-          {whereHeWas(season)} — not counted toward the drafting team's score.
+          {whereHeWas(season)} — not counted toward {teamScoreLabel(isPick)}.
         </div>
       )}
     </li>

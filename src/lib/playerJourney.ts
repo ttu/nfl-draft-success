@@ -1,4 +1,4 @@
-import type { DraftPick, Role, Season } from '../types';
+import type { Acquisition, DraftPick, Role, Season } from '../types';
 import { classifyRole } from './classifyRole';
 import { snapShareForRoleTier } from './snapShareForTier';
 import { isStrongerRole } from './roleDisplay';
@@ -10,7 +10,7 @@ export interface TeamStint {
 }
 
 /** Most recent season by year, or `undefined` if the pick has none. */
-export function getLatestSeason(pick: DraftPick): Season | undefined {
+export function getLatestSeason(pick: Acquisition): Season | undefined {
   return [...pick.seasons].sort((a, b) => b.year - a.year)[0];
 }
 
@@ -21,12 +21,12 @@ export function getLatestSeason(pick: DraftPick): Season | undefined {
  * played: a pick traded over the offseason has left, even though the season he
  * leaves for has not started.
  */
-export function isDeparted(pick: DraftPick): boolean {
+export function isDeparted(pick: Acquisition): boolean {
   return getLatestSeason(pick)?.retained === false;
 }
 
 /** Team abbreviation the player is currently on (only set when departed). */
-export function getCurrentTeam(pick: DraftPick): string | undefined {
+export function getCurrentTeam(pick: Acquisition): string | undefined {
   return getLatestSeason(pick)?.currentTeam;
 }
 
@@ -35,7 +35,7 @@ export function getCurrentTeam(pick: DraftPick): string | undefined {
  * with their drafting team, otherwise the team they are now on ('FA' when a
  * free agent).
  */
-export function getCurrentTeamIndicator(pick: DraftPick): string | null {
+export function getCurrentTeamIndicator(pick: Acquisition): string | null {
   if (!isDeparted(pick)) return null;
   return getCurrentTeam(pick) ?? 'FA';
 }
@@ -43,14 +43,14 @@ export function getCurrentTeamIndicator(pick: DraftPick): string | null {
 /** Team a season was played for: drafting team if retained, otherwise currentTeam or 'FA'. */
 export function getSeasonTeamAbbreviation(
   season: Season,
-  pick: DraftPick,
+  pick: Acquisition,
 ): string {
   if (season.retained) return pick.teamId;
   return season.currentTeam ?? 'FA';
 }
 
 /** True when the season represents a year the player was a free agent. */
-export function isFreeAgentSeason(season: Season, pick: DraftPick): boolean {
+export function isFreeAgentSeason(season: Season, pick: Acquisition): boolean {
   return getSeasonTeamAbbreviation(season, pick) === 'FA';
 }
 

@@ -1,4 +1,4 @@
-import type { DraftClass, DraftPick, Role } from '../types';
+import type { Acquisition, DraftClass, DraftPick, Role } from '../types';
 import { getPlayerRole, type GetPlayerRoleOptions } from './getPlayerRole';
 import { playedSeasons } from './seasonPlayed';
 
@@ -50,11 +50,17 @@ export function avgLoad(
  * view: every same-position pick from the target's draft year, ranked by load
  * on the caller's lens and capped at `limit`, plus the target's 1-based rank within that list
  * (0 when the target sits outside the capped list).
+ *
+ * `pick` is typed `Acquisition` rather than `DraftPick` so an undrafted free
+ * agent's detail view can call this too — the classmates it lists are always
+ * drafted picks (`draftClasses` holds nothing else), only `pick.position` and
+ * `pick.playerId` are read from the target, and a free agent's `playerId`
+ * simply never matches one of them, leaving `rank` at 0.
  */
 export function getPositionCohort(
   draftClasses: DraftClass[],
   draftYear: number,
-  pick: DraftPick,
+  pick: Acquisition,
   options?: GetPlayerRoleOptions,
   limit = 8,
 ): PositionCohort {

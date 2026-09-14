@@ -5,6 +5,7 @@ import { PlayerDetailView } from './PlayerDetailView';
 import type { DraftClass, DraftPick } from '../../../types';
 import {
   makeDraftClass,
+  makeFreeAgent,
   makeNonContributorSeason,
   makePick,
   makeSeason,
@@ -279,6 +280,17 @@ describe('PlayerDetailView draft score', () => {
     renderView();
     const overSlot = screen.getByTestId('player-over-slot');
     expect(overSlot.textContent).toMatch(/^\+/);
+  });
+
+  it('reads the over-slot verdict against his draft slot, and names his pick', () => {
+    renderView();
+    expect(screen.getByText(/his draft slot/i)).toBeInTheDocument();
+    expect(screen.getByText(/\(pick 203\)/)).toBeInTheDocument();
+  });
+
+  it('explains Load against the team that drafted him', () => {
+    renderView();
+    expect(screen.getByText(/team that drafted him/i)).toBeInTheDocument();
   });
 });
 
@@ -751,5 +763,199 @@ describe('PlayerDetailView rested-finale marker', () => {
     renderRested();
 
     expect(screen.queryByTestId('rested-finale-2024')).toBeNull();
+  });
+});
+
+describe('PlayerDetailView for an undrafted free agent', () => {
+  const freeAgentWr = makeFreeAgent({
+    playerId: 'fa-1',
+    playerName: 'Sam Overlooked',
+    position: 'WR',
+    teamId: 'BUF',
+    draftYear: 2020,
+    seasons: [makeSeason({ year: 2020 })],
+  });
+
+  function renderUndrafted() {
+    return render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={freeAgentWr}
+          draftYear={2020}
+          draftClasses={[]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+  }
+
+  it('renders the page instead of hanging', () => {
+    renderUndrafted();
+    expect(screen.getByText('Sam Overlooked')).toBeInTheDocument();
+    expect(screen.getByTestId('player-overall-score')).toBeInTheDocument();
+  });
+
+  it('shows "Undrafted" where a pick shows its round and slot', () => {
+    renderUndrafted();
+    expect(screen.getAllByText(/undrafted/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/round \d/i)).not.toBeInTheDocument();
+  });
+
+  it('opens the hero eyebrow with "Debut", never "Draft"', () => {
+    renderUndrafted();
+    expect(screen.getByText(/^Debut/)).toBeInTheDocument();
+    expect(screen.queryByText(/^Draft\s/)).not.toBeInTheDocument();
+  });
+
+  it('says "debuted with", asserting neither a draft nor a signing', () => {
+    // The data knows where he first took a snap. It does not know who signed
+    // him, and an undrafted player is routinely signed by a team he never
+    // plays a down for.
+    renderUndrafted();
+    expect(screen.getByText(/debuted with BUF/i)).toBeInTheDocument();
+    expect(screen.queryByText(/drafted by/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/signed by/i)).not.toBeInTheDocument();
+  });
+
+  it('does not rank him inside a cohort listing only drafted classmates', () => {
+    const classmate = makePick({
+      playerId: 'wr-1',
+      playerName: 'Drafted Receiver',
+      position: 'WR',
+      teamId: 'BUF',
+      draftYear: 2020,
+      round: 2,
+      overallPick: 40,
+      seasons: [makeSeason({ year: 2020 })],
+    });
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={freeAgentWr}
+          draftYear={2020}
+          draftClasses={[makeDraftClass({ year: 2020, picks: [classmate] })]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+
+    const panel = screen.getByTestId('position-cohort');
+    expect(panel).toHaveTextContent(/2020 draft class/i);
+    expect(panel).not.toHaveTextContent('#—');
+    expect(panel).toHaveTextContent(/he isn't in it/i);
+  });
+
+  it('never says the rookie window on an undrafted apprentice season', () => {
+    const benched = makeFreeAgent({
+      playerId: 'fa-qb',
+      playerName: 'Undrafted Understudy',
+      position: 'QB',
+      teamId: 'BUF',
+      draftYear: 2020,
+      seasons: [
+        makeNonContributorSeason({ year: 2020 }),
+        makeSeason({ year: 2021, gamesPlayed: 17, snapShare: 0.98 }),
+        makeSeason({ year: 2022, gamesPlayed: 17, snapShare: 0.98 }),
+      ],
+    });
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={benched}
+          draftYear={2020}
+          draftClasses={[]}
+          draftingTeamOnly
+        />
+      </MemoryRouter>,
+    );
+
+    const row = screen.getByTestId('season-uncounted-2020');
+    const mark = within(row).getByLabelText(/not counted/i);
+    expect(mark).toHaveAccessibleName(/learning behind a veteran/i);
+    expect(mark).not.toHaveAccessibleName(/rookie window/i);
+  });
+
+  it('explains Load against the team that signed him, not drafted him', () => {
+    renderUndrafted();
+    expect(screen.getByText(/team that signed him/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/team that drafted him/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it('reads the over-slot verdict against the undrafted average, not a draft slot', () => {
+    renderUndrafted();
+    expect(screen.getByText(/the undrafted average/i)).toBeInTheDocument();
+    expect(screen.queryByText(/his draft slot/i)).not.toBeInTheDocument();
+  });
+
+  it('shows a plain empty state, not "this pick", when there is no season data', () => {
+    const noSeasons = makeFreeAgent({
+      playerId: 'fa-none',
+      playerName: 'No Snaps Yet',
+      teamId: 'BUF',
+      draftYear: 2020,
+    });
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={noSeasons}
+          draftYear={2020}
+          draftClasses={[]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByText(/no season data yet for this player/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/this pick/i)).not.toBeInTheDocument();
+  });
+
+  it('divides the career table by an undrafted window, never a rookie one', () => {
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={freeAgentWr}
+          draftYear={2020}
+          draftClasses={[]}
+          draftingTeamOnly
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('rookie-window-note')).toHaveTextContent(
+      'a 3-season undrafted window',
+    );
+    expect(screen.queryByText(/rookie window/i)).not.toBeInTheDocument();
+  });
+
+  it('marks a folded free-agent run as not counted toward his team, not "the drafting team"', () => {
+    const faSeason = (year: number) =>
+      makeSeason({ year, gamesPlayed: 0, snapShare: 0, retained: false });
+    const washedOut = makeFreeAgent({
+      playerId: 'fa-washed',
+      playerName: 'Washed Out',
+      teamId: 'BUF',
+      draftYear: 2020,
+      seasons: [
+        makeSeason({ year: 2020, snapShare: 0.2, gamesPlayed: 5 }),
+        faSeason(2021),
+        faSeason(2022),
+      ],
+    });
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={washedOut}
+          draftYear={2020}
+          draftClasses={[]}
+          draftingTeamOnly
+        />
+      </MemoryRouter>,
+    );
+    const row = screen.getByTestId('fa-run-2021-2022');
+    const mark = within(row).getByLabelText(/not counted/i);
+    expect(mark).toHaveAccessibleName(/no season with his team/i);
+    expect(mark).not.toHaveAccessibleName(/drafting team/i);
   });
 });

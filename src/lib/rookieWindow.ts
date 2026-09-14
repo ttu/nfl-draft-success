@@ -1,5 +1,6 @@
 import seasonWindow from '../data/season-window.json';
-import type { DraftPick } from '../types';
+import type { Acquisition, DraftPick } from '../types';
+import { acquisitionWindow } from './acquisition';
 import {
   apprenticeSeasonCount,
   firstScoredYear,
@@ -18,22 +19,9 @@ import { isPlayedSeason } from './seasonPlayed';
  */
 export const LATEST_SEASON: number = seasonWindow.latestSeason;
 
-/** Rookie deal for a first-round pick: four years plus the fifth-year option. */
-const FIRST_ROUND_WINDOW = 5;
-/** Rookie deal for rounds 2–7: four years, no option. */
-const LATE_ROUND_WINDOW = 4;
-
-/**
- * How many seasons a pick's rookie contract entitles its team to.
- *
- * Round-dependent because the CBA is: only first-rounders carry a fifth-year
- * option. Scoring every pick against five years would charge a third-rounder
- * who played all four of his years and left in free agency with a missing
- * season he was never owed — penalising a successful outcome, and compounding
- * a bias against late rounds that over slot exists to correct.
- */
+/** @see acquisitionWindow — the round-only entry point for existing callers. */
 export function rookieWindow(round: number): number {
-  return round === 1 ? FIRST_ROUND_WINDOW : LATE_ROUND_WINDOW;
+  return acquisitionWindow({ round } as DraftPick);
 }
 
 /**
@@ -49,7 +37,7 @@ export function rookieWindow(round: number): number {
  * out of the league entirely (no row at all). Roster seasons spent injured
  * still carry a retained row, so time on IR does not read as departure.
  */
-function hasDeparted(pick: DraftPick): boolean {
+function hasDeparted(pick: Acquisition): boolean {
   const newest = pick.seasons.reduce(
     (year, s) => Math.max(year, s.year),
     LATEST_SEASON,
@@ -90,13 +78,13 @@ function hasDeparted(pick: DraftPick): boolean {
  * years his rookie deal never covered.
  */
 export function scoredSeasonCount(
-  pick: DraftPick,
+  pick: Acquisition,
   retainedSeasonCount: number,
 ): number {
   const apprenticeSeasons = apprenticeSeasonCount(pick);
   // Can reach zero if the bench years exhausted the deal; the `retained` floor
   // below is what keeps the divisor usable.
-  const window = Math.max(0, rookieWindow(pick.round) - apprenticeSeasons);
+  const window = Math.max(0, acquisitionWindow(pick) - apprenticeSeasons);
   const elapsed = LATEST_SEASON - (pick.draftYear + apprenticeSeasons) + 1;
   const tracked = hasDeparted(pick) ? window : Math.min(elapsed, window);
   return Math.max(retainedSeasonCount, tracked);
@@ -113,7 +101,7 @@ export function scoredSeasonCount(
  * as explicit zero rows makes the denominator visible, which is the argument
  * the score is making.
  */
-export function scoredWindowYears(pick: DraftPick): number[] {
+export function scoredWindowYears(pick: Acquisition): number[] {
   const from = firstScoredYear(pick);
   const retained = withoutApprenticeSeasons(pick, pick.seasons).filter(
     (s) => s.retained && isPlayedSeason(s),

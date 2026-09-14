@@ -19,13 +19,15 @@ test.describe('Role filter', () => {
   });
 
   test('toggling a role off removes those player rows', async ({ page }) => {
-    const coreChips = page.locator('.roster-table .role-chip', {
+    const coreChips = page.locator('#team-roster .roster-table .role-chip', {
       hasText: /^Core Starter$/,
     });
     const coreCountBefore = await coreChips.count();
     expect(coreCountBefore).toBeGreaterThan(0);
 
-    const totalBefore = await page.locator('.roster-table tbody tr').count();
+    const totalBefore = await page
+      .locator('#team-roster .roster-table tbody tr')
+      .count();
 
     const corePill = page
       .locator('.role-pill')
@@ -34,7 +36,9 @@ test.describe('Role filter', () => {
     await expect(corePill).toHaveAttribute('aria-pressed', 'false');
 
     await expect(coreChips).toHaveCount(0);
-    const totalAfter = await page.locator('.roster-table tbody tr').count();
+    const totalAfter = await page
+      .locator('#team-roster .roster-table tbody tr')
+      .count();
     expect(totalAfter).toBe(totalBefore - coreCountBefore);
   });
 
@@ -60,20 +64,24 @@ test.describe('Role filter', () => {
   });
 
   test('re-enabling a role restores its player rows', async ({ page }) => {
-    const totalBefore = await page.locator('.roster-table tbody tr').count();
+    const totalBefore = await page
+      .locator('#team-roster .roster-table tbody tr')
+      .count();
     const corePill = page
       .locator('.role-pill')
       .filter({ hasText: /^Core Starter$/ });
 
     await corePill.click();
     await expect(corePill).toHaveAttribute('aria-pressed', 'false');
-    const restricted = await page.locator('.roster-table tbody tr').count();
+    const restricted = await page
+      .locator('#team-roster .roster-table tbody tr')
+      .count();
     expect(restricted).toBeLessThan(totalBefore);
 
     await corePill.click();
     await expect(corePill).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('.roster-table tbody tr')).toHaveCount(
-      totalBefore,
-    );
+    await expect(
+      page.locator('#team-roster .roster-table tbody tr'),
+    ).toHaveCount(totalBefore);
   });
 });

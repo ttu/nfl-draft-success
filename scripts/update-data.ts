@@ -41,6 +41,12 @@ import { seasonEndingAbsenceGames } from '../src/lib/seasonEndingAbsence';
 import { resolveLatestPlayedSeason } from '../src/lib/latestPlayedSeason';
 import { accumulateReserveWeeks } from '../src/lib/reserveWeeks';
 import { excusedAbsenceGames } from '../src/lib/absenceWeeks';
+import {
+  FA_FIRST_CLASS_YEAR,
+  isUndraftedAndTracked,
+  type NflversePlayerRow,
+} from '../src/lib/freeAgentCohort';
+import { firstSnapTeam } from '../src/lib/firstSnapTeam';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 /** First season nflverse publishes snap counts for. */
@@ -710,13 +716,27 @@ async function loadReserveData(seasons: number[]): Promise<{
   return { byPlayer, loadedSeasons };
 }
 
-/** Load headshots and position meta from nflverse players */
+/** Parse an nflverse integer column, treating blank and non-numeric as absent. */
+function intOrNull(raw: string | undefined): number | null {
+  const n = parseInt((raw ?? '').trim(), 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Load headshots, position meta and the raw player rows from nflverse players.
+ *
+ * The rows come back alongside the two lookups rather than from a second fetch:
+ * the undrafted cohort is decided from the same file, and pulling players.csv
+ * twice would be a second few-megabyte download for columns already in hand.
+ */
 async function loadNflversePlayers(): Promise<{
   headshots: Map<string, string>;
   metaByPfrId: Map<string, NflversePlayerMeta>;
+  playerRows: NflversePlayerRow[];
 }> {
   const headshots = new Map<string, string>();
   const metaByPfrId = new Map<string, NflversePlayerMeta>();
+  const playerRows: NflversePlayerRow[] = [];
   const url = `${BASE}/players/players.csv`;
   const csv = await fetchCsv(url);
   const rows = parseCsv(csv);
@@ -729,8 +749,19 @@ async function loadNflversePlayers(): Promise<{
       position_group: (row.position_group ?? '').trim(),
       position: (row.position ?? '').trim(),
     });
+    playerRows.push({
+      pfrId,
+      gsisId: (row.gsis_id ?? '').trim(),
+      playerName: (row.display_name ?? row.full_name ?? '').trim(),
+      position: (row.position ?? '').trim(),
+      rookieSeason: intOrNull(row.rookie_season),
+      draftYear: intOrNull(row.draft_year),
+      draftPick: intOrNull(row.draft_pick),
+      headshot,
+      espnId: (row.espn_id ?? '').trim(),
+    });
   }
-  return { headshots, metaByPfrId };
+  return { headshots, metaByPfrId, playerRows };
 }
 
 /**
@@ -831,6 +862,25 @@ interface DraftPick {
   position: string;
   round: number;
   overallPick: number;
+  teamId: string;
+  espnId?: string;
+  headshotUrl?: string;
+  seasons: PickSeason[];
+}
+
+/**
+ * An undrafted player and their tracked seasons, as written to fa-<year>.json.
+ *
+ * Deliberately {@link DraftPick} minus `round` and `overallPick` — everything
+ * downstream treats the two the same, so any field that drifted apart here
+ * would be a field the scoring engine has to special-case. `draftYear` is
+ * absent for the same reason it is absent from a pick: the enclosing class
+ * stamps it at load time.
+ */
+interface FreeAgent {
+  playerId: string;
+  playerName: string;
+  position: string;
   teamId: string;
   espnId?: string;
   headshotUrl?: string;
@@ -1107,24 +1157,30 @@ interface PickSources {
  * releases, hence the `??` chains. `fallbackIndex` only names picks that have
  * no id at all.
  */
-function buildDraftPick(
-  row: CsvRow,
-  year: number,
-  fallbackIndex: number,
-  sources: PickSources,
-): DraftPick {
-  const pfrId =
-    row.pfr_player_id ?? row.pfr_id ?? row.player_id ?? row.gsis_id ?? '';
-  const gsisId = (row.gsis_id ?? '').trim();
-  const teamId = normalizeTeam(row.team ?? row.draft_team ?? '');
-  const espnId = row.espn_id ?? row.espnid;
-
+/**
+ * Every season row one acquisition gets: his class year through the newest
+ * played one, plus an offseason row where there is something to say.
+ *
+ * Shared by picks and free agents so the two populations cannot drift. The
+ * scoring engine treats them identically, so anything that changed here for one
+ * and not the other — an injury forgiveness, a rest-game adjustment — would be
+ * a difference the engine has no way to know about.
+ */
+function buildCareerSeasons(params: {
+  pfrId: string;
+  gsisId: string;
+  teamId: string;
+  /** The year his window opens: the draft for a pick, the debut for a free agent. */
+  startSeason: number;
+  sources: PickSources;
+}): PickSeason[] {
+  const { pfrId, gsisId, teamId, startSeason, sources } = params;
   const playerSnaps = sources.snapData.get(pfrId);
   const playerInjuries = gsisId ? sources.injuryData.get(gsisId) : undefined;
   const playerReserve = gsisId ? sources.reserveData.get(gsisId) : undefined;
 
   const seasons: PickSeason[] = [];
-  for (let s = year; s <= sources.maxSeason; s++) {
+  for (let s = startSeason; s <= sources.maxSeason; s++) {
     seasons.push(
       buildPickSeason({
         season: s,
@@ -1141,7 +1197,7 @@ function buildDraftPick(
   // Only classes that have played get one. The incoming class is on its
   // drafting team by definition, and the roster release does not list it yet
   // anyway — a row would read those picks as unrostered, meaning departed.
-  if (sources.roster && year <= sources.maxSeason) {
+  if (sources.roster && startSeason <= sources.maxSeason) {
     const offseason = buildOffseasonSeason({
       roster: sources.roster,
       gsisId,
@@ -1153,6 +1209,29 @@ function buildDraftPick(
     if (offseason) seasons.push(offseason);
   }
 
+  return seasons;
+}
+
+function buildDraftPick(
+  row: CsvRow,
+  year: number,
+  fallbackIndex: number,
+  sources: PickSources,
+): DraftPick {
+  const pfrId =
+    row.pfr_player_id ?? row.pfr_id ?? row.player_id ?? row.gsis_id ?? '';
+  const gsisId = (row.gsis_id ?? '').trim();
+  const teamId = normalizeTeam(row.team ?? row.draft_team ?? '');
+  const espnId = row.espn_id ?? row.espnid;
+
+  const seasons = buildCareerSeasons({
+    pfrId,
+    gsisId,
+    teamId,
+    startSeason: year,
+    sources,
+  });
+
   const headshotUrl = pfrId ? sources.headshots.get(pfrId) : undefined;
   return {
     playerId: pfrId || `unknown-${year}-${fallbackIndex}`,
@@ -1163,6 +1242,44 @@ function buildDraftPick(
     overallPick: parseInt(row.pick ?? row.overall ?? '0', 10) || 1,
     teamId,
     ...(espnId ? { espnId } : {}),
+    ...(headshotUrl ? { headshotUrl } : {}),
+    seasons,
+  };
+}
+
+/**
+ * Build one free-agent record, with a season row for every year from his class
+ * year through the newest played one — the same shape `buildDraftPick`
+ * produces, so every scoring library treats the two identically.
+ *
+ * `classYear` is the season of his first snap, and `teamId` the franchise he
+ * took it for: for an undrafted player that is the team that signed and played
+ * him, and the pair fills the role the draft year and drafting team fill for a
+ * pick. Starting the rows at his debut rather than his `rookie_season` matters
+ * for the player who spent a year on a practice squad — opening his window on
+ * seasons nobody played him would charge his team for years it never had him.
+ */
+function buildFreeAgent(
+  row: NflversePlayerRow,
+  classYear: number,
+  teamId: string,
+  sources: PickSources,
+): FreeAgent {
+  const seasons = buildCareerSeasons({
+    pfrId: row.pfrId,
+    gsisId: row.gsisId,
+    teamId,
+    startSeason: classYear,
+    sources,
+  });
+
+  const headshotUrl = sources.headshots.get(row.pfrId);
+  return {
+    playerId: row.pfrId,
+    playerName: row.playerName,
+    position: normalizeDraftPosition(row.position || '?'),
+    teamId,
+    ...(row.espnId ? { espnId: row.espnId } : {}),
     ...(headshotUrl ? { headshotUrl } : {}),
     seasons,
   };
@@ -1273,7 +1390,7 @@ async function main() {
   console.log(`  Draft classes: ${draftYears[0]}–${draftYears.at(-1)}`);
 
   console.log('Fetching nflverse players (headshots + positions)...');
-  const { headshots, metaByPfrId } = await loadNflversePlayers();
+  const { headshots, metaByPfrId, playerRows } = await loadNflversePlayers();
 
   const snapSeasons = seasonRange(FIRST_SNAP_SEASON, maxSeason);
   console.log(`Fetching snap_counts (${FIRST_SNAP_SEASON}–${maxSeason})...`);
@@ -1325,6 +1442,58 @@ async function main() {
     const outPath = path.join(outDir, `draft-${year}.json`);
     fs.writeFileSync(outPath, JSON.stringify(draftClass, null, 2));
     console.log(`  Wrote ${picks.length} picks to ${outPath}`);
+  }
+
+  // A free agent's class is the season he first played, not his `rookie_season`.
+  // The two differ for the player who spent his first year on a practice squad,
+  // and where they differ `rookie_season` is the wrong one: it would open his
+  // three-season window on years his team never had him on the field, and file
+  // him under a class alongside a team he only joined later.
+  //
+  // `rookie_season` still decides *eligibility*, which is what keeps a veteran
+  // whose earliest snap merely happens to fall inside the data window out of the
+  // cohort. `isUndraftedAndTracked` asks exactly that: undrafted, with a rookie
+  // season the site tracks.
+  console.log('Building undrafted free-agent classes...');
+  const faYears = seasonRange(FA_FIRST_CLASS_YEAR, maxSeason);
+  const freeAgentsByYear = new Map<number, FreeAgent[]>(
+    faYears.map((year) => [year, []]),
+  );
+  let outsideWindow = 0;
+  let totalFreeAgents = 0;
+  for (const row of playerRows) {
+    if (!isUndraftedAndTracked(row)) continue;
+    const first = firstSnapTeam(row.pfrId, snapData);
+    if (!first) continue; // never took a snap: not in the cohort
+    const cohort = freeAgentsByYear.get(first.season);
+    // A debut outside the tracked window has no class to belong to; only
+    // reachable if a snap predates the player's own recorded rookie season.
+    if (!cohort) {
+      outsideWindow++;
+      continue;
+    }
+    cohort.push(buildFreeAgent(row, first.season, first.teamId, sources));
+    totalFreeAgents++;
+  }
+  if (outsideWindow > 0) {
+    console.log(
+      `  Skipped ${outsideWindow} debuts outside ${faYears[0]}–${maxSeason}`,
+    );
+  }
+  // Without this, a broken join against players.csv (nflverse renaming a
+  // column, say) would write 13 well-formed, entirely empty files and exit 0 —
+  // the same silent failure the `draftYears.length === 0` guard above prevents
+  // for picks.
+  if (totalFreeAgents === 0) {
+    throw new Error(
+      `No undrafted free agents found across ${playerRows.length} player rows`,
+    );
+  }
+  for (const year of faYears) {
+    const freeAgents = freeAgentsByYear.get(year) ?? [];
+    const outPath = path.join(outDir, `fa-${year}.json`);
+    fs.writeFileSync(outPath, JSON.stringify({ year, freeAgents }, null, 2));
+    console.log(`  Wrote ${freeAgents.length} free agents to ${outPath}`);
   }
 
   const metaPath = path.join(outDir, 'data-meta.json');

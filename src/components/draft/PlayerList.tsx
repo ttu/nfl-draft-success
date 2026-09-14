@@ -1,8 +1,9 @@
 import type { CSSProperties } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import type { DraftPick } from '../../types';
+import type { Acquisition } from '../../types';
 import { getPlayerRole, getPlayerDraftScore } from '../../lib/getPlayerRole';
-import { getPlayerDraftSkill } from '../../lib/draftSlotBaseline';
+import { getAcquisitionOverSlot } from '../../lib/overSlot';
+import { isDraftPick } from '../../lib/acquisition';
 import { formatOverSlot, isOverSlotPositive } from '../../lib/formatOverSlot';
 import { buildPlayerHref } from '../../lib/playerBackTarget';
 import {
@@ -15,7 +16,7 @@ import { cx } from '../../lib/cx';
 import { isDeparted, getCurrentTeam } from '../../lib/playerJourney';
 
 export interface PlayerWithDraftYear {
-  pick: DraftPick;
+  pick: Acquisition;
   draftYear: number;
 }
 
@@ -25,6 +26,8 @@ export interface PlayerListProps {
   draftingTeamOnly?: boolean;
   brandByDraftingTeam?: boolean;
   yearDraftBoard?: boolean;
+  /** Noun used in the empty-state message: "No {label} to show." */
+  label?: string;
 }
 
 export function PlayerList({
@@ -32,6 +35,7 @@ export function PlayerList({
   teamId,
   draftingTeamOnly = false,
   brandByDraftingTeam = false,
+  label = 'picks',
 }: PlayerListProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,7 +50,7 @@ export function PlayerList({
           padding: '10px 0',
         }}
       >
-        No picks to show.
+        No {label} to show.
       </p>
     );
   }
@@ -59,7 +63,7 @@ export function PlayerList({
           const score = Math.round(
             getPlayerDraftScore(pick, { draftingTeamOnly }),
           );
-          const overSlot = getPlayerDraftSkill(pick, { draftingTeamOnly });
+          const overSlot = getAcquisitionOverSlot(pick, { draftingTeamOnly });
           const departed = isDeparted(pick);
           // For departed players, surface the role they held for the drafting
           // team (retained seasons only) alongside the "Departed" marker.
@@ -78,8 +82,22 @@ export function PlayerList({
               }
               onClick={() => navigate(buildPlayerHref(pick.playerId, origin))}
             >
-              <td className="pick-tag" style={{ width: 48 }}>
-                R{pick.round}·{pick.overallPick}
+              <td
+                className={cx(
+                  'pick-tag',
+                  !isDraftPick(pick) && 'pick-tag--undrafted',
+                )}
+                style={{ width: 48 }}
+              >
+                {isDraftPick(pick) ? (
+                  <>
+                    R{pick.round}·{pick.overallPick}
+                  </>
+                ) : (
+                  // Fits the column the pick tags already size; the full
+                  // phrase lives in the year heading and on the player page.
+                  'UDFA'
+                )}
               </td>
               <td style={{ width: 40 }}>
                 <PlayerAvatar
@@ -143,7 +161,11 @@ export function PlayerList({
                     ? 'var(--positive)'
                     : 'var(--negative)',
                 }}
-                title="Draft value over slot — score above what this pick position predicted"
+                title={
+                  isDraftPick(pick)
+                    ? 'Draft value over slot — score above what this pick position predicted'
+                    : 'Score above what undrafted free agents average — he has no draft position to be measured against'
+                }
               >
                 {formatOverSlot(overSlot)}
               </td>

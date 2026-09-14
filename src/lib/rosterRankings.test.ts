@@ -4,10 +4,15 @@ import { ROSTER_SEASON } from './currentRoster';
 import { TEAMS } from '../data/teams';
 import {
   makeDraftClass,
+  makeFreeAgent,
   makeDepthSeason,
   makePick,
   makeSeason,
 } from '../test/factories';
+import { stampFreeAgentYear } from './freeAgentClass';
+
+/** The season the roster snapshot row is written for. */
+const CURRENT = ROSTER_SEASON;
 
 /** The unplayed snapshot row update-data writes for the season ahead. */
 const onRosterOf = (teamId: string | undefined, retained: boolean) =>
@@ -50,7 +55,7 @@ describe('getRosterRankings', () => {
       }),
     ];
 
-    const rankings = getRosterRankings(classes);
+    const rankings = getRosterRankings(classes, []);
 
     expect(rankings).toHaveLength(TEAMS.length);
     expect(rankings[0]).toMatchObject({ teamId: 'KC', rank: 1, players: 1 });
@@ -66,7 +71,7 @@ describe('getRosterRankings', () => {
       }),
     ];
 
-    const rankings = getRosterRankings(classes);
+    const rankings = getRosterRankings(classes, []);
 
     expect(rankings.find((r) => r.teamId === 'BUF')).toMatchObject({
       rank: 1,
@@ -83,7 +88,7 @@ describe('getRosterRankings', () => {
       }),
     ];
 
-    const rankings = getRosterRankings(classes);
+    const rankings = getRosterRankings(classes, []);
 
     expect(rankings[0].teamId).toBe('BUF');
     expect(rankings[rankings.length - 1].score).toBeUndefined();
@@ -110,8 +115,65 @@ describe('getRosterRankings', () => {
       }),
     ];
 
-    const kc = getRosterRankings(classes).find((r) => r.teamId === 'KC');
+    const kc = getRosterRankings(classes, []).find((r) => r.teamId === 'KC');
 
     expect(kc).toMatchObject({ players: 1, score: undefined });
+  });
+});
+
+describe('getRosterRankings with undrafted players', () => {
+  const undrafted = (id: string, teamId: string, snapShare: number) =>
+    makeFreeAgent({
+      playerId: id,
+      playerName: id,
+      teamId,
+      seasons: [
+        makeSeason({ year: CURRENT - 2, snapShare }),
+        makeSeason({
+          year: CURRENT,
+          gamesPlayed: 0,
+          teamGames: 0,
+          snapShare: 0,
+          retained: true,
+        }),
+      ],
+    });
+
+  it('counts an undrafted player toward his team’s roster mean', () => {
+    const classes = [makeDraftClass({ year: CURRENT - 2, picks: [] })];
+    const withNobody = getRosterRankings(classes, []).find(
+      (r) => r.teamId === 'BUF',
+    );
+    const withOne = getRosterRankings(classes, [
+      stampFreeAgentYear({
+        year: CURRENT - 2,
+        freeAgents: [undrafted('Contributor', 'BUF', 0.8)],
+      }),
+    ]).find((r) => r.teamId === 'BUF');
+
+    expect(withNobody?.players).toBe(0);
+    expect(withOne?.players).toBe(1);
+    expect(withOne?.score).toBeGreaterThan(0);
+  });
+
+  it('can reorder the board, because the roster it ranks has changed', () => {
+    // This is the one ranking in the app whose numbers move for undrafted
+    // players; the draft rankings stay picks-only by design.
+    const classes = [makeDraftClass({ year: CURRENT - 2, picks: [] })];
+    const freeAgents = [
+      stampFreeAgentYear({
+        year: CURRENT - 2,
+        freeAgents: [
+          undrafted('Strong', 'BUF', 0.95),
+          undrafted('Weak', 'KC', 0.05),
+        ],
+      }),
+    ];
+    const board = getRosterRankings(classes, freeAgents);
+    const buf = board.find((r) => r.teamId === 'BUF');
+    const kc = board.find((r) => r.teamId === 'KC');
+
+    expect(buf?.score).toBeGreaterThan(kc?.score ?? 0);
+    expect(buf!.rank).toBeLessThan(kc!.rank);
   });
 });

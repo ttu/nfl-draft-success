@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ScoreBreakdown } from './ScoreBreakdown';
-import { makePick, makeSeason } from '../../../test/factories';
+import { makeFreeAgent, makePick, makeSeason } from '../../../test/factories';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
 import type { DraftPick } from '../../../types';
@@ -506,5 +506,35 @@ describe('ScoreBreakdown injury wording', () => {
     );
 
     expect(note).toHaveTextContent('11 excused (games after his last snap)');
+  });
+});
+
+describe('ScoreBreakdown for an undrafted free agent', () => {
+  const undraftedWr = makeFreeAgent({
+    playerId: 'fa-1',
+    playerName: 'Sam Overlooked',
+    position: 'WR',
+    teamId: 'BUF',
+    draftYear: 2020,
+    seasons: [makeSeason({ year: 2020 })],
+  });
+
+  function renderFaBreakdown() {
+    const utils = render(
+      <ScoreBreakdown pick={undraftedWr} draftingTeamOnly />,
+    );
+    fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
+    return utils;
+  }
+
+  it('explains a free agent against the undrafted cohort, not a draft slot', () => {
+    renderFaBreakdown();
+    expect(screen.getByText(/undrafted free agents/i)).toBeInTheDocument();
+    expect(screen.queryByText(/draft slot/i)).not.toBeInTheDocument();
+  });
+
+  it('divides a free agent by a three-season window', () => {
+    renderFaBreakdown();
+    expect(screen.getByText(/3 seasons/i)).toBeInTheDocument();
   });
 });

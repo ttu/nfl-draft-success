@@ -8,6 +8,7 @@ import { DEFAULT_ROLE_FILTER } from '../../../lib/roleFilter';
 import {
   makeDraftClass,
   makePick as buildPick,
+  makeFreeAgent,
   makeSeason,
 } from '../../../test/factories';
 
@@ -50,12 +51,14 @@ function renderView(
     roleFilter: new Set(DEFAULT_ROLE_FILTER),
     setRoleFilter: () => {},
     rosterByDraftYear: [
-      { year: 2021, picks: [{ pick: makePick(10, TEAM), draftYear: 2021 }] },
-      { year: 2022, picks: [{ pick: makePick(20, TEAM), draftYear: 2022 }] },
+      { year: 2021, players: [{ pick: makePick(10, TEAM), draftYear: 2021 }] },
+      { year: 2022, players: [{ pick: makePick(20, TEAM), draftYear: 2022 }] },
     ],
     depthChartUrl: null,
     showDeparted: false,
     setShowDeparted: () => {},
+    showFreeAgents: false,
+    setShowFreeAgents: () => {},
     correlationRow: null,
     onShowMethodology: () => {},
     windows: { draftFrom: 2018, draftTo: 2021, winFrom: 2022, winTo: 2025 },
@@ -279,5 +282,100 @@ describe('TeamDetailContent summary card', () => {
     expect(
       screen.getByRole('link', { name: /external depth chart/i }),
     ).toBeInTheDocument();
+  });
+});
+
+describe('the roster’s undrafted toggle', () => {
+  it('offers Show free agents beside Show departed', () => {
+    renderView();
+    expect(
+      screen.getByRole('checkbox', { name: /show departed/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: /show free agents/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('reflects the current setting', () => {
+    renderView({ showFreeAgents: true });
+    expect(
+      screen.getByRole('checkbox', { name: /show free agents/i }),
+    ).toBeChecked();
+  });
+
+  it('reports a change without touching the departed setting', () => {
+    const setShowFreeAgents = vi.fn();
+    const setShowDeparted = vi.fn();
+    renderView({ showFreeAgents: false, setShowFreeAgents, setShowDeparted });
+
+    fireEvent.click(
+      screen.getByRole('checkbox', { name: /show free agents/i }),
+    );
+
+    expect(setShowFreeAgents).toHaveBeenCalledWith(true);
+    expect(setShowDeparted).not.toHaveBeenCalled();
+  });
+});
+
+describe('the roster heading count', () => {
+  const withUndrafted = [
+    {
+      year: 2021,
+      players: [
+        { pick: makePick(10, TEAM), draftYear: 2021 },
+        {
+          pick: makeFreeAgent({
+            playerId: 'fa-1',
+            playerName: 'Undrafted One',
+            teamId: TEAM,
+            seasons: [makeSeason({ year: 2021 })],
+          }),
+          draftYear: 2021,
+        },
+      ],
+    },
+  ];
+
+  it('counts picks and undrafted separately, as the year headings do', () => {
+    renderView({ rosterByDraftYear: withUndrafted });
+    const heading = screen.getByRole('heading', {
+      name: /Everyone they brought in/i,
+    });
+    expect(heading).toHaveTextContent(/1 pick/);
+    expect(heading).toHaveTextContent(/1 undrafted/);
+  });
+
+  it('moves when undrafted players are shown, rather than sitting still', () => {
+    // The bug: the total summed picks only, so toggling "Show free agents"
+    // left "41 picks" beside a list that had grown by twenty rows.
+    const picksOnly = [
+      { year: 2021, players: [{ pick: makePick(10, TEAM), draftYear: 2021 }] },
+    ];
+    const { unmount } = renderView({ rosterByDraftYear: picksOnly });
+    const before = screen.getByRole('heading', {
+      name: /Everyone they brought in/i,
+    }).textContent;
+    unmount();
+
+    renderView({ rosterByDraftYear: withUndrafted });
+    const after = screen.getByRole('heading', {
+      name: /Everyone they brought in/i,
+    }).textContent;
+
+    expect(after).not.toEqual(before);
+  });
+
+  it('says nothing about undrafted players when none are shown', () => {
+    renderView({
+      rosterByDraftYear: [
+        {
+          year: 2021,
+          players: [{ pick: makePick(10, TEAM), draftYear: 2021 }],
+        },
+      ],
+    });
+    expect(
+      screen.getByRole('heading', { name: /Everyone they brought in/i }),
+    ).not.toHaveTextContent(/undrafted/i);
   });
 });

@@ -125,6 +125,27 @@ describe('InfoView', () => {
     ).toBeInTheDocument();
   });
 
+  it('explains undrafted free-agent scoring, using "debuted" and never "UDFA"', () => {
+    render(<InfoView onClose={vi.fn()} />);
+    expect(
+      screen.getByRole('heading', { name: /undrafted free agents/i }),
+    ).toBeInTheDocument();
+    const heading = screen.getByRole('heading', {
+      name: /undrafted free agents/i,
+    });
+    const section = heading.parentElement?.textContent ?? '';
+    expect(section).toMatch(/debuted undrafted/i);
+    expect(section).toMatch(/three-season window/i);
+    expect(section).toMatch(/centered on zero/i);
+    expect(section).not.toMatch(/entered the league/i);
+    expect(section).not.toMatch(/UDFA/);
+  });
+
+  it('states the free-agent baseline is not a like-for-like bar with a pick expectation', () => {
+    render(<InfoView onClose={vi.fn()} />);
+    expect(screen.getByText(/like-for-like bar/i)).toBeInTheDocument();
+  });
+
   it('links to the project source', () => {
     render(<InfoView onClose={vi.fn()} />);
     const link = screen.getByRole('link', { name: /github/i });

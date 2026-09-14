@@ -18,13 +18,17 @@ import {
   getPlayerDraftScore,
 } from '../../../lib/getPlayerRole';
 import { firstScoredYear } from '../../../lib/apprenticeship';
-import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
+import {
+  getAcquisitionOverSlot,
+  expectedScoreForFreeAgent,
+} from '../../../lib/overSlot';
+import { isDraftPick, acquisitionWindow } from '../../../lib/acquisition';
 import {
   formatOverSlot,
   isOverSlotPositive,
 } from '../../../lib/formatOverSlot';
 import { getSeasonScore } from '../../../lib/getSeasonScore';
-import { rookieWindow, scoredWindowYears } from '../../../lib/rookieWindow';
+import { scoredWindowYears } from '../../../lib/rookieWindow';
 import { isPlayedSeason, isUnplayedSeason } from '../../../lib/seasonPlayed';
 import { isInjuredOutSeason } from '../../../lib/injuredSeason';
 import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
@@ -45,10 +49,11 @@ import {
   getPositionCohort,
   type CohortMember,
 } from '../../../lib/getPositionCohort';
-import type { DraftClass, DraftPick, Role, Season } from '../../../types';
+import type { Acquisition, DraftClass, Role, Season } from '../../../types';
 
 export interface PlayerDetailViewProps {
-  pick: DraftPick;
+  /** A drafted pick or an undrafted free agent — see `isDraftPick`. */
+  pick: Acquisition;
   draftYear: number;
   draftClasses: DraftClass[];
   draftingTeamOnly: boolean;
@@ -70,7 +75,7 @@ function PlayerDetailViewImpl({
   const overallScore = Math.round(
     getPlayerDraftScore(pick, { draftingTeamOnly }),
   );
-  const overSlot = getPlayerDraftSkill(pick, { draftingTeamOnly });
+  const overSlot = getAcquisitionOverSlot(pick, { draftingTeamOnly });
   const currentTeam = getCurrentTeamIndicator(pick);
   const positionExempt = isBaselineExemptPosition(pick.position);
   const positionBaseline = getPositionBaseline(pick.position);
@@ -148,11 +153,23 @@ function PlayerDetailViewImpl({
         }
       >
         <div className="player-hero__eyebrow">
-          Draft <span className="tnum">{draftYear}</span>
+          {isDraftPick(pick) ? (
+            <>
+              Draft <span className="tnum">{draftYear}</span>
+            </>
+          ) : (
+            <>
+              Debut <span className="tnum">{draftYear}</span>
+            </>
+          )}
         </div>
         <div className="player-hero__grid">
           <div className="player-hero__round">
-            <div className="player-hero__round-label">Round {pick.round}</div>
+            <div className="player-hero__round-label">
+              {isDraftPick(pick)
+                ? `Round ${pick.round}`
+                : `Undrafted free agent, ${draftYear}`}
+            </div>
           </div>
           <PlayerHeroBand pick={pick} />
           <PlayerHeroIdentity
@@ -163,7 +180,7 @@ function PlayerDetailViewImpl({
           <PlayerHeroVerdict
             overallScore={overallScore}
             overSlot={overSlot}
-            overallPick={pick.overallPick}
+            pick={pick}
             role={role}
             roleCls={roleCls}
           />
@@ -179,10 +196,10 @@ function PlayerDetailViewImpl({
             </dd>
             <dt>Load</dt>
             <dd>
-              How much of a full season he played for the team that drafted him.
-              Weeks spent on the injury report, and games missed after an injury
-              ended his season, don't count against him — so getting hurt
-              doesn't drag Load down.
+              How much of a full season he played for the team that{' '}
+              {isDraftPick(pick) ? 'drafted' : 'signed'} him. Weeks spent on the
+              injury report, and games missed after an injury ended his season,
+              don't count against him — so getting hurt doesn't drag Load down.
             </dd>
             <dt>Role</dt>
             <dd>
@@ -192,10 +209,24 @@ function PlayerDetailViewImpl({
             </dd>
             <dt>Over slot</dt>
             <dd>
-              His Score minus what his draft position alone predicted. Positive
-              means he outplayed where he was picked (a steal); negative means
-              he fell short (a reach). Early picks are expected to score high,
-              so the bar is higher the earlier he went.
+              {isDraftPick(pick) ? (
+                <>
+                  His Score minus what his draft position alone predicted.
+                  Positive means he outplayed where he was picked (a steal);
+                  negative means he fell short (a reach). Early picks are
+                  expected to score high, so the bar is higher the earlier he
+                  went.
+                </>
+              ) : (
+                <>
+                  His Score minus what undrafted free agents who took at least
+                  one snap earn on average (
+                  {Math.round(expectedScoreForFreeAgent())}). That average is
+                  centered on the cohort itself, not a like-for-like bar with a
+                  draft slot's expectation — it isn't the same comparison a
+                  drafted pick's over slot makes.
+                </>
+              )}
             </dd>
             <dt>Position bar</dt>
             <dd>
@@ -241,7 +272,8 @@ function PlayerDetailViewImpl({
               playedSeasons={sortedSeasons.length}
               apprenticeSeasons={apprenticeYears.size}
               windowYears={windowYears.length}
-              contractYears={rookieWindow(pick.round)}
+              contractYears={acquisitionWindow(pick)}
+              isPick={isDraftPick(pick)}
             />
           </div>
         </div>
@@ -250,7 +282,7 @@ function PlayerDetailViewImpl({
             className="mono"
             style={{ color: 'var(--ink-3)', fontSize: 12, padding: '20px 0' }}
           >
-            No season data yet for this pick.
+            No season data yet for this {isDraftPick(pick) ? 'pick' : 'player'}.
           </p>
         ) : (
           <div className="player-career__scroll">
@@ -298,6 +330,7 @@ function PlayerDetailViewImpl({
                           ? 'apprentice'
                           : 'elsewhere'
                       }
+                      isPick={isDraftPick(pick)}
                     />
                   ) : (
                     <WindowGapRow key={year} year={year} />
@@ -307,6 +340,7 @@ function PlayerDetailViewImpl({
                   <FreeAgentRunRow
                     fromYear={faRun[0].year}
                     toYear={faRun[faRun.length - 1].year}
+                    isPick={isDraftPick(pick)}
                   />
                 )}
                 {upcomingSeason && (
@@ -335,16 +369,23 @@ function PlayerDetailViewImpl({
             position={pick.position}
           />
         </section>
-        <section className="hero-chart">
+        <section className="hero-chart" data-testid="position-cohort">
           <div className="hero-chart__head">
             <div className="kicker">
-              {pick.position} · {draftYear} class · ranked by load
+              {pick.position} · {draftYear}{' '}
+              {isDraftPick(pick) ? 'class' : 'draft class'} · ranked by load
             </div>
             <span
               className="mono"
               style={{ fontSize: 11, color: 'var(--ink-3)' }}
             >
-              #{positionRank || '—'} of {classmateRows.length}
+              {/* `getPositionCohort` only ever lists drafted picks, so an
+                  undrafted player has no place in this ranking. Printing
+                  "#— of 8" beside a list he is absent from reads as a rank of
+                  last, which is a claim the list cannot support. */}
+              {isDraftPick(pick)
+                ? `#${positionRank || '—'} of ${classmateRows.length}`
+                : `${classmateRows.length} drafted · he isn't in it`}
             </span>
           </div>
           <div style={{ marginTop: 14 }}>
@@ -367,7 +408,7 @@ function PlayerDetailViewImpl({
   );
 }
 
-function PlayerHeroBand({ pick }: { pick: DraftPick }) {
+function PlayerHeroBand({ pick }: { pick: Acquisition }) {
   return (
     <div className="player-hero__band">
       <div className="player-hero__band-logo">
@@ -390,7 +431,7 @@ function PlayerHeroIdentity({
   teamName,
   currentTeam,
 }: {
-  pick: DraftPick;
+  pick: Acquisition;
   teamName?: string;
   currentTeam?: string | null;
 }) {
@@ -400,10 +441,18 @@ function PlayerHeroIdentity({
       <div className="player-hero__meta">
         <span className="pos-chip">{pick.position}</span>
         <span>·</span>
-        <span>Pick {pick.overallPick} overall</span>
+        {isDraftPick(pick) ? (
+          <span>Pick {pick.overallPick} overall</span>
+        ) : (
+          <span>Undrafted</span>
+        )}
         <span style={{ color: 'var(--ink-4)' }}>·</span>
         <span className="mono" style={{ color: 'var(--ink-3)', fontSize: 12 }}>
-          {teamName} · drafted by {pick.teamId}
+          {/* A free agent's team is where he first took a snap. Who signed
+              him is not in the data — undrafted players are signed by teams
+              they never play a down for — so the hero says what is known. */}
+          {teamName} · {isDraftPick(pick) ? 'drafted by' : 'debuted with'}{' '}
+          {pick.teamId}
         </span>
         {currentTeam && <PlayerHeroCurrentTeam currentTeam={currentTeam} />}
       </div>
@@ -426,28 +475,33 @@ function PlayerHeroCurrentTeam({ currentTeam }: { currentTeam: string }) {
   );
 }
 
-/** Plain-language read on how far a pick's score sits from its slot expectation. */
-function overSlotVerdict(overSlot: number): string {
-  if (overSlot >= 10) return 'well above his draft slot';
-  if (overSlot > 3) return 'above his draft slot';
-  if (overSlot >= -3) return 'right at his draft slot';
-  if (overSlot > -10) return 'below his draft slot';
-  return 'well below his draft slot';
+/**
+ * Plain-language read on how far a score sits from its expectation: a pick's
+ * draft slot, or a free agent's undrafted-cohort average.
+ */
+function overSlotVerdict(overSlot: number, isPick: boolean): string {
+  const subject = isPick ? 'his draft slot' : 'the undrafted average';
+  if (overSlot >= 10) return `well above ${subject}`;
+  if (overSlot > 3) return `above ${subject}`;
+  if (overSlot >= -3) return `right at ${subject}`;
+  if (overSlot > -10) return `below ${subject}`;
+  return `well below ${subject}`;
 }
 
 function PlayerHeroVerdict({
   overallScore,
   overSlot,
-  overallPick,
+  pick,
   role,
   roleCls,
 }: {
   overallScore: number;
   overSlot: number;
-  overallPick: number;
+  pick: Acquisition;
   role: Role;
   roleCls: string;
 }) {
+  const isPick = isDraftPick(pick);
   return (
     <div className="player-hero__role-col">
       <div className="player-hero__score">
@@ -478,7 +532,8 @@ function PlayerHeroVerdict({
           {formatOverSlot(overSlot)}
         </span>
         <span className="player-hero__overslot-note">
-          {overSlotVerdict(overSlot)} (pick {overallPick})
+          {overSlotVerdict(overSlot, isPick)}
+          {isDraftPick(pick) && ` (pick ${pick.overallPick})`}
         </span>
       </div>
     </div>
@@ -504,6 +559,7 @@ function describeCareerDenominator(
   windowYears: number,
   contractYears: number,
   apprenticeSeasons: number,
+  isPick: boolean,
 ): string {
   const s = (n: number) => (n === 1 ? '' : 's');
   // An apprenticeship shortens the window — Love's is 2 — and the divisor is 3
@@ -514,11 +570,18 @@ function describeCareerDenominator(
   }
   // A pick who outlasted his rookie deal is divided by his actual tenure, which
   // `scoredSeasonCount` floors at his retained seasons. Quenton Nelson's eight
-  // years are not "an 8-season rookie window" — no round carries one.
+  // years are not "an 8-season rookie window" — no round carries one. Same
+  // reasoning, same wording split, as `ScoreBreakdown`'s `denominatorLabel`:
+  // "rookie window"/"drafting team" claim a contract and a drafter that a free
+  // agent never had.
   if (windowYears > contractYears) {
-    return `${windowYears} seasons with the drafting team, past his ${contractYears}-season rookie window`;
+    return isPick
+      ? `${windowYears} seasons with the drafting team, past his ${contractYears}-season rookie window`
+      : `${windowYears} seasons with the team, past his ${contractYears}-season undrafted window`;
   }
-  return `a ${windowYears}-season rookie window`;
+  return isPick
+    ? `a ${windowYears}-season rookie window`
+    : `a ${windowYears}-season undrafted window`;
 }
 
 function CareerCountNote({
@@ -527,6 +590,7 @@ function CareerCountNote({
   apprenticeSeasons,
   windowYears,
   contractYears,
+  isPick,
 }: {
   countedSeasons: number;
   playedSeasons: number;
@@ -534,6 +598,7 @@ function CareerCountNote({
   windowYears: number;
   /** What the round's rookie deal actually entitled the team to: 5, or 4. */
   contractYears: number;
+  isPick: boolean;
 }) {
   const s = (n: number) => (n === 1 ? '' : 's');
   if (windowYears === 0) {
@@ -548,7 +613,12 @@ function CareerCountNote({
     <span data-testid="rookie-window-note">
       {countedSeasons} of {playedSeasons} season{s(playedSeasons)} counted ·
       divided by{' '}
-      {describeCareerDenominator(windowYears, contractYears, apprenticeSeasons)}
+      {describeCareerDenominator(
+        windowYears,
+        contractYears,
+        apprenticeSeasons,
+        isPick,
+      )}
       {countedSeasons < playedSeasons - apprenticeSeasons && (
         // The ✕ in the Score column carries the same meaning, but it only
         // explains itself through a title tooltip — which needs a second of
@@ -566,11 +636,21 @@ function CareerCountNote({
   );
 }
 
-/** What the ✕ on an uncounted season says it means. */
-function uncountedNote(reason: 'elsewhere' | 'apprentice'): string {
-  return reason === 'apprentice'
+/**
+ * What the ✕ on an uncounted season says it means.
+ *
+ * The apprenticeship rule accepts any `Acquisition`, and the cohort holds
+ * undrafted quarterbacks, so "the rookie window" cannot be said unbranched:
+ * an undrafted player has no rookie deal to open.
+ */
+function uncountedNote(
+  reason: 'elsewhere' | 'apprentice',
+  isPick: boolean,
+): string {
+  if (reason !== 'apprentice') return 'this season was played for another team';
+  return isPick
     ? 'this season was spent learning behind a veteran, before the rookie window opens'
-    : 'this season was played for another team';
+    : 'this season was spent learning behind a veteran, before his scored window opens';
 }
 
 function SeasonRow({
@@ -580,6 +660,7 @@ function SeasonRow({
   color,
   counts = true,
   uncountedReason = 'elsewhere',
+  isPick = true,
 }: {
   s: Season;
   pickTeamId: string;
@@ -594,6 +675,8 @@ function SeasonRow({
   counts?: boolean;
   /** Why it does not count, which decides what the ✕ says. */
   uncountedReason?: 'elsewhere' | 'apprentice';
+  /** Whether this is a draft pick, which decides whether a rookie deal exists. */
+  isPick?: boolean;
 }) {
   const team = s.retained ? pickTeamId : (s.currentTeam ?? 'FA');
   const seasonRole = classifyRole(
@@ -655,8 +738,8 @@ function SeasonRow({
         {!counts && (
           <abbr
             className="season-uncounted-mark"
-            aria-label={`Not counted — ${uncountedNote(uncountedReason)}`}
-            title={`Not counted — ${uncountedNote(uncountedReason)}`}
+            aria-label={`Not counted — ${uncountedNote(uncountedReason, isPick)}`}
+            title={`Not counted — ${uncountedNote(uncountedReason, isPick)}`}
           >
             ✕
           </abbr>
@@ -738,9 +821,11 @@ function UpcomingSeasonRow({
 function FreeAgentRunRow({
   fromYear,
   toYear,
+  isPick,
 }: {
   fromYear: number;
   toYear: number;
+  isPick: boolean;
 }) {
   return (
     <tr
@@ -768,8 +853,8 @@ function FreeAgentRunRow({
         0
         <abbr
           className="season-uncounted-mark"
-          aria-label="Not counted — no season with the drafting team"
-          title="Not counted — the player was not on the drafting team's roster"
+          aria-label={`Not counted — no season with ${isPick ? 'the drafting team' : 'his team'}`}
+          title={`Not counted — the player was not on ${isPick ? "the drafting team's" : 'his'} roster`}
         >
           ✕
         </abbr>

@@ -5,7 +5,13 @@ import { HighlightsView } from './HighlightsView';
 import type { LeagueHighlights } from '../../../lib/getLeagueHighlights';
 import type { RankedPlayer } from '../../../lib/careerShapeHighlights';
 import type { DraftPick } from '../../../types';
-import { makePick, makeTeam } from '../../../test/factories';
+import {
+  makeFreeAgent,
+  makePick,
+  makeSeason,
+  makeTeam,
+} from '../../../test/factories';
+import type { FreeAgentHighlights } from '../../../lib/getFreeAgentHighlights';
 
 const samplePick = (over: Partial<DraftPick>): DraftPick =>
   makePick({
@@ -75,11 +81,15 @@ const defaultHighlights: LeagueHighlights = {
   ],
 };
 
-function renderView(highlights: Partial<LeagueHighlights> = {}) {
+function renderView(
+  highlights: Partial<LeagueHighlights> = {},
+  freeAgentHighlights: FreeAgentHighlights | null = null,
+) {
   return render(
     <MemoryRouter>
       <HighlightsView
         highlights={{ ...defaultHighlights, ...highlights }}
+        freeAgentHighlights={freeAgentHighlights}
         startYear={2021}
         endYear={2025}
         onTeamSelect={() => {}}
@@ -339,5 +349,50 @@ describe('HighlightsView', () => {
     expect(
       screen.getByText('No picks with data in this window yet.'),
     ).toBeInTheDocument();
+  });
+});
+
+describe('the undrafted band', () => {
+  const undrafted: FreeAgentHighlights = {
+    bestUndrafted: [
+      {
+        player: makeFreeAgent({
+          playerId: 'fa-1',
+          playerName: 'Sam Overlooked',
+          position: 'WR',
+          teamId: 'DET',
+          seasons: [makeSeason({ year: 2021 })],
+        }),
+        team: lions,
+        draftYear: 2021,
+        score: 88,
+        overSlot: 70,
+      },
+    ],
+  };
+
+  it('stays off the page until the undrafted classes resolve', () => {
+    renderView({}, null);
+    expect(screen.queryByText(/best undrafted players/i)).toBeNull();
+  });
+
+  it('lists the best undrafted players once they are in', () => {
+    renderView({}, undrafted);
+    expect(screen.getByText(/best undrafted players/i)).toBeInTheDocument();
+    expect(screen.getByText('Sam Overlooked')).toBeInTheDocument();
+  });
+
+  it('leads with the score, since that is what the list is ranked on', () => {
+    renderView({}, undrafted);
+    const row = screen.getByText('Sam Overlooked').closest('.highlight-row');
+    expect(row).toHaveTextContent('88');
+  });
+
+  it('names what the residual is measured against, and shows no draft slot', () => {
+    renderView({}, undrafted);
+    const row = screen.getByText('Sam Overlooked').closest('.highlight-row');
+    expect(row).toHaveTextContent(/vs undrafted average/i);
+    expect(row).toHaveTextContent(/undrafted/i);
+    expect(row).not.toHaveTextContent(/R\d+ #\d+/);
   });
 });

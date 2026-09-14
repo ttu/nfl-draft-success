@@ -2,10 +2,13 @@ import type {
   DataMeta,
   DraftClass,
   DefaultRankingsData,
+  FreeAgentClass,
   LaggedDraftRankingsData,
 } from '../types';
 import type { TeamSuccessData } from './teamSuccess';
 import { stampDraftYear } from './draftClass';
+import { stampFreeAgentYear, type RawFreeAgentClass } from './freeAgentClass';
+import { LATEST_SEASON } from './rookieWindow';
 
 /**
  * Completed and in-flight loads, keyed by data file.
@@ -83,6 +86,69 @@ export async function loadData(year: string): Promise<DraftClass> {
  */
 export async function loadDataForYears(years: number[]): Promise<DraftClass[]> {
   const results = await Promise.all(years.map((y) => loadData(String(y))));
+  return [...results].sort((a, b) => a.year - b.year);
+}
+
+/**
+ * Load the undrafted free-agent class for a year from
+ * `public/data/fa-{year}.json`.
+ *
+ * A separate file from `draft-{year}.json` on purpose: the draft payload and
+ * its load path stay untouched, and this is fetched only by views that show
+ * it. A free agent's class year is the season he debuted, not the year he
+ * signed, so `fa-{year}` and `draft-{year}` for the same year do not describe
+ * the same population.
+ *
+ * A missing file (404) resolves to an empty class rather than rejecting: the
+ * app's year range routinely includes the current year, and there is no
+ * `fa-{year}.json` for it until a season's worth of snaps exists to publish.
+ * `loadFreeAgentsForYears` uses `Promise.all`, which would otherwise fail the
+ * whole batch over one year with no data yet. Any other failure — a network
+ * error, or a malformed body for a year that does exist — still propagates,
+ * so a real breakage is not disguised as an empty cohort.
+ */
+export async function loadFreeAgentClass(
+  year: string,
+): Promise<FreeAgentClass> {
+  return cached(`fa-${year}`, async () => {
+    const res = await fetchData(`fa-${year}.json`);
+    if (res.status === 404) {
+      return { year: Number(year), freeAgents: [] };
+    }
+    if (!res.ok) {
+      throw new Error(
+        `Failed to load free agent data for ${year}: ${res.status}`,
+      );
+    }
+    return stampFreeAgentYear((await res.json()) as RawFreeAgentClass);
+  });
+}
+
+/**
+ * Load free-agent classes for multiple years in parallel, oldest first.
+ *
+ * Years past the newest played season are resolved to an empty class without a
+ * request. A class file is only written once there are snaps to publish, so
+ * `fa-{latestSeason + 1}.json` never exists — and the app's year range reaches
+ * the newest *draft* class, a year further on. Asking for it anyway made the
+ * feature depend on the host answering 404: a dev server (and any host with an
+ * SPA fallback) answers 200 with `index.html`, which throws on parse and, via
+ * the `Promise.all` below, took every other year down with it. That is what
+ * left an out-of-range free agent's page loading forever.
+ *
+ * The 404 tolerance in {@link loadFreeAgentClass} stays as the second line of
+ * defence, for a deploy caught mid-refresh.
+ */
+export async function loadFreeAgentsForYears(
+  years: number[],
+): Promise<FreeAgentClass[]> {
+  const results = await Promise.all(
+    years.map((y) =>
+      y > LATEST_SEASON
+        ? Promise.resolve<FreeAgentClass>({ year: y, freeAgents: [] })
+        : loadFreeAgentClass(String(y)),
+    ),
+  );
   return [...results].sort((a, b) => a.year - b.year);
 }
 

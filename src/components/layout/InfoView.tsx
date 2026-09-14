@@ -321,6 +321,36 @@ retention     = retained_players / picks_in_range`}</pre>
 overSlot(pick) = score(pick) − expected(pick)
 overSlot(team) = mean( overSlot(pick) for pick in range )`}</pre>
 
+      <h2 className="info-section-title" style={{ marginTop: 32 }}>
+        Undrafted free agents
+      </h2>
+      <p
+        style={{
+          fontSize: 13,
+          lineHeight: 1.7,
+          color: 'var(--ink-2)',
+          margin: '0 0 12px',
+          maxWidth: 640,
+        }}
+      >
+        Players who <b>debuted</b> undrafted are grouped into the class of the
+        season they first took a snap — not the year they signed — and counted
+        only if they took at least one. They're scored on the same 0–100 scale
+        as draft picks, over a three-season window, the length of an undrafted
+        rookie contract. Their expectation is the average score undrafted
+        players actually earn, so "over slot" here means "better than a typical
+        undrafted signing." Because that expectation is the cohort's own
+        average, it's centered on zero by construction: it compares teams with
+        each other, and can't say whether the league as a whole develops
+        undrafted players well. It's also computed only over undrafted players
+        who took at least one snap — a player who spent the year on a practice
+        squad was on a roster but isn't counted — while a pick's expectation
+        includes picks who never played a snap, so the two numbers share a scale
+        but aren't a like-for-like bar; a free agent's +5 and a pick's +5 aren't
+        the same claim. These figures sit beside the draft score and are never
+        folded into it.
+      </p>
+
       <h2
         className="info-section-title"
         style={{ marginTop: 32 }}

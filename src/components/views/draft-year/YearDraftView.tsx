@@ -10,21 +10,28 @@ import {
   StatBlock,
 } from '../../design/Primitives';
 import { sortPicksByOverall } from '../../../lib/pickSort';
-import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
+import {
+  getPlayerRole,
+  getPlayerDraftScore,
+  pickHasSeasonSnapData,
+} from '../../../lib/getPlayerRole';
 import { getDraftClassSummary } from '../../../lib/getDraftClassSummary';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
 import { activateOnKey } from '../../../lib/activateOnKey';
 import { cx } from '../../../lib/cx';
-import type { DraftClass, DraftPick } from '../../../types';
+import { PlayerList } from '../../draft/PlayerList';
+import type { DraftClass, DraftPick, FreeAgentClass } from '../../../types';
 
 export interface YearDraftViewProps {
   draftClass: DraftClass;
   draftingTeamOnly: boolean;
+  freeAgentClasses: FreeAgentClass[];
 }
 
 function YearDraftViewImpl({
   draftClass,
   draftingTeamOnly,
+  freeAgentClasses,
 }: YearDraftViewProps) {
   const year = draftClass.year;
   const sorted = sortPicksByOverall(draftClass.picks);
@@ -37,6 +44,24 @@ function YearDraftViewImpl({
 
   const summary = getDraftClassSummary(draftClass, { draftingTeamOnly });
   const firstRound = enriched.filter((p) => p.pick.round === 1);
+
+  // This year's undrafted cohort, across the whole league — a separate axis
+  // from `summary`, never folded into the picks-only "all rounds" figures.
+  const freeAgents = [
+    ...(freeAgentClasses.find((cls) => cls.year === year)?.freeAgents ?? []),
+  ].sort(
+    (a, b) =>
+      getPlayerDraftScore(b, { draftingTeamOnly }) -
+      getPlayerDraftScore(a, { draftingTeamOnly }),
+  );
+  const scoredFreeAgents = freeAgents.filter(pickHasSeasonSnapData);
+  const freeAgentAvgScore =
+    scoredFreeAgents.length > 0
+      ? scoredFreeAgents.reduce(
+          (sum, fa) => sum + getPlayerDraftScore(fa, { draftingTeamOnly }),
+          0,
+        ) / scoredFreeAgents.length
+      : 0;
 
   return (
     <section className="year-draft-view" aria-labelledby="year-draft-title">
@@ -100,6 +125,22 @@ function YearDraftViewImpl({
             value={`${Math.round(summary.retentionRate * 100)}%`}
             sub="still with team"
           />
+          {freeAgents.length > 0 && (
+            <>
+              <StatBlock
+                variant="year"
+                label="Undrafted"
+                value={String(freeAgents.length)}
+                sub="debuted, this class"
+              />
+              <StatBlock
+                variant="year"
+                label="Undrafted score"
+                value={String(Math.round(freeAgentAvgScore))}
+                sub="mean, this class"
+              />
+            </>
+          )}
         </div>
       </section>
 
@@ -129,6 +170,22 @@ function YearDraftViewImpl({
                 <PickLedgerRow key={p.pick.overallPick} {...p} />
               ))}
           </div>
+        </section>
+      )}
+
+      {freeAgents.length > 0 && (
+        <section className="pick-ledger" style={{ paddingTop: 0 }}>
+          <div className="section-head">
+            <h2 style={{ marginTop: 0 }}>Undrafted, and on the roster.</h2>
+            <div className="kicker">undrafted</div>
+          </div>
+          <PlayerList
+            picks={freeAgents.map((fa) => ({ pick: fa, draftYear: year }))}
+            teamId={freeAgents[0].teamId}
+            brandByDraftingTeam
+            draftingTeamOnly={draftingTeamOnly}
+            label="undrafted free agents"
+          />
         </section>
       )}
     </section>

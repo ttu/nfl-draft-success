@@ -1718,6 +1718,12 @@ button {
   color: var(--ink);
 }
 
+.free-agent-section {
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+  margin-top: 32px;
+}
+
 /* ─── Team body two-column ────────────────────────────────── */
 .team-body {
   padding: 32px 48px;
@@ -1885,6 +1891,14 @@ button {
 }
 .roster-controls input[type='checkbox'] {
   accent-color: var(--ox);
+}
+/* The two roster toggles sit together, and wrap rather than crowd the heading
+   when the section head runs out of room. */
+.roster-controls-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 .roster-filter-pills {
   display: flex;
@@ -4123,6 +4137,17 @@ button {
    320 they run ~12px long, which is exactly the horizontal padding of the six
    cells — so take a pixel back from each rather than dropping a seventh column
    or reintroducing the scroll. */
+/* The roster carries picks, their departures and optionally undrafted arrivals
+   in one table, and at 360px the role chips were the last 4px keeping it from
+   fitting. Tighten the chip rather than drop a column: the label is the row's
+   verdict, and losing it would cost more than the width. */
+@media (max-width: 360px) {
+  .roster-table .role-chip {
+    padding-left: 5px;
+    padding-right: 5px;
+    letter-spacing: 0.6px;
+  }
+}
 @media (max-width: 360px) {
   .player-career td,
   .player-career th {

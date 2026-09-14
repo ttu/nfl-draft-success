@@ -60,6 +60,22 @@ Apprentice seasons are dropped from the seasons a pick is judged on (`getFiltere
 
 **Franchise moves to handle:** STL→LAR, SD→LAC, OAK→LV.
 
+## Undrafted Free Agents
+
+**Cohort membership:** a player qualifies if, in `players.csv`, he has no `draft_year` and no `draft_pick`, has a recorded `rookie_season` of 2013 or later, and has at least one snap in `snap_counts`. All three conditions must hold — a player with only one of the two draft columns populated is treated as a drafted player with a gap in his record, not an undrafted one, and a player who was never on a snap-count row generates no season data to score.
+
+**Class year:** the season he **debuted** — his first logged snap — not his `rookie_season` and not the year he signed. This is a deliberate departure from an earlier version of this spec, which used `rookie_season` directly; see the note in the design doc for why that broke the owning-team rule below. `rookie_season` still gates cohort membership (it is what marks him a first-timer rather than a veteran whose earliest tracked snap happens to fall after 2013), but it does not decide which class he lands in.
+
+**Owning team:** the franchise he took his first snap for. Where his debut season is split across two rosters, he is credited to whichever franchise he took the most snaps for that season — the same primary-team resolution used elsewhere for a split season.
+
+**Scoring window:** 3 seasons (`FA_WINDOW`), matching the length of an undrafted rookie contract. Free agents are scored with the same per-season formula, position baselines, and role tiers as draft picks; only the window length and the expectation they are compared against differ.
+
+**Expectation baseline:** `src/data/fa-baseline.json` stores a single scalar — the mean score actually earned by undrafted free agents, computed over classes old enough to have played out their window (the same maturity lag, measured back from the same newest-draft-class reference, as the draft-slot curve — so the two are fit over the identical mature span), scored in drafting-team mode, and restricted to free agents who took at least one snap (the population the cohort rule already requires: a player who never took a snap, including one who spent the year on a practice squad, is not in the cohort). Because the baseline is the cohort's own mean, free-agent "over slot" is centered on zero by construction: it ranks teams' undrafted signings against each other, and can never say the league as a whole develops undrafted players well or badly. It is also **not** a like-for-like baseline with a pick's slot expectation — the free-agent scalar is a survivors' average (undrafted players who never made a roster leave no season row to average in), while a pick's slot expectation is fit over every drafted player with a season row, including picks who never played and score near zero. Both residuals share units and a 0–100 scale, but a free agent's +5 and a pick's +5 are not answering the same question.
+
+**Picks-only surfaces unaffected:** the rolling draft score, its Core Starter/Retention rates, and every team ranking remain computed over draft picks only. Free-agent figures are reported beside them — a team detail section, a draft-year block, a player detail page — and are never summed, averaged, or folded into a pick-based number.
+
+**Known limitation:** the free-agent score, like the pick score, measures what a team's undrafted signings became, not how efficiently it got there. A team that signs thirty undrafted rookies and develops one into a core starter scores the same as a team that signed one and developed him. Postseason snaps are not distinguished from regular-season ones when a debut season is decided.
+
 ## Contributor Count
 
 **Definition:** All non-zero roles — Core Starter + Starter when healthy + Significant Contributor + Contributor + Depth.

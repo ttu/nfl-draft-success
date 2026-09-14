@@ -28,6 +28,7 @@ import {
   loadDataMeta,
   loadTeamSuccess,
   loadLaggedRankings,
+  loadFreeAgentsForYears,
 } from './lib/loadData';
 import { teamSuccessForWindow, type TeamSuccessData } from './lib/teamSuccess';
 import {
@@ -45,6 +46,10 @@ import {
   type LeagueHighlights,
 } from './lib/getLeagueHighlights';
 import {
+  getFreeAgentHighlights,
+  type FreeAgentHighlights,
+} from './lib/getFreeAgentHighlights';
+import {
   getRollingDraftScore,
   type RollingDraftScore,
 } from './lib/getRollingDraftScore';
@@ -57,6 +62,8 @@ import {
   saveRoleFilter,
   loadShowDeparted,
   saveShowDeparted,
+  loadShowFreeAgents,
+  saveShowFreeAgents,
   loadLandingIntroDismissed,
   saveLandingIntroDismissed,
   loadDarkMode,
@@ -65,10 +72,11 @@ import {
 import { TEAMS } from './data/teams';
 import { getTeamDepthChartUrl } from './data/teamColors';
 import {
+  type Acquisition,
   type DraftClass,
-  type DraftPick,
   type DefaultRankingsData,
   type LaggedDraftRankingsData,
+  type FreeAgentClass,
   type Role,
   ActiveView,
 } from './types';
@@ -99,7 +107,7 @@ import {
 } from './components/views/team/TeamRankingsView';
 import { Footer } from './components/layout/Footer';
 import { DocumentHead } from './seo';
-import type { RosterPick } from './components/views/team/TeamDetailContent';
+import type { RosterByDraftYear } from './components/views/team/TeamDetailContent';
 
 const InfoView = lazy(() =>
   import('./components/layout/InfoView').then((m) => ({
@@ -230,7 +238,7 @@ function usePositionRedirect({
 const DRAFTING_TEAM_ONLY = true;
 
 /** Stable empty roster for views that never read one, so memo output is referentially stable. */
-const EMPTY_ROSTER: { year: number; picks: RosterPick[] }[] = [];
+const EMPTY_ROSTER: RosterByDraftYear[] = [];
 
 /**
  * Everything derived from the loaded draft classes.
@@ -242,24 +250,29 @@ const EMPTY_ROSTER: { year: number; picks: RosterPick[] }[] = [];
  */
 function useDraftAnalytics({
   draftClasses,
+  freeAgentClasses,
   selectedTeam,
   activeView,
   isPlayerView,
   showDeparted,
+  showFreeAgents,
   roleFilter,
 }: {
   draftClasses: DraftClass[];
+  /** Undrafted players share the roster's year groups — see `getRosterByDraftYear`. */
+  freeAgentClasses: FreeAgentClass[];
   selectedTeam: string | null;
   activeView: ActiveView;
   isPlayerView: boolean;
   showDeparted: boolean;
+  showFreeAgents: boolean;
   roleFilter: Set<Role>;
 }) {
   const draftingTeamOnly = DRAFTING_TEAM_ONLY;
   const hasClasses = draftClasses.length > 0;
   const needs = useMemo(
-    () => getAnalyticsNeeds({ activeView, isPlayerView }),
-    [activeView, isPlayerView],
+    () => getAnalyticsNeeds({ activeView, isPlayerView, showFreeAgents }),
+    [activeView, isPlayerView, showFreeAgents],
   );
 
   const rollingDraftScore = useMemo(
@@ -296,22 +309,37 @@ function useDraftAnalytics({
     [needs, hasClasses, draftClasses, draftingTeamOnly],
   );
 
+  // Ranked from the free-agent classes alone, so nothing undrafted can reach
+  // the draft aggregates above. Null until those classes resolve, which is what
+  // keeps the band off the page rather than showing it empty.
+  const freeAgentHighlights = useMemo(
+    () =>
+      needs.freeAgentClasses && freeAgentClasses.length > 0
+        ? getFreeAgentHighlights(freeAgentClasses, TEAMS, { draftingTeamOnly })
+        : null,
+    [needs, freeAgentClasses, draftingTeamOnly],
+  );
+
   const rosterByDraftYear = useMemo(
     () =>
       needs.rosterByDraftYear
         ? getRosterByDraftYear(
             draftClasses,
+            freeAgentClasses,
             selectedTeam,
             showDeparted,
             roleFilter,
             draftingTeamOnly,
+            showFreeAgents,
           )
         : EMPTY_ROSTER,
     [
       needs,
       draftClasses,
+      freeAgentClasses,
       selectedTeam,
       showDeparted,
+      showFreeAgents,
       roleFilter,
       draftingTeamOnly,
     ],
@@ -322,6 +350,7 @@ function useDraftAnalytics({
     teamRank,
     leagueContext,
     leagueHighlights,
+    freeAgentHighlights,
     rosterByDraftYear,
   };
 }
@@ -419,58 +448,171 @@ function useDraftClassLoader(
 }
 
 /**
- * Resolves the pick for the player detail view. When the player isn't in the
- * current range's classes, loads every year on demand so the detail view (and
- * its position cohort) still has data; that all-years set is reset once the
- * player is found in-range again.
+ * Loads the undrafted free-agent classes for a year range, when the current
+ * view actually reads them (see {@link getAnalyticsNeeds}).
+ *
+ * Failures are swallowed rather than surfaced: free agents are a side panel,
+ * and a deploy whose `fa-{year}.json` files have not been generated yet must
+ * still render the draft view it has always rendered.
+ *
+ * `resolved` is the point of the second return value. An empty list means two
+ * different things — "this team signed nobody" and "nothing has arrived yet" —
+ * and a consumer that cannot tell them apart states the first while the second
+ * is true. Only a fetch that came back with data flips it, so a failure leaves
+ * the section unrendered rather than rendering a falsehood about the team.
  */
+function useFreeAgentClassLoader(
+  startYear: number,
+  endYear: number,
+  enabled: boolean,
+): { classes: FreeAgentClass[]; resolved: boolean } {
+  const [loaded, setLoaded] = useState<{
+    key: string;
+    classes: FreeAgentClass[];
+  } | null>(null);
+
+  // Identifies the request whose result is currently held, so a stale result
+  // from a previous range (or from before the view stopped needing free
+  // agents) reads as unresolved without a synchronous reset in the effect.
+  const key = enabled ? `${startYear}-${endYear}` : '';
+
+  useEffect(() => {
+    if (!enabled) return;
+    let cancelled = false;
+    loadFreeAgentsForYears(generateYearArray(startYear, endYear))
+      .then((data) => {
+        if (!cancelled) setLoaded({ key, classes: data });
+      })
+      .catch(() => {
+        // Left unresolved on purpose: see the doc comment.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [startYear, endYear, enabled, key]);
+
+  return loaded !== null && loaded.key === key && enabled
+    ? { classes: loaded.classes, resolved: true }
+    : EMPTY_FREE_AGENT_STATE;
+}
+
+/** Nothing loaded, and nothing claimed about why. */
+const EMPTY_FREE_AGENT_STATE: {
+  classes: FreeAgentClass[];
+  resolved: boolean;
+} = { classes: [], resolved: false };
+
+/**
+ * Resolves the pick or free agent for the player detail view. When the player
+ * isn't in the current range's classes, loads every year — draft and free
+ * agent alike — on demand so the detail view (and its position cohort) still
+ * has data; that all-years set is reset once the player is found in-range
+ * again.
+ *
+ * Free agents are searched after draft classes, so a `playerId` that
+ * (improbably) collides between the two populations still resolves to the
+ * drafted pick, matching how every other list in the app treats a pick as the
+ * primary record and a free agent as the side population.
+ *
+ * The all-years fallback fetches both populations together, not just
+ * draftClasses: `fa-{year}.json` spans the same year range as `draft-{year}
+ * .json` (2013–present), so a free agent who debuted outside the currently
+ * selected range would otherwise dead-end exactly like the bug this lookup
+ * exists to close — just reached by a different door (the year filter instead
+ * of a missing search).
+ */
+/** True when `playerId` is in either population, without caring which. */
+function hasPlayer(
+  draftClasses: DraftClass[],
+  freeAgentClasses: FreeAgentClass[],
+  playerId: string,
+): boolean {
+  const inDraft = draftClasses.some((dc) =>
+    dc.picks.some((p) => p.playerId === playerId),
+  );
+  if (inDraft) return true;
+  return freeAgentClasses.some((fc) =>
+    fc.freeAgents.some((fa) => fa.playerId === playerId),
+  );
+}
+
+/**
+ * Finds `playerId` among draft classes first, then free-agent classes — see
+ * {@link usePlayerLookup} for why that order is deliberate.
+ */
+function findPlayerInfo(
+  draftClasses: DraftClass[],
+  freeAgentClasses: FreeAgentClass[],
+  playerId: string,
+): { pick: Acquisition; draftYear: number } | null {
+  for (const dc of draftClasses) {
+    const found = dc.picks.find((p) => p.playerId === playerId);
+    if (found) return { pick: found, draftYear: dc.year };
+  }
+  for (const fc of freeAgentClasses) {
+    const found = fc.freeAgents.find((fa) => fa.playerId === playerId);
+    if (found) return { pick: found, draftYear: fc.year };
+  }
+  return null;
+}
+
 function usePlayerLookup(
   isPlayerView: boolean,
   playerId: string | undefined,
   draftClasses: DraftClass[],
+  freeAgentClasses: FreeAgentClass[],
 ): {
   playerLookupClasses: DraftClass[];
-  playerInfo: { pick: DraftPick; draftYear: number } | null;
+  playerInfo: { pick: Acquisition; draftYear: number } | null;
 } {
   const [playerSearchClasses, setPlayerSearchClasses] = useState<
     DraftClass[] | null
   >(null);
+  const [playerSearchFreeAgentClasses, setPlayerSearchFreeAgentClasses] =
+    useState<FreeAgentClass[] | null>(null);
 
   useEffect(() => {
     if (!isPlayerView || !playerId) return;
-    const found = draftClasses.some((dc) =>
-      dc.picks.some((p) => p.playerId === playerId),
-    );
-    if (found) {
+    if (hasPlayer(draftClasses, freeAgentClasses, playerId)) {
       // Player is in the current range: clear any all-years data fetched for a
       // previously-viewed out-of-range player. A one-time reset, not a render loop.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setPlayerSearchClasses(null);
+      setPlayerSearchFreeAgentClasses(null);
       return;
     }
     let cancelled = false;
     const years = generateYearArray(YEAR_MIN, YEAR_MAX);
+    // Two independent fetches, not one `Promise.all`: a free-agent file that
+    // fails to parse must not cost the draft lookup its result too — that
+    // would reproduce this same dead-end for an ordinary drafted pick, just
+    // from a different cause.
     loadDataForYears(years)
       .then((all) => {
         if (!cancelled) setPlayerSearchClasses(all);
       })
       .catch(() => {});
+    loadFreeAgentsForYears(years)
+      .then((allFreeAgents) => {
+        if (!cancelled) setPlayerSearchFreeAgentClasses(allFreeAgents);
+      })
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, [isPlayerView, playerId, draftClasses]);
+  }, [isPlayerView, playerId, draftClasses, freeAgentClasses]);
 
   const playerLookupClasses = playerSearchClasses ?? draftClasses;
-  let playerInfo: { pick: DraftPick; draftYear: number } | null = null;
-  if (isPlayerView && playerId) {
-    for (const dc of playerLookupClasses) {
-      const found = dc.picks.find((p) => p.playerId === playerId);
-      if (found) {
-        playerInfo = { pick: found, draftYear: dc.year };
-        break;
-      }
-    }
-  }
+  const playerLookupFreeAgentClasses =
+    playerSearchFreeAgentClasses ?? freeAgentClasses;
+  const playerInfo =
+    isPlayerView && playerId
+      ? findPlayerInfo(
+          playerLookupClasses,
+          playerLookupFreeAgentClasses,
+          playerId,
+        )
+      : null;
 
   return { playerLookupClasses, playerInfo };
 }
@@ -482,15 +624,29 @@ function usePlayerLookup(
  * it cannot be built from the range `useDraftClassLoader` fetched. `loadData`
  * caches per file, so the wider set is paid for once a session.
  */
-function useRosterClasses(needsRosterClasses: boolean): DraftClass[] | null {
+function useRosterClasses(needsRosterClasses: boolean): {
+  draftClasses: DraftClass[] | null;
+  freeAgentClasses: FreeAgentClass[];
+} {
   const [rosterClasses, setRosterClasses] = useState<DraftClass[] | null>(null);
+  const [rosterFreeAgents, setRosterFreeAgents] = useState<FreeAgentClass[]>(
+    [],
+  );
 
   useEffect(() => {
     if (!needsRosterClasses) return;
     let cancelled = false;
-    loadDataForYears(generateYearArray(YEAR_MIN, YEAR_MAX))
+    const years = generateYearArray(YEAR_MIN, YEAR_MAX);
+    // Independent of the draft fetch, as everywhere else: an undrafted class
+    // that fails to load must not cost the roster its picks as well.
+    loadDataForYears(years)
       .then((all) => {
         if (!cancelled) setRosterClasses(all);
+      })
+      .catch(() => {});
+    loadFreeAgentsForYears(years)
+      .then((all) => {
+        if (!cancelled) setRosterFreeAgents(all);
       })
       .catch(() => {});
     return () => {
@@ -498,7 +654,10 @@ function useRosterClasses(needsRosterClasses: boolean): DraftClass[] | null {
     };
   }, [needsRosterClasses]);
 
-  return needsRosterClasses ? rosterClasses : null;
+  return {
+    draftClasses: needsRosterClasses ? rosterClasses : null,
+    freeAgentClasses: needsRosterClasses ? rosterFreeAgents : [],
+  };
 }
 
 type AppRouteParams = {
@@ -551,7 +710,10 @@ function AppContent() {
     }
   }, [isRosterView, selectedTeam, navigate]);
 
-  const rosterClasses = useRosterClasses(isRosterView || isRosterRankingsView);
+  const {
+    draftClasses: rosterClasses,
+    freeAgentClasses: rosterFreeAgentClasses,
+  } = useRosterClasses(isRosterView || isRosterRankingsView);
 
   const { startYear, endYear } = useResolvedYearRange(
     forcedSingleYear,
@@ -566,10 +728,20 @@ function AppContent() {
       stored?.length ? new Set(stored) : new Set(DEFAULT_ROLE_FILTER)
     ) as Set<Role>;
   });
+  const [showFreeAgents, setShowFreeAgents] = useState(() =>
+    loadShowFreeAgents(),
+  );
   const { draftClasses, loading, error } = useDraftClassLoader(
     startYear,
     endYear,
   );
+  const { classes: freeAgentClasses, resolved: freeAgentClassesResolved } =
+    useFreeAgentClassLoader(
+      startYear,
+      endYear,
+      getAnalyticsNeeds({ activeView, isPlayerView, showFreeAgents })
+        .freeAgentClasses,
+    );
   const [defaultRankings, setDefaultRankings] =
     useState<DefaultRankingsData | null>(null);
   const [teamSuccessData, setTeamSuccessData] =
@@ -607,6 +779,7 @@ function AppContent() {
     isPlayerView,
     playerId,
     draftClasses,
+    freeAgentClasses,
   );
 
   const positionOptions = useMemo(
@@ -636,6 +809,9 @@ function AppContent() {
   useEffect(() => {
     saveShowDeparted(showDeparted);
   }, [showDeparted]);
+  useEffect(() => {
+    saveShowFreeAgents(showFreeAgents);
+  }, [showFreeAgents]);
   useEffect(() => {
     loadDefaultRankings()
       .then(setDefaultRankings)
@@ -756,13 +932,16 @@ function AppContent() {
     teamRank,
     leagueContext,
     leagueHighlights,
+    freeAgentHighlights,
     rosterByDraftYear,
   } = useDraftAnalytics({
     draftClasses,
+    freeAgentClasses,
     selectedTeam,
     activeView,
     isPlayerView,
     showDeparted,
+    showFreeAgents,
     roleFilter,
   });
 
@@ -865,6 +1044,7 @@ function AppContent() {
           teamRank,
           leagueContext,
           leagueHighlights,
+          freeAgentHighlights,
           rollingDraftScore,
           draftClasses,
           playerLookupClasses,
@@ -875,6 +1055,8 @@ function AppContent() {
           depthChartUrl,
           showDeparted,
           setShowDeparted,
+          showFreeAgents,
+          setShowFreeAgents,
           correlationRow,
           onShowMethodology: handleShowMethodology,
           canonicalPosition,
@@ -884,6 +1066,9 @@ function AppContent() {
           handlePositionChange,
           playerInfo,
           rosterClasses,
+          rosterFreeAgentClasses,
+          freeAgentClasses,
+          freeAgentClassesResolved,
         })}
       </div>
 
@@ -1099,6 +1284,7 @@ interface RenderMainArgs {
   teamRank: { rank: number; total: number; rankings: TeamRanking[] } | null;
   leagueContext: LeagueContext | undefined;
   leagueHighlights: LeagueHighlights | null;
+  freeAgentHighlights: FreeAgentHighlights | null;
   rollingDraftScore: RollingDraftScore | null;
   draftClasses: DraftClass[];
   // Classes the player pick was resolved from — spans all years when the player
@@ -1107,10 +1293,12 @@ interface RenderMainArgs {
   draftingTeamOnly: boolean;
   roleFilter: Set<Role>;
   setRoleFilter: (value: Set<Role>) => void;
-  rosterByDraftYear: { year: number; picks: RosterPick[] }[];
+  rosterByDraftYear: RosterByDraftYear[];
   depthChartUrl: string | null;
   showDeparted: boolean;
   setShowDeparted: (value: boolean) => void;
+  showFreeAgents: boolean;
+  setShowFreeAgents: (value: boolean) => void;
   correlationRow: CorrelationResult['rows'][number] | null;
   onShowMethodology: () => void;
   canonicalPosition: string | null;
@@ -1118,8 +1306,14 @@ interface RenderMainArgs {
   endYear: number;
   positionOptions: string[];
   handlePositionChange: (pos: string) => void;
-  playerInfo: { pick: DraftPick; draftYear: number } | null;
+  playerInfo: { pick: Acquisition; draftYear: number } | null;
   rosterClasses: DraftClass[] | null;
+  rosterFreeAgentClasses: FreeAgentClass[];
+  // Read by TeamDetailContent's undrafted free-agent section and by
+  // YearDraftView's undrafted block. Fetched only for the views that read it.
+  freeAgentClasses: FreeAgentClass[];
+  /** Whether the free-agent fetch has actually come back — see the loader. */
+  freeAgentClassesResolved: boolean;
 }
 
 function renderPlayerView(a: RenderMainArgs) {
@@ -1176,7 +1370,11 @@ function renderRosterView(a: RenderMainArgs) {
   }
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <RosterView teamId={a.selectedTeam} draftClasses={a.rosterClasses} />
+      <RosterView
+        teamId={a.selectedTeam}
+        draftClasses={a.rosterClasses}
+        freeAgentClasses={a.rosterFreeAgentClasses}
+      />
     </Suspense>
   );
 }
@@ -1187,7 +1385,10 @@ function renderRosterRankings(a: RenderMainArgs) {
   }
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <RosterRankingsView draftClasses={a.rosterClasses} />
+      <RosterRankingsView
+        draftClasses={a.rosterClasses}
+        freeAgentClasses={a.rosterFreeAgentClasses}
+      />
     </Suspense>
   );
 }
@@ -1228,6 +1429,8 @@ function renderMainContent(a: RenderMainArgs) {
           depthChartUrl={a.depthChartUrl}
           showDeparted={a.showDeparted}
           setShowDeparted={a.setShowDeparted}
+          showFreeAgents={a.showFreeAgents}
+          setShowFreeAgents={a.setShowFreeAgents}
           correlationRow={a.correlationRow}
           onShowMethodology={a.onShowMethodology}
           windows={LAGGED_WINDOWS}
@@ -1241,6 +1444,7 @@ function renderMainContent(a: RenderMainArgs) {
         <YearDraftView
           draftClass={a.draftClasses[0]}
           draftingTeamOnly={a.draftingTeamOnly}
+          freeAgentClasses={a.freeAgentClasses}
         />
       </Suspense>
     );
@@ -1253,6 +1457,7 @@ function renderMainContent(a: RenderMainArgs) {
       <Suspense fallback={<LoadingSpinner />}>
         <HighlightsView
           highlights={a.leagueHighlights}
+          freeAgentHighlights={a.freeAgentHighlights}
           startYear={a.startYear}
           endYear={a.endYear}
           onTeamSelect={a.handleTeamSelect}

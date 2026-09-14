@@ -1,4 +1,4 @@
-import type { DraftPick, Role, Season } from '../types';
+import type { Acquisition, Role, Season } from '../types';
 import { classifyRole } from './classifyRole';
 import { playedSeasons } from './seasonPlayed';
 import { snapShareForRoleTier } from './snapShareForTier';
@@ -61,7 +61,7 @@ function seasonRole(season: Season, position: string): Role {
  * job, qualifies. That follows from keying on outcome, and is accepted rather
  * than overlooked.
  */
-export function apprenticeSeasonCount(pick: DraftPick): number {
+export function apprenticeSeasonCount(pick: Acquisition): number {
   if (!APPRENTICESHIP_POSITIONS.includes(pick.position)) return 0;
 
   const seasons = [...playedSeasons(pick)].sort((a, b) => a.year - b.year);
@@ -90,7 +90,7 @@ export function apprenticeSeasonCount(pick: DraftPick): number {
  * The first season a pick is judged on: his draft year, or the year his
  * apprenticeship ended. The rookie-contract window is measured from here.
  */
-export function firstScoredYear(pick: DraftPick): number {
+export function firstScoredYear(pick: Acquisition): number {
   return pick.draftYear + apprenticeSeasonCount(pick);
 }
 
@@ -104,7 +104,7 @@ export function firstScoredYear(pick: DraftPick): number {
  * than this rule is entitled to do.
  */
 export function withoutApprenticeSeasons(
-  pick: DraftPick,
+  pick: Acquisition,
   seasons: Season[],
 ): Season[] {
   const count = apprenticeSeasonCount(pick);

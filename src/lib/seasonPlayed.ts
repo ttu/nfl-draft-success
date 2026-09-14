@@ -1,4 +1,4 @@
-import type { DraftPick, Season } from '../types';
+import type { Acquisition, Season } from '../types';
 
 /**
  * Whether a season row describes football that has actually been played.
@@ -22,11 +22,11 @@ export function isUnplayedSeason(season: Season): boolean {
 }
 
 /** A pick's seasons with any upcoming-season row removed. */
-export function playedSeasons(pick: DraftPick): Season[] {
+export function playedSeasons(pick: Acquisition): Season[] {
   return pick.seasons.filter(isPlayedSeason);
 }
 
 /** Newest season the pick actually played, or `undefined` if there is none. */
-export function latestPlayedSeason(pick: DraftPick): Season | undefined {
+export function latestPlayedSeason(pick: Acquisition): Season | undefined {
   return playedSeasons(pick).sort((a, b) => b.year - a.year)[0];
 }

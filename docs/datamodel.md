@@ -1,6 +1,6 @@
 # Data Model
 
-Data structures for `public/data/draft-{year}.json` and TypeScript types in `src/types.ts`.
+Data structures for `public/data/draft-{year}.json`, `public/data/fa-{year}.json`, and TypeScript types in `src/types.ts`.
 
 ## Schema Overview
 
@@ -159,6 +159,73 @@ Team-centric view filters client-side.
   ]
 }
 ```
+
+## Undrafted Free Agents
+
+`public/data/fa-{year}.json`, one file per class from 2013 through 2025 — no 2026 file, deliberately: the incoming class has taken no snaps yet, and the loader resolves a missing year to an empty class rather than an error.
+
+```ts
+export interface FreeAgent {
+  playerId: string;
+  playerName: string;
+  position: string;
+  teamId: string;
+  /**
+   * The class year he belongs to: the season he debuted, not his
+   * `rookie_season` and not the year he signed. Stamped from the enclosing
+   * class by `stampFreeAgentYear`, not stored in fa-{year}.json.
+   */
+  draftYear: number;
+  espnId?: string;
+  headshotUrl?: string;
+  seasons: Season[];
+}
+
+export interface FreeAgentClass {
+  year: number;
+  freeAgents: FreeAgent[];
+}
+```
+
+`FreeAgent` is deliberately `DraftPick` minus `round` and `overallPick` — the absence of `round` is what the code discriminates a free agent on, and `seasons` is the identical `Season[]` shape, so load, role tiering, injury forgiveness, and every other season-level calculation apply unchanged.
+
+| Field       | Type     | Notes                                                                                                 |
+| ----------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| playerId    | string   |                                                                                                       |
+| playerName  | string   |                                                                                                       |
+| position    | string   |                                                                                                       |
+| teamId      | string   | the franchise that owns him — his first-snap team (§ Undrafted Free Agents, `SPEC_CLARIFICATIONS.md`) |
+| draftYear   | number   | **his debut season**, not `rookie_season` — stamped at load time, not present in the JSON file        |
+| espnId      | string?  |                                                                                                       |
+| headshotUrl | string?  |                                                                                                       |
+| seasons     | Season[] | identical `Season` shape used by draft picks                                                          |
+
+### Example: fa-2019.json
+
+```json
+{
+  "year": 2019,
+  "freeAgents": [
+    {
+      "playerId": "00-0035228",
+      "playerName": "Austin Ekeler",
+      "position": "RB",
+      "teamId": "LAC",
+      "seasons": [
+        {
+          "year": 2019,
+          "gamesPlayed": 16,
+          "teamGames": 16,
+          "snapShare": 0.41,
+          "retained": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+Note `draftYear` is absent from the stored file — it is stamped as `2019` (the enclosing class's `year`, his debut season) by `stampFreeAgentYear` at parse time, exactly as `stampDraftYear` stamps a `DraftPick.draftYear` from its enclosing `draft-{year}.json`.
 
 ## Team Metadata
 

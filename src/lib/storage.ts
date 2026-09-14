@@ -46,7 +46,10 @@ export function saveRoleFilter(roleFilter: string[]): void {
  * returns `false` when nothing is stored or the value is not strictly `true`
  * (including parse errors); saving swallows quota / private-mode errors.
  */
-function boolFlag(key: string): {
+function boolFlag(
+  key: string,
+  defaultValue = false,
+): {
   load: () => boolean;
   save: (value: boolean) => void;
 } {
@@ -54,10 +57,13 @@ function boolFlag(key: string): {
     load: () => {
       try {
         const raw = localStorage.getItem(key);
-        if (raw === null) return false;
-        return (JSON.parse(raw) as unknown) === true;
+        if (raw === null) return defaultValue;
+        const parsed = JSON.parse(raw) as unknown;
+        // Only a real boolean overrides the default; anything else is a
+        // corrupt or hand-edited value and should not silently mean "off".
+        return typeof parsed === 'boolean' ? parsed : defaultValue;
       } catch {
-        return false;
+        return defaultValue;
       }
     },
     save: (value: boolean) => {
@@ -71,8 +77,24 @@ function boolFlag(key: string): {
 }
 
 /** Persisted "show departed players" toggle. Defaults to false. */
+/**
+ * Whether the roster keeps players who have since left. Defaults to true: the
+ * list is organised by the class a player arrived in, and a class with its
+ * departures removed answers "who is here now" while looking like it answers
+ * "what did this team get" — an explicit opt-out is still remembered.
+ */
 export const { load: loadShowDeparted, save: saveShowDeparted } = boolFlag(
   'nfl-draft-success-show-departed',
+  true,
+);
+
+/**
+ * Whether the roster lists undrafted free agents alongside the picks.
+ * Defaults to false: they are an opt-in second population, the way departed
+ * players are.
+ */
+export const { load: loadShowFreeAgents, save: saveShowFreeAgents } = boolFlag(
+  'nfl-draft-success-show-free-agents',
 );
 
 /** Whether the user closed the landing-page site intro banner. Defaults to false. */

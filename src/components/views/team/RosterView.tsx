@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import type { DraftClass } from '../../../types';
+import type { DraftClass, FreeAgentClass } from '../../../types';
 import { TEAMS } from '../../../data/teams';
 import { DRAFT_YEAR_BOUNDS } from '../../../lib/draftYearBounds';
 import {
@@ -11,6 +11,7 @@ import {
   type RosterEntry,
 } from '../../../lib/currentRoster';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
+import { isDraftPick } from '../../../lib/acquisition';
 import { cx } from '../../../lib/cx';
 import {
   PlayerAvatar,
@@ -25,11 +26,18 @@ interface RosterViewProps {
   teamId: string;
   /** All shipped classes — the roster is not a year-range question. */
   draftClasses: DraftClass[];
+  /** The undrafted classes, on the same all-years basis. */
+  freeAgentClasses: FreeAgentClass[];
 }
 
-/** Where the pick came from: draft year, round, and the team that drafted him. */
+/**
+ * How the player arrived: his class year and round, or UDFA when he was never
+ * drafted, plus the team he came from when it was not this one.
+ */
 function originLabel(entry: RosterEntry): string {
-  const base = `${entry.draftYear} · R${entry.pick.round}`;
+  const base = isDraftPick(entry.pick)
+    ? `${entry.draftYear} · R${entry.pick.round}`
+    : `${entry.draftYear} · UDFA`;
   return entry.acquired ? `${base} · from ${entry.pick.teamId}` : base;
 }
 
@@ -44,12 +52,16 @@ function scoreLabel(entry: RosterEntry): string {
   return entry.score === undefined ? '—' : String(Math.round(entry.score));
 }
 
-export function RosterView({ teamId, draftClasses }: RosterViewProps) {
+export function RosterView({
+  teamId,
+  draftClasses,
+  freeAgentClasses,
+}: RosterViewProps) {
   const location = useLocation();
   const origin = location.pathname + location.search;
   const team = TEAMS.find((t) => t.id === teamId);
   const color = teamColor(teamId);
-  const entries = getCurrentRoster(draftClasses, teamId);
+  const entries = getCurrentRoster(draftClasses, freeAgentClasses, teamId);
   const groups = groupRosterByPosition(entries);
   const mean = rosterMeanScore(entries);
   const snapshotPublished = hasRosterSnapshot(draftClasses);
@@ -78,9 +90,11 @@ export function RosterView({ teamId, draftClasses }: RosterViewProps) {
           </span>
         </div>
         <p className="roster-view__caveat">
-          Players drafted {DRAFT_YEAR_BOUNDS.min}–{DRAFT_YEAR_BOUNDS.max} who
-          are on the roster now, wherever they were drafted. Undrafted players
-          and older veterans are not tracked, so this is not the full 53.
+          Players who entered the league from {DRAFT_YEAR_BOUNDS.min} on —
+          drafted or undrafted — and are listed with this team now, wherever
+          they arrived from. That listing is the league&rsquo;s, so it includes
+          the practice squad and players on reserve, not just the active 53.
+          Veterans who came in before {DRAFT_YEAR_BOUNDS.min} are not tracked.
         </p>
       </header>
 

@@ -1,0 +1,4441 @@
+{
+  "year": 2025,
+  "freeAgents": [
+    {
+      "playerId": "AjiaAu00",
+      "playerName": "Austin Ajiake",
+      "position": "LB",
+      "teamId": "IND",
+      "espnId": "4374171",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/m5hvok66omx2blhddshk",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 16,
+          "teamGames": 17,
+          "snapShare": 0.14124999999999996,
+          "cumulativeSnapShare": 0.1350359157616582,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BaldJo01",
+      "playerName": "Johnathan Baldwin",
+      "position": "S",
+      "teamId": "GB",
+      "espnId": "4709980",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/us9ui2rbj5t4wr3wgyin",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 18,
+          "snapShare": 0.495,
+          "cumulativeSnapShare": 0.05509181969949917,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.99,
+            "playerSnaps": 66,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1198
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BankBr02",
+      "playerName": "Brant Banks",
+      "position": "OT",
+      "teamId": "GB",
+      "espnId": "4426623",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fgyysqdckajohxo82d6w",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 18,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 51
+          },
+          "loadDenominator": 1122
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NYJ"
+        }
+      ]
+    },
+    {
+      "playerId": "BankMa00",
+      "playerName": "Marcus Banks",
+      "position": "DB",
+      "teamId": "TB",
+      "espnId": "4567109",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ob0uq7pyr6vhjsp253l1",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "BarbRi00",
+      "playerName": "Ricky Barber",
+      "position": "DT",
+      "teamId": "WAS",
+      "espnId": "4428343",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/updqursgjxdp8zsjelp2",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.21500000000000002,
+          "cumulativeSnapShare": 0.028103044496487123,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BarrJu00",
+      "playerName": "Justin Barron",
+      "position": "LB",
+      "teamId": "DAL",
+      "espnId": "4429249",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lnrgjwbxfkbfgsgtsgta",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BartJa01",
+      "playerName": "Jared Bartlett",
+      "position": "LB",
+      "teamId": "ARI",
+      "espnId": "4426646",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xvtfeuh8yeeunr7duz6f",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "JAX"
+        }
+      ]
+    },
+    {
+      "playerId": "BattTy00",
+      "playerName": "Tyler Batty",
+      "position": "LB",
+      "teamId": "MIN",
+      "espnId": "4608794",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xur5y3juva1uila1vszk",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 17,
+          "snapShare": 0.05333333333333334,
+          "cumulativeSnapShare": 0.05333333333333334,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "reserveWeeks": 5,
+          "excusedGames": 5
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BeneTh00",
+      "playerName": "Theo Benedet",
+      "position": "OL",
+      "teamId": "CHI",
+      "espnId": "5125873",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jar87gerxyz6bhf3xezu",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 18,
+          "teamGames": 19,
+          "snapShare": 0.4794444444444445,
+          "cumulativeSnapShare": 0.46875,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BentUl00",
+      "playerName": "Ulysses Bentley IV",
+      "position": "RB",
+      "teamId": "IND",
+      "espnId": "4426689",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/iw8g8cngrmp4ipcrdpwi",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.03,
+          "cumulativeSnapShare": 0.0018656716417910447,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "BondIs00",
+      "playerName": "Isaiah Bond",
+      "position": "WR",
+      "teamId": "CLE",
+      "espnId": "4808839",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/piv889pkizjvgrtpfkxm",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 16,
+          "teamGames": 17,
+          "snapShare": 0.480625,
+          "cumulativeSnapShare": 0.480625,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BrinAu00",
+      "playerName": "Austin Brinkman",
+      "position": "LS",
+      "teamId": "HOU",
+      "espnId": "4690999",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gfb3bzfuppjf7t7d3kis",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 19,
+          "teamGames": 19,
+          "snapShare": 0.32842105263157895,
+          "cumulativeSnapShare": 0.05762857635116442,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.31,
+            "playerSnaps": 11,
+            "teamSnaps": 169
+          },
+          "loadDenominator": 2984.630384618631
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BrooJa04",
+      "playerName": "Ja'Corey Brooks",
+      "position": "WR",
+      "teamId": "WAS",
+      "espnId": "4431506",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lnncmzqomxihtw73wasv",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.11,
+          "cumulativeSnapShare": 0.006641366223908918,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "BrosMa00",
+      "playerName": "Max Brosmer",
+      "position": "QB",
+      "teamId": "MIN",
+      "espnId": "4573398",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fpveluufmy7buwrhpiny",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 7,
+          "teamGames": 17,
+          "snapShare": 0.45428571428571424,
+          "cumulativeSnapShare": 0.17782217782217782,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "BryaCo02",
+      "playerName": "Cobee Bryant",
+      "position": "CB",
+      "teamId": "ATL",
+      "espnId": "4429324",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/krehmn2g4cxokjpcr6iw",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 7,
+          "teamGames": 17,
+          "snapShare": 0.21714285714285714,
+          "cumulativeSnapShare": 0.09239130434782608,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "BuecSh00",
+      "playerName": "Shane Buechele",
+      "position": "QB",
+      "teamId": "KC",
+      "espnId": "4039034",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kmbuzxucmmytpuoy8yfc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.45,
+          "cumulativeSnapShare": 0.02605570530098832,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "BUF"
+        }
+      ]
+    },
+    {
+      "playerId": "BullCo00",
+      "playerName": "Corey Bullock",
+      "position": "OT",
+      "teamId": "BAL",
+      "espnId": "4576075",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mzkd2grjzcncllrhaacw",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 16,
+          "teamGames": 17,
+          "snapShare": 0.011875000000000002,
+          "cumulativeSnapShare": 0.011875000000000002,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CAR"
+        }
+      ]
+    },
+    {
+      "playerId": "BullJo01",
+      "playerName": "John Bullock",
+      "position": "LB",
+      "teamId": "TB",
+      "espnId": "4569563",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/myb1grpfohovodjjzdb6",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 15,
+          "teamGames": 17,
+          "snapShare": 0.006,
+          "cumulativeSnapShare": 0.004789272030651341,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "ByrdHe00",
+      "playerName": "Henry Byrd",
+      "position": "G",
+      "teamId": "MIN",
+      "espnId": "4367995",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x6i8ymo7tl6o19o7pmry",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "CambDa00",
+      "playerName": "Dalen Cambre",
+      "position": "WR",
+      "teamId": "NYG",
+      "espnId": "4570296",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cfllxq8wvrrciu7ugnyp",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 7,
+          "teamGames": 17,
+          "snapShare": 0.032857142857142856,
+          "cumulativeSnapShare": 0.01391304347826087,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "CampDa01",
+      "playerName": "Dalevon Campbell",
+      "position": "WR",
+      "teamId": "CAR",
+      "espnId": "4569372",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lmdwuz4anz0nhbaeewmm",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 18,
+          "snapShare": 0.065,
+          "cumulativeSnapShare": 0.008448060075093867,
+          "retained": true,
+          "reserveWeeks": 1,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "CannSa00",
+      "playerName": "Sal Cannella",
+      "position": "TE",
+      "teamId": "CLE",
+      "espnId": "4242536",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.27999999999999997,
+          "cumulativeSnapShare": 0.02677746999076639,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "CartAj00",
+      "playerName": "Ajani Carter",
+      "position": "DB",
+      "teamId": "HOU",
+      "espnId": "4429379",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 19,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "reserveWeeks": 6,
+          "excusedGames": 6,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 68
+          },
+          "loadDenominator": 891.5263157894736
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "CarvJe00",
+      "playerName": "Jerome Carvin",
+      "position": "G",
+      "teamId": "JAX",
+      "espnId": "4369859",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/e7x7wggxza9p4evirbb0",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 18,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "CastSe01",
+      "playerName": "Sebastian Castro",
+      "position": "S",
+      "teamId": "PIT",
+      "espnId": "4426882",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/df4sh5ddoseg7d5bbl6q",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 10,
+          "teamGames": 18,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "ChamCh01",
+      "playerName": "Chaz Chambliss",
+      "position": "LB",
+      "teamId": "MIN",
+      "espnId": "4431520",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wwuawbggpxurztrxyyuh",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 17,
+          "snapShare": 0.03583333333333333,
+          "cumulativeSnapShare": 0.023353669854513957,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "ChilZi00",
+      "playerName": "Zion Childress",
+      "position": "DB",
+      "teamId": "DAL",
+      "espnId": "4685841",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rfj8pmex9tjxqayn0maz",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.023333333333333334,
+          "cumulativeSnapShare": 0.00451548724035882,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CAR"
+        }
+      ]
+    },
+    {
+      "playerId": "ChisEf00",
+      "playerName": "Efton Chism III",
+      "position": "WR",
+      "teamId": "NE",
+      "espnId": "4695193",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zbnf3ujmwprzgjnwdtlo",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 10,
+          "teamGames": 21,
+          "snapShare": 0.199,
+          "cumulativeSnapShare": 0.09896907216494846,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "ChukBe00",
+      "playerName": "Benjamin Chukwuma",
+      "position": "OT",
+      "teamId": "TB",
+      "espnId": "4690787",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gudosqnpwknrvvpaqjzg",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0.12647058823529414,
+          "cumulativeSnapShare": 0.12647058823529414,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "CiarJi00",
+      "playerName": "Jimmy Ciarlo",
+      "position": "LB",
+      "teamId": "BUF",
+      "espnId": "4689804",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vcrpv0u95feynfkhtxbx",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 19,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 1273
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "ClarAl01",
+      "playerName": "Alijah Clark",
+      "position": "DB",
+      "teamId": "DAL",
+      "espnId": "4595352",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sr5sjigohu5fufu4yxm7",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 17,
+          "snapShare": 0.05727272727272728,
+          "cumulativeSnapShare": 0.038381641543049974,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "ClarDe03",
+      "playerName": "Dean Clark",
+      "position": "S",
+      "teamId": "NYJ",
+      "espnId": "4426921",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/p6jf4tbfaxal0x71dqvy",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 17,
+          "snapShare": 0.2141666666666667,
+          "cumulativeSnapShare": 0.15943312666076173,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "ClarJo00",
+      "playerName": "Jordan Clark",
+      "position": "CB",
+      "teamId": "NYJ",
+      "espnId": "4429411",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qiesv40i10bhxmfuf1md",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 6,
+          "teamGames": 17,
+          "snapShare": 0.34333333333333327,
+          "cumulativeSnapShare": 0.12311780336581045,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "ColbJo00",
+      "playerName": "Jordan Colbert",
+      "position": "S",
+      "teamId": "MIA",
+      "espnId": "4367504",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vzwrdqknqaz09r8s2wcu",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 5,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 6,
+          "excusedGames": 6
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "CollBe00",
+      "playerName": "Beaux Collins",
+      "position": "WR",
+      "teamId": "NYG",
+      "espnId": "4431210",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fypzpyhv2bsvlcwp2ppo",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 9,
+          "teamGames": 17,
+          "snapShare": 0.1377777777777778,
+          "cumulativeSnapShare": 0.1377777777777778,
+          "retained": true,
+          "injuryReportWeeks": 7,
+          "reserveWeeks": 8,
+          "excusedGames": 8
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "ATL"
+        }
+      ]
+    },
+    {
+      "playerId": "CombBr00",
+      "playerName": "Branson Combs",
+      "position": "LB",
+      "teamId": "JAX",
+      "espnId": "4572704",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/u60bto6dll3fjewspobu",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 18,
+          "snapShare": 0.04181818181818182,
+          "cumulativeSnapShare": 0.024140662915929638,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "CookBr03",
+      "playerName": "Brady Cook",
+      "position": "QB",
+      "teamId": "NYJ",
+      "espnId": "4429435",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sk8u7zzg7e3t4vu7xesg",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 5,
+          "teamGames": 17,
+          "snapShare": 0.9800000000000001,
+          "cumulativeSnapShare": 0.2824427480916031,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "MIA"
+        }
+      ]
+    },
+    {
+      "playerId": "CookDy00",
+      "playerName": "Dylan Cook",
+      "position": "OT",
+      "teamId": "PIT",
+      "espnId": "4570898",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nj4lwx2zcxnzg6kn3tu5",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 6,
+          "teamGames": 18,
+          "snapShare": 0.8683333333333333,
+          "cumulativeSnapShare": 0.31985294117647056,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "CoopDa01",
+      "playerName": "Darius Cooper",
+      "position": "WR",
+      "teamId": "PHI",
+      "espnId": "4715355",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pe71oe4eoyyfnq80fkxc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 14,
+          "teamGames": 18,
+          "snapShare": 0.26071428571428573,
+          "cumulativeSnapShare": 0.2583148558758315,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "reserveWeeks": 4,
+          "excusedGames": 4,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.84,
+            "playerSnaps": 54,
+            "teamSnaps": 64
+          },
+          "loadDenominator": 902
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "CoopKe00",
+      "playerName": "Keith Cooper Jr.",
+      "position": "DE",
+      "teamId": "CLE",
+      "espnId": "4712462",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tsr4nvxl1xnbcds25pof",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.02,
+          "cumulativeSnapShare": 0.0009475488054836868,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "MIA"
+        }
+      ]
+    },
+    {
+      "playerId": "CrenBr00",
+      "playerName": "Brandon Crenshaw-Dickson",
+      "position": "OT",
+      "teamId": "TEN",
+      "espnId": "4426987",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hggljfh39iorav9j5mpw",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.0775,
+          "cumulativeSnapShare": 0.017045454545454544,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "CrosHo01",
+      "playerName": "Howard Cross III",
+      "position": "DT",
+      "teamId": "CIN",
+      "espnId": "4426992",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/c14y9hq7dq3e6wfuiqi7",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.215,
+          "cumulativeSnapShare": 0.045911702183096946,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "DabnDr00",
+      "playerName": "Drake Dabney",
+      "position": "TE",
+      "teamId": "GB",
+      "espnId": "4429466",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/olsiufbauh2x6pshrygm",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 18,
+          "snapShare": 0.515,
+          "cumulativeSnapShare": 0.04634581105169341,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.88,
+            "playerSnaps": 45,
+            "teamSnaps": 51
+          },
+          "loadDenominator": 1122
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "DippCJ00",
+      "playerName": "CJ Dippre",
+      "position": "TE",
+      "teamId": "NE",
+      "espnId": "4596545",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/azvsbbacjbgiyr3hmgdi",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 21,
+          "snapShare": 0.16,
+          "cumulativeSnapShare": 0.015463917525773196,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "TB"
+        }
+      ]
+    },
+    {
+      "playerId": "DolaSh00",
+      "playerName": "Shaun Dolac",
+      "position": "LB",
+      "teamId": "LAR",
+      "espnId": "4693848",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hqgtyx8usody1lywex4a",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 20,
+          "snapShare": 0.03235294117647059,
+          "cumulativeSnapShare": 0.0314185082442415,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "DownEt00",
+      "playerName": "Ethan Downs",
+      "position": "LB",
+      "teamId": "KC",
+      "espnId": "4431534",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/somszafluhppwnnplu8i",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.18,
+          "cumulativeSnapShare": 0.010577081441271003,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "EdwaJo00",
+      "playerName": "Johnathan Edwards",
+      "position": "DB",
+      "teamId": "IND",
+      "espnId": "4695991",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hvshzsyqwcqqtfdltrpu",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 14,
+          "teamGames": 17,
+          "snapShare": 0.325,
+          "cumulativeSnapShare": 0.26921173014903826,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "EguaKi00",
+      "playerName": "Kingsley Eguakun",
+      "position": "C",
+      "teamId": "DET",
+      "espnId": "4567410",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tybhcfzdfccvnxz4labx",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.5025,
+          "cumulativeSnapShare": 0.13341674249317562,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NYG"
+        }
+      ]
+    },
+    {
+      "playerId": "FitzRy01",
+      "playerName": "Ryan Fitzgerald",
+      "position": "K",
+      "teamId": "CAR",
+      "espnId": "4568263",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/giy8qnq6njxzwtqvqdsm",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 18,
+          "teamGames": 18,
+          "snapShare": 0.32111111111111107,
+          "cumulativeSnapShare": 0.0526183721058185,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "FryaJo00",
+      "playerName": "Josh Fryar",
+      "position": "OT",
+      "teamId": "ARI",
+      "espnId": "4429782",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/b9mitmbbavxycpafysqu",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 17,
+          "snapShare": 0.3925,
+          "cumulativeSnapShare": 0.25462555066079295,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "GodrJa00",
+      "playerName": "Chukwuebuka Godrick",
+      "position": "OT",
+      "teamId": "KC",
+      "espnId": "5144457",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/smipbrnexnhyh7q302gv",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.8875,
+          "cumulativeSnapShare": 0.16711590296495957,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "MIA"
+        }
+      ]
+    },
+    {
+      "playerId": "GoodAn00",
+      "playerName": "Anthony Goodlow",
+      "position": "DE",
+      "teamId": "ARI",
+      "espnId": "4372378",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nyluqyk0urg2bdfsajdk",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.18666666666666665,
+          "cumulativeSnapShare": 0.031413612565445025,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CAR"
+        }
+      ]
+    },
+    {
+      "playerId": "GoreFr01",
+      "playerName": "Frank Gore Jr.",
+      "position": "RB",
+      "teamId": "BUF",
+      "espnId": "4429805",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qzf7faowlqoh5nengpq5",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 19,
+          "snapShare": 0.03,
+          "cumulativeSnapShare": 0.003142183817753339,
+          "retained": true,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 1273
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "GreeBJ00",
+      "playerName": "BJ Green II",
+      "position": "DE",
+      "teamId": "JAX",
+      "espnId": "4875266",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ozs0yiy8cfhwplbjdgnd",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 15,
+          "teamGames": 18,
+          "snapShare": 0.11133333333333333,
+          "cumulativeSnapShare": 0.09138965246744792,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "GregEr00",
+      "playerName": "Eric Gregory",
+      "position": "DT",
+      "teamId": "NE",
+      "espnId": "4567171",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yl1571iztzfkancofsja",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 7,
+          "teamGames": 21,
+          "snapShare": 0.33428571428571424,
+          "cumulativeSnapShare": 0.11127791986695282,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "HaggLu00",
+      "playerName": "Luke Haggard",
+      "position": "G",
+      "teamId": "TB",
+      "espnId": "4686884",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qgucw8h7i34exiqtqunr",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 17,
+          "snapShare": 0.34909090909090906,
+          "cumulativeSnapShare": 0.26877047115142355,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "excusedGames": 3
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "HarvJa00",
+      "playerName": "Jahfari Harvey",
+      "position": "DE",
+      "teamId": "LV",
+      "espnId": "4427408",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nbkouemkxdpjax4c4lsl",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.21000000000000002,
+          "cumulativeSnapShare": 0.024,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "HiggJa01",
+      "playerName": "Jay Higgins",
+      "position": "LB",
+      "teamId": "BAL",
+      "espnId": "4565350",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zsbevehh3h4bsqiyga5q",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 17,
+          "snapShare": 0.012727272727272728,
+          "cumulativeSnapShare": 0.009515632825355941,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "reserveWeeks": 6,
+          "excusedGames": 6
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "HoliJi00",
+      "playerName": "Jimmy Holiday",
+      "position": "WR",
+      "teamId": "KC",
+      "espnId": "4431142",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yk1s0zu3wukxx2plsfpd",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.02,
+          "cumulativeSnapShare": 0.0008984725965858042,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "HorsCa00",
+      "playerName": "Cam Horsley",
+      "position": "DT",
+      "teamId": "TEN",
+      "espnId": "4431147",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/twzqj6uora5h2qsutdxh",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.23,
+          "cumulativeSnapShare": 0.013195098963242224,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "ARI"
+        }
+      ]
+    },
+    {
+      "playerId": "HortZa00",
+      "playerName": "Zach Horton",
+      "position": "TE",
+      "teamId": "DET",
+      "espnId": "4877824",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vpb6tgpghkvdjobzovqe",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.085,
+          "cumulativeSnapShare": 0.010009099181073703,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "HubeJo00",
+      "playerName": "Joe Huber",
+      "position": "G",
+      "teamId": "MIN",
+      "espnId": "4690210",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uyx7yhbqffwghbe517dy",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 17,
+          "snapShare": 0.1025,
+          "cumulativeSnapShare": 0.07892107892107893,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "HudsBr00",
+      "playerName": "Bryan Hudson",
+      "position": "C",
+      "teamId": "NYG",
+      "espnId": "4426489",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/na1dcb82f0pahjtyipzw",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.025,
+          "cumulativeSnapShare": 0.0026086956521739132,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "HuntAd00",
+      "playerName": "Adin Huntington",
+      "position": "DE",
+      "teamId": "CLE",
+      "espnId": "4605792",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zqevui8ikmsi20blzgot",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 13,
+          "teamGames": 17,
+          "snapShare": 0.20076923076923078,
+          "cumulativeSnapShare": 0.20076923076923078,
+          "retained": true,
+          "injuryReportWeeks": 5,
+          "excusedGames": 4
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "HuzzAl00",
+      "playerName": "Alijah Huzzie",
+      "position": "CB",
+      "teamId": "HOU",
+      "espnId": "4577494",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cspeq4wwmy82tmumrh6n",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 19,
+          "snapShare": 0.17,
+          "cumulativeSnapShare": 0.032726074895060395,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "reserveWeeks": 8,
+          "excusedGames": 8,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.34,
+            "playerSnaps": 22,
+            "teamSnaps": 65
+          },
+          "loadDenominator": 672.24682674428
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "InglTa00",
+      "playerName": "Tanner Ingle",
+      "position": "S",
+      "teamId": "LAR",
+      "espnId": "4361651",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vzeuylllstdp5udwxgzq",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 20,
+          "snapShare": 0.01,
+          "cumulativeSnapShare": 0.0022441791603029643,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "IveyJa00",
+      "playerName": "Jared Ivey",
+      "position": "LB",
+      "teamId": "SEA",
+      "espnId": "4605478",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rliaugoupzvspm3vdtcp",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 20,
+          "snapShare": 0.1,
+          "cumulativeSnapShare": 0.011411271541686075,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "ATL"
+        }
+      ]
+    },
+    {
+      "playerId": "JackKe03",
+      "playerName": "Keondre Jackson",
+      "position": "S",
+      "teamId": "BAL",
+      "espnId": "4878287",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nseq4vwhoakwfp7ytpp0",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "JackNi00",
+      "playerName": "Nick Jackson",
+      "position": "LB",
+      "teamId": "TB",
+      "espnId": "4568492",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/j1tpfwt373szwooa1cdq",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.08333333333333333,
+          "cumulativeSnapShare": 0.017241379310344827,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "JenkKe01",
+      "playerName": "Keonta Jenkins",
+      "position": "LB",
+      "teamId": "BUF",
+      "espnId": "4577066",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ss0czp5cbgns7jmngkpf",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 19,
+          "snapShare": 0.16,
+          "cumulativeSnapShare": 0.020718582910377807,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.48,
+            "playerSnaps": 23,
+            "teamSnaps": 48
+          },
+          "loadDenominator": 1110.1145333872928
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "JennDo00",
+      "playerName": "Donovan Jennings",
+      "position": "OT",
+      "teamId": "GB",
+      "espnId": "4360887",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nv3cyilbj4znjy7bayvk",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 18,
+          "snapShare": 0.065,
+          "cumulativeSnapShare": 0.0053475935828877,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 1,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 51
+          },
+          "loadDenominator": 1122
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "JohnAm00",
+      "playerName": "Amar Johnson",
+      "position": "RB",
+      "teamId": "LAC",
+      "espnId": "4878878",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qw1s7luuaia2f08p19aq",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 18,
+          "snapShare": 0.04,
+          "cumulativeSnapShare": 0.0033250207813798837,
+          "retained": true,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 71
+          },
+          "loadDenominator": 1203
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "JohnBr24",
+      "playerName": "Brandon Johnson",
+      "position": "CB",
+      "teamId": "PHI",
+      "espnId": "4594338",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 18,
+          "snapShare": 0.14,
+          "cumulativeSnapShare": 0.023643541011801522,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.33,
+            "playerSnaps": 23,
+            "teamSnaps": 69
+          },
+          "loadDenominator": 1184.255775648156
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "DumaJa00",
+      "playerName": "Jamon Johnson",
+      "position": "LB",
+      "teamId": "GB",
+      "espnId": "4569680",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 18,
+          "snapShare": 1,
+          "cumulativeSnapShare": 0.055926544240400666,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 1,
+            "playerSnaps": 67,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1198
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "BAL"
+        }
+      ]
+    },
+    {
+      "playerId": "JoneDo03",
+      "playerName": "Dom Jones",
+      "position": "CB",
+      "teamId": "CLE",
+      "espnId": "4572519",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/drlhingyoocycjx2j7qc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 8,
+          "teamGames": 17,
+          "snapShare": 0.09625,
+          "cumulativeSnapShare": 0.07893081549679112,
+          "retained": true,
+          "reserveWeeks": 7,
+          "excusedGames": 7
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "JoneJa16",
+      "playerName": "Jacoby Jones",
+      "position": "WR",
+      "teamId": "WAS",
+      "espnId": "5083297",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jfy4bvrbzlpyreglk79s",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.16,
+          "cumulativeSnapShare": 0.010436432637571158,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "JoneJe01",
+      "playerName": "Jeshaun Jones",
+      "position": "WR",
+      "teamId": "MIN",
+      "espnId": "4360637",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pwlziiyhd7ectylkejgc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "JulePJ00",
+      "playerName": "PJ Jules",
+      "position": "S",
+      "teamId": "CIN",
+      "espnId": "4429946",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ypmhoannzlvxolhoalkc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 14,
+          "teamGames": 17,
+          "snapShare": 0.009285714285714286,
+          "cumulativeSnapShare": 0.008583690987124463,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "excusedGames": 3
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "KahoAl00",
+      "playerName": "Ale Kaho",
+      "position": "LB",
+      "teamId": "WAS",
+      "espnId": "4361090",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xtiv998kd4048degy4xl",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 8,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "excusedGames": 4
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "KallNi00",
+      "playerName": "Nick Kallerup",
+      "position": "TE",
+      "teamId": "SEA",
+      "espnId": "4569547",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/eetx8ba2ztsmk9wabbzp",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 20,
+          "snapShare": 0.2118181818181818,
+          "cumulativeSnapShare": 0.11385350318471338,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "KeenJa00",
+      "playerName": "Jakobie Keeney-James",
+      "position": "WR",
+      "teamId": "GB",
+      "espnId": "5178972",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 18,
+          "snapShare": 0.94,
+          "cumulativeSnapShare": 0.0427807486631016,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.94,
+            "playerSnaps": 48,
+            "teamSnaps": 51
+          },
+          "loadDenominator": 1122
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "KeysAu00",
+      "playerName": "Austin Keys",
+      "position": "LB",
+      "teamId": "MIN",
+      "espnId": "4429185",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/u4h08rpevr5barwyomuw",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 17,
+          "snapShare": 0.012727272727272728,
+          "cumulativeSnapShare": 0.009074568857753996,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "excusedGames": 3
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "KighAm00",
+      "playerName": "Amari Kight",
+      "position": "OT",
+      "teamId": "SEA",
+      "espnId": "4567135",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/geobk1ufvn2wvlwmss3w",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 5,
+          "teamGames": 20,
+          "snapShare": 0.076,
+          "cumulativeSnapShare": 0.017599731813610457,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "KineCo00",
+      "playerName": "Corey Kiner",
+      "position": "RB",
+      "teamId": "ARI",
+      "espnId": "4431431",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tpnamrgzfbytwlzhhyf8",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.1325,
+          "cumulativeSnapShare": 0.02643171806167401,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NE"
+        }
+      ]
+    },
+    {
+      "playerId": "KnowKe00",
+      "playerName": "Kevin Knowles",
+      "position": "DB",
+      "teamId": "KC",
+      "espnId": "4602648",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xkgx12iv1iqeygpifh9l",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 13,
+          "teamGames": 17,
+          "snapShare": 0.09461538461538462,
+          "cumulativeSnapShare": 0.07884733438038384,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "TB"
+        }
+      ]
+    },
+    {
+      "playerId": "KroeKa00",
+      "playerName": "Kai Kroeger",
+      "position": "P",
+      "teamId": "NO",
+      "espnId": "4570033",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jujimmrfpazu360znwfe",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0.3052941176470589,
+          "cumulativeSnapShare": 0.04972821572125912,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "HOU"
+        }
+      ]
+    },
+    {
+      "playerId": "LarvGa00",
+      "playerName": "Gage Larvadain",
+      "position": "WR",
+      "teamId": "CLE",
+      "espnId": "4877203",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ghzcze6fe8cmvu2vrkyo",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 13,
+          "teamGames": 17,
+          "snapShare": 0.2361538461538462,
+          "cumulativeSnapShare": 0.17174515235457063,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "LatuKe00",
+      "playerName": "Keleki Latu",
+      "position": "TE",
+      "teamId": "BUF",
+      "espnId": "4688552",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vebjjfyrrrbwaqjlyvun",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 5,
+          "teamGames": 19,
+          "snapShare": 0.23399999999999999,
+          "cumulativeSnapShare": 0.06677140612725845,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.68,
+            "playerSnaps": 51,
+            "teamSnaps": 75
+          },
+          "loadDenominator": 1273
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "LeexVe00",
+      "playerName": "Vershon Lee",
+      "position": "C",
+      "teamId": "MIN",
+      "espnId": "4430218",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yygtmj3azqkxi1est3eq",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "ARI"
+        }
+      ]
+    },
+    {
+      "playerId": "LoweRe00",
+      "playerName": "Reuben Lowery",
+      "position": "S",
+      "teamId": "BAL",
+      "espnId": "4692970",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/izccmtei81rlnzdahwgb",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.36000000000000004,
+          "cumulativeSnapShare": 0.06698209481399017,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "LuxxBr00",
+      "playerName": "Bralyn Lux",
+      "position": "DB",
+      "teamId": "CIN",
+      "espnId": "4575559",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zjdsqlekl63ooll81os9",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.17,
+          "cumulativeSnapShare": 0.01744644682957684,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MaguTJ00",
+      "playerName": "T.J. Maguranyanga",
+      "position": "DE",
+      "teamId": "WAS",
+      "espnId": "5278092",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gzwkqtfyk6wukjkpil64",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.16,
+          "cumulativeSnapShare": 0.00966042154566745,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MartCh02",
+      "playerName": "Chandler Martin",
+      "position": "LB",
+      "teamId": "BAL",
+      "espnId": "4695086",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/po0lpcvyloyque4kmnjy",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NYG"
+        }
+      ]
+    },
+    {
+      "playerId": "MartKe03",
+      "playerName": "Keyon Martin",
+      "position": "CB",
+      "teamId": "BAL",
+      "espnId": "4694334",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kuvtqhos7jfzxbvykdrh",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 13,
+          "teamGames": 17,
+          "snapShare": 0.16,
+          "cumulativeSnapShare": 0.13390910566842937,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MartBa00",
+      "playerName": "Bam Martin-Scott",
+      "position": "LB",
+      "teamId": "CAR",
+      "espnId": "4880613",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fvfw5drjy4cxaotvve69",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 18,
+          "teamGames": 18,
+          "snapShare": 0.04611111111111112,
+          "cumulativeSnapShare": 0.04611111111111112,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MascEa00",
+      "playerName": "Easton Mascarenas-Arnold",
+      "position": "LB",
+      "teamId": "CLE",
+      "espnId": "5085888",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/a8uufqbzvn1u8zhhujfa",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 16,
+          "teamGames": 17,
+          "snapShare": 0.01375,
+          "cumulativeSnapShare": 0.013265683276771615,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MausDo00",
+      "playerName": "Dorian Mausi",
+      "position": "LB",
+      "teamId": "TEN",
+      "espnId": "4573318",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mf8ks1kejyk3ccakvs5f",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "McDoCo01",
+      "playerName": "Cooper McDonald",
+      "position": "LB",
+      "teamId": "KC",
+      "espnId": "4567826",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uuogsrg8u8cewevs0fxi",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0.05352941176470588,
+          "cumulativeSnapShare": 0.05352941176470588,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "McLeDe00",
+      "playerName": "Derrick McLendon",
+      "position": "DE",
+      "teamId": "MIA",
+      "espnId": "4430153",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hljzgmhhji9ioelyz3sf",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.32,
+          "cumulativeSnapShare": 0.01773890903938145,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "McMiDo00",
+      "playerName": "Donovan McMillon",
+      "position": "S",
+      "teamId": "CLE",
+      "espnId": "4686027",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xxpttzs5lhbmc7phnxli",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0.022941176470588236,
+          "cumulativeSnapShare": 0.02274117133160848,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "McNaAu00",
+      "playerName": "Austin McNamara",
+      "position": "P",
+      "teamId": "NYJ",
+      "espnId": "4427982",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tu0cvxj9l141hhpcr5mh",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0.36235294117647066,
+          "cumulativeSnapShare": 0.0642279916379609,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MeekJa00",
+      "playerName": "Jackson Meeks",
+      "position": "WR",
+      "teamId": "DET",
+      "espnId": "4602788",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ot3dsyhfhos9epmkqdip",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.045000000000000005,
+          "cumulativeSnapShare": 0.004549590536851683,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MeviHa00",
+      "playerName": "Harrison Mevis",
+      "position": "K",
+      "teamId": "LAR",
+      "espnId": "4574716",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yjmtai1e4eqbsw2yk6mh",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 20,
+          "snapShare": 0.2183333333333333,
+          "cumulativeSnapShare": 0.022638761400209106,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MeyeAn00",
+      "playerName": "Andrew Meyer",
+      "position": "C",
+      "teamId": "MIA",
+      "espnId": "4362064",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gfpddwgpotujkccninbs",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 1,
+          "cumulativeSnapShare": 0.4756996894931183,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "reserveWeeks": 15,
+          "excusedGames": 15
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "MitcZa00",
+      "playerName": "Zaire Mitchell-Paden",
+      "position": "TE",
+      "teamId": "BAL",
+      "espnId": "4876006",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kx728asxtg6ykmh1yblc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 8,
+          "teamGames": 17,
+          "snapShare": 0.22875000000000004,
+          "cumulativeSnapShare": 0.2192164569134925,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "reserveWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "HOU"
+        }
+      ]
+    },
+    {
+      "playerId": "MossDr00",
+      "playerName": "Drew Moss",
+      "position": "G",
+      "teamId": "SF",
+      "espnId": "4879480",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dv8tuwzq6fptydjywws3",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 5,
+          "teamGames": 19,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "TEN"
+        }
+      ]
+    },
+    {
+      "playerId": "NchaDu00",
+      "playerName": "Durell Nchami",
+      "position": "DE",
+      "teamId": "IND",
+      "espnId": "4360638",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/arq8u512zcrrr9nyqjln",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.15666666666666665,
+          "cumulativeSnapShare": 0.02838334535117656,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "NeyoIs00",
+      "playerName": "Isaiah Neyor",
+      "position": "WR",
+      "teamId": "GB",
+      "espnId": "4428116",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kpmodyntguke9pmvxeyw",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 18,
+          "snapShare": 0.04,
+          "cumulativeSnapShare": 0.00267379679144385,
+          "retained": true,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 51
+          },
+          "loadDenominator": 1122
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "OTooCo00",
+      "playerName": "Connor O'Toole",
+      "position": "LB",
+      "teamId": "SEA",
+      "espnId": "4605491",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fvrgej9ifncdq5ywexos",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 20,
+          "snapShare": 0.045454545454545456,
+          "cumulativeSnapShare": 0.024344045955596957,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "OwenCo00",
+      "playerName": "Coleman Owen",
+      "position": "WR",
+      "teamId": "IND",
+      "espnId": "4578436",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rvjkyuhymdjax5jk9bf6",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.01,
+          "cumulativeSnapShare": 0.0009328358208955224,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "PagePa00",
+      "playerName": "Payton Page",
+      "position": "DT",
+      "teamId": "NYJ",
+      "espnId": "4431582",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lv2k8zefcvbgpgl5j6k1",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.22,
+          "cumulativeSnapShare": 0.054030115146147036,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "PoleEs00",
+      "playerName": "Esa Pole",
+      "position": "OT",
+      "teamId": "KC",
+      "espnId": "5153070",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yn1ylypuzoeo3scc4n5o",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 5,
+          "teamGames": 17,
+          "snapShare": 0.992,
+          "cumulativeSnapShare": 0.2625224618149147,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "WAS"
+        }
+      ]
+    },
+    {
+      "playerId": "PondEl02",
+      "playerName": "Elijah Ponder",
+      "position": "LB",
+      "teamId": "NE",
+      "espnId": "4688432",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/g9d7riu8zsysuaqbqpjc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 19,
+          "teamGames": 21,
+          "snapShare": 0.2700000000000001,
+          "cumulativeSnapShare": 0.2446867425645881,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "PortDa01",
+      "playerName": "Daryl Porter",
+      "position": "DB",
+      "teamId": "PIT",
+      "espnId": "4691005",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 18,
+          "snapShare": 0.01,
+          "cumulativeSnapShare": 0.0008116883116883117,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "PresBr00",
+      "playerName": "Brennan Presley",
+      "position": "WR",
+      "teamId": "LAR",
+      "espnId": "4431342",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/v5cydesy5zo4njavqwxb",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 20,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "PricMy00",
+      "playerName": "Myles Price",
+      "position": "WR",
+      "teamId": "MIN",
+      "espnId": "4430656",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yi2pgwujy0lv9l3m3sig",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 16,
+          "teamGames": 17,
+          "snapShare": 0.018125000000000002,
+          "cumulativeSnapShare": 0.018044455544455544,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "PutnWi00",
+      "playerName": "Will Putnam",
+      "position": "C",
+      "teamId": "LV",
+      "espnId": "4426393",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/clwvsywtoyawl9dhn7gv",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 15,
+          "teamGames": 17,
+          "snapShare": 0.142,
+          "cumulativeSnapShare": 0.13997985901309165,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "RaveCJ00",
+      "playerName": "C.J. Ravenell",
+      "position": "DE",
+      "teamId": "TEN",
+      "espnId": "4700676",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rqjhomavdixcd1tqcge5",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 14,
+          "teamGames": 17,
+          "snapShare": 0.11285714285714288,
+          "cumulativeSnapShare": 0.09142318567389256,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "ReedNi00",
+      "playerName": "Nikko Reed",
+      "position": "DB",
+      "teamId": "LAC",
+      "espnId": "4691043",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kwrqouczwfh7xtyhlzgl",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 5,
+          "teamGames": 18,
+          "snapShare": 0.184,
+          "cumulativeSnapShare": 0.046248189962736816,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 1,
+          "restGame": {
+            "playerGames": 0,
+            "playerShareSum": 0,
+            "playerSnaps": 0,
+            "teamSnaps": 58.97435897435897
+          },
+          "loadDenominator": 1081.1233918621701
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "ReidKa00",
+      "playerName": "Karene Reid",
+      "position": "LB",
+      "teamId": "DEN",
+      "espnId": "4875336",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gx65fgbnmrzc51w1hfav",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 10,
+          "teamGames": 19,
+          "snapShare": 0.004,
+          "cumulativeSnapShare": 0.003750562177320394,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "reserveWeeks": 7,
+          "excusedGames": 7
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "RestXa00",
+      "playerName": "Xavier Restrepo",
+      "position": "WR",
+      "teamId": "TEN",
+      "espnId": "4431353",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/w4onu90fxjmlkmkchcg1",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.22,
+          "cumulativeSnapShare": 0.028409090909090908,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "RobiEt00",
+      "playerName": "Ethan Robinson",
+      "position": "DB",
+      "teamId": "MIA",
+      "espnId": "4876614",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bgzwkstmyml3ljwxgle9",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "RuccHa00",
+      "playerName": "Hayden Rucci",
+      "position": "TE",
+      "teamId": "MIA",
+      "espnId": "4428396",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vkscrzclmd0tboxpi8lk",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.17,
+          "cumulativeSnapShare": 0.03968403826787512,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "JAX"
+        }
+      ]
+    },
+    {
+      "playerId": "RunyCa00",
+      "playerName": "Carter Runyon",
+      "position": "TE",
+      "teamId": "LV",
+      "espnId": "5155825",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q8knlo3npxhjxiyyx4h6",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 13,
+          "teamGames": 17,
+          "snapShare": 0.0623076923076923,
+          "cumulativeSnapShare": 0.045317220543806644,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "SandRa00",
+      "playerName": "Raheim Sanders",
+      "position": "RB",
+      "teamId": "CLE",
+      "espnId": "4601080",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bopoof9uczgpvpggeahp",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.2575,
+          "cumulativeSnapShare": 0.05788319482917821,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "SaulBe00",
+      "playerName": "Ben Sauls",
+      "position": "K",
+      "teamId": "NYG",
+      "espnId": "4566158",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ert4wflttmvtssck1qz4",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.38333333333333336,
+          "cumulativeSnapShare": 0.009232231224100234,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "SaylJa00",
+      "playerName": "Jacob Saylors",
+      "position": "RB",
+      "teamId": "DET",
+      "espnId": "4383429",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wunm6abfmikwaewmwkp7",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 16,
+          "teamGames": 17,
+          "snapShare": 0.008125,
+          "cumulativeSnapShare": 0.007734303912647862,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "ScotZa00",
+      "playerName": "Zavier Scott",
+      "position": "RB",
+      "teamId": "MIN",
+      "espnId": "4257364",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z8sqpgdoyuv5rask15vn",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 16,
+          "teamGames": 17,
+          "snapShare": 0.10187500000000001,
+          "cumulativeSnapShare": 0.10187500000000001,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "excusedGames": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CHI"
+        }
+      ]
+    },
+    {
+      "playerId": "SilmCa00",
+      "playerName": "Cam'Ron Silmon-Craig",
+      "position": "DB",
+      "teamId": "JAX",
+      "espnId": "4877475",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sdlpu4khplzqtchb5syg",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 18,
+          "snapShare": 0.11,
+          "cumulativeSnapShare": 0.01810549718694723,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "SimmEl00",
+      "playerName": "Elijah Simmons",
+      "position": "DL",
+      "teamId": "TB",
+      "espnId": "4430478",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dnimueujvnjhpcj7xpti",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 9,
+          "teamGames": 17,
+          "snapShare": 0.16555555555555557,
+          "cumulativeSnapShare": 0.08812260536398467,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "SimpTo00",
+      "playerName": "Torricelli Simpkins III",
+      "position": "G",
+      "teamId": "NO",
+      "espnId": "4696902",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xhof0hsbncovhmhhvifd",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 15,
+          "teamGames": 17,
+          "snapShare": 0.17266666666666666,
+          "cumulativeSnapShare": 0.1592526690391459,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CAR"
+        }
+      ]
+    },
+    {
+      "playerId": "SirmJa00",
+      "playerName": "Jackson Sirmon",
+      "position": "LB",
+      "teamId": "NYJ",
+      "espnId": "4361101",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zyqgfn5klopemn3prpwc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "NO"
+        }
+      ]
+    },
+    {
+      "playerId": "SkinQu00",
+      "playerName": "Quentin Skinner",
+      "position": "WR",
+      "teamId": "NYJ",
+      "espnId": "4613050",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/opemnlou4xhxf1hf1d3j",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.33,
+          "cumulativeSnapShare": 0.015267175572519083,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "SlovKe00",
+      "playerName": "Kedon Slovis",
+      "position": "QB",
+      "teamId": "ARI",
+      "espnId": "4428512",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hkvrcpwl9tm41jr3b0x3",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 2,
+          "teamGames": 17,
+          "snapShare": 0.03,
+          "cumulativeSnapShare": 0.004405286343612335,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "GB"
+        }
+      ]
+    },
+    {
+      "playerId": "SmytCh00",
+      "playerName": "Charlie Smyth",
+      "position": "K",
+      "teamId": "NO",
+      "espnId": "5208518",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yv9x4ywdfecxioletyol",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 6,
+          "teamGames": 17,
+          "snapShare": 0.39166666666666666,
+          "cumulativeSnapShare": 0.023733921139691853,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "StacNa00",
+      "playerName": "Nazir Stackhouse",
+      "position": "DT",
+      "teamId": "GB",
+      "espnId": "4429142",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vokytmju8zhlte70ss9a",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 14,
+          "teamGames": 18,
+          "snapShare": 0.18357142857142858,
+          "cumulativeSnapShare": 0.14440734557595994,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.67,
+            "playerSnaps": 45,
+            "teamSnaps": 67
+          },
+          "loadDenominator": 1198
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "TEN"
+        }
+      ]
+    },
+    {
+      "playerId": "StriDa01",
+      "playerName": "Danny Striggow",
+      "position": "DE",
+      "teamId": "JAX",
+      "espnId": "4573319",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lcyhsnmb991cgvwthcy0",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 18,
+          "snapShare": 0.1981818181818182,
+          "cumulativeSnapShare": 0.1396709782993072,
+          "retained": true,
+          "injuryReportWeeks": 6,
+          "excusedGames": 2
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "SzmyAn00",
+      "playerName": "Andre Szmyt",
+      "position": "K",
+      "teamId": "CLE",
+      "espnId": "4258620",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tkah6glpysuyq2a54gts",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0.26764705882352946,
+          "cumulativeSnapShare": 0.04697451919989478,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "ThomTr04",
+      "playerName": "Trevian Thomas",
+      "position": "S",
+      "teamId": "CAR",
+      "espnId": "4570633",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/h1dafnkoaft9gldc6beo",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 18,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "ThorCo00",
+      "playerName": "Corey Thornton",
+      "position": "CB",
+      "teamId": "CAR",
+      "espnId": "4431426",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fqf0gc9owhcrxgua2kbr",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 18,
+          "snapShare": 0.16833333333333333,
+          "cumulativeSnapShare": 0.1551676848273283,
+          "retained": true,
+          "reserveWeeks": 5,
+          "excusedGames": 5
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "TrusXa00",
+      "playerName": "Xavier Truss",
+      "position": "G",
+      "teamId": "NO",
+      "espnId": "4427080",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dimz3zv8mumt0yyyrci4",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 7,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "TurnJo00",
+      "playerName": "Jordan Turner",
+      "position": "LB",
+      "teamId": "DEN",
+      "espnId": "4693373",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pksjz8mnu6w6s3k3mh6c",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 9,
+          "teamGames": 19,
+          "snapShare": 0.035555555555555556,
+          "cumulativeSnapShare": 0.018160616858604012,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "VancGr00",
+      "playerName": "Greedy Vance",
+      "position": "CB",
+      "teamId": "LV",
+      "espnId": "4686337",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mr8rshagj0vkedyjoz1t",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 6,
+          "teamGames": 17,
+          "snapShare": 0.22833333333333336,
+          "cumulativeSnapShare": 0.08177777777777778,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "VaugZe00",
+      "playerName": "Zemaiah Vaughn",
+      "position": "CB",
+      "teamId": "MIN",
+      "espnId": "4695609",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ko8yku7d4usn5sm0nuf9",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WagnDa00",
+      "playerName": "Dalton Wagner",
+      "position": "OT",
+      "teamId": "LV",
+      "espnId": "4242177",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/po1l6ufoljeuaaodsbvz",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 17,
+          "snapShare": 0.03,
+          "cumulativeSnapShare": 0.002014098690835851,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "WagnWi00",
+      "playerName": "William Wagner",
+      "position": "LS",
+      "teamId": "CIN",
+      "espnId": "4572051",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mlpqnycrpna1gurrpzr5",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 17,
+          "teamGames": 17,
+          "snapShare": 0.30235294117647055,
+          "cumulativeSnapShare": 0.0519008659845471,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WalkJa03",
+      "playerName": "Jahdae Walker",
+      "position": "WR",
+      "teamId": "CHI",
+      "espnId": "5160110",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cr13mo2xrpdkksy8fveq",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 9,
+          "teamGames": 19,
+          "snapShare": 0.15111111111111108,
+          "cumulativeSnapShare": 0.08296521959888296,
+          "retained": true,
+          "injuryReportWeeks": 5,
+          "excusedGames": 4
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WashTr00",
+      "playerName": "Trey Washington",
+      "position": "S",
+      "teamId": "IND",
+      "espnId": "4599160",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ace4vjl3mefeypjbb5hc",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0.1275,
+          "cumulativeSnapShare": 0.030963649474010792,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WaxxMa00",
+      "playerName": "Marlowe Wax",
+      "position": "LB",
+      "teamId": "LAC",
+      "espnId": "4431467",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jolfhevlffwbwy6xbmu3",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 18,
+          "teamGames": 18,
+          "snapShare": 0.03666666666666667,
+          "cumulativeSnapShare": 0.036073588170934714,
+          "retained": true,
+          "restGame": {
+            "playerGames": 1,
+            "playerShareSum": 0.66,
+            "playerSnaps": 39,
+            "teamSnaps": 58.97435897435897
+          },
+          "loadDenominator": 1081.1233918621701
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WeasTh00",
+      "playerName": "Theo Wease Jr.",
+      "position": "WR",
+      "teamId": "MIA",
+      "espnId": "4426535",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/iykujtgwn2x1ymy7jdxw",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.3233333333333333,
+          "cumulativeSnapShare": 0.05596466935213158,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "LAC"
+        }
+      ]
+    },
+    {
+      "playerId": "WelcTr00",
+      "playerName": "Treyton Welch",
+      "position": "TE",
+      "teamId": "NO",
+      "espnId": "4430684",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rutsetwerjfsym9ohqrs",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.08,
+          "cumulativeSnapShare": 0.014234875444839857,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WestJa02",
+      "playerName": "Ja'Markis Weston",
+      "position": "LB",
+      "teamId": "NYJ",
+      "espnId": "4567416",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/v41az1eczskjq29u2e9n",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "reserveWeeks": 6,
+          "excusedGames": 6
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "WillEl00",
+      "playerName": "Elijah Williams",
+      "position": "DE",
+      "teamId": "MIN",
+      "espnId": "4696782",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jdad4ub2ljy6hynzxmb4",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 7,
+          "teamGames": 17,
+          "snapShare": 0.09714285714285716,
+          "cumulativeSnapShare": 0.04446538740299458,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "reserveWeeks": 1,
+          "excusedGames": 2
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WillJo011",
+      "playerName": "Josh Williams",
+      "position": "RB",
+      "teamId": "TB",
+      "espnId": "4568024",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/c2zxbiz8153usfggosvv",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.043333333333333335,
+          "cumulativeSnapShare": 0.01199294532627866,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "reserveWeeks": 5,
+          "excusedGames": 7
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WillKe08",
+      "playerName": "Ke'Shawn Williams",
+      "position": "WR",
+      "teamId": "PIT",
+      "espnId": "4570738",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/r7enwgccqv93feuoeurz",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 11,
+          "teamGames": 18,
+          "snapShare": 0.035454545454545454,
+          "cumulativeSnapShare": 0.033873343151693665,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CIN"
+        }
+      ]
+    },
+    {
+      "playerId": "WisdRa00",
+      "playerName": "Rashad Wisdom",
+      "position": "S",
+      "teamId": "TB",
+      "espnId": "4428917",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/b1tsjkgvh7sb3yaxpexg",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 3,
+          "teamGames": 17,
+          "snapShare": 0.02,
+          "cumulativeSnapShare": 0.008141762452107279,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "reserveWeeks": 10,
+          "excusedGames": 11
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false
+        }
+      ]
+    },
+    {
+      "playerId": "WoodJa02",
+      "playerName": "Jackson Woodard",
+      "position": "LB",
+      "teamId": "MIA",
+      "espnId": "4685637",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/az85ciifheyqiga3yqot",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WrigJa05",
+      "playerName": "Jacardia Wright",
+      "position": "RB",
+      "teamId": "SEA",
+      "espnId": "4428943",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tp3d97gujpw7fkvn7gno",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 1,
+          "teamGames": 20,
+          "snapShare": 0.09,
+          "cumulativeSnapShare": 0.003980891719745223,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "WrigRe00",
+      "playerName": "Rejzohn Wright",
+      "position": "DB",
+      "teamId": "NO",
+      "espnId": "4696043",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yrq9uabvv4pfbc0terbp",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 4,
+          "teamGames": 17,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    },
+    {
+      "playerId": "YuroBe00",
+      "playerName": "Ben Yurosek",
+      "position": "TE",
+      "teamId": "MIN",
+      "espnId": "4433959",
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q6ea6dqd4nn27aeihiv7",
+      "seasons": [
+        {
+          "year": 2025,
+          "gamesPlayed": 12,
+          "teamGames": 17,
+          "snapShare": 0.16583333333333336,
+          "cumulativeSnapShare": 0.13133533133533135,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 2
+        },
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
+    }
+  ]
+}

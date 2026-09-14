@@ -6,6 +6,8 @@ import {
   saveShowDeparted,
   loadLandingIntroDismissed,
   saveLandingIntroDismissed,
+  loadShowFreeAgents,
+  saveShowFreeAgents,
 } from './storage';
 
 describe('storage', () => {
@@ -56,8 +58,8 @@ describe('showDeparted storage', () => {
     localStorage.clear();
   });
 
-  it('returns false when localStorage is empty', () => {
-    expect(loadShowDeparted()).toBe(false);
+  it('defaults to true, so a roster shows its whole history', () => {
+    expect(loadShowDeparted()).toBe(true);
   });
 
   it('loads and persists true', () => {
@@ -70,8 +72,15 @@ describe('showDeparted storage', () => {
     expect(loadShowDeparted()).toBe(false);
   });
 
-  it('returns false for non-boolean stored value', () => {
+  it('falls back to the default for a non-boolean stored value', () => {
     localStorage.setItem('nfl-draft-success-show-departed', '"yes"');
+    expect(loadShowDeparted()).toBe(true);
+  });
+
+  it('remembers an explicit opt-out rather than reapplying the default', () => {
+    // Someone who turned departed players off must stay opted out; only an
+    // absent preference takes the new default.
+    saveShowDeparted(false);
     expect(loadShowDeparted()).toBe(false);
   });
 });
@@ -98,5 +107,27 @@ describe('landing intro dismissed storage', () => {
   it('returns false for non-boolean stored value', () => {
     localStorage.setItem('nfl-draft-success-landing-intro-dismissed', '"yes"');
     expect(loadLandingIntroDismissed()).toBe(false);
+  });
+});
+
+describe('showFreeAgents preference', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('defaults to false, so undrafted players are opt-in', () => {
+    expect(loadShowFreeAgents()).toBe(false);
+  });
+
+  it('loads and persists true', () => {
+    saveShowFreeAgents(true);
+    expect(loadShowFreeAgents()).toBe(true);
+  });
+
+  it('keeps its own key, independent of showDeparted', () => {
+    saveShowFreeAgents(true);
+    saveShowDeparted(false);
+    expect(loadShowFreeAgents()).toBe(true);
+    expect(loadShowDeparted()).toBe(false);
   });
 });

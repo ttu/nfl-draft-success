@@ -1,4 +1,4 @@
-import type { DraftClass, DraftPick, Season, Team } from '../types';
+import type { DraftClass, DraftPick, FreeAgent, Season, Team } from '../types';
 
 /**
  * Test data builders for the core draft types.
@@ -94,6 +94,25 @@ export function makeDraftClass(
   };
   for (const pick of cls.picks) pick.draftYear = cls.year;
   return cls;
+}
+
+/**
+ * An undrafted free agent with no season rows. Mirrors {@link makePick} minus
+ * `round`/`overallPick` — that absence is what {@link isDraftPick}
+ * discriminates on — and derives `playerId`/`playerName` from a caller-supplied
+ * or default index so fixtures stay distinguishable without spelling both out.
+ */
+export function makeFreeAgent(overrides: Partial<FreeAgent> = {}): FreeAgent {
+  const id = overrides.playerId ?? 'fa-1';
+  return {
+    playerId: id,
+    playerName: `Free Agent ${id}`,
+    position: 'ZZ',
+    teamId: 'KC',
+    draftYear: 2023,
+    seasons: [],
+    ...overrides,
+  };
 }
 
 export function makeTeam(overrides: Partial<Team> = {}): Team {

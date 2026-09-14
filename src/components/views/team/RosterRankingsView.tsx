@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import type { DraftClass } from '../../../types';
+import type { DraftClass, FreeAgentClass } from '../../../types';
 import { DRAFT_YEAR_BOUNDS } from '../../../lib/draftYearBounds';
 import { hasRosterSnapshot } from '../../../lib/currentRoster';
 import {
@@ -12,6 +12,8 @@ import { StatBlock } from '../../design/StatBlock';
 interface RosterRankingsViewProps {
   /** All shipped classes — the roster is not a year-range question. */
   draftClasses: DraftClass[];
+  /** The undrafted classes, counted the same way the roster page counts them. */
+  freeAgentClasses: FreeAgentClass[];
 }
 
 /**
@@ -21,8 +23,11 @@ interface RosterRankingsViewProps {
  * Deliberately not a slice of the year selector: unlike the draft rankings,
  * this asks who is on the team now, so it reads every shipped class.
  */
-export function RosterRankingsView({ draftClasses }: RosterRankingsViewProps) {
-  const rankings = getRosterRankings(draftClasses);
+export function RosterRankingsView({
+  draftClasses,
+  freeAgentClasses,
+}: RosterRankingsViewProps) {
+  const rankings = getRosterRankings(draftClasses, freeAgentClasses);
 
   return (
     <section className="rankings-view" aria-label="Current roster rankings">
@@ -70,9 +75,11 @@ function RosterRankingsHero({ rankings }: { rankings: RosterRanking[] }) {
             Whose roster is <em>stocked</em> right now.
           </h1>
           <p className="page-hero__lede">
-            Every tracked draftee on a roster today, scored on the seasons he
-            actually played — wherever he was drafted. A team&rsquo;s score is
-            the average of those.
+            Every tracked player on a roster today — drafted or undrafted —
+            scored on the seasons he actually played, wherever he arrived from.
+            A team&rsquo;s score is the average of those. Rosters here are the
+            league&rsquo;s listings, so they take in the practice squad and
+            reserve as well as the active 53.
           </p>
         </div>
 

@@ -34,15 +34,21 @@ import {
   formatYearRangeShort,
   type LaggedWindows,
 } from '../../../lib/laggedWindow';
-import type { DraftClass, DraftPick, Role } from '../../../types';
+import type { DraftClass, Role } from '../../../types';
 import type { TeamRanking } from '../../../lib/getRollingDraftScore';
 import type { RollingDraftScore } from '../../../lib/getRollingDraftScore';
 import { getTeamPicks } from '../../../lib/picksByTeam';
+import {
+  countPicks,
+  countUndrafted,
+  type RosterByDraftYear,
+} from '../../../lib/getRosterByDraftYear';
 
-export interface RosterPick {
-  pick: DraftPick;
-  draftYear: number;
-}
+/**
+ * Re-exported so `App` can type its roster state without importing the lib
+ * directly; the grouping itself lives in `getRosterByDraftYear`.
+ */
+export type { RosterByDraftYear };
 
 type TeamRank = { rank: number; total: number; rankings: TeamRanking[] } | null;
 
@@ -56,10 +62,13 @@ export interface TeamDetailContentProps {
   draftingTeamOnly: boolean;
   roleFilter: Set<Role>;
   setRoleFilter: (value: Set<Role>) => void;
-  rosterByDraftYear: { year: number; picks: RosterPick[] }[];
+  rosterByDraftYear: RosterByDraftYear[];
   depthChartUrl: string | null;
   showDeparted: boolean;
   setShowDeparted: (value: boolean) => void;
+  /** Whether the roster lists undrafted players alongside the picks. */
+  showFreeAgents: boolean;
+  setShowFreeAgents: (value: boolean) => void;
   /** This team's lagged draft-score↔win-rate row; null hides the card. */
   correlationRow: CorrelationRow | null;
   onShowMethodology: () => void;
@@ -81,6 +90,8 @@ function TeamDetailContentImpl({
   depthChartUrl,
   showDeparted,
   setShowDeparted,
+  showFreeAgents,
+  setShowFreeAgents,
   correlationRow,
   onShowMethodology,
   windows,
@@ -173,6 +184,8 @@ function TeamDetailContentImpl({
           setRoleFilter={setRoleFilter}
           showDeparted={showDeparted}
           setShowDeparted={setShowDeparted}
+          showFreeAgents={showFreeAgents}
+          setShowFreeAgents={setShowFreeAgents}
           hideRosterYearHeading={hideRosterYearHeading}
         />
         <SideRail
@@ -418,13 +431,15 @@ const ClassGrid = memo(function ClassGrid({
 });
 
 interface RosterSectionProps {
-  rosterByDraftYear: { year: number; picks: RosterPick[] }[];
+  rosterByDraftYear: RosterByDraftYear[];
   selectedTeam: string;
   draftingTeamOnly: boolean;
   roleFilter: Set<Role>;
   setRoleFilter: (value: Set<Role>) => void;
   showDeparted: boolean;
   setShowDeparted: (value: boolean) => void;
+  showFreeAgents: boolean;
+  setShowFreeAgents: (value: boolean) => void;
   hideRosterYearHeading: boolean;
 }
 
@@ -436,46 +451,80 @@ function RosterSection({
   setRoleFilter,
   showDeparted,
   setShowDeparted,
+  showFreeAgents,
+  setShowFreeAgents,
   hideRosterYearHeading,
 }: RosterSectionProps) {
+  // Both halves, so the total tracks the list under it. Summing picks alone
+  // left the heading frozen while "Show free agents" grew the list beneath —
+  // a number that cannot move is worse than no number.
+  const pickTotal = rosterByDraftYear.reduce((a, g) => a + countPicks(g), 0);
+  const undraftedTotal = rosterByDraftYear.reduce(
+    (a, g) => a + countUndrafted(g),
+    0,
+  );
+
   return (
     <div className="roster-section" id="team-roster">
       <div className="section-head">
+        {/* Not "Current roster": the list keeps players who have since left,
+            and can include undrafted arrivals, so it is a record of what the
+            team brought in rather than of who is here today. The separate
+            Current roster view, linked from the hero, answers that. */}
         <h2>
-          Current roster{' '}
+          Everyone they brought in.{' '}
           <span style={{ color: 'var(--ink-4)', fontWeight: 400 }}>
-            · {rosterByDraftYear.reduce((a, g) => a + g.picks.length, 0)} picks
+            · {pickTotal} picks
+            {undraftedTotal > 0 && ` · ${undraftedTotal} undrafted`}
           </span>
         </h2>
-        <label className="roster-controls">
-          <input
-            type="checkbox"
-            checked={showDeparted}
-            onChange={(e) => setShowDeparted(e.target.checked)}
-            aria-label="Show departed players"
-          />
-          <span>Show departed</span>
-        </label>
+        <div className="roster-controls-group">
+          <label className="roster-controls">
+            <input
+              type="checkbox"
+              checked={showDeparted}
+              onChange={(e) => setShowDeparted(e.target.checked)}
+              aria-label="Show departed players"
+            />
+            <span>Show departed</span>
+          </label>
+          <label className="roster-controls">
+            <input
+              type="checkbox"
+              checked={showFreeAgents}
+              onChange={(e) => setShowFreeAgents(e.target.checked)}
+              aria-label="Show free agents"
+            />
+            <span>Show free agents</span>
+          </label>
+        </div>
       </div>
 
       <RoleFilter value={roleFilter} onChange={setRoleFilter} />
 
-      {rosterByDraftYear.map(({ year, picks }) => (
-        <div key={year} id={`roster-year-${year}`} className="roster-year">
-          {!hideRosterYearHeading && (
-            <div className="roster-year__head">
-              <span className="roster-year__title">Draft {year}</span>
-              <span className="kicker">{picks.length} picks</span>
-              <span className="roster-year__rule" />
-            </div>
-          )}
-          <PlayerList
-            picks={picks}
-            teamId={selectedTeam}
-            draftingTeamOnly={draftingTeamOnly}
-          />
-        </div>
-      ))}
+      {rosterByDraftYear.map((group) => {
+        const { year, players } = group;
+        const undrafted = countUndrafted(group);
+        return (
+          <div key={year} id={`roster-year-${year}`} className="roster-year">
+            {!hideRosterYearHeading && (
+              <div className="roster-year__head">
+                <span className="roster-year__title">Draft {year}</span>
+                <span className="kicker">
+                  {countPicks(group)} picks
+                  {undrafted > 0 && ` · ${undrafted} undrafted`}
+                </span>
+                <span className="roster-year__rule" />
+              </div>
+            )}
+            <PlayerList
+              picks={players}
+              teamId={selectedTeam}
+              draftingTeamOnly={draftingTeamOnly}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

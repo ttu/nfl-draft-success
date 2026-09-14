@@ -8,32 +8,36 @@ test.describe('Departed players toggle', () => {
     await expect(page.locator('.team-hero')).toBeVisible();
   });
 
-  test('toggle is unchecked by default', async ({ page }) => {
+  test('toggle is checked by default', async ({ page }) => {
     const toggle = page.locator('[aria-label="Show departed players"]');
-    await expect(toggle).not.toBeChecked();
+    await expect(toggle).toBeChecked();
   });
 
-  test('no departed player rows shown by default', async ({ page }) => {
-    await expect(page.locator('.roster-table .role-chip.gone')).toHaveCount(0);
+  test('departed player rows are shown by default', async ({ page }) => {
+    await expect(
+      page.locator('#team-roster .roster-table .role-chip.gone').first(),
+    ).toBeVisible();
   });
 
-  test('enabling the toggle reveals departed players', async ({ page }) => {
-    const totalBefore = await page.locator('.roster-table tbody tr').count();
+  test('disabling the toggle hides departed players', async ({ page }) => {
+    const totalBefore = await page
+      .locator('#team-roster .roster-table tbody tr')
+      .count();
 
-    await page.locator('[aria-label="Show departed players"]').check();
+    await page.locator('[aria-label="Show departed players"]').uncheck();
 
-    const departedRows = page.locator('.roster-table tbody tr', {
-      has: page.locator('.role-chip.gone'),
-    });
-    expect(await departedRows.count()).toBeGreaterThan(0);
+    await expect(
+      page.locator('#team-roster .roster-table .role-chip.gone'),
+    ).toHaveCount(0);
 
-    const totalAfter = await page.locator('.roster-table tbody tr').count();
-    expect(totalAfter).toBeGreaterThan(totalBefore);
+    const totalAfter = await page
+      .locator('#team-roster .roster-table tbody tr')
+      .count();
+    expect(totalAfter).toBeLessThan(totalBefore);
   });
 
   test('departed player rows show the current team', async ({ page }) => {
-    await page.locator('[aria-label="Show departed players"]').check();
-    const departedRows = page.locator('.roster-table tbody tr', {
+    const departedRows = page.locator('#team-roster .roster-table tbody tr', {
       has: page.locator('.role-chip.gone'),
     });
     const count = await departedRows.count();

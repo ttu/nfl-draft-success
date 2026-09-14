@@ -47,6 +47,7 @@ const loadLaggedRankings = vi.fn(async () => ({
   rankings: [],
 }));
 const loadDataMeta = vi.fn(async () => null);
+const loadFreeAgentsForYears = vi.fn(async () => []);
 
 vi.mock('./lib/loadData', () => ({
   loadDataForYears,
@@ -54,6 +55,7 @@ vi.mock('./lib/loadData', () => ({
   loadTeamSuccess,
   loadLaggedRankings,
   loadDataMeta,
+  loadFreeAgentsForYears,
 }));
 
 // Import App AFTER the mock is registered.

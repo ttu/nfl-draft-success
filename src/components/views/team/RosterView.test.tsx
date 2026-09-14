@@ -72,14 +72,18 @@ const classes = [
 
 describe('RosterView', () => {
   it('lists players currently on the team and omits those who left', () => {
-    renderView(<RosterView teamId="BUF" draftClasses={classes} />);
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
     expect(screen.getByText('Josh Starter')).toBeInTheDocument();
     expect(screen.getByText('Traded Corner')).toBeInTheDocument();
     expect(screen.queryByText('Gone Receiver')).not.toBeInTheDocument();
   });
 
   it('groups by position group in depth-chart order', () => {
-    renderView(<RosterView teamId="BUF" draftClasses={classes} />);
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
     const headings = screen
       .getAllByRole('heading', { level: 3 })
       .map((h) => h.textContent);
@@ -87,7 +91,9 @@ describe('RosterView', () => {
   });
 
   it('marks a player his team did not draft', () => {
-    renderView(<RosterView teamId="BUF" draftClasses={classes} />);
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
     const row = screen.getByText('Traded Corner').closest('tr');
     expect(row).not.toBeNull();
     // Twice over: the draft-origin column a wide screen shows, and the line
@@ -96,7 +102,9 @@ describe('RosterView', () => {
   });
 
   it('repeats the collapsing columns inside the name cell', () => {
-    renderView(<RosterView teamId="BUF" draftClasses={classes} />);
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
     const row = screen.getByText('Josh Starter').closest('tr') as HTMLElement;
     const meta = row.querySelector('.roster-row__meta');
     expect(meta?.textContent).toContain(`${CURRENT - 2} · R1`);
@@ -107,29 +115,37 @@ describe('RosterView', () => {
   });
 
   it('shows a player with no played seasons as awaiting data', () => {
-    renderView(<RosterView teamId="BUF" draftClasses={classes} />);
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
     const row = screen.getByText('Rookie Passer').closest('tr');
     expect(within(row as HTMLElement).getByText('—')).toBeInTheDocument();
   });
 
   it('links each player to his profile', () => {
-    renderView(<RosterView teamId="BUF" draftClasses={classes} />);
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
     expect(
       screen.getByRole('link', { name: 'Josh Starter' }).getAttribute('href'),
     ).toContain('/player/');
   });
 
-  it('says the page covers tracked draftees only', () => {
-    renderView(<RosterView teamId="BUF" draftClasses={classes} />);
+  it('names the entry window the page covers', () => {
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
     expect(
       screen.getByText(
-        new RegExp(`drafted ${DRAFT_YEAR_BOUNDS.min}.${DRAFT_YEAR_BOUNDS.max}`),
+        new RegExp(`entered the league from ${DRAFT_YEAR_BOUNDS.min} on`, 'i'),
       ),
     ).toBeInTheDocument();
   });
 
   it('renders an empty state when no tracked player is on the roster', () => {
-    renderView(<RosterView teamId="NYJ" draftClasses={classes} />);
+    renderView(
+      <RosterView teamId="NYJ" draftClasses={classes} freeAgentClasses={[]} />,
+    );
     expect(screen.getByText(/No tracked draftees/)).toBeInTheDocument();
   });
 
@@ -148,10 +164,37 @@ describe('RosterView', () => {
         ],
       }),
     ];
-    renderView(<RosterView teamId="BUF" draftClasses={noSnapshotClasses} />);
+    renderView(
+      <RosterView
+        teamId="BUF"
+        draftClasses={noSnapshotClasses}
+        freeAgentClasses={[]}
+      />,
+    );
     expect(screen.queryByText(/No tracked draftees/)).not.toBeInTheDocument();
     expect(
       screen.getByText(/roster snapshot.*has not been published/i),
     ).toBeInTheDocument();
+  });
+});
+
+describe('what the roster claims to contain', () => {
+  it('says it includes the practice squad and reserve, not just the 53', () => {
+    // The page indexes the league's roster listing without filtering status,
+    // so it must not imply an active-roster view.
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
+    expect(screen.getByText(/practice squad/i)).toBeInTheDocument();
+    expect(screen.getByText(/reserve/i)).toBeInTheDocument();
+  });
+
+  it('no longer claims undrafted players are untracked', () => {
+    // They are listed now; the old caveat said the opposite and no test caught
+    // it changing from true to false.
+    renderView(
+      <RosterView teamId="BUF" draftClasses={classes} freeAgentClasses={[]} />,
+    );
+    expect(screen.queryByText(/undrafted players.*not tracked/i)).toBeNull();
   });
 });
