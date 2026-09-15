@@ -12,6 +12,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
-    exclude: ['e2e/**', 'node_modules/**'],
+    // `.worktrees/**` holds sibling git worktrees, each with its own
+    // node_modules and src — without this, a run from the main checkout picks
+    // up their tests (and their dependencies' bundled tests) and fails.
+    exclude: ['e2e/**', 'node_modules/**', '.worktrees/**'],
   },
 });
