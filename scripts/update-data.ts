@@ -47,6 +47,7 @@ import {
   type NflversePlayerRow,
 } from '../src/lib/freeAgentCohort';
 import { firstSnapTeam } from '../src/lib/firstSnapTeam';
+import { trimReconstructibleSeasons } from '../src/lib/trailingSeasons';
 
 const BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 /** First season nflverse publishes snap counts for. */
@@ -1209,7 +1210,12 @@ function buildCareerSeasons(params: {
     if (offseason) seasons.push(offseason);
   }
 
-  return seasons;
+  // Years after a career ends are a pure function of franchise and season, so
+  // they are left out of the file and rebuilt on parse from
+  // `src/data/team-games.json`. They still count — career-mode scoring divides
+  // across every season since the player entered the league, and the rows are
+  // back before anything scores. See `src/lib/trailingSeasons.ts`.
+  return trimReconstructibleSeasons(seasons);
 }
 
 function buildDraftPick(
@@ -1347,6 +1353,51 @@ function seasonRange(from: number, to: number): number[] {
   return Array.from({ length: to - from + 1 }, (_, i) => from + i);
 }
 
+/**
+ * Writes the table that lets the class files leave out a season row for every
+ * year a player spends out of the league — roughly a quarter of the payload.
+ *
+ * Same fallback order those rows were written with in
+ * {@link resolveTeamGamesDenominator}: the player's own franchise, else the
+ * deepest run anyone made that year. Lands in `src/data/` for the same reason
+ * as the season window — parsing must not wait on a fetch. Read back by
+ * `src/lib/trailingSeasons.ts`.
+ */
+function writeTeamGames(params: {
+  outPath: string;
+  generatedAt: string;
+  franchiseGameCountsBySeason: Map<number, Map<string, number>>;
+  maxFranchiseGamesBySeason: Map<number, number>;
+}): void {
+  const {
+    outPath,
+    generatedAt,
+    franchiseGameCountsBySeason,
+    maxFranchiseGamesBySeason,
+  } = params;
+
+  const gamesBySeason: Record<
+    string,
+    { max: number; byTeam: Record<string, number> }
+  > = {};
+  const seasons = [...franchiseGameCountsBySeason.keys()].sort((a, b) => a - b);
+  for (const season of seasons) {
+    const byTeam = franchiseGameCountsBySeason.get(season);
+    if (!byTeam || byTeam.size === 0) continue;
+    gamesBySeason[String(season)] = {
+      max:
+        maxFranchiseGamesBySeason.get(season) ?? Math.max(...byTeam.values()),
+      byTeam: Object.fromEntries([...byTeam.entries()].sort()),
+    };
+  }
+
+  fs.writeFileSync(
+    outPath,
+    JSON.stringify({ generatedAt, gamesBySeason }, null, 2) + '\n',
+  );
+  console.log(`  Wrote team game counts ${outPath}`);
+}
+
 async function main() {
   const outDir = path.join(process.cwd(), 'public', 'data');
   fs.mkdirSync(outDir, { recursive: true });
@@ -1438,7 +1489,7 @@ async function main() {
       picks.push(buildDraftPick(row, year, picks.length, sources));
     }
 
-    const draftClass = { year, picks };
+    const draftClass = { year, seasonsThrough: maxSeason, picks };
     const outPath = path.join(outDir, `draft-${year}.json`);
     fs.writeFileSync(outPath, JSON.stringify(draftClass, null, 2));
     console.log(`  Wrote ${picks.length} picks to ${outPath}`);
@@ -1492,7 +1543,10 @@ async function main() {
   for (const year of faYears) {
     const freeAgents = freeAgentsByYear.get(year) ?? [];
     const outPath = path.join(outDir, `fa-${year}.json`);
-    fs.writeFileSync(outPath, JSON.stringify({ year, freeAgents }, null, 2));
+    fs.writeFileSync(
+      outPath,
+      JSON.stringify({ year, seasonsThrough: maxSeason, freeAgents }, null, 2),
+    );
     console.log(`  Wrote ${freeAgents.length} free agents to ${outPath}`);
   }
 
@@ -1526,6 +1580,13 @@ async function main() {
     ) + '\n',
   );
   console.log(`  Wrote season window ${seasonWindowPath}`);
+
+  writeTeamGames({
+    outPath: path.join(process.cwd(), 'src', 'data', 'team-games.json'),
+    generatedAt: lastUpdated,
+    franchiseGameCountsBySeason,
+    maxFranchiseGamesBySeason,
+  });
 
   console.log('Done.');
 }

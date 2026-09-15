@@ -1,5 +1,6 @@
 import type { FreeAgent, FreeAgentClass } from '../types';
 import { withoutRestGame } from './restGame';
+import { hydrateAcquisitionSeasons } from './trailingSeasons';
 
 /**
  * A free-agent class as it exists in `fa-{year}.json`: the stored shape, minus
@@ -13,6 +14,8 @@ import { withoutRestGame } from './restGame';
  */
 export interface RawFreeAgentClass {
   year: number;
+  /** See {@link ./draftClass.RawDraftClass.seasonsThrough}. */
+  seasonsThrough?: number;
   freeAgents: Omit<FreeAgent, 'draftYear'>[];
 }
 
@@ -27,7 +30,12 @@ export function stampFreeAgentYear(cls: RawFreeAgentClass): FreeAgentClass {
   const stamped = cls as FreeAgentClass;
   for (const fa of stamped.freeAgents) {
     fa.draftYear = stamped.year;
-    fa.seasons = fa.seasons.map(withoutRestGame);
+    fa.seasons = hydrateAcquisitionSeasons(
+      fa.seasons,
+      fa.teamId,
+      stamped.year,
+      stamped.seasonsThrough,
+    ).map(withoutRestGame);
   }
   return stamped;
 }

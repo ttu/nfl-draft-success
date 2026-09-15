@@ -101,6 +101,7 @@ Team-centric view filters client-side.
 ```json
 {
   "year": 2023,
+  "seasonsThrough": 2025,
   "picks": [
     {
       "playerId": "00-0033873",
@@ -224,6 +225,27 @@ export interface FreeAgentClass {
   ]
 }
 ```
+
+### Elided season rows
+
+Both class files carry `seasonsThrough`: the newest played season the writer ran
+season rows out to. Rows for years a player spent **out of the league** are left
+out of the file up to that year and rebuilt at parse time by
+`src/lib/trailingSeasons.ts`, from the per-franchise game counts in
+`src/data/team-games.json`. About a quarter of the payload, and every field on
+such a row is implied by the player's franchise and the year.
+
+The rows still count. Career-mode scoring divides across every season since a
+player entered the league, so those zeros are his penalty for a short career —
+they are simply back in place before anything scores. `stampDraftYear` and
+`stampFreeAgentYear` are the only places this happens, so nothing in `src/lib`
+or `src/components` sees a shortened career.
+
+Only a genuinely empty year is elided. A season the player was rostered for but
+never played (`retained: true`), one spent on injured reserve (`reserveWeeks`),
+and the offseason roster row (`teamGames: 0`) all stay in the file — they carry
+information no lookup can put back. A class with no `seasonsThrough` (a test
+fixture, or a file from a deploy that predates this) is left exactly as stored.
 
 Note `draftYear` is absent from the stored file — it is stamped as `2019` (the enclosing class's `year`, his debut season) by `stampFreeAgentYear` at parse time, exactly as `stampDraftYear` stamps a `DraftPick.draftYear` from its enclosing `draft-{year}.json`.
 

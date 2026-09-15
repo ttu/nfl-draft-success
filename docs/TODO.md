@@ -13,7 +13,7 @@ Items are grouped by the risk of getting them wrong, not by size.
 These alter values the site already displays, so each needs its own branch and its own
 before/after evidence. None of them can ride along with unrelated work.
 
-### Trailing out-of-league season rows dilute career-mode scores
+### Trailing out-of-league season rows are intentional (settled)
 
 **What.** When a player leaves the NFL, `scripts/update-data.ts` keeps emitting a season
 row for every remaining year through the newest played season — `gamesPlayed: 0`,
@@ -32,23 +32,44 @@ after an injury in his debut year:
 The drafting-team number is unaffected — that path filters to retained seasons and
 divides by the contract window — so only career mode is distorted.
 
-**Why it is not obviously a bug.** It is arguable that a career-mode score _should_ be
-divided across every season since the player entered the league. Settle that question
-before changing anything; the fix is different depending on the answer.
+**Decision (2026-09-15): keep them. Career mode divides across every season since the
+player entered the league, and this is shipped behavior already.** The expectation window
+does not close when a career does: an acquisition is expected to return value through the
+newest played season, so the years he spent out of the league count as zeros against him.
+A player who washed out after one season _is_ a worse outcome than one who produced for
+five, and the mean has to say so. No scoring change is wanted; the table above records
+what the alternative would have cost, not a defect.
 
-**The trap.** The newest trailing row is load-bearing and must be kept. `isDeparted`
-(`src/lib/playerJourney.ts`) reads only the latest row of any kind; Adams' last _played_
-season is 2013 with `retained: true`, so dropping the trailing rows wholesale would make
-the site claim he is still on Buffalo. Keep-newest, drop-the-rest preserves departure,
-the `FA` indicator, and every drafting-team figure.
+The mechanism is correct as written: a trailing row scores exactly 0 in `getSeasonScore`
+(`snapShare` 0, `gamesPlayed / teamGames` 0) and adds 1 to the `seasons.length`
+denominator in `getPlayerAverageScoreWeight` / `getPlayerDraftScore`. `buildCareerSeasons`
+emits the rows `startSeason → maxSeason` unconditionally, so picks and free agents are
+treated identically.
 
-**Scope.** This is shared pipeline behavior, so it moves **draft picks too** — 13,894
-non-retained rows across `draft-*.json`. That is why it was kept out of the free-agent
-branch, which held a hard "no picks-only value may change" constraint.
+Two notes for anyone who reopens this:
 
-**Payoff.** 6,186 of 16,582 free-agent season rows are redundant trailing zeros: about
-1.56 MB of the 4.19 MB of free-agent JSON, before counting the same saving on the pick
-files.
+- `teamGames` on an out-of-league row is arbitrary — `resolveTeamGamesDenominator` finds
+  no primary or injury team and falls back to the drafting team's game count, or to the
+  league's deepest playoff run for a free agent with no drafting team (hence `19` in
+  `fa-2013.json`). It is **score-neutral**, because `gamesPlayed` is 0 either way; it
+  matters only as the `isPlayedSeason` gate. Do not "fix" it expecting numbers to move.
+- Zero games does not imply out of the league. Alex Lewis' 2017 and 2021 are real NFL
+  seasons spent on injured reserve (`reserveWeeks` 16 and 17) and must keep counting. Any
+  future trim has to key on league absence, not on `gamesPlayed === 0`.
+
+**The trap the trim had to clear.** `isDeparted` (`src/lib/playerJourney.ts`) reads only
+the latest row of any kind, and Adams' last _played_ season is 2013 with `retained: true`
+— so a trim that simply dropped his trailing rows would have made the site claim he is
+still on Buffalo. Rebuilding them at parse time sidesteps it entirely: `isDeparted` sees
+the same last row it always did. Anything that later moves the rebuild _later_ than the
+parse boundary reopens this.
+
+**Payload: done (2026-09-15).** The rows are no longer _stored_, only counted. 15,482 of
+41,321 season rows were pure function of franchise and year, so `update-data.ts` stops
+writing them and `src/lib/trailingSeasons.ts` rebuilds them in `stampDraftYear` /
+`stampFreeAgentYear` from `src/data/team-games.json` (8 KB). `public/data` went 11.65 MB →
+8.71 MB, with the round trip verified exact over every shipped player and the derived
+baselines and rankings regenerating byte-identical. No displayed number moved.
 
 ### The free-agent expectation is a survivors' average; a pick's is not
 

@@ -1,5 +1,6 @@
 import type { DraftClass, DraftPick } from '../types';
 import { withoutRestGame } from './restGame';
+import { hydrateAcquisitionSeasons } from './trailingSeasons';
 
 /**
  * A class as it exists before stamping: exactly `DraftClass`, minus the
@@ -12,17 +13,26 @@ import { withoutRestGame } from './restGame';
  */
 export interface RawDraftClass {
   year: number;
+  /**
+   * Season the pipeline wrote rows out to. Present only on generated files,
+   * and its presence is what licenses {@link hydrateAcquisitionSeasons} to
+   * rebuild the out-of-league rows the writer elided. Hand-built classes omit
+   * it and are left exactly as given.
+   */
+  seasonsThrough?: number;
   picks: Omit<DraftPick, 'draftYear'>[];
 }
 
 /**
  * Prepares a freshly-parsed class for use: stamps each pick with its
- * `draftYear`, and subtracts any rested finale from its seasons.
+ * `draftYear`, rebuilds the season rows the writer elided, and subtracts any
+ * rested finale from what is left.
  *
- * Rest exclusion belongs here, at the single point every path parsing draft
- * JSON goes through, so role classification, season scores, cohort baselines
- * and the derivation scripts all see the shortened schedule without each having
- * to remember. See {@link ./restGame.withoutRestGame}.
+ * All three belong here, at the single point every path parsing draft JSON
+ * goes through, so role classification, season scores, cohort baselines and
+ * the derivation scripts all see the same career without each having to
+ * remember. See {@link ./restGame.withoutRestGame} and
+ * {@link ./trailingSeasons.hydrateAcquisitionSeasons}.
  *
  * `draft-{year}.json` carries the year once, on the class, but scoring needs it
  * per pick: {@link getPlayerDraftScore} divides by the rookie-contract window,
@@ -32,14 +42,17 @@ export interface RawDraftClass {
  * The year is taken from `cls.year` rather than from any pick payload, so a
  * stale or hand-edited `draftYear` in the JSON cannot survive a load.
  *
- * `pick.seasons[0].year` would give the same answer today — `update-data.ts`
- * emits a row per elapsed season, including zero-game ones, so first rows line
- * up with draft years across every pick in the dataset. It is deliberately not
- * used. That alignment is a property of the current emit behaviour, not a
- * guarantee; if a refresh ever stopped emitting empty rows, a pick who missed
- * his rookie year would be measured against a *shorter* window and score
- * *higher* for having missed it. Silent, backwards, and invisible from outside
- * the scoring function.
+ * `pick.seasons[0].year` is deliberately not used, and the hazard it guards
+ * against is no longer hypothetical. A pick measured against a *shorter*
+ * window scores *higher* for the seasons he missed — silent, backwards, and
+ * invisible from outside the scoring function. The files now genuinely omit
+ * rows (every year after a career ends), so the only trustworthy source for
+ * where a window opens is `cls.year`, which no refresh can shorten.
+ *
+ * The elided rows are put back below, before the pick reaches anything that
+ * scores it, from the season horizon the class states. `src/data`'s
+ * `shippedSeasonRows.test.ts` asserts that every shipped pick comes back
+ * whole.
  *
  * Mutates in place and returns the same object: called once per class at load,
  * before anything caches or scores, and copying ~260 picks per class earns
@@ -56,7 +69,12 @@ export function stampDraftYear(cls: RawDraftClass): DraftClass {
   const stamped = cls as DraftClass;
   for (const pick of stamped.picks) {
     pick.draftYear = stamped.year;
-    pick.seasons = pick.seasons.map(withoutRestGame);
+    pick.seasons = hydrateAcquisitionSeasons(
+      pick.seasons,
+      pick.teamId,
+      stamped.year,
+      stamped.seasonsThrough,
+    ).map(withoutRestGame);
   }
   return stamped;
 }
