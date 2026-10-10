@@ -49,18 +49,24 @@ for (const width of PHONE_WIDTHS) {
 
     test('keeps every range preset reachable', async ({ page }) => {
       // The presets used to sit in a box that scrolled with its scrollbar
-      // hidden, so at 320 the last chip was simply unreachable. They wrap
-      // instead, which costs a second row at that width alone — one chip
-      // (28px) plus the row's 9px padding — and buys every chip on screen.
+      // hidden, so the last chip was simply unreachable at the widths where
+      // four of them no longer fit. They wrap instead — whatever the chips
+      // measure, all four are on screen.
       const cut = await page
         .locator('.subbar__presets')
         .evaluate((el) => el.scrollWidth - el.clientWidth);
       expect(cut).toBeLessThanOrEqual(1);
 
+      // Above the wrap breakpoint the row still costs a single line. At or
+      // below it a second line is allowed but not required: whether four chips
+      // fit one row at 360 comes down to how wide the font renders, which
+      // differs between a developer's machine and CI. The cap is there to
+      // catch a runaway row, not to pin the wrap to a particular platform —
+      // one chip (28px) plus the row's 9px padding is the second line's cost.
       const height = await page
         .locator('.subbar')
         .evaluate((el) => el.getBoundingClientRect().height);
-      expect(height).toBeLessThanOrEqual(width <= 320 ? 90 : 50);
+      expect(height).toBeLessThanOrEqual(width <= 360 ? 90 : 50);
     });
 
     test('lists the board from #4, the podium having taken the top three', async ({
