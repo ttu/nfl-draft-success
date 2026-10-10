@@ -14,8 +14,14 @@ test.describe('Departed players toggle', () => {
   });
 
   test('departed player rows are shown by default', async ({ page }) => {
+    // Each row states its role twice — the role column, and a copy under the
+    // name that the narrow layout shows instead. Assert against the column,
+    // which is the copy this desktop viewport displays.
     await expect(
-      page.locator('#team-roster .roster-table .role-chip.gone').first(),
+      page
+        .locator('#team-roster .roster-table .player-row__role-cell')
+        .locator('.role-chip.gone')
+        .first(),
     ).toBeVisible();
   });
 

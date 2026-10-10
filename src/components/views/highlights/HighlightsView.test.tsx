@@ -396,3 +396,18 @@ describe('the undrafted band', () => {
     expect(row).not.toHaveTextContent(/R\d+ #\d+/);
   });
 });
+
+describe('the meta line under a highlight name', () => {
+  it('keeps the logo with its team code but lets the detail wrap', () => {
+    const { container } = renderView(standoutHighlights);
+
+    const row = container.querySelector('.highlight-row__meta');
+    const badge = row?.querySelector('.nowrap .team-logo')?.closest('.nowrap');
+    // The badge holds the logo and the code it belongs to — nothing more.
+    expect(badge?.textContent?.trim()).toBe('DET');
+    // The list's own detail is a separate, breakable group; a long one used to
+    // run off the card's right edge on a phone.
+    expect(row?.textContent).toMatch(/score 88/);
+    expect(badge?.textContent).not.toMatch(/score 88/);
+  });
+});

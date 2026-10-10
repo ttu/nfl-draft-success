@@ -69,9 +69,11 @@ describe('PlayerList', () => {
     expect(screen.getByText('R7·245')).toBeInTheDocument();
     expect(screen.queryByText(/'1[78]/)).not.toBeInTheDocument();
 
-    // Role labels derived from snap share
-    expect(screen.getByText('Core Starter')).toBeInTheDocument();
-    expect(screen.getByText('Non-Contributor')).toBeInTheDocument();
+    // Role labels derived from snap share. Each row states its role twice —
+    // once in the role column, once under the name for the narrow layout —
+    // and CSS shows exactly one of the two.
+    expect(screen.getAllByText('Core Starter')).toHaveLength(2);
+    expect(screen.getAllByText('Non-Contributor')).toHaveLength(2);
 
     // One <tr> per pick
     expect(screen.getAllByRole('row')).toHaveLength(2);
@@ -140,15 +142,16 @@ describe('PlayerList', () => {
     expect(screen.getByText('Traded Away')).toBeInTheDocument();
     // Current team is shown after the name
     expect(screen.getByText(/→ NYG/)).toBeInTheDocument();
-    // Departed players still carry the "Departed" chip
-    expect(screen.getByText('Departed')).toBeInTheDocument();
+    // Departed players still carry the "Departed" chip, in the role column
+    // and again on the name line the narrow layout uses.
+    expect(screen.getAllByText('Departed')).toHaveLength(2);
     // ...and also show the role they held for the drafting team. One starting
     // season out of a four-year window he left after: the badge divides by the
     // rookie window exactly as the score does, so this reads Depth, not Core
     // Starter. A pick who gave the team one year of its deal should not wear
     // the same chip as one who gave it four — see the denominator note on
     // `getPlayerAverageScoreWeight`.
-    expect(screen.getByText('Depth')).toBeInTheDocument();
+    expect(screen.getAllByText('Depth')).toHaveLength(2);
   });
 
   it('renders every pick when brandByDraftingTeam is set', () => {
@@ -272,5 +275,46 @@ describe('PlayerList', () => {
     render(<PlayerList picks={mockPicks} teamId="KC" />);
     fireEvent.click(screen.getByRole('link', { name: /Patrick Mahomes/ }));
     expect(screen.getByTestId('location').textContent).toContain('p1');
+  });
+
+  it('repeats the role under the name for the narrow layout that drops the role column', () => {
+    const { container } = render(<PlayerList picks={mockPicks} teamId="KC" />);
+
+    const row = container.querySelector('.roster-table tbody tr');
+    expect(row?.querySelector('.player-row__role')?.textContent).toBe(
+      row?.querySelector('.player-row__role-cell')?.textContent,
+    );
+  });
+
+  it('carries both the drafting role and the Departed marker under the name', () => {
+    const departedPicks = [
+      {
+        pick: makePick({
+          playerId: 'p9',
+          playerName: 'Traded Away',
+          position: 'WR',
+          round: 2,
+          overallPick: 40,
+          seasons: [
+            makeSeason({ year: 2022, snapShare: 0.7 }),
+            makeSeason({
+              year: 2023,
+              gamesPlayed: 17,
+              snapShare: 0.8,
+              retained: false,
+              currentTeam: 'NYG',
+            }),
+          ],
+        }),
+        draftYear: 2022,
+      },
+    ];
+    const { container } = render(
+      <PlayerList picks={departedPicks} teamId="KC" draftingTeamOnly />,
+    );
+
+    const inlineRole = container.querySelector('.player-row__role');
+    expect(inlineRole?.querySelectorAll('.role-chip')).toHaveLength(2);
+    expect(inlineRole?.textContent).toMatch(/Departed/i);
   });
 });

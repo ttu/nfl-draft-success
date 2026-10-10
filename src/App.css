@@ -8,6 +8,8 @@
   --ink: #12151b;
   --ink-2: #2b303a;
   --ink-3: #5b616e;
+  /* The quietest tier. It clears 3:1 but not 4.5:1, so it dresses rules, dots
+     and separators — never a label or a figure the reader has to read. */
   --ink-4: #949aa6;
   --rule: #dde1e8;
   --rule-2: #eceef2;
@@ -329,6 +331,10 @@ button {
 }
 .subbar__range-inputs input {
   width: 64px;
+  /* No spinners: they reserve room inside the field that the four digits of a
+     year need, and at the narrower mobile width that clipped the last one. The
+     field takes typed years, with min/max doing the guarding. */
+  appearance: textfield;
   padding: 4px 8px;
   border: 1px solid var(--rule);
   background: var(--card);
@@ -337,6 +343,11 @@ button {
   font-family: var(--f-mono);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
+}
+.subbar__range-inputs input::-webkit-outer-spin-button,
+.subbar__range-inputs input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
 }
 .subbar__range-inputs input:focus {
   outline: 1px solid var(--ox);
@@ -456,7 +467,7 @@ button {
   background: var(--ink-4);
 }
 .role-chip.non {
-  color: var(--ink-4);
+  color: var(--ink-3);
   background: transparent;
   border: 1px dashed var(--rule);
 }
@@ -967,6 +978,9 @@ button {
   display: block;
   min-width: 0;
 }
+/* Wraps rather than ellipses: under the design width the card's name column
+   narrows to about 100px, and "Trey Smith" came out as "Trey Smi…" — a name is
+   the one thing in this card that must read in full. */
 .highlight-spotlight__name {
   display: block;
   font-family: var(--f-display);
@@ -974,9 +988,6 @@ button {
   font-weight: 600;
   letter-spacing: -0.015em;
   line-height: 1.1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .highlight-spotlight__value {
   display: flex;
@@ -1643,6 +1654,13 @@ button {
   font-weight: 600;
   letter-spacing: -0.015em;
 }
+.section-head__count {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+.section-head__count::before {
+  content: '· ';
+}
 .class-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -1929,6 +1947,18 @@ button {
   color: var(--ink-2);
 }
 
+.role-marker {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+/* The name cell repeats the role for the narrow layout; the column carries it
+   everywhere else, so only one of the two is ever visible. */
+.player-row__role {
+  display: none;
+}
+
 .roster-year {
   margin-bottom: 22px;
   scroll-margin-top: 16px;
@@ -1999,7 +2029,7 @@ button {
   color: var(--ox);
 }
 .roster-table__score--low {
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 
 /* ─── Team logo medallion ─────────────────────────────────── */
@@ -3329,6 +3359,36 @@ button {
 }
 
 /* ─── Loading spinner ─────────────────────────────────────── */
+/* Dead-end state — a player id that matches nobody. Sits where the spinner
+   would, and reads as prose rather than as a failed load. */
+.empty-state {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 72px 24px 96px;
+  text-align: center;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.empty-state__title {
+  font-family: var(--f-serif);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.empty-state p {
+  margin: 0 0 18px;
+}
+.empty-state a {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ox);
+}
+
 .loading-spinner {
   display: flex;
   align-items: center;
@@ -3476,11 +3536,17 @@ button {
   .pick-ledger__grid {
     column-gap: 24px;
   }
+  /* Twenty-one positions no longer fit one line under the design width, and
+     the strip scrolled the last of them out of reach. Wrap instead — the same
+     answer the mobile layout already gives this selector. */
   .pos-tabstrip {
     padding: 0 24px;
+    flex-wrap: wrap;
+    overflow-x: visible;
   }
   .pos-tabstrip button {
     padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
   }
   .pos-hero {
     padding: 28px 24px 28px;
@@ -3613,11 +3679,21 @@ button {
   .mast__nav {
     border-bottom: 1px solid var(--rule);
   }
+  /* The strip used to scroll with its scrollbar hidden, so any tab past the
+     right edge was silently unreachable. Let it wrap instead: a tablet still
+     fits one row, and a phone gets every tab on screen. */
+  .mast__nav {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
   .mast__nav button {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
     justify-content: center;
-    padding: 15px 16px;
-    font-size: 14px;
+    padding: 14px 8px;
+    font-size: 13px;
+    border-top: 1px solid var(--rule);
+    margin-top: -1px;
   }
   .mast__meta {
     display: none;
@@ -3660,7 +3736,9 @@ button {
     padding: 4px 0 4px 10px;
     border: 0;
     background: none;
-    color: var(--ink-4);
+    /* An interactive label, so it takes the readable muted tier rather than
+       the decorative one. */
+    color: var(--ink-3);
     font-size: 10px;
     letter-spacing: 0.04em;
     cursor: pointer;
@@ -3781,8 +3859,15 @@ button {
   .roster-board__col-score {
     width: 66px;
   }
+  /* "Players" is one word, so it cannot wrap out of a tight column the way
+     "Roster score" does — it just overflowed its cell and was clipped. Give it
+     a little more width and less tracking; the team column absorbs the cost by
+     wrapping a line it already wraps. */
   .roster-board__col-players {
-    width: 50px;
+    width: 62px;
+  }
+  .roster-board th {
+    letter-spacing: 0.06em;
   }
   .roster-board .score-big {
     font-size: 14px;
@@ -3819,9 +3904,12 @@ button {
   .class-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  /* minmax(0, …) rather than 1fr: an auto track floors at the roster table's
+     min-content width, which pushed the whole column past the viewport and let
+     the page clip the role chips off the right edge. */
   .team-body {
     padding: 18px 16px;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .roster-view {
     padding: 18px 16px 32px;
@@ -4071,12 +4159,6 @@ button {
     padding: 8px 16px 24px;
     grid-template-columns: 1fr;
   }
-  /* Compact the classmate ranking so the load number + role chip stay on
-     screen: shrink the rank/logo columns and let the load bar collapse. */
-  .classmate-row {
-    grid-template-columns: 20px 22px 1fr 60px auto;
-    gap: 6px;
-  }
   .info-sheet {
     top: 8px;
     right: 8px;
@@ -4153,6 +4235,11 @@ button {
   .player-career th {
     padding-left: 3px;
     padding-right: 3px;
+  }
+  /* At 320 the table needs the team crest's width too; the code beside it
+     already names the team. */
+  .player-career .team-logo {
+    display: none;
   }
   .player-career td.player-career__score {
     padding-right: 10px;
@@ -4251,6 +4338,13 @@ button {
   margin: 0;
   color: var(--team);
 }
+/* A dark team colour — Bills navy, Cowboys navy, Ravens purple — reads at
+   about 1.7:1 against the dark ground, which left these position headings
+   barely legible. Mixing toward the page's ink keeps the team tint and brings
+   the heading back to a readable weight. */
+[data-dark='true'] .roster-group__title {
+  color: color-mix(in oklch, var(--team) 45%, var(--ink));
+}
 .roster-group__meta {
   font-size: 11px;
   color: var(--ink-4);
@@ -4302,5 +4396,207 @@ button {
   }
   .roster-table__awaiting {
     font-size: 10px;
+  }
+}
+
+/* ─── Draft roster table on a phone ───────────────────────────
+   Auto table layout sized every year block from its own rows, so the columns
+   jumped whenever "Show departed" or "Show free agents" changed which rows
+   were in the table — and the widest of them (the role column) pushed the
+   table past the viewport. A fixed layout without the role column holds one
+   geometry for every block and every toggle state, and the role moves under
+   the player name so nothing is lost. */
+@media (max-width: 700px) {
+  .roster-table {
+    table-layout: fixed;
+  }
+  .player-row__role-cell {
+    display: none;
+  }
+  .player-row__role {
+    display: block;
+    margin-top: 4px;
+  }
+  .player-row__role .role-marker {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .roster-table td {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 700px) {
+  .section-head__count {
+    display: block;
+    font-size: 15px;
+  }
+  .section-head__count::before {
+    content: none;
+  }
+}
+
+/* A steal or bust row has room for two lines of name — it already gives the
+   meta line one — so wrap the name rather than ellipsing "Jonathon Coo…" on a
+   phone. The score keeps its own column, so nothing shifts. */
+@media (max-width: 700px) {
+  .highlight-row__name {
+    white-space: normal;
+    overflow: visible;
+  }
+}
+
+/* Below ~360px the four range presets no longer fit one line, and their
+   scroller hid the last chip behind the edit toggle with nothing to show it
+   could be scrolled. Wrapping keeps every preset on screen. */
+@media (max-width: 360px) {
+  .subbar__presets {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    row-gap: 6px;
+  }
+}
+
+/* At 320px the widest single word in a player's name no longer fits the row's
+   name column, so the wrap above still left "Jonathon Coo…". Trading a few
+   points off the score — still the row's largest type — buys the name the
+   width it needs without dropping anything from the row. */
+@media (max-width: 360px) {
+  .highlight-row {
+    gap: 10px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .highlight-row__score {
+    font-size: 21px;
+  }
+  .highlight-row__name {
+    font-size: 15px;
+  }
+}
+
+/* The position board's five mobile columns overran the phone viewport — 390px
+   of columns in 375, more for positions with longer names — and its scroller
+   then hid the Role column off the right edge. Tightening the cells and letting
+   the role chip take two lines brings the whole board on screen. */
+@media (max-width: 700px) {
+  .pos-table th,
+  .pos-table td {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  .pos-table th {
+    letter-spacing: 0.02em;
+    font-size: 9px;
+  }
+  .pos-table .role-chip {
+    padding-left: 5px;
+    padding-right: 5px;
+    letter-spacing: 0.4px;
+    white-space: normal;
+    text-align: left;
+  }
+  .pos-player__club {
+    display: none;
+  }
+}
+
+/* At 320px the board is still ~26px too wide, and the headshot is the one
+   thing in the row that carries no information the other columns lack — the
+   name, pick and role all still read. Drop it rather than scroll the Role
+   column off the edge. */
+@media (max-width: 360px) {
+  .pos-player .player-avatar {
+    display: none;
+  }
+}
+
+/* Same trade on the roster board: at 320px the fixed team column cannot hold
+   the logo and a name like "Washington Commanders", and the name ran out of
+   its cell and into the score beside it. The rank, code and name all still
+   name the team without the crest. */
+@media (max-width: 360px) {
+  .roster-board .team-logo {
+    display: none;
+  }
+}
+
+/* No phone is wide enough for five tabs on one line — seven with a team open.
+   Below this width the strip always wraps, and giving every tab the same
+   fraction of the line splits them evenly (five read 3 + 2) instead of
+   stranding the last tab alone on a row of its own. */
+@media (max-width: 480px) {
+  .mast__nav button {
+    flex-basis: calc(100% / var(--nav-cols, 3));
+  }
+}
+
+/* Between the mobile breakpoint and about 1240px the masthead row no longer
+   holds everything: the brand, the synced-data block and the controls left the
+   tab strip ~325px for up to 498px of tabs, and it scrolled the last ones past
+   its edge with the scrollbar hidden — "Position" cut mid-word, Rosters and
+   Roster unreachable. Drop the synced-data block first, exactly as the mobile
+   masthead does; the same two lines are in the Info view. */
+@media (max-width: 1240px) {
+  .mast__meta {
+    display: none;
+  }
+}
+
+/* Below ~1000px the tab strip is short again even without the synced-data
+   block, so the brand gives up its tagline next — mobile drops it for the same
+   reason, and the Info view states it in full. */
+@media (max-width: 1000px) {
+  .mast__tag {
+    display: none;
+  }
+}
+
+/* The career table scrolled on every phone width, which put Score — the row's
+   verdict — off the right edge. Two lines of role chip, and the IR/REST
+   markers dropping under the year instead of setting the season column's whole
+   width, bring the table inside the viewport. */
+@media (max-width: 700px) {
+  .player-career .role-chip {
+    white-space: normal;
+    text-align: left;
+  }
+  .player-career__season-cell {
+    white-space: normal;
+  }
+}
+
+/* The classmate ranking sits in a rail that is 503px wide at the design width
+   but only ~345px at 1100 and below — and there the desktop grid's fixed
+   columns (262px of them) left the name about 50px, so every row stacked one
+   word per line with the load bar running through the team code. Compact the
+   columns from the width where the rail gets tight, not only on a phone. */
+@media (max-width: 1100px) {
+  .classmate-row {
+    grid-template-columns: 20px 22px 1fr 36px auto;
+    gap: 6px;
+  }
+  /* The load bar is a second reading of the number beside it, so it is the
+     first thing to go when the rail is this tight — the name needs the room
+     more than the bar does. */
+  .classmate-row > :nth-child(4) > div:first-child {
+    display: none;
+  }
+  .classmate-row .role-chip {
+    letter-spacing: 0.04em;
+  }
+}
+
+/* The career table runs 880px of columns under the design width and scrolled
+   its last column — Report wks — out of reach. The two 80px bars are a second
+   reading of the percentages printed beside them, so they give up the width. */
+@media (max-width: 1100px) {
+  .player-career .snap-bar__track {
+    width: 56px;
+  }
+  .player-career .snap-bar {
+    gap: 6px;
   }
 }

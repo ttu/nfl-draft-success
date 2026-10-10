@@ -226,6 +226,22 @@ function PosStat({
   );
 }
 
+/**
+ * The team code under a player's name, with the club's full name beside it.
+ *
+ * The club name is a separate span so a phone can drop it: the column is
+ * narrow enough there that the pair cost the line a second row, and the code
+ * names the team on its own.
+ */
+function TeamLine({ teamId, clubName }: { teamId: string; clubName?: string }) {
+  return (
+    <div className="mono" style={{ fontSize: 10.5, color: 'var(--ink-3)' }}>
+      {teamId}
+      <span className="pos-player__club"> · {clubName}</span>
+    </div>
+  );
+}
+
 function PosRow({ r, i }: { r: PickRow; i: number }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -295,12 +311,7 @@ function PosRow({ r, i }: { r: PickRow; i: number }) {
             >
               {r.pick.playerName}
             </Link>
-            <div
-              className="mono"
-              style={{ fontSize: 10.5, color: 'var(--ink-3)' }}
-            >
-              {r.pick.teamId} · {team?.name}
-            </div>
+            <TeamLine teamId={r.pick.teamId} clubName={team?.name} />
           </div>
         </div>
       </td>

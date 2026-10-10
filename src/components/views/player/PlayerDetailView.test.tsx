@@ -959,3 +959,33 @@ describe('PlayerDetailView for an undrafted free agent', () => {
     expect(mark).not.toHaveAccessibleName(/drafting team/i);
   });
 });
+
+describe('the hero meta line', () => {
+  it('keeps each separator with the group it introduces, so none is left dangling', () => {
+    const pick = makePick({
+      playerName: 'Dangling Separator',
+      position: 'LB',
+      overallPick: 58,
+      teamId: 'KC',
+    });
+    const { container } = render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={pick}
+          draftYear={2021}
+          draftClasses={[makeDraftClass({ year: 2021, picks: [pick] })]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+
+    const meta = container.querySelector('.player-hero__meta');
+    // The line wraps on a phone. A separator of its own would strand a "·" at
+    // the end of a line, so each one leads the group it belongs to.
+    const loneSeparators = [...(meta?.children ?? [])].filter(
+      (el) => el.textContent?.trim() === '·',
+    );
+    expect(loneSeparators).toHaveLength(0);
+    expect(meta?.textContent).toMatch(/· *drafted by KC/);
+  });
+});

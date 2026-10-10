@@ -47,13 +47,20 @@ for (const width of PHONE_WIDTHS) {
       expect(presetsRight).toBeLessThanOrEqual(editLeft + 1);
     });
 
-    test('keeps the range control to a single row', async ({ page }) => {
-      // One chip (28px) plus the row's 9px padding. A second row would take it
-      // past 60 — the wrap this layout exists to prevent.
+    test('keeps every range preset reachable', async ({ page }) => {
+      // The presets used to sit in a box that scrolled with its scrollbar
+      // hidden, so at 320 the last chip was simply unreachable. They wrap
+      // instead, which costs a second row at that width alone — one chip
+      // (28px) plus the row's 9px padding — and buys every chip on screen.
+      const cut = await page
+        .locator('.subbar__presets')
+        .evaluate((el) => el.scrollWidth - el.clientWidth);
+      expect(cut).toBeLessThanOrEqual(1);
+
       const height = await page
         .locator('.subbar')
         .evaluate((el) => el.getBoundingClientRect().height);
-      expect(height).toBeLessThanOrEqual(50);
+      expect(height).toBeLessThanOrEqual(width <= 320 ? 90 : 50);
     });
 
     test('lists the board from #4, the podium having taken the top three', async ({

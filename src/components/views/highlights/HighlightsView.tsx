@@ -509,8 +509,12 @@ function PlayerMeta({
       </span>
       <span className="nowrap">
         <TeamLogo teamId={pick.teamId} size={14} ring={false} />
-        {team?.abbreviation ?? pick.teamId} · {detail}
+        {team?.abbreviation ?? pick.teamId}
       </span>
+      {/* The detail is free text — "+62.3 vs undrafted average" and the like —
+          so it gets its own group. Held inside the badge's nowrap it ran off
+          the card's right edge on a phone and was clipped mid-word. */}
+      <span>· {detail}</span>
     </div>
   );
 }

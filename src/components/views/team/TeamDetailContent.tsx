@@ -473,8 +473,10 @@ function RosterSection({
             Current roster view, linked from the hero, answers that. */}
         <h2>
           Everyone they brought in.{' '}
-          <span style={{ color: 'var(--ink-4)', fontWeight: 400 }}>
-            · {pickTotal} picks
+          {/* The separator is CSS, not text: on a phone the count drops to its
+              own line under the heading, where a leading "·" would dangle. */}
+          <span className="section-head__count">
+            {pickTotal} pick{pickTotal === 1 ? '' : 's'}
             {undraftedTotal > 0 && ` · ${undraftedTotal} undrafted`}
           </span>
         </h2>
@@ -511,7 +513,7 @@ function RosterSection({
               <div className="roster-year__head">
                 <span className="roster-year__title">Draft {year}</span>
                 <span className="kicker">
-                  {countPicks(group)} picks
+                  {countPicks(group)} pick{countPicks(group) === 1 ? '' : 's'}
                   {undrafted > 0 && ` · ${undrafted} undrafted`}
                 </span>
                 <span className="roster-year__rule" />

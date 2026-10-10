@@ -142,7 +142,7 @@ describe('free agent loading', () => {
     await screen.findByText('Sam Overlooked');
     // The count has to stay honest about which population is which.
     expect(document.getElementById('roster-year-2021')).toHaveTextContent(
-      /1 picks · 1 undrafted/,
+      /1 pick · 1 undrafted/,
     );
   });
 

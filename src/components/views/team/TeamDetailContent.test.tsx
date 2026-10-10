@@ -379,3 +379,27 @@ describe('the roster heading count', () => {
     ).not.toHaveTextContent(/undrafted/i);
   });
 });
+
+describe('the year headings', () => {
+  it('says "1 pick", not "1 picks", for a one-pick class', () => {
+    renderView({
+      rosterByDraftYear: [
+        {
+          year: 2021,
+          players: [{ pick: makePick(10, TEAM), draftYear: 2021 }],
+        },
+      ],
+    });
+
+    const head = document.querySelector('.roster-year__head');
+    expect(head?.textContent).toContain('1 pick');
+    expect(head?.textContent).not.toContain('1 picks');
+  });
+
+  it('keeps the plural for a class with more than one pick', () => {
+    renderView();
+
+    const head = document.querySelector('.roster-year__head');
+    expect(head?.textContent).toContain('1 pick');
+  });
+});

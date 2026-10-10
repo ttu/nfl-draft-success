@@ -11,6 +11,7 @@ import {
 import {
   Routes,
   Route,
+  Link,
   useParams,
   useSearchParams,
   useNavigate,
@@ -564,12 +565,18 @@ function usePlayerLookup(
 ): {
   playerLookupClasses: DraftClass[];
   playerInfo: { pick: Acquisition; draftYear: number } | null;
+  /** False while the all-years search is still out — see `playerSettled`. */
+  playerSettled: boolean;
 } {
   const [playerSearchClasses, setPlayerSearchClasses] = useState<
     DraftClass[] | null
   >(null);
   const [playerSearchFreeAgentClasses, setPlayerSearchFreeAgentClasses] =
     useState<FreeAgentClass[] | null>(null);
+  // Both all-years fetches have come back (or failed). Until then a miss means
+  // "not found yet"; after it, the id matches nobody and the view must say so
+  // rather than spin for good.
+  const [searchSettled, setSearchSettled] = useState(false);
 
   useEffect(() => {
     if (!isPlayerView || !playerId) return;
@@ -579,9 +586,16 @@ function usePlayerLookup(
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setPlayerSearchClasses(null);
       setPlayerSearchFreeAgentClasses(null);
+      setSearchSettled(true);
       return;
     }
     let cancelled = false;
+    setSearchSettled(false);
+    let pending = 2;
+    const settle = () => {
+      pending -= 1;
+      if (pending === 0 && !cancelled) setSearchSettled(true);
+    };
     const years = generateYearArray(YEAR_MIN, YEAR_MAX);
     // Two independent fetches, not one `Promise.all`: a free-agent file that
     // fails to parse must not cost the draft lookup its result too — that
@@ -591,12 +605,14 @@ function usePlayerLookup(
       .then((all) => {
         if (!cancelled) setPlayerSearchClasses(all);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(settle);
     loadFreeAgentsForYears(years)
       .then((allFreeAgents) => {
         if (!cancelled) setPlayerSearchFreeAgentClasses(allFreeAgents);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(settle);
     return () => {
       cancelled = true;
     };
@@ -614,7 +630,7 @@ function usePlayerLookup(
         )
       : null;
 
-  return { playerLookupClasses, playerInfo };
+  return { playerLookupClasses, playerInfo, playerSettled: searchSettled };
 }
 
 /**
@@ -775,7 +791,7 @@ function AppContent() {
   );
   const [showDeparted, setShowDeparted] = useState(() => loadShowDeparted());
 
-  const { playerLookupClasses, playerInfo } = usePlayerLookup(
+  const { playerLookupClasses, playerInfo, playerSettled } = usePlayerLookup(
     isPlayerView,
     playerId,
     draftClasses,
@@ -1065,6 +1081,7 @@ function AppContent() {
           positionOptions,
           handlePositionChange,
           playerInfo,
+          playerSettled,
           rosterClasses,
           rosterFreeAgentClasses,
           freeAgentClasses,
@@ -1307,6 +1324,8 @@ interface RenderMainArgs {
   positionOptions: string[];
   handlePositionChange: (pos: string) => void;
   playerInfo: { pick: Acquisition; draftYear: number } | null;
+  /** Whether the all-years player search has finished — see `usePlayerLookup`. */
+  playerSettled: boolean;
   rosterClasses: DraftClass[] | null;
   rosterFreeAgentClasses: FreeAgentClass[];
   // Read by TeamDetailContent's undrafted free-agent section and by
@@ -1316,9 +1335,29 @@ interface RenderMainArgs {
   freeAgentClassesResolved: boolean;
 }
 
+/** Dead end for a player id that matches nobody — a stale or mistyped link. */
+function PlayerNotFound() {
+  return (
+    <div className="empty-state" role="status">
+      <p className="empty-state__title">No player here.</p>
+      <p>
+        That link points at a player this data does not carry — it may be from
+        an older run of the site.
+      </p>
+      <Link to="/">← Back to the rankings</Link>
+    </div>
+  );
+}
+
 function renderPlayerView(a: RenderMainArgs) {
   if (!a.playerInfo) {
-    return <LoadingSpinner message="Loading player…" />;
+    // A miss after the all-years search has settled is not a slow load — the id
+    // names nobody, and spinning on forever tells the reader nothing.
+    return a.playerSettled ? (
+      <PlayerNotFound />
+    ) : (
+      <LoadingSpinner message="Loading player…" />
+    );
   }
   return (
     <Suspense fallback={<LoadingSpinner />}>

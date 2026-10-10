@@ -120,4 +120,19 @@ describe('Masthead', () => {
       HTMLElement.prototype.scrollIntoView = original;
     }
   });
+
+  it('tells CSS how many tab columns to wrap into, so no tab is cut off on a phone', () => {
+    const nav = () => screen.getByRole('navigation', { name: 'Primary' });
+
+    renderMasthead('rankings');
+    // Five tabs wrap into two rows of three and two.
+    expect(nav().style.getPropertyValue('--nav-cols')).toBe('3');
+  });
+
+  it("spreads a team context's seven tabs over four columns", () => {
+    renderMasthead('team', { teamId: 'BUF', initialEntries: ['/BUF'] });
+
+    const nav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(nav.style.getPropertyValue('--nav-cols')).toBe('4');
+  });
 });

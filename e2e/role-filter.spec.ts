@@ -19,9 +19,12 @@ test.describe('Role filter', () => {
   });
 
   test('toggling a role off removes those player rows', async ({ page }) => {
-    const coreChips = page.locator('#team-roster .roster-table .role-chip', {
-      hasText: /^Core Starter$/,
-    });
+    // The role column, not every chip in the row: the name cell repeats the
+    // role for the narrow layout, so an unscoped count is double the rows.
+    const coreChips = page.locator(
+      '#team-roster .roster-table .player-row__role-cell .role-chip',
+      { hasText: /^Core Starter$/ },
+    );
     const coreCountBefore = await coreChips.count();
     expect(coreCountBefore).toBeGreaterThan(0);
 

@@ -440,18 +440,19 @@ function PlayerHeroIdentity({
       <h1 className="player-hero__name">{pick.playerName}</h1>
       <div className="player-hero__meta">
         <span className="pos-chip">{pick.position}</span>
-        <span>·</span>
+        {/* Each separator leads its own group rather than standing alone: the
+            line wraps on a phone, and a lone "·" ended up stranded at the end
+            of a line with nothing after it. */}
         {isDraftPick(pick) ? (
-          <span>Pick {pick.overallPick} overall</span>
+          <span>· Pick {pick.overallPick} overall</span>
         ) : (
-          <span>Undrafted</span>
+          <span>· Undrafted</span>
         )}
-        <span style={{ color: 'var(--ink-4)' }}>·</span>
         <span className="mono" style={{ color: 'var(--ink-3)', fontSize: 12 }}>
           {/* A free agent's team is where he first took a snap. Who signed
               him is not in the data — undrafted players are signed by teams
               they never play a down for — so the hero says what is known. */}
-          {teamName} · {isDraftPick(pick) ? 'drafted by' : 'debuted with'}{' '}
+          · {teamName} · {isDraftPick(pick) ? 'drafted by' : 'debuted with'}{' '}
           {pick.teamId}
         </span>
         {currentTeam && <PlayerHeroCurrentTeam currentTeam={currentTeam} />}

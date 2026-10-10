@@ -22,7 +22,9 @@ test.describe('Team detail view', () => {
   test('shows roster player rows with role chips', async ({ page }) => {
     const rows = page.locator('#team-roster .roster-table tbody tr');
     expect(await rows.count()).toBeGreaterThan(0);
-    await expect(rows.first().locator('.role-chip')).toBeVisible();
+    await expect(
+      rows.first().locator('.player-row__role-cell .role-chip'),
+    ).toBeVisible();
   });
 
   test('player rows show name, position, and pick number', async ({ page }) => {

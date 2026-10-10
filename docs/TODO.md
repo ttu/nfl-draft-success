@@ -214,6 +214,18 @@ season.
 - **A free agent is absent from the cohort panel that ranks him.** The panel is honest
   about it ("N drafted · he isn't in it"), but including free-agent classmates would make
   it a real ranking.
+- **The quietest ink tier does not meet WCAG AA, deliberately.** `--ink-4` measures
+  2.61:1 on light paper (`#949aa6`) and 2.60:1 on the dark card (`#565c69`), against the
+  4.5:1 body-text minimum — and it carries real reading text, not only rules and dots:
+  the roster view's caveat paragraph, position-board pick labels, highlight notes, cohort
+  rank numbers, year-page meta (~629 elements on `/year/2016` alone). Raising it to pass
+  means `#6d717a` light / `#798294` dark, which lands on top of `--ink-3` (`#5b616e` /
+  `#838a98`, 5.74:1 / 5.57:1): the two muted tiers cannot both exist and both be
+  compliant. The call taken is hierarchy over AA on the quietest tier, with size and
+  weight left carrying less of the distinction than they would have to otherwise.
+  Text that had to be readable was moved off the tier — the mobile range `edit` toggle,
+  the section pick count, dimmed score figures and the Non-Contributor chip all now use
+  `--ink-3`. Revisit if the site ever needs an accessibility statement.
 
 ---
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type CSSProperties } from 'react';
 import { useNavigate, useSearchParams, useMatch } from 'react-router-dom';
 import { DRAFT_YEAR_BOUNDS } from '../../lib/draftYearBounds';
 import { formatYearRange } from '../../lib/laggedWindow';
@@ -15,6 +15,16 @@ interface MastheadProps {
   onShowInfo: () => void;
   dark: boolean;
   onToggleDark: () => void;
+}
+
+/**
+ * Tab columns for the wrapped mobile nav.
+ *
+ * Up to four tabs still fit one row; beyond that the strip wraps, and halving
+ * the count keeps the rows even instead of stranding a single tab on its own.
+ */
+function navColumns(tabCount: number): number {
+  return tabCount <= 4 ? tabCount : Math.ceil(tabCount / 2);
 }
 
 export function Masthead({
@@ -121,7 +131,16 @@ export function Masthead({
           <div className="mast__tag">Snap share · Availability · Retention</div>
         </div>
       </button>
-      <nav className="mast__nav" aria-label="Primary">
+      <nav
+        className="mast__nav"
+        aria-label="Primary"
+        /* Phone widths cannot fit the tab strip on one line, so it wraps.
+           Splitting the tabs over ceil(n / 2) columns keeps the two rows
+           balanced — five tabs read 3 + 2 rather than 4 + 1. */
+        style={
+          { ['--nav-cols' as never]: navColumns(tabs.length) } as CSSProperties
+        }
+      >
         {tabs.map((t) => (
           <button
             key={t.id}

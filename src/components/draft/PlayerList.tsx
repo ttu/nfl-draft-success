@@ -70,6 +70,17 @@ export function PlayerList({
           const draftingRole = getPlayerRole(pick, { draftingTeamOnly: true });
           const currentTeam = departed ? getCurrentTeam(pick) : undefined;
           const color = teamColor(brandTeam);
+          // A departed player carries two chips — the role he held here and
+          // the Departed marker — and both the column and the name line show
+          // the same pair.
+          const roleMarker = departed ? (
+            <span className="role-marker">
+              <RoleChip role={draftingRole} />
+              <RoleChip role="gone" />
+            </span>
+          ) : (
+            <RoleChip role={role} />
+          );
 
           return (
             <tr
@@ -134,6 +145,10 @@ export function PlayerList({
                     → {currentTeam}
                   </span>
                 )}
+                {/* The role column is dropped on a narrow screen, where seven
+                    columns leave the name a sliver. This line carries it
+                    instead, so nothing a desktop row states goes missing. */}
+                <span className="player-row__role">{roleMarker}</span>
               </td>
               <td
                 className={cx(
@@ -169,22 +184,11 @@ export function PlayerList({
               >
                 {formatOverSlot(overSlot)}
               </td>
-              <td style={{ width: 170, textAlign: 'right' }}>
-                {departed ? (
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-end',
-                      gap: 4,
-                    }}
-                  >
-                    <RoleChip role={draftingRole} />
-                    <RoleChip role="gone" />
-                  </span>
-                ) : (
-                  <RoleChip role={role} />
-                )}
+              <td
+                className="player-row__role-cell"
+                style={{ width: 170, textAlign: 'right' }}
+              >
+                {roleMarker}
               </td>
             </tr>
           );

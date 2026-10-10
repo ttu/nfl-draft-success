@@ -79,4 +79,24 @@ describe('PositionDraftView', () => {
       alpha.compareDocumentPosition(beta) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
+
+  it("keeps the team code beside a pick and marks the club's full name apart", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <PositionDraftView
+          position="TE"
+          yearFrom={2020}
+          yearTo={2021}
+          draftClasses={classes}
+          draftingTeamOnly
+        />
+      </MemoryRouter>,
+    );
+
+    const line = container.querySelector('.pos-player__club');
+    // The full club name is separable so a phone can drop it: the code alone
+    // identifies the team, and the pair took two lines of a narrow column.
+    expect(line?.textContent).toMatch(/Bengals/);
+    expect(line?.parentElement?.textContent).toMatch(/^CIN/);
+  });
 });
