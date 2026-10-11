@@ -588,6 +588,16 @@ function describeCareerDenominator(
       ? `${windowYears} seasons with the drafting team, past his ${contractYears}-season rookie window`
       : `${windowYears} seasons with the team, past his ${contractYears}-season undrafted window`;
   }
+  // The mirror case: a class young enough that the window has not run out yet
+  // is divided by the seasons that have elapsed. "A 1-season rookie window"
+  // invents a contract just as surely as "an 8-season" one does, and the maths
+  // panel below already words this case correctly — see `describeDenominator`
+  // in `ScoreBreakdown`, which this wording matches on purpose.
+  if (windowYears < contractYears) {
+    return isPick
+      ? `${windowYears} season${s(windowYears)} elapsed, of a ${contractYears}-season rookie window`
+      : `${windowYears} season${s(windowYears)} elapsed, of his ${contractYears}-season undrafted window`;
+  }
   return isPick
     ? `a ${windowYears}-season rookie window`
     : `a ${windowYears}-season undrafted window`;

@@ -384,6 +384,26 @@ describe('PlayerDetailView rookie window', () => {
     );
   });
 
+  it('does not invent a contract term for a class that is still young', () => {
+    // A 2026 first-rounder is divided by one season because only one has
+    // elapsed, not because his deal ran a year. "A 1-season rookie window" is
+    // a contract nobody signs — and the maths panel right below already says
+    // "1 season elapsed, of a 5-season rookie window".
+    const rookie = makePick({
+      playerName: 'Just Drafted',
+      round: 1,
+      draftYear: LATEST_SEASON,
+      teamId: 'MIN',
+      seasons: [makeSeason({ year: LATEST_SEASON })],
+    });
+    renderPick(rookie);
+    const note = screen.getByTestId('rookie-window-note');
+    expect(note).toHaveTextContent(
+      /1 of 1 season counted · divided by 1 season elapsed, of a 5-season rookie window/i,
+    );
+    expect(note).not.toHaveTextContent(/a 1-season rookie window/i);
+  });
+
   it('does not invent a contract term for a pick who outlasted his deal', () => {
     // Quenton Nelson's shape: eight seasons with the drafting team against a
     // five-year window. The divisor is eight because his tenure floors it, and
