@@ -5,6 +5,7 @@ import type { DraftClass, Team } from '../types';
 import {
   makeDraftClass,
   makePick,
+  makeRosterSnapshotSeason,
   makeSeason,
   makeTeam,
 } from '../test/factories';
@@ -149,6 +150,17 @@ const scoredPick = (
     seasons: [makeSeason({ year, gamesPlayed: 17, snapShare })],
   });
 
+/** The same pick, plus the roster snapshot saying he is still on the team. */
+const retainedPick = (
+  teamId: string,
+  id: string,
+  snapShare: number,
+  year: number,
+) => {
+  const pick = scoredPick(teamId, id, snapShare, year);
+  return { ...pick, seasons: [...pick.seasons, makeRosterSnapshotSeason()] };
+};
+
 describe('getTeamRankSummary extended per-team stats', () => {
   const twoTeams: Team[] = teamsStub.slice(0, 2); // A, B
 
@@ -178,7 +190,19 @@ describe('getTeamRankSummary extended per-team stats', () => {
   }
 
   it('populates picks, coreRate and retentionRate for each team', () => {
-    const s = getTeamRankSummary(flipDraftClasses(), twoTeams, 'A', {
+    // Retention is read from the roster snapshot, so both of A's picks carry
+    // one — a played season's `retained` says nothing about today.
+    const onRoster: DraftClass[] = [
+      makeDraftClass({
+        year: 2021,
+        picks: [retainedPick('A', 'a21', 0.3, 2021)],
+      }),
+      makeDraftClass({
+        year: 2022,
+        picks: [retainedPick('A', 'a22', 0.95, 2022)],
+      }),
+    ];
+    const s = getTeamRankSummary(onRoster, twoTeams, 'A', {
       draftingTeamOnly: true,
     });
     const a = s!.rankings.find((r) => r.teamId === 'A')!;

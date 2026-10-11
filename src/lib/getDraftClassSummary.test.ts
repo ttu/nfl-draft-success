@@ -5,10 +5,16 @@ import type { DraftClass } from '../types';
 import {
   makeNonContributorSeason,
   makePick as pick,
+  makeRosterSnapshotSeason,
   makeSeason,
 } from '../test/factories';
 
-const coreSeason = [makeSeason({ snapShare: 0.95 })];
+// Carries the roster snapshot: this pick is still with the drafting team, and
+// that is a fact about the roster today, not about his last played season.
+const coreSeason = [
+  makeSeason({ snapShare: 0.95 }),
+  makeRosterSnapshotSeason(),
+];
 const nonContribSeason = [makeNonContributorSeason({ retained: false })];
 
 describe('getDraftClassSummary', () => {

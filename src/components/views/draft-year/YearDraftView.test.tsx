@@ -3,7 +3,12 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { YearDraftView } from './YearDraftView';
 import type { DraftClass, FreeAgentClass } from '../../../types';
-import { makeDraftClass, makePick, makeSeason } from '../../../test/factories';
+import {
+  makeDraftClass,
+  makePick,
+  makeRosterSnapshotSeason,
+  makeSeason,
+} from '../../../test/factories';
 import { stampFreeAgentYear } from '../../../lib/freeAgentClass';
 
 const draftClass: DraftClass = makeDraftClass({
@@ -21,6 +26,9 @@ const draftClass: DraftClass = makeDraftClass({
           teamGames: 16,
           snapShare: 0.95,
         }),
+        // Still with the drafting team, which retention reads from the roster
+        // snapshot rather than from the last season he played.
+        makeRosterSnapshotSeason(),
       ],
     }),
     makePick({
@@ -36,6 +44,7 @@ const draftClass: DraftClass = makeDraftClass({
           teamGames: 16,
           snapShare: 0.8,
         }),
+        makeRosterSnapshotSeason(),
       ],
     }),
   ],

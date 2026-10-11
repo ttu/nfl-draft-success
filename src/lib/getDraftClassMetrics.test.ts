@@ -1,7 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { getDraftClassMetrics } from './getDraftClassMetrics';
 import { getPlayerDraftScore } from './getPlayerRole';
-import { makeDraftClass, makePick, makeSeason } from '../test/factories';
+import {
+  makeDraftClass,
+  makePick,
+  makeRosterSnapshotSeason,
+  makeSeason,
+} from '../test/factories';
 
 describe('getDraftClassMetrics', () => {
   it('reports draftScore as the mean per-pick draft score across scored picks (ignoring awaiting-data picks)', () => {
@@ -45,14 +50,22 @@ describe('getDraftClassMetrics', () => {
           playerName: 'Starter',
           position: 'QB',
           overallPick: 5,
-          seasons: [makeSeason({ snapShare: 0.95 })],
+          seasons: [
+            makeSeason({ snapShare: 0.95 }),
+            // Still with the team — said by the roster snapshot, which is
+            // where retention is read from.
+            makeRosterSnapshotSeason(),
+          ],
         }),
         makePick({
           playerName: 'Depth',
           position: 'WR',
           round: 5,
           overallPick: 150,
-          seasons: [makeSeason({ gamesPlayed: 3, snapShare: 0.15 })],
+          seasons: [
+            makeSeason({ gamesPlayed: 3, snapShare: 0.15 }),
+            makeRosterSnapshotSeason(),
+          ],
         }),
         makePick({
           playerName: 'Gone',

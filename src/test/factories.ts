@@ -1,4 +1,5 @@
 import type { DraftClass, DraftPick, FreeAgent, Season, Team } from '../types';
+import { LATEST_SEASON } from '../lib/rookieWindow';
 
 /**
  * Test data builders for the core draft types.
@@ -47,6 +48,27 @@ export function makeNonContributorSeason(
   return makeSeason({
     gamesPlayed: 1,
     snapShare: 0.02,
+    ...overrides,
+  });
+}
+
+/**
+ * The roster-snapshot row: where the player stands today, played by nobody.
+ *
+ * `teamGames: 0` is the marker (see `src/lib/seasonPlayed.ts`), and `retained`
+ * is what `isDraftPickRetainedLatest` reads. A pick with no such row is on no
+ * roster at all, so a fixture that means "still with his team" has to carry
+ * one — a final played season saying `retained: true` describes that season,
+ * not today.
+ */
+export function makeRosterSnapshotSeason(
+  overrides: Partial<Season> = {},
+): Season {
+  return makeSeason({
+    year: LATEST_SEASON + 1,
+    gamesPlayed: 0,
+    teamGames: 0,
+    snapShare: 0,
     ...overrides,
   });
 }

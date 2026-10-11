@@ -6,6 +6,7 @@ import {
   makeDepthSeason,
   makeDraftClass,
   makePick,
+  makeRosterSnapshotSeason,
   makeSeason,
 } from '../test/factories';
 
@@ -20,6 +21,8 @@ const seasonScore = (snap: number, gp: number, tg: number) =>
 const CORE_PICK = seasonScore(0.9, 16, 17); // ~91.2
 const DEPTH_PICK = seasonScore(0.15, 3, 17); // ~15.8
 
+// Still with the drafting team, which the roster snapshot is what says —
+// a played season's `retained` describes that season, not today.
 const coreStarterPick = (year: number): DraftClass =>
   makeDraftClass({
     year,
@@ -27,7 +30,7 @@ const coreStarterPick = (year: number): DraftClass =>
       makePick({
         playerName: 'Starter',
         overallPick: 5,
-        seasons: [makeSeason({ year })],
+        seasons: [makeSeason({ year }), makeRosterSnapshotSeason()],
       }),
     ],
   });

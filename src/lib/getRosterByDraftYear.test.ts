@@ -8,6 +8,7 @@ import {
   makeDraftClass,
   makeFreeAgent,
   makePick,
+  makeRosterSnapshotSeason,
   makeSeason,
 } from '../test/factories';
 
@@ -158,11 +159,10 @@ describe('getRosterByDraftYear with free agents', () => {
       playerName: playerId,
       teamId: overrides.teamId ?? 'BUF',
       seasons: [
-        makeSeason({
-          year,
-          snapShare,
-          retained: overrides.retained ?? true,
-        }),
+        makeSeason({ year, snapShare }),
+        // Where he stands today, which is what the roster reads. A played
+        // season's `retained` is only about that season.
+        makeRosterSnapshotSeason({ retained: overrides.retained ?? true }),
       ],
     });
 
