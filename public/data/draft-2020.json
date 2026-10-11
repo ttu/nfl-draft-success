@@ -880,14 +880,6 @@
           "excusedGames": 12
         },
         {
-          "year": 2025,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
-        },
-        {
           "year": 2027,
           "gamesPlayed": 0,
           "teamGames": 0,
@@ -1021,14 +1013,6 @@
           "cumulativeSnapShare": 0.2744453574363188,
           "retained": true,
           "injuryReportWeeks": 2
-        },
-        {
-          "year": 2022,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -1610,7 +1594,7 @@
           "teamGames": 17,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         },
         {
           "year": 2023,
@@ -2564,14 +2548,6 @@
           "cumulativeSnapShare": 0.8919925512104283,
           "retained": true,
           "injuryReportWeeks": 2
-        },
-        {
-          "year": 2021,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -2658,22 +2634,6 @@
           "snapShare": 0.105,
           "cumulativeSnapShare": 0.017070979335130278,
           "retained": true
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 4,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
-        },
-        {
-          "year": 2027,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false
         }
       ]
     },
@@ -2846,6 +2806,7 @@
           "cumulativeSnapShare": 0.7675276752767528,
           "retained": false,
           "injuryReportWeeks": 3,
+          "reserveWeeks": 1,
           "excusedGames": 1,
           "currentTeam": "PIT"
         },
@@ -5460,22 +5421,6 @@
           "cumulativeSnapShare": 0.5846666666666668,
           "retained": true,
           "injuryReportWeeks": 2
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 4,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
-        },
-        {
-          "year": 2027,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false
         }
       ]
     },
@@ -10103,22 +10048,6 @@
             "teamSnaps": 75
           },
           "loadDenominator": 1273
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 4,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
-        },
-        {
-          "year": 2027,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false
         }
       ]
     },
@@ -10745,14 +10674,6 @@
             "teamSnaps": 67
           },
           "loadDenominator": 1206
-        },
-        {
-          "year": 2024,
-          "gamesPlayed": 0,
-          "teamGames": 19,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -11672,14 +11593,6 @@
           "retained": true,
           "injuryReportWeeks": 1,
           "reserveWeeks": 17
-        },
-        {
-          "year": 2023,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -12764,14 +12677,6 @@
           "injuryReportWeeks": 1,
           "reserveWeeks": 13,
           "excusedGames": 13
-        },
-        {
-          "year": 2023,
-          "gamesPlayed": 0,
-          "teamGames": 20,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -15762,14 +15667,6 @@
           "injuryReportWeeks": 1,
           "reserveWeeks": 5,
           "excusedGames": 5
-        },
-        {
-          "year": 2022,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -16124,14 +16021,6 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": true
-        },
-        {
-          "year": 2025,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -16242,14 +16131,6 @@
           "teamGames": 17,
           "snapShare": 0.03166666666666666,
           "cumulativeSnapShare": 0.011705685618729096,
-          "retained": true
-        },
-        {
-          "year": 2022,
-          "gamesPlayed": 0,
-          "teamGames": 18,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
           "retained": true
         }
       ]
@@ -17246,7 +17127,7 @@
           "teamGames": 19,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         },
         {
           "year": 2024,
@@ -17324,14 +17205,6 @@
           "retained": true,
           "reserveWeeks": 15,
           "excusedGames": 15
-        },
-        {
-          "year": 2023,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },

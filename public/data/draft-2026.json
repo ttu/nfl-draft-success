@@ -975,7 +975,7 @@
           "cumulativeSnapShare": 0,
           "retained": true,
           "injuryReportWeeks": 2,
-          "reserveWeeks": 5
+          "reserveWeeks": 4
         },
         {
           "year": 2027,
@@ -2697,7 +2697,8 @@
           "snapShare": 0.01,
           "cumulativeSnapShare": 0.007662835249042145,
           "retained": true,
-          "injuryReportWeeks": 2
+          "injuryReportWeeks": 2,
+          "reserveWeeks": 1
         },
         {
           "year": 2027,
@@ -4615,7 +4616,7 @@
           "cumulativeSnapShare": 0,
           "retained": true,
           "injuryReportWeeks": 1,
-          "reserveWeeks": 5
+          "reserveWeeks": 4
         },
         {
           "year": 2027,

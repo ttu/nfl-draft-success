@@ -128,14 +128,6 @@
             "teamSnaps": 65
           },
           "loadDenominator": 1206
-        },
-        {
-          "year": 2024,
-          "gamesPlayed": 0,
-          "teamGames": 21,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -685,6 +677,7 @@
           "cumulativeSnapShare": 0.39999999999999997,
           "retained": false,
           "injuryReportWeeks": 1,
+          "reserveWeeks": 1,
           "currentTeam": "GB"
         },
         {
@@ -789,22 +782,6 @@
           "snapShare": 0.734,
           "cumulativeSnapShare": 0.19081908190819083,
           "retained": true
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 4,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
-        },
-        {
-          "year": 2027,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false
         }
       ]
     },
@@ -2591,22 +2568,6 @@
             "teamSnaps": 51
           },
           "loadDenominator": 1059.6666666666667
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 4,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
-        },
-        {
-          "year": 2027,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false
         }
       ]
     },
@@ -3335,14 +3296,6 @@
           "snapShare": 0.17142857142857146,
           "cumulativeSnapShare": 0.15541313801785306,
           "retained": true
-        },
-        {
-          "year": 2025,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -3457,14 +3410,6 @@
           "teamGames": 17,
           "snapShare": 0.01,
           "cumulativeSnapShare": 0.0036101083032490976,
-          "retained": true
-        },
-        {
-          "year": 2024,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
           "retained": true
         }
       ]
@@ -4871,14 +4816,6 @@
           "retained": true,
           "injuryReportWeeks": 2,
           "excusedGames": 2
-        },
-        {
-          "year": 2024,
-          "gamesPlayed": 0,
-          "teamGames": 18,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -5136,14 +5073,6 @@
             "teamSnaps": 34
           },
           "loadDenominator": 1321
-        },
-        {
-          "year": 2025,
-          "gamesPlayed": 0,
-          "teamGames": 17,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
         }
       ]
     },
@@ -5359,22 +5288,6 @@
           "snapShare": 0.18999999999999997,
           "cumulativeSnapShare": 0.14957829808660625,
           "retained": true
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 4,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
-        },
-        {
-          "year": 2027,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false
         }
       ]
     },
@@ -6082,22 +5995,6 @@
           "retained": true,
           "reserveWeeks": 11,
           "excusedGames": 11
-        },
-        {
-          "year": 2026,
-          "gamesPlayed": 0,
-          "teamGames": 4,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": true
-        },
-        {
-          "year": 2027,
-          "gamesPlayed": 0,
-          "teamGames": 0,
-          "snapShare": 0,
-          "cumulativeSnapShare": 0,
-          "retained": false
         }
       ]
     },

@@ -67,6 +67,42 @@ describe('resolveRetained', () => {
     expect(resolveRetained(base)).toBe(false);
   });
 
+  it('takes absence from a roster feed that spoke as the departure it is', () => {
+    // Anthony Barr's 2024: no snaps, no injury rows, no reserve weeks, and no
+    // weekly-roster row anywhere in the league — he was out of football. The
+    // guess below would copy 2023 and keep him a Viking for a year he never
+    // played, charging the pick for it.
+    expect(
+      resolveRetained({
+        ...base,
+        rosteredThisSeason: false,
+        playerSnaps: new Map([[2025, { primaryTeam: 'NO' }]]),
+      }),
+    ).toBe(false);
+  });
+
+  it('still infers when the roster feed never spoke for that season', () => {
+    // Before 2016 there is no weekly-roster coverage to be absent from, so
+    // silence there is not evidence and the inference stands.
+    expect(
+      resolveRetained({
+        ...base,
+        rosteredThisSeason: undefined,
+        playerSnaps: new Map([[2025, { primaryTeam: 'NO' }]]),
+      }),
+    ).toBe(true);
+  });
+
+  it('infers as before for a player who is on a roster it cannot name', () => {
+    expect(
+      resolveRetained({
+        ...base,
+        rosteredThisSeason: true,
+        playerSnaps: new Map([[2025, { primaryTeam: 'NO' }]]),
+      }),
+    ).toBe(true);
+  });
+
   it('compares teams by their normalized name', () => {
     expect(
       resolveRetained({ ...base, teamId: 'LAR', reserveTeam: 'STL' }),

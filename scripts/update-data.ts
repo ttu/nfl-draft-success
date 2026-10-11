@@ -42,6 +42,7 @@ import { resolveLatestPlayedSeason } from '../src/lib/latestPlayedSeason';
 import {
   accumulateReserveTeams,
   accumulateReserveWeeks,
+  accumulateRosteredPlayers,
 } from '../src/lib/reserveWeeks';
 import { firstNamedTeam, resolveRetained } from '../src/lib/retention';
 import { excusedAbsenceGames } from '../src/lib/absenceWeeks';
@@ -696,10 +697,12 @@ async function loadInjuryData(
 async function loadReserveData(seasons: number[]): Promise<{
   byPlayer: Map<string, Map<number, Set<number>>>;
   teamsByPlayer: Map<string, Map<number, string>>;
+  rosteredBySeason: Map<number, Set<string>>;
   loadedSeasons: Set<number>;
 }> {
   const byPlayer = new Map<string, Map<number, Set<number>>>();
   const teamsByPlayer = new Map<string, Map<number, string>>();
+  const rosteredBySeason = new Map<number, Set<string>>();
   const loadedSeasons = new Set<number>();
 
   for (const season of seasons) {
@@ -722,6 +725,7 @@ async function loadReserveData(seasons: number[]): Promise<{
       }
       pm.set(season, weeks);
     }
+    rosteredBySeason.set(season, accumulateRosteredPlayers(rows));
     for (const [gsisId, team] of accumulateReserveTeams(rows)) {
       let pm = teamsByPlayer.get(gsisId);
       if (!pm) {
@@ -732,7 +736,7 @@ async function loadReserveData(seasons: number[]): Promise<{
     }
   }
 
-  return { byPlayer, teamsByPlayer, loadedSeasons };
+  return { byPlayer, teamsByPlayer, rosteredBySeason, loadedSeasons };
 }
 
 /** Parse an nflverse integer column, treating blank and non-numeric as absent. */
@@ -1053,6 +1057,21 @@ function resolveInjurySignals(params: {
   };
 }
 
+/**
+ * Whether the weekly roster feed had this player on a roster in `season`, or
+ * `undefined` where it cannot say — a season it never covered, or a player
+ * carrying no `gsis_id` to look up.
+ */
+function rosteredForSeason(
+  rosteredBySeason: ReadonlyMap<number, ReadonlySet<string>>,
+  season: number,
+  gsisId: string,
+): boolean | undefined {
+  if (!gsisId) return undefined;
+  const rostered = rosteredBySeason.get(season);
+  return rostered ? rostered.has(gsisId) : undefined;
+}
+
 /** Build one season record for a pick, resolving denominators and retention. */
 function buildPickSeason(params: {
   season: number;
@@ -1061,6 +1080,8 @@ function buildPickSeason(params: {
   playerInjuries?: Map<number, InjurySeasonData>;
   playerReserve?: Map<number, Set<number>>;
   playerReserveTeams?: Map<number, string>;
+  rosteredBySeason: ReadonlyMap<number, ReadonlySet<string>>;
+  gsisId: string;
   loadedReserveSeasons: ReadonlySet<number>;
   lookups: SeasonLookups;
 }): PickSeason {
@@ -1071,6 +1092,8 @@ function buildPickSeason(params: {
     playerInjuries,
     playerReserve,
     playerReserveTeams,
+    rosteredBySeason,
+    gsisId,
     loadedReserveSeasons,
     lookups,
   } = params;
@@ -1137,6 +1160,9 @@ function buildPickSeason(params: {
     primaryTeam,
     injuryTeam,
     reserveTeam,
+    // Only answerable for a season the feed covered, and only for a player it
+    // can key: without a gsis_id his absence says nothing about him.
+    rosteredThisSeason: rosteredForSeason(rosteredBySeason, season, gsisId),
     teamId,
     season,
     playerSnaps,
@@ -1174,6 +1200,8 @@ interface PickSources {
   reserveData: Map<string, Map<number, Set<number>>>;
   /** The team each reserve stint was served with; see {@link accumulateReserveTeams}. */
   reserveTeams: Map<string, Map<number, string>>;
+  /** Everyone on a roster per season; see {@link accumulateRosteredPlayers}. */
+  rosteredBySeason: Map<number, Set<string>>;
   /** Seasons whose weekly-roster CSV actually loaded; see {@link loadReserveData}. */
   loadedReserveSeasons: ReadonlySet<number>;
   headshots: Map<string, string>;
@@ -1226,6 +1254,8 @@ function buildCareerSeasons(params: {
         playerInjuries,
         playerReserve,
         playerReserveTeams,
+        rosteredBySeason: sources.rosteredBySeason,
+        gsisId,
         loadedReserveSeasons: sources.loadedReserveSeasons,
         lookups: sources.lookups,
       }),
@@ -1501,6 +1531,7 @@ async function main() {
   const {
     byPlayer: reserveData,
     teamsByPlayer: reserveTeams,
+    rosteredBySeason,
     loadedSeasons: loadedReserveSeasons,
   } = await loadReserveData(reserveSeasons);
 
@@ -1515,6 +1546,7 @@ async function main() {
     injuryData,
     reserveData,
     reserveTeams,
+    rosteredBySeason,
     loadedReserveSeasons,
     headshots,
     lookups,

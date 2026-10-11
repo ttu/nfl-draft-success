@@ -396,7 +396,7 @@
           "cumulativeSnapShare": 0,
           "retained": true,
           "injuryReportWeeks": 2,
-          "reserveWeeks": 5
+          "reserveWeeks": 4
         },
         {
           "year": 2027,
@@ -471,7 +471,7 @@
           "cumulativeSnapShare": 0,
           "retained": true,
           "injuryReportWeeks": 1,
-          "reserveWeeks": 5
+          "reserveWeeks": 4
         },
         {
           "year": 2027,
@@ -4103,7 +4103,7 @@
           "teamGames": 0,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true
+          "retained": false
         }
       ]
     },
@@ -7562,7 +7562,7 @@
           "cumulativeSnapShare": 0,
           "retained": true,
           "injuryReportWeeks": 1,
-          "reserveWeeks": 5
+          "reserveWeeks": 4
         },
         {
           "year": 2027,

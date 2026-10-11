@@ -141,9 +141,12 @@ Note the **availability** term of the season score (`gamesPlayed / teamGames`, 3
 1. If snap data exists: `retained = (normalize(primaryTeam) === teamId)`
 2. If no snap data but injury report exists: use injury report team as primary
 3. If neither, but he spent weeks on a reserve list: use the team those weeks were served with (`accumulateReserveTeams`, from the weekly roster feed; §1.3's era gate applies)
-4. If no feed names a team: infer from previous/next season primary team (player on roster but inactive)
+4. If no feed names a team, but the weekly roster feed covered the season and lists him on no roster in the league (`accumulateRosteredPlayers`): **not retained** — he was out of football
+5. If nothing above can speak: infer from previous/next season primary team (player on roster but inactive)
 
-Step 3 is why the inference in step 4 is not the fallback it looks like. A season lost to injured reserve produces no snaps _and_ no injury-report rows — placement on IR removes a player from the report — so the two feeds above go quiet for exactly the players whose absence is least voluntary. The inference below needs an adjacent season to exist, which a rookie hurt in camp and a player in his newest tracked season both lack: without the reserve team they read as departures. Jordyn Tyson, New Orleans' 2026 first-rounder, sat out his rookie year on reserve and scored as though the Saints had released him.
+Step 4 is the same evidence read the other way. The feed carries every player on every roster every week, so a season it covered in which he appears nowhere states that no team had him — the one thing that separates a year out of football from a year merely missing from the stat sheets. Without it the inference copies the adjacent season and gives every player who retires with his drafting team one extra retained year, scoring 0 against the pick: Anthony Barr's 2024, carried over from a 2023 he really did play for Minnesota. The feed starts at 2016 (§1.3), so earlier gap years still fall through to step 5.
+
+Step 3 is why the inference in step 5 is not the fallback it looks like. A season lost to injured reserve produces no snaps _and_ no injury-report rows — placement on IR removes a player from the report — so the two feeds above go quiet for exactly the players whose absence is least voluntary. The inference below needs an adjacent season to exist, which a rookie hurt in camp and a player in his newest tracked season both lack: without the reserve team they read as departures. Jordyn Tyson, New Orleans' 2026 first-rounder, sat out his rookie year on reserve and scored as though the Saints had released him.
 
 ### 1.6 Rest Games (per season, per franchise)
 

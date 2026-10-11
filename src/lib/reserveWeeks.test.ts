@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { accumulateReserveTeams, accumulateReserveWeeks } from './reserveWeeks';
+import {
+  accumulateReserveTeams,
+  accumulateReserveWeeks,
+  accumulateRosteredPlayers,
+} from './reserveWeeks';
 
 const row = (o: Partial<Record<string, string>>) => ({
   gsis_id: '00-0034790',
@@ -103,6 +107,32 @@ describe('accumulateReserveTeams', () => {
 
   it('skips rows with no team', () => {
     const got = accumulateReserveTeams([row({ team: '' })]);
+    expect(got.size).toBe(0);
+  });
+});
+
+describe('accumulateRosteredPlayers', () => {
+  it('names everyone the feed carried, whatever their status', () => {
+    const got = accumulateRosteredPlayers([
+      row({ gsis_id: '00-0000001', status: 'ACT' }),
+      row({ gsis_id: '00-0000002', status: 'RES' }),
+      row({ gsis_id: '00-0000003', status: 'DEV' }),
+    ]);
+    expect(got).toEqual(new Set(['00-0000001', '00-0000002', '00-0000003']));
+  });
+
+  it('counts a player the week he was cut, who was on the roster until then', () => {
+    const got = accumulateRosteredPlayers([row({ status: 'CUT' })]);
+    expect(got.has('00-0034790')).toBe(true);
+  });
+
+  it('ignores preseason rows, which are not a season on a roster', () => {
+    const got = accumulateRosteredPlayers([row({ game_type: 'PRE' })]);
+    expect(got.size).toBe(0);
+  });
+
+  it('skips rows with no gsis_id, the only key it can answer for', () => {
+    const got = accumulateRosteredPlayers([row({ gsis_id: '' })]);
     expect(got.size).toBe(0);
   });
 });

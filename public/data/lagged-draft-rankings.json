@@ -3,196 +3,196 @@
   "to": 2021,
   "rankings": [
     {
+      "teamId": "KC",
+      "teamName": "Kansas City Chiefs",
+      "score": 46.03599022198954,
+      "overSlot": 9.406512415066926
+    },
+    {
       "teamId": "CHI",
       "teamName": "Chicago Bears",
       "score": 42.92438180903582,
-      "overSlot": 9.052860956870434
-    },
-    {
-      "teamId": "KC",
-      "teamName": "Kansas City Chiefs",
-      "score": 45.114843912836164,
-      "overSlot": 8.81097551724023
+      "overSlot": 8.777567988450343
     },
     {
       "teamId": "SF",
       "teamName": "San Francisco 49ers",
       "score": 46.24563531894048,
-      "overSlot": 6.982445655548777
+      "overSlot": 6.679344061902123
     },
     {
       "teamId": "LAC",
       "teamName": "Los Angeles Chargers",
-      "score": 44.641827987658615,
-      "overSlot": 6.447018952189013
+      "score": 45.134251458068256,
+      "overSlot": 6.624336521581228
     },
     {
       "teamId": "IND",
       "teamName": "Indianapolis Colts",
-      "score": 42.71735492392896,
-      "overSlot": 6.3031487652607865
+      "score": 43.2177619518601,
+      "overSlot": 6.501642871153599
     },
     {
       "teamId": "BUF",
       "teamName": "Buffalo Bills",
-      "score": 41.07807759884767,
-      "overSlot": 5.901401106114899
+      "score": 41.471107575046084,
+      "overSlot": 6.0104816892180795
     },
     {
       "teamId": "WAS",
       "teamName": "Washington Commanders",
       "score": 40.529299781982104,
-      "overSlot": 5.537513679320519
+      "overSlot": 5.257095069555711
     },
     {
       "teamId": "MIA",
       "teamName": "Miami Dolphins",
       "score": 45.84871401144293,
-      "overSlot": 4.355046653233378
+      "overSlot": 4.024928498164425
     },
     {
       "teamId": "PHI",
       "teamName": "Philadelphia Eagles",
       "score": 40.132877033732946,
-      "overSlot": 4.245553419301237
+      "overSlot": 3.936882639422197
+    },
+    {
+      "teamId": "TB",
+      "teamName": "Tampa Bay Buccaneers",
+      "score": 43.74468622345372,
+      "overSlot": 3.8216242555663222
+    },
+    {
+      "teamId": "ATL",
+      "teamName": "Atlanta Falcons",
+      "score": 44.52207466056017,
+      "overSlot": 3.7435653937149573
     },
     {
       "teamId": "GB",
       "teamName": "Green Bay Packers",
       "score": 37.35272899375084,
-      "overSlot": 3.892842978914738
-    },
-    {
-      "teamId": "ATL",
-      "teamName": "Atlanta Falcons",
-      "score": 44.2296504565342,
-      "overSlot": 3.7922723018481888
-    },
-    {
-      "teamId": "TB",
-      "teamName": "Tampa Bay Buccaneers",
-      "score": 43.27470011136013,
-      "overSlot": 3.6865706085663574
+      "overSlot": 3.6162517898773947
     },
     {
       "teamId": "DET",
       "teamName": "Detroit Lions",
       "score": 43.14329394354271,
-      "overSlot": 3.0305185185044055
+      "overSlot": 2.7155965301967906
+    },
+    {
+      "teamId": "DAL",
+      "teamName": "Dallas Cowboys",
+      "score": 38.15585368735289,
+      "overSlot": 2.2822471268743185
     },
     {
       "teamId": "DEN",
       "teamName": "Denver Broncos",
       "score": 40.74906522917743,
-      "overSlot": 2.5686910041826545
-    },
-    {
-      "teamId": "PIT",
-      "teamName": "Pittsburgh Steelers",
-      "score": 37.53489878053118,
-      "overSlot": 2.0290526422551243
-    },
-    {
-      "teamId": "DAL",
-      "teamName": "Dallas Cowboys",
-      "score": 37.57925712597554,
-      "overSlot": 2.0157268067199765
+      "overSlot": 2.255283869925152
     },
     {
       "teamId": "SEA",
       "teamName": "Seattle Seahawks",
-      "score": 37.814859612334814,
-      "overSlot": 1.962518602976305
+      "score": 38.25034216536342,
+      "overSlot": 2.0846512227932474
     },
     {
-      "teamId": "CAR",
-      "teamName": "Carolina Panthers",
-      "score": 38.44827396931019,
-      "overSlot": 0.8544995539835003
+      "teamId": "PIT",
+      "teamName": "Pittsburgh Steelers",
+      "score": 37.6491046332332,
+      "overSlot": 1.8352122935723358
     },
     {
       "teamId": "LAR",
       "teamName": "Los Angeles Rams",
-      "score": 31.085906974384198,
-      "overSlot": 0.7681087900851017
+      "score": 31.434222207989958,
+      "overSlot": 0.8521860412056355
+    },
+    {
+      "teamId": "CAR",
+      "teamName": "Carolina Panthers",
+      "score": 38.58747870618808,
+      "overSlot": 0.6899824815862268
     },
     {
       "teamId": "BAL",
       "teamName": "Baltimore Ravens",
-      "score": 38.17079371695194,
-      "overSlot": 0.4507631464075172
+      "score": 38.309450576108304,
+      "overSlot": 0.2669410639837104
     },
     {
       "teamId": "NYG",
       "teamName": "New York Giants",
-      "score": 40.129147559768924,
-      "overSlot": 0.34877384261689526
+      "score": 40.25476475500887,
+      "overSlot": 0.17814960562177828
     },
     {
       "teamId": "NO",
       "teamName": "New Orleans Saints",
       "score": 35.30042765413262,
-      "overSlot": -0.029047195446394447
+      "overSlot": -0.3250680823181368
+    },
+    {
+      "teamId": "ARI",
+      "teamName": "Arizona Cardinals",
+      "score": 35.749262055941905,
+      "overSlot": -1.3070043029993632
     },
     {
       "teamId": "MIN",
       "teamName": "Minnesota Vikings",
       "score": 31.942401279413296,
-      "overSlot": -1.0672500067007857
+      "overSlot": -1.3444488550679423
     },
     {
-      "teamId": "ARI",
-      "teamName": "Arizona Cardinals",
-      "score": 35.5402470990368,
-      "overSlot": -1.2399570050437585
+      "teamId": "CIN",
+      "teamName": "Cincinnati Bengals",
+      "score": 35.19928445451978,
+      "overSlot": -2.5965011706319365
     },
     {
       "teamId": "HOU",
       "teamName": "Houston Texans",
       "score": 34.3480799177403,
-      "overSlot": -2.2940108802787877
-    },
-    {
-      "teamId": "CIN",
-      "teamName": "Cincinnati Bengals",
-      "score": 34.589644484781786,
-      "overSlot": -2.907858081074134
+      "overSlot": -2.6194202986344237
     },
     {
       "teamId": "LV",
       "teamName": "Las Vegas Raiders",
-      "score": 40.55752045251071,
-      "overSlot": -3.171160620903407
-    },
-    {
-      "teamId": "TEN",
-      "teamName": "Tennessee Titans",
-      "score": 36.62969601891396,
-      "overSlot": -3.2835572747474147
+      "score": 41.03461526178139,
+      "overSlot": -3.062285144905588
     },
     {
       "teamId": "JAX",
       "teamName": "Jacksonville Jaguars",
       "score": 38.02860651347903,
-      "overSlot": -3.2848337260137366
+      "overSlot": -3.6025866710245897
+    },
+    {
+      "teamId": "TEN",
+      "teamName": "Tennessee Titans",
+      "score": 36.62969601891396,
+      "overSlot": -3.6214268612024227
     },
     {
       "teamId": "CLE",
       "teamName": "Cleveland Browns",
-      "score": 37.377980676460794,
-      "overSlot": -4.515674136836043
+      "score": 38.098961502739755,
+      "overSlot": -4.127279037282496
     },
     {
       "teamId": "NYJ",
       "teamName": "New York Jets",
       "score": 35.112430646631985,
-      "overSlot": -5.1243254985774565
+      "overSlot": -5.440803625833568
     },
     {
       "teamId": "NE",
       "teamName": "New England Patriots",
       "score": 26.597353125419094,
-      "overSlot": -9.352554917780077
+      "overSlot": -9.658498580531818
     }
   ]
 }

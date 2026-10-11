@@ -142,7 +142,38 @@ export function accumulateReserveTeams(
 }
 
 /**
- * The row filter both accumulators share, so "what counts as a reserve week"
+ * Everyone the weekly roster feed carried in a season, by `gsis_id`.
+ *
+ * The counterpart to the two accumulators above: they answer "was he hurt, and
+ * for whom", this one answers the blunter question of whether any team had him
+ * under contract at all. Every status counts, `CUT` included — a player
+ * released in Week 3 was on the roster for the first three weeks, and the row
+ * recording it is the proof.
+ *
+ * Its value is in the negative. The feed lists every player on every roster
+ * every week, so a season it covered in which a player appears nowhere is
+ * evidence he was on no roster — the one thing that can tell a year out of
+ * football apart from a year merely absent from the stat sheets, which
+ * otherwise look identical and get guessed at. See `resolveRetained`.
+ */
+export function accumulateRosteredPlayers(
+  rows: ReserveRosterRow[],
+): Set<string> {
+  const rostered = new Set<string>();
+  for (const row of rows) {
+    const gsisId = (row.gsis_id ?? '').trim();
+    if (!gsisId) continue;
+    // Preseason churn is not a season on a roster — the same gate the week
+    // count applies, for the same reason.
+    const gameType = row.game_type ?? '';
+    if (gameType !== 'REG' && gameType !== 'POST') continue;
+    rostered.add(gsisId);
+  }
+  return rostered;
+}
+
+/**
+ * The row filter both reserve accumulators share, so "what counts as a reserve week"
  * keeps one definition — the team lookup must not be able to drift from the
  * week count it explains.
  */

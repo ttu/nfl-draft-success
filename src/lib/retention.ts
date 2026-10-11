@@ -20,6 +20,13 @@ export interface RetentionSignals {
   injuryTeam: string;
   /** Team he spent his reserve weeks with, from the weekly roster feed. */
   reserveTeam: string;
+  /**
+   * Whether the weekly roster feed carried him anywhere in the league this
+   * season. `undefined` when that feed did not speak for the season at all —
+   * before 2016, or a release that failed to load — where absence proves
+   * nothing. See {@link resolveRetained}.
+   */
+  rosteredThisSeason?: boolean;
   /** The team being judged: who drafted or signed him. */
   teamId: string;
   season: number;
@@ -47,12 +54,21 @@ export interface RetentionSignals {
  * adjacent season to exist, which is why it cannot stand in for the reserve
  * signal: a rookie who is hurt in camp has no previous season, and a player in
  * his newest tracked season has no next one.
+ *
+ * The inference runs only where there is genuinely nothing to go on. A season
+ * the weekly roster feed covered, and in which it lists him on no roster in
+ * the league, is positive evidence that he was not on one — the feed carries
+ * every player on every roster every week — so it settles the season instead.
+ * Without that, the year a player leaves football is read as one more season
+ * with the team that drafted him: Anthony Barr's 2024, copied from the 2023
+ * he really did play for Minnesota, scored 0 against the pick.
  */
 export function resolveRetained(signals: RetentionSignals): boolean {
   const {
     primaryTeam,
     injuryTeam,
     reserveTeam,
+    rosteredThisSeason,
     teamId,
     season,
     playerSnaps,
@@ -61,6 +77,10 @@ export function resolveRetained(signals: RetentionSignals): boolean {
 
   const named = firstNamedTeam(primaryTeam, injuryTeam, reserveTeam);
   if (named !== '') return normalizeNflverseTeam(named) === teamId;
+
+  // Nobody rostered him, and the feed is in a position to know: that is a
+  // departure stated outright, not a gap to be guessed at.
+  if (rosteredThisSeason === false) return false;
 
   const teamIn = (year: number): string =>
     playerSnaps?.get(year)?.primaryTeam ??
