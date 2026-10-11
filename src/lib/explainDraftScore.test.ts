@@ -4,6 +4,7 @@ import { getSeasonScore } from './getSeasonScore';
 import { getPlayerDraftScore } from './getPlayerRole';
 import { getPlayerDraftSkill } from './draftSlotBaseline';
 import { LATEST_SEASON } from './rookieWindow';
+import { getPositionBaseline } from './positionBaseline';
 import type { DraftPick, Season } from '../types';
 import { makePick, makeSeason } from '../test/factories';
 
@@ -28,13 +29,26 @@ const pick = (overrides: Partial<DraftPick> = {}): DraftPick => ({
   ...overrides,
 });
 
-/** Richardson's real shape: three seasons, first-round, still on the roster. */
+/**
+ * Richardson's real shape: three seasons, first-round, still on the roster.
+ *
+ * Anchored to {@link LATEST_SEASON}, not his real 2023–2025: with fixed years
+ * his newest row falls behind the league on the next data refresh and the pick
+ * reads as departed, which charges the full window instead of clamping.
+ */
+const RICHARDSON_YEARS = [
+  LATEST_SEASON - 2,
+  LATEST_SEASON - 1,
+  LATEST_SEASON,
+] as const;
+
 const richardson = () =>
   pick({
     position: 'QB',
+    draftYear: RICHARDSON_YEARS[0],
     seasons: [
       season({
-        year: 2023,
+        year: RICHARDSON_YEARS[0],
         gamesPlayed: 4,
         snapShare: 0.6525,
         cumulativeSnapShare: 0.4842,
@@ -43,7 +57,7 @@ const richardson = () =>
         excusedGames: 12,
       }),
       season({
-        year: 2024,
+        year: RICHARDSON_YEARS[1],
         gamesPlayed: 11,
         snapShare: 0.9255,
         cumulativeSnapShare: 0.8815,
@@ -51,7 +65,7 @@ const richardson = () =>
         excusedGames: 2,
       }),
       season({
-        year: 2025,
+        year: RICHARDSON_YEARS[2],
         gamesPlayed: 2,
         snapShare: 0.115,
         cumulativeSnapShare: 0.0444,
@@ -115,7 +129,7 @@ describe('explainDraftScore', () => {
 
   describe('denominator', () => {
     it('clamps a first-rounder to seasons elapsed while still on the roster', () => {
-      // Drafted 2023, latest season 2025 → 3 elapsed, below the 5-year window.
+      // Three seasons elapsed, below the first round's 5-year window.
       const e = explainDraftScore(richardson(), true)!;
 
       expect(e.denominator).toBe(3);
@@ -222,19 +236,21 @@ describe('explainDraftScore', () => {
     });
 
     it('renders unplayed window years as gap rows in chronological place', () => {
+      const [first, , third] = RICHARDSON_YEARS;
       const p = pick({
         round: 3,
         overallPick: 80,
-        seasons: [season({ year: 2023 }), season({ year: 2025 })],
+        draftYear: first,
+        seasons: [season({ year: first }), season({ year: third })],
       });
       const e = explainDraftScore(p, true)!;
 
       // Still on the roster, so the window clamps to the three seasons that
       // have elapsed rather than charging all four up front.
       expect(e.rows.map((r) => [r.kind, r.year])).toEqual([
-        ['season', 2023],
-        ['gap', 2024],
-        ['season', 2025],
+        ['season', first],
+        ['gap', first + 1],
+        ['season', third],
       ]);
     });
 
@@ -268,7 +284,7 @@ describe('explainDraftScore', () => {
       const rows = seasonRows(explainDraftScore(richardson(), true)!);
 
       expect(rows[0].baselineExempt).toBe(false);
-      expect(rows[0].positionBaseline).toBeCloseTo(0.992, 3);
+      expect(rows[0].positionBaseline).toBe(getPositionBaseline('QB'));
       expect(rows[0].normalizedShare).toBeCloseTo(
         rows[0].rawShare / rows[0].positionBaseline,
         6,
@@ -299,13 +315,14 @@ describe('explainDraftScore', () => {
   describe('injury adjustment', () => {
     it('reports the stored excusal, not a figure re-derived from week counts', () => {
       const rows = seasonRows(explainDraftScore(richardson(), true)!);
-      const y2023 = rows.find((r) => r.year === 2023)!;
+      const rookieYear = rows.find((r) => r.year === RICHARDSON_YEARS[0])!;
 
-      // 2 report weeks and 12 reserve weeks, and the denominator forgave 12 —
+      // His rookie year: 2 report weeks and 12 reserve weeks, and the
+      // denominator forgave 12 —
       // the weeks he missed that were documented. Neither the max (12 by
       // coincidence here) nor the sum (14) is what is being read: the panel
       // takes `excusedGames` straight off the season.
-      expect(y2023.injury).toEqual({
+      expect(rookieYear.injury).toEqual({
         injuryReportWeeks: 2,
         seasonEndingAbsenceGames: 0,
         reserveWeeks: 12,

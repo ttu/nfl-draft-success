@@ -1,5 +1,6 @@
 {
   "year": 2013,
+  "seasonsThrough": 2026,
   "freeAgents": [
     {
       "playerId": "AdamJo02",
@@ -741,7 +742,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "CLE"
         }
       ]
     },
@@ -932,7 +934,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "CHI"
         }
       ]
     },
@@ -1089,8 +1092,9 @@
           "teamGames": 17,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true,
-          "reserveWeeks": 16
+          "retained": false,
+          "reserveWeeks": 16,
+          "currentTeam": "DEN"
         }
       ]
     },
@@ -1242,8 +1246,9 @@
           "teamGames": 16,
           "snapShare": 0,
           "cumulativeSnapShare": 0,
-          "retained": true,
-          "reserveWeeks": 4
+          "retained": false,
+          "reserveWeeks": 4,
+          "currentTeam": "DEN"
         },
         {
           "year": 2017,
@@ -1260,7 +1265,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 5
+          "reserveWeeks": 5,
+          "currentTeam": "CHI"
         }
       ]
     },
@@ -2984,6 +2990,15 @@
         },
         {
           "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.6425000000000001,
+          "cumulativeSnapShare": 0.6356429527437455,
+          "retained": false,
+          "currentTeam": "LAC"
+        },
+        {
+          "year": 2027,
           "gamesPlayed": 0,
           "teamGames": 0,
           "snapShare": 0,
@@ -3926,7 +3941,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "NO"
         }
       ]
     },
@@ -4872,7 +4888,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "HOU"
         }
       ]
     },
@@ -5303,7 +5320,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "ATL"
         }
       ]
     },
@@ -5406,7 +5424,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "DET"
         }
       ]
     },
@@ -5861,7 +5880,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 1
+          "reserveWeeks": 1,
+          "currentTeam": "NYJ"
         }
       ]
     },
@@ -6460,7 +6480,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "BUF"
         }
       ]
     },
@@ -6513,7 +6534,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 8
+          "reserveWeeks": 8,
+          "currentTeam": "NO"
         }
       ]
     },
@@ -6723,7 +6745,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 1
+          "reserveWeeks": 1,
+          "currentTeam": "SF"
         }
       ]
     },
@@ -6884,7 +6907,8 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "PHI"
         },
         {
           "year": 2019,
@@ -6947,10 +6971,10 @@
           "snapShare": 0,
           "cumulativeSnapShare": 0,
           "retained": false,
-          "reserveWeeks": 16
+          "reserveWeeks": 16,
+          "currentTeam": "DET"
         }
       ]
     }
-  ],
-  "seasonsThrough": 2025
+  ]
 }

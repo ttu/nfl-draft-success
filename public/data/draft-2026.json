@@ -1,5 +1,6 @@
 {
   "year": 2026,
+  "seasonsThrough": 2026,
   "picks": [
     {
       "playerId": "MendFe00",
@@ -9,7 +10,16 @@
       "overallPick": 1,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/umygvel2pumkyvxt3jm9",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BailDa02",
@@ -18,8 +28,26 @@
       "round": 1,
       "overallPick": 2,
       "teamId": "NYJ",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/r6vo0ugtnbbooogommai",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bzanl4jdvmkvsdmsyxwg",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.7224999999999999,
+          "cumulativeSnapShare": 0.7224999999999999,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LoveJe00",
@@ -29,7 +57,25 @@
       "overallPick": 3,
       "teamId": "ARI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/b12gtjsylmql5v7iyyla",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.48000000000000004,
+          "cumulativeSnapShare": 0.48000000000000004,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TateCa00",
@@ -38,8 +84,26 @@
       "round": 1,
       "overallPick": 4,
       "teamId": "TEN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ghpmpzcnigxrdbyvcxke",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xlva68qwhtm0n36pwyad",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.8374999999999999,
+          "cumulativeSnapShare": 0.8374999999999999,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ReesAr00",
@@ -49,7 +113,24 @@
       "overallPick": 5,
       "teamId": "NYG",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tvhqfy34evkal6zpu9to",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.9875,
+          "cumulativeSnapShare": 0.9875,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DelaMa00",
@@ -59,7 +140,26 @@
       "overallPick": 6,
       "teamId": "KC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tw9nfj4gxwqjvqfencwo",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.66,
+          "cumulativeSnapShare": 0.66,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "StylSo01",
@@ -69,7 +169,25 @@
       "overallPick": 7,
       "teamId": "WAS",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wxufyrsnbie0gyq9piyf",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.9025000000000001,
+          "cumulativeSnapShare": 0.9000251614526545,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TysoJo00",
@@ -78,8 +196,26 @@
       "round": 1,
       "overallPick": 8,
       "teamId": "NO",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/al6fifxstyc6omsenzhd",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bmiqhbfepmwian4cjddy",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "FanoSp00",
@@ -88,8 +224,25 @@
       "round": 1,
       "overallPick": 9,
       "teamId": "CLE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xbh3gk38au7vprlbh6hb",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fuwdqegdhjwsndpqhi69",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MauiFr01",
@@ -99,7 +252,25 @@
       "overallPick": 10,
       "teamId": "NYG",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sf5gdoimkobalbcvgirv",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DownCa00",
@@ -109,7 +280,24 @@
       "overallPick": 11,
       "teamId": "DAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nkj0yjytmlcbciqjus0w",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 5,
+          "teamGames": 5,
+          "snapShare": 0.976,
+          "cumulativeSnapShare": 0.9758308157099698,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ProcKa00",
@@ -118,8 +306,25 @@
       "round": 1,
       "overallPick": 12,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/drkcektwmef11cd6pojk",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/m5jop9fmghbma0ee3ru3",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SimpTy00",
@@ -129,7 +334,16 @@
       "overallPick": 13,
       "teamId": "LAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lbvqgmsidrpxh1jyyey6",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "IoanOl00",
@@ -139,17 +353,53 @@
       "overallPick": 14,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x3z8asowfyyrhgc0nujw",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BainRu00",
-      "playerName": "Rueben Bain Jr.",
+      "playerName": "Rueben Bain",
       "position": "DE",
       "round": 1,
       "overallPick": 15,
       "teamId": "TB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/iim0v0qnfmkeonr7qkjr",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 5,
+          "snapShare": 0.6066666666666666,
+          "cumulativeSnapShare": 0.6066666666666666,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "excusedGames": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SadiKe00",
@@ -159,7 +409,25 @@
       "overallPick": 16,
       "teamId": "NYJ",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mnswulwto4yqkgmugoiq",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.5125,
+          "cumulativeSnapShare": 0.4811715481171548,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MillBl01",
@@ -169,7 +437,26 @@
       "overallPick": 17,
       "teamId": "DET",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l4asr5sgiqltqyw0fvf2",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BankCa01",
@@ -178,8 +465,25 @@
       "round": 1,
       "overallPick": 18,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kn0vbk3i04hyepp7phmb",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wyu25kuhccxyrvmzlur5",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.29500000000000004,
+          "cumulativeSnapShare": 0.29500000000000004,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "FreeMo00",
@@ -189,7 +493,25 @@
       "overallPick": 19,
       "teamId": "CAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ljukgocjxwgzy7pdf6rv",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.885,
+          "cumulativeSnapShare": 0.8811188811188811,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LemoMa00",
@@ -199,7 +521,24 @@
       "overallPick": 20,
       "teamId": "PHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ys2i2o7c0bl36xvlrojz",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.6775,
+          "cumulativeSnapShare": 0.6735537190082644,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "IheaMa00",
@@ -209,7 +548,24 @@
       "overallPick": 21,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jwaks17icukbwjeshhnf",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.5125,
+          "cumulativeSnapShare": 0.5092250922509225,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MesiAk01",
@@ -219,7 +575,25 @@
       "overallPick": 22,
       "teamId": "LAC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uzofkqafecc5zqqwyiyd",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.48,
+          "cumulativeSnapShare": 0.48,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LawrMa01",
@@ -229,7 +603,24 @@
       "overallPick": 23,
       "teamId": "DAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fyhju3zbedckstcoufxp",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 5,
+          "teamGames": 5,
+          "snapShare": 0.352,
+          "cumulativeSnapShare": 0.352,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ConcKC00",
@@ -238,8 +629,25 @@
       "round": 1,
       "overallPick": 24,
       "teamId": "CLE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ztdyzyngqr1pexyghlt3",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/evzxqxsyr1m3ohchqcan",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.7825,
+          "cumulativeSnapShare": 0.7825,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ThieDi00",
@@ -248,8 +656,25 @@
       "round": 1,
       "overallPick": 25,
       "teamId": "CHI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hyl3qlps5bwhwvklhf2j",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lkqxlsmgrd6zfnxvwfph",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RutlKe01",
@@ -258,8 +683,25 @@
       "round": 1,
       "overallPick": 26,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qzt4txsu9hhjgy9yiwej",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/shf94nklc5gp5q8hze5v",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JohnCh09",
@@ -268,8 +710,26 @@
       "round": 1,
       "overallPick": 27,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xapxjgeqo5rbmuvfxbfv",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fpvhojljhxejpm9hehbx",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.9525,
+          "cumulativeSnapShare": 0.9525,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LomuCa00",
@@ -278,8 +738,25 @@
       "round": 1,
       "overallPick": 28,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cjnhusuj4mifbdoseimb",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zribmzpnmf3zcljapf1u",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.185,
+          "cumulativeSnapShare": 0.185,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WoodPe00",
@@ -289,17 +766,54 @@
       "overallPick": 29,
       "teamId": "KC",
       "headshotUrl": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/snsufdjfzmgcorft2mv7",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.475,
+          "cumulativeSnapShare": 0.46153846153846156,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CoopOm00",
-      "playerName": "Omar Cooper Jr.",
+      "playerName": "Omar Cooper",
       "position": "WR",
       "round": 1,
       "overallPick": 30,
       "teamId": "NYJ",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lmua2lbg0m77ibvydvaq",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.07,
+          "cumulativeSnapShare": 0.07,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 4,
+          "excusedGames": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "FaulKe01",
@@ -308,8 +822,26 @@
       "round": 1,
       "overallPick": 31,
       "teamId": "TEN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yn8hrjyo5q5kcmriamnb",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/efnmd2nhjyq3t6c0myyj",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.3125,
+          "cumulativeSnapShare": 0.30996309963099633,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PricJa02",
@@ -319,7 +851,27 @@
       "overallPick": 32,
       "teamId": "SEA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/toy90i08oumgbdlvctja",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.3666666666666667,
+          "cumulativeSnapShare": 0.3582887700534759,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "reserveWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "StriDe01",
@@ -329,7 +881,27 @@
       "overallPick": 33,
       "teamId": "SF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/eu1nxtlztiwr5ko48iwz",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.32,
+          "cumulativeSnapShare": 0.32,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 4,
+          "excusedGames": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BisoCh00",
@@ -339,7 +911,25 @@
       "overallPick": 34,
       "teamId": "ARI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qb9l3hc9l6pytbgpwrmd",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ParkTJ00",
@@ -348,8 +938,25 @@
       "round": 2,
       "overallPick": 35,
       "teamId": "BUF",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oayz0zuvip1soobdidga",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ko8yaipbaeyaneyp7oex",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.20750000000000002,
+          "cumulativeSnapShare": 0.20750000000000002,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "McDoKa00",
@@ -358,8 +965,27 @@
       "round": 2,
       "overallPick": 36,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/s9qpl2hid4ydacfgnkkj",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fcasjvzrnyvd9bperaqv",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HoodCo00",
@@ -369,7 +995,24 @@
       "overallPick": 37,
       "teamId": "NYG",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lzlv1gqqjzhawk3jfu8m",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.5125,
+          "cumulativeSnapShare": 0.508130081300813,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "StukTr00",
@@ -379,7 +1022,26 @@
       "overallPick": 38,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uhljscop4d7yxtanrwop",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.82,
+          "cumulativeSnapShare": 0.7596899224806202,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BostDe00",
@@ -389,7 +1051,24 @@
       "overallPick": 39,
       "teamId": "CLE",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ybkny6eh5eegq3bqmony",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.9225000000000001,
+          "cumulativeSnapShare": 0.9218106995884774,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MasoR01",
@@ -399,7 +1078,25 @@
       "overallPick": 40,
       "teamId": "KC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kyj9zy752wgq6nnn4ui6",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.5275,
+          "cumulativeSnapShare": 0.5275,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HoweCa00",
@@ -409,7 +1106,24 @@
       "overallPick": 41,
       "teamId": "CIN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qepm55rb579namslsmjb",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.40750000000000003,
+          "cumulativeSnapShare": 0.40750000000000003,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MillCh01",
@@ -418,8 +1132,27 @@
       "round": 2,
       "overallPick": 42,
       "teamId": "NO",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/goyemhogpp21adasa9z7",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x2lgnlf8ty0fmsmvzg6h",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.32,
+          "cumulativeSnapShare": 0.32,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "excusedGames": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RodrJa00",
@@ -428,8 +1161,25 @@
       "round": 2,
       "overallPick": 43,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yqhkilqqhuxelhiz40qv",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ew3ilkxo5ub3bnzisc2t",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.98,
+          "cumulativeSnapShare": 0.98,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MoorDe03",
@@ -439,7 +1189,25 @@
       "overallPick": 44,
       "teamId": "DET",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cl0rhuy0xdtwwu2fq2os",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.17,
+          "cumulativeSnapShare": 0.17,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "YounZi00",
@@ -449,7 +1217,25 @@
       "overallPick": 45,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hnutmew9xs7czug8ujne",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.325,
+          "cumulativeSnapShare": 0.325,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TrotJo00",
@@ -459,7 +1245,26 @@
       "overallPick": 46,
       "teamId": "TB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sqikte2lgczxdun64akq",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 5,
+          "snapShare": 0.8875,
+          "cumulativeSnapShare": 0.8875,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BernGe00",
@@ -469,7 +1274,24 @@
       "overallPick": 47,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rsbtypbsvxux94vokb5q",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.375,
+          "cumulativeSnapShare": 0.375,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TerrAv00",
@@ -478,8 +1300,25 @@
       "round": 2,
       "overallPick": 48,
       "teamId": "ATL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ellqzbdrtdoxmte2ehk8",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wrwnxp7n6xxbr17ytslr",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.355,
+          "cumulativeSnapShare": 0.355,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HuntLe00",
@@ -489,7 +1328,25 @@
       "overallPick": 49,
       "teamId": "CAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/h3dk22cisv0hv6dpvd6a",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.3775,
+          "cumulativeSnapShare": 0.3775,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PondDA00",
@@ -499,7 +1356,26 @@
       "overallPick": 50,
       "teamId": "NYJ",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/exokwoursxgcvgnnwp76",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.11,
+          "cumulativeSnapShare": 0.11,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "GoldJa01",
@@ -508,8 +1384,26 @@
       "round": 2,
       "overallPick": 51,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xxquil9cdqnjwqiwrj4h",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tmlyc4z2u3hsuhfjhcey",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.04,
+          "cumulativeSnapShare": 0.028,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CissBr00",
@@ -519,7 +1413,25 @@
       "overallPick": 52,
       "teamId": "GB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jvhlu2ghhxoitpve7ccj",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.9,
+          "cumulativeSnapShare": 0.9,
+          "retained": true,
+          "injuryReportWeeks": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "AlleCJ00",
@@ -528,8 +1440,25 @@
       "round": 2,
       "overallPick": 53,
       "teamId": "IND",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qhwxb55xtmpp2mvej4a2",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/o2gknzcxyfl102fpdocy",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.08499999999999999,
+          "cumulativeSnapShare": 0.041353383458646614,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "StowEl00",
@@ -539,7 +1468,26 @@
       "overallPick": 54,
       "teamId": "PHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/c9rjqit3q5tm9hzkm5ay",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JacaGa00",
@@ -548,8 +1496,25 @@
       "round": 2,
       "overallPick": 55,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/olnj7czbn0ul98o5nn61",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pfj4ln4kaoimfwezeviq",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.5725,
+          "cumulativeSnapShare": 0.5725,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BoerNa00",
@@ -559,7 +1524,25 @@
       "overallPick": 56,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bxglkvzpx2y40u25xaso",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.4625,
+          "cumulativeSnapShare": 0.4602510460251046,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JoneLo01",
@@ -568,8 +1551,25 @@
       "round": 2,
       "overallPick": 57,
       "teamId": "CHI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xln1vy146svhdcpqn643",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wdzoi5ndoenuuiwtoc8b",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "McNeEm00",
@@ -578,7 +1578,25 @@
       "round": 2,
       "overallPick": 58,
       "teamId": "CLE",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gi1jsnkrzav2lbpyktyb",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.29000000000000004,
+          "cumulativeSnapShare": 0.29000000000000004,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KleiMa00",
@@ -587,18 +1605,52 @@
       "round": 2,
       "overallPick": 59,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ek2nzhrwqxl6psbm2iic",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bbmetjgefc5y3xo4f7pc",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.09666666666666668,
+          "cumulativeSnapShare": 0.08208955223880597,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HillAn01",
-      "playerName": "Anthony Hill Jr.",
+      "playerName": "Anthony Hill",
       "position": "LB",
       "round": 2,
       "overallPick": 60,
       "teamId": "TEN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rcozyv4kil96dw8aovh4",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KlarMa00",
@@ -607,7 +1659,25 @@
       "round": 2,
       "overallPick": 61,
       "teamId": "LAR",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qapyeuy4mq7eydc5syiw",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.0033333333333333335,
+          "cumulativeSnapShare": 0.0033333333333333335,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "IgbiDa01",
@@ -616,8 +1686,25 @@
       "round": 2,
       "overallPick": 62,
       "teamId": "BUF",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jb0yvudwlaooyiemyxh8",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bypfwe3tzolclsrvdev1",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.455,
+          "cumulativeSnapShare": 0.455,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SlauJa02",
@@ -627,7 +1714,24 @@
       "overallPick": 63,
       "teamId": "LAC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/m3tbps2o5cuy8ueeygjy",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ClarBu00",
@@ -637,7 +1741,25 @@
       "overallPick": 64,
       "teamId": "SEA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l1kul40tgcpyox07cbaa",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BeckCa01",
@@ -647,7 +1769,16 @@
       "overallPick": 65,
       "teamId": "ARI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yvybqpgnezk75h9rpobv",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "OnyeTy00",
@@ -657,7 +1788,16 @@
       "overallPick": 66,
       "teamId": "DEN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/d2ttkvv1veffjciazekv",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CrawKe01",
@@ -667,7 +1807,25 @@
       "overallPick": 67,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/es2d7bq7qj5xestutdk2",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BellMa02",
@@ -677,7 +1835,24 @@
       "overallPick": 68,
       "teamId": "PHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zbm6pz0vpqq5jup2s0ky",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.255,
+          "cumulativeSnapShare": 0.255,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RousSa00",
@@ -686,8 +1861,25 @@
       "round": 3,
       "overallPick": 69,
       "teamId": "CHI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jqkmmguw4934lyjgvuip",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gjz1in0tnn9vjssgs762",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.225,
+          "cumulativeSnapShare": 0.225,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HeigRo00",
@@ -697,7 +1889,26 @@
       "overallPick": 70,
       "teamId": "SF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l3arvnk3oxjzzglzvnps",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.53,
+          "cumulativeSnapShare": 0.48293884865228104,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WillAn04",
@@ -707,7 +1918,24 @@
       "overallPick": 71,
       "teamId": "WAS",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/noywrsgaqoqlv64c12yw",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.49,
+          "cumulativeSnapShare": 0.4854014598540146,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DaviTa01",
@@ -717,7 +1945,24 @@
       "overallPick": 72,
       "teamId": "CIN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l4vgk9lz1y81pm89hxf7",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.21500000000000002,
+          "cumulativeSnapShare": 0.21153846153846154,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DelpOs01",
@@ -726,8 +1971,27 @@
       "round": 3,
       "overallPick": 73,
       "teamId": "NO",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/a7tu8cb3rnd5ncgbtok5",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/svrdhfmujcmpd9i0wj01",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.21333333333333335,
+          "cumulativeSnapShare": 0.2047930283224401,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "FielMa00",
@@ -737,7 +2001,24 @@
       "overallPick": 74,
       "teamId": "NYG",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tpls1aptxx9x8xaqvjtj",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.72,
+          "cumulativeSnapShare": 0.7170542635658915,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DougCa00",
@@ -746,8 +2027,27 @@
       "round": 3,
       "overallPick": 75,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/stwypvmutplwvi1zzbmu",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/h0ds6lir4svszjcpc3hr",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.885,
+          "cumulativeSnapShare": 0.885,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "excusedGames": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "AllaDr00",
@@ -757,7 +2057,16 @@
       "overallPick": 76,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sphuqnfrtzwsgeugeycz",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "McClCh01",
@@ -767,7 +2076,24 @@
       "overallPick": 77,
       "teamId": "GB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jp4ns5e4vgwf7yn5hf1h",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.42000000000000004,
+          "cumulativeSnapShare": 0.42000000000000004,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HaulAJ00",
@@ -777,7 +2103,25 @@
       "overallPick": 78,
       "teamId": "IND",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y0kpgevqxihsroz9zqrm",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.7425,
+          "cumulativeSnapShare": 0.7330827067669173,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BranZa00",
@@ -786,8 +2130,26 @@
       "round": 3,
       "overallPick": 79,
       "teamId": "ATL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qwbo8lgyd85dlwnbznsc",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ueo0q6wzg6gntezjk93y",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.22749999999999998,
+          "cumulativeSnapShare": 0.22568093385214008,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LaneJa01",
@@ -797,7 +2159,26 @@
       "overallPick": 80,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gjezd2a8imfrxyv16wuj",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.4,
+          "cumulativeSnapShare": 0.39705882352941174,
+          "retained": true,
+          "reserveWeeks": 4,
+          "excusedGames": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RegiAl00",
@@ -807,7 +2188,26 @@
       "overallPick": 81,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qr8atadqfx7yf2kzrtd5",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.12999999999999998,
+          "cumulativeSnapShare": 0.1163181927421293,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "OranDo00",
@@ -816,8 +2216,25 @@
       "round": 3,
       "overallPick": 82,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/o2druy2qqi3nkcbj9ns6",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/njdgjd9ij7rald5vbsen",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.2975,
+          "cumulativeSnapShare": 0.292,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BrazCh01",
@@ -827,7 +2244,25 @@
       "overallPick": 83,
       "teamId": "CAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jdmycletwhknhs9oth1f",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 4
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HursTe00",
@@ -837,7 +2272,24 @@
       "overallPick": 84,
       "teamId": "TB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mmf6qmo6a2evw4feupcm",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 5,
+          "teamGames": 5,
+          "snapShare": 0.62,
+          "cumulativeSnapShare": 0.6165644171779141,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "EverDa00",
@@ -847,7 +2299,24 @@
       "overallPick": 85,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cihcum2yfkzszr6e7icn",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.36,
+          "cumulativeSnapShare": 0.36,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BarbAu00",
@@ -856,8 +2325,25 @@
       "round": 3,
       "overallPick": 86,
       "teamId": "CLE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kglwdpydzvvmdr1bdblg",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rb5oxduysq2e7efhhbmn",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KacmWi00",
@@ -866,8 +2352,26 @@
       "round": 3,
       "overallPick": 87,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/erqascuieblamkhf2vbs",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vfzymn3tyys1zegpwlzy",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.4375,
+          "cumulativeSnapShare": 0.42290748898678415,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PregEm00",
@@ -877,7 +2381,24 @@
       "overallPick": 88,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ujjke8d6jxr3wrwsslqh",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 1,
+          "cumulativeSnapShare": 1,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ThomZa05",
@@ -886,8 +2407,25 @@
       "round": 3,
       "overallPick": 89,
       "teamId": "CHI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lhodk54zsmznu4yxjoux",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oqdpvuf3w45eelcjblq7",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.060000000000000005,
+          "cumulativeSnapShare": 0.060000000000000005,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BlacKa00",
@@ -897,17 +2435,53 @@
       "overallPick": 90,
       "teamId": "SF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nwgkzr1ysr32jc79zfnt",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.2925,
+          "cumulativeSnapShare": 0.2925,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ZuhnTr01",
-      "playerName": "Trey Zuhn III",
+      "playerName": "Trey Zuhn",
       "position": "OT",
       "round": 3,
       "overallPick": 91,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/k2qgtsvaic93xeu4jqhh",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.04,
+          "cumulativeSnapShare": 0.04,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BarhJa01",
@@ -917,7 +2491,24 @@
       "overallPick": 92,
       "teamId": "DAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/h35ij5cb5g5a8av170ca",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 5,
+          "teamGames": 5,
+          "snapShare": 0.68,
+          "cumulativeSnapShare": 0.6797583081570997,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TrosKe00",
@@ -927,7 +2518,25 @@
       "overallPick": 93,
       "teamId": "LAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yu1xi1tsm8my89xiefte",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BellCh00",
@@ -936,8 +2545,26 @@
       "round": 3,
       "overallPick": 94,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zgbku18zemqyryvyahd4",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fm5rlhfcjhiiaaf1y5ss",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.615,
+          "cumulativeSnapShare": 0.6035242290748899,
+          "retained": true,
+          "injuryReportWeeks": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RariEl00",
@@ -946,8 +2573,27 @@
       "round": 3,
       "overallPick": 95,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tglrg0yek3kwrt8rqz5t",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/flj53cmijulfjxegejyc",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.43999999999999995,
+          "cumulativeSnapShare": 0.43999999999999995,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DunkGe00",
@@ -957,7 +2603,26 @@
       "overallPick": 96,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/orewpce9gba4rsx0qnr8",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TierCa00",
@@ -966,8 +2631,27 @@
       "round": 3,
       "overallPick": 97,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wp0lu3cuqnu47gn3gmo1",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kezsaae1nuabfow4kzk2",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.1,
+          "cumulativeSnapShare": 0.04199475065616798,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ThomJa07",
@@ -976,8 +2660,26 @@
       "round": 3,
       "overallPick": 98,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lhdrccjr1nefeeqnuzo7",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rticmnkvtao4cd66kydm",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "NealJu00",
@@ -987,7 +2689,25 @@
       "overallPick": 99,
       "teamId": "SEA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/izqce9eijr3fgtuhifbp",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.01,
+          "cumulativeSnapShare": 0.007662835249042145,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HuskJa00",
@@ -997,7 +2717,16 @@
       "overallPick": 100,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jowxyw99dao1tfevtpxm",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "McCoJe00",
@@ -1007,7 +2736,24 @@
       "overallPick": 101,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dhihcvbhqkm7sqcmhhwr",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.08666666666666667,
+          "cumulativeSnapShare": 0.06976744186046512,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BowrJu00",
@@ -1016,8 +2762,17 @@
       "round": 4,
       "overallPick": 102,
       "teamId": "BUF",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xxt4s3hr2srnm4geikpp",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zccbppbc1ex7llvdsblo",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JackDa06",
@@ -1027,7 +2782,24 @@
       "overallPick": 103,
       "teamId": "NYJ",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kmkykh3qj3gxyhn006jr",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.2925,
+          "cumulativeSnapShare": 0.2925,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ProcKa01",
@@ -1037,7 +2809,25 @@
       "overallPick": 104,
       "teamId": "ARI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/poc14gh4dkx2uqoronkr",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ThomBr07",
@@ -1047,7 +2837,26 @@
       "overallPick": 105,
       "teamId": "LAC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/khlvgjk60vz6ghkwpmak",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.18,
+          "cumulativeSnapShare": 0.16730038022813687,
+          "retained": true,
+          "injuryReportWeeks": 4,
+          "excusedGames": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "NwaiFe00",
@@ -1056,8 +2865,25 @@
       "round": 4,
       "overallPick": 106,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/clcdhdvcrafpqstv35vp",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zbhrhb0wspcoffjtv4wq",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HaltGr00",
@@ -1067,7 +2893,25 @@
       "overallPick": 107,
       "teamId": "SF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kgidfvowkezba4g4nig8",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.4425,
+          "cumulativeSnapShare": 0.43171806167400884,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ColeJo00",
@@ -1077,7 +2921,27 @@
       "overallPick": 108,
       "teamId": "DEN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qbauucaxakkhtxihuvmr",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.23,
+          "cumulativeSnapShare": 0.22734051367025684,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 3,
+          "excusedGames": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CanaJa00",
@@ -1087,7 +2951,26 @@
       "overallPick": 109,
       "teamId": "KC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/huudorks6t6jyqnytlcy",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.0033333333333333335,
+          "cumulativeSnapShare": 0.0033333333333333335,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KlubCa00",
@@ -1096,8 +2979,17 @@
       "round": 4,
       "overallPick": 110,
       "teamId": "NYJ",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sqsxavkryojbysy4kq85",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wjng4c61gqtlf3ah2mgi",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CaseKa00",
@@ -1106,7 +2998,16 @@
       "round": 4,
       "overallPick": 111,
       "teamId": "DEN",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ShelDr00",
@@ -1116,7 +3017,26 @@
       "overallPick": 112,
       "teamId": "DAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ach6jq8xsd8xwcplylro",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 5,
+          "snapShare": 0.02,
+          "cumulativeSnapShare": 0.018867924528301886,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "FarmJa00",
@@ -1125,8 +3045,25 @@
       "round": 4,
       "overallPick": 113,
       "teamId": "IND",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/byzurpewdn5eqgulkwbt",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/egypkmqdnzpfvadi8c3p",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.0125,
+          "cumulativeSnapShare": 0.01171875,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MoorDe04",
@@ -1136,7 +3073,25 @@
       "overallPick": 114,
       "teamId": "DAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uhvkhsxnd5xqgrafkzug",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 5,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SarrEl00",
@@ -1146,7 +3101,24 @@
       "overallPick": 115,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rbtitvma6hjyotcajqtv",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.36,
+          "cumulativeSnapShare": 0.09055118110236221,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ScotKe01",
@@ -1156,7 +3128,25 @@
       "overallPick": 116,
       "teamId": "TB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vysxl6mkg0xgfjdgscj1",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 5,
+          "teamGames": 5,
+          "snapShare": 0.6159999999999999,
+          "cumulativeSnapShare": 0.6159999999999999,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BurkTr01",
@@ -1166,7 +3156,24 @@
       "overallPick": 117,
       "teamId": "LAC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yoigcukgefvk61ojqqba",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.205,
+          "cumulativeSnapShare": 0.205,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RoldJi00",
@@ -1176,7 +3183,26 @@
       "overallPick": 118,
       "teamId": "DET",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sivfbjxymtff2cumzr92",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.045,
+          "cumulativeSnapShare": 0.030601092896174863,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WillWe01",
@@ -1186,7 +3212,16 @@
       "overallPick": 119,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/celtgaqzzg1pgqky5yju",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DennDa01",
@@ -1196,7 +3231,24 @@
       "overallPick": 120,
       "teamId": "GB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mcasa9q73bt1zghn7olr",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.41500000000000004,
+          "cumulativeSnapShare": 0.41500000000000004,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WetjKa00",
@@ -1206,7 +3258,24 @@
       "overallPick": 121,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/s44clgjdvd1tuslyqimk",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WashMi00",
@@ -1216,7 +3285,24 @@
       "overallPick": 122,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ocdjq5ohmtgdghqdh5m4",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.1875,
+          "cumulativeSnapShare": 0.1875,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WoodWa00",
@@ -1225,8 +3311,26 @@
       "round": 4,
       "overallPick": 123,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pwnisqesajtuhmgkfhjq",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gj9fdps8qh2reicenrrb",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.0725,
+          "cumulativeSnapShare": 0.0725,
+          "retained": true,
+          "injuryReportWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MuhaMa00",
@@ -1235,8 +3339,26 @@
       "round": 4,
       "overallPick": 124,
       "teamId": "CHI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rs98wyp3t1ipacwqtvbz",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jya34gjpa0pgojtqygvn",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.815,
+          "cumulativeSnapShare": 0.801980198019802,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BellSk00",
@@ -1245,8 +3367,17 @@
       "round": 4,
       "overallPick": 125,
       "teamId": "BUF",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oac3geuuhazbznztufzk",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tu9glerx4l63buzpszbw",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ElarKa00",
@@ -1256,7 +3387,24 @@
       "overallPick": 126,
       "teamId": "BUF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uagxpthu9yavvnupay9y",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.155,
+          "cumulativeSnapShare": 0.155,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WillCa05",
@@ -1266,7 +3414,24 @@
       "overallPick": 127,
       "teamId": "SF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xxgctbtrfu8cbihjwgii",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.03,
+          "cumulativeSnapShare": 0.02531645569620253,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LewxCo00",
@@ -1276,17 +3441,43 @@
       "overallPick": 128,
       "teamId": "CIN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/p0nnxqjniklz0nqdmpm2",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LeexWi00",
-      "playerName": "Will Lee III",
+      "playerName": "Will Lee",
       "position": "CB",
       "round": 4,
       "overallPick": 129,
       "teamId": "CAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wurwgex2escrqdqmyaeg",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.7025,
+          "cumulativeSnapShare": 0.6992155580977284,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MoorTr02",
@@ -1295,8 +3486,26 @@
       "round": 4,
       "overallPick": 130,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kezibcnrkdwepbbkaqfq",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/moiewnb5hkrldsup3kn8",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SmitGe01",
@@ -1306,7 +3515,24 @@
       "overallPick": 131,
       "teamId": "LAC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xaausvzp0c7hyqgiqdbr",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.5549999999999999,
+          "cumulativeSnapShare": 0.5448368166374962,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WrigJe00",
@@ -1315,8 +3541,26 @@
       "round": 4,
       "overallPick": 132,
       "teamId": "NO",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/s5b3bbmyxesu4kff2mci",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pessmrj4zxslvp48ujaa",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HibnMa00",
@@ -1326,7 +3570,24 @@
       "overallPick": 133,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kkkia0wl2sqsjiwecde0",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.4375,
+          "cumulativeSnapShare": 0.43700787401574803,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DaniKe00",
@@ -1335,8 +3596,26 @@
       "round": 4,
       "overallPick": 134,
       "teamId": "ATL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y0dplhsrdng9momqwilu",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/iootljcdvo1tjgwe5ft7",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.515,
+          "cumulativeSnapShare": 0.51289879407724,
+          "retained": true,
+          "injuryReportWeeks": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BoetBr00",
@@ -1345,8 +3624,25 @@
       "round": 4,
       "overallPick": 135,
       "teamId": "IND",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yyzig5kcgafowpllis6g",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ml8dutkcdiis1mio8jqe",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.30000000000000004,
+          "cumulativeSnapShare": 0.29699248120300753,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LancBr00",
@@ -1355,8 +3651,25 @@
       "round": 4,
       "overallPick": 136,
       "teamId": "NO",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lzh0hbhllbouh97ffpp6",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sst98duh0vwxfdaezkvc",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.7625000000000001,
+          "cumulativeSnapShare": 0.7581699346405228,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "OverLT00",
@@ -1366,7 +3679,24 @@
       "overallPick": 137,
       "teamId": "DAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/f7qnzlq019tmi9o6f1ld",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 5,
+          "teamGames": 5,
+          "snapShare": 0.276,
+          "cumulativeSnapShare": 0.27492447129909364,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LouiKy00",
@@ -1375,8 +3705,27 @@
       "round": 4,
       "overallPick": 138,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dhnmmaa0fa4qevmfjez0",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oxwphzdkvzlnhxa7csss",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.04,
+          "cumulativeSnapShare": 0.04,
+          "retained": true,
+          "reserveWeeks": 4,
+          "excusedGames": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PrysEp00",
@@ -1386,7 +3735,16 @@
       "overallPick": 139,
       "teamId": "SF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ywyqg8kadbaxy6fezyvv",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "YounCo01",
@@ -1396,7 +3754,26 @@
       "overallPick": 140,
       "teamId": "CIN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/n4irmipxyl87b6jmudte",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.11000000000000003,
+          "cumulativeSnapShare": 0.10376134889753567,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RamsKa01",
@@ -1405,8 +3782,25 @@
       "round": 5,
       "overallPick": 141,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/h13havquctbz0yop4hlr",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/s9ic4ugfij0tqrrfk9yw",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.057499999999999996,
+          "cumulativeSnapShare": 0.057499999999999996,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CarmFe00",
@@ -1415,8 +3809,28 @@
       "round": 5,
       "overallPick": 142,
       "teamId": "TEN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oajvs6a6je65shncldtr",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qg7snvjvhxaoteg4wdqo",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.6733333333333333,
+          "cumulativeSnapShare": 0.6108663729809104,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "VirgRe00",
@@ -1426,7 +3840,16 @@
       "overallPick": 143,
       "teamId": "ARI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hmaylhc9nc2zmqjdw1ib",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HechSa00",
@@ -1436,7 +3859,24 @@
       "overallPick": 144,
       "teamId": "CAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/a5xw6zbvi2yy5mh4hgcg",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.04,
+          "cumulativeSnapShare": 0.038461538461538464,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BarrNi00",
@@ -1446,7 +3886,24 @@
       "overallPick": 145,
       "teamId": "LAC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q50al52f5lmwzulxqqtl",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.21750000000000003,
+          "cumulativeSnapShare": 0.21188098424791518,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BraiPa01",
@@ -1455,7 +3912,25 @@
       "round": 5,
       "overallPick": 146,
       "teamId": "CLE",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JoseJo00",
@@ -1465,7 +3940,24 @@
       "overallPick": 147,
       "teamId": "WAS",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l9c6njm2uvmgcshmfeiq",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.215,
+          "cumulativeSnapShare": 0.215,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "StepBe00",
@@ -1475,7 +3967,25 @@
       "overallPick": 148,
       "teamId": "SEA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zdtaxq8qwchw3dscp1z0",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.4033333333333333,
+          "cumulativeSnapShare": 0.31983805668016196,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JeffJu01",
@@ -1484,7 +3994,16 @@
       "round": 5,
       "overallPick": 149,
       "teamId": "CLE",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JohnDa11",
@@ -1494,7 +4013,24 @@
       "overallPick": 150,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xtnd8hztdo6o1q9xpuw6",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WheaZa00",
@@ -1504,7 +4040,24 @@
       "overallPick": 151,
       "teamId": "CAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qvujxg50a70hzrg4luzm",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.5966666666666667,
+          "cumulativeSnapShare": 0.4427193985945416,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JolyJu00",
@@ -1513,8 +4066,28 @@
       "round": 5,
       "overallPick": 152,
       "teamId": "DEN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vglffv5obtvktndulobu",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/opu2purmoumpzr8axbqv",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "injuryReportWeeks": 1,
+          "currentTeam": "MIA"
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "MIA"
+        }
+      ]
     },
     {
       "playerId": "BurtJa02",
@@ -1524,7 +4097,26 @@
       "overallPick": 153,
       "teamId": "GB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zidvccgdzgf3lwkfcg7v",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.6950000000000001,
+          "cumulativeSnapShare": 0.46903820816864294,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DuggJa00",
@@ -1534,7 +4126,25 @@
       "overallPick": 154,
       "teamId": "SF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qgqcvgbjx1yflrlwfltq",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.37,
+          "cumulativeSnapShare": 0.36586276413051594,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CapeDe00",
@@ -1544,7 +4154,25 @@
       "overallPick": 155,
       "teamId": "TB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vkgp4mn510m1dgx34zfx",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 5,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "GumbGe00",
@@ -1554,17 +4182,44 @@
       "overallPick": 156,
       "teamId": "IND",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rdqs2cz8p8tdcnrkuxkt",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "AbneKe00",
-      "playerName": "Keith Abney II",
+      "playerName": "Keith Abney",
       "position": "CB",
       "round": 5,
       "overallPick": 157,
       "teamId": "DET",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pnryzkihoi17eq91ibag",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.09333333333333334,
+          "cumulativeSnapShare": 0.08196721311475409,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TaafMi00",
@@ -1573,7 +4228,25 @@
       "round": 5,
       "overallPick": 158,
       "teamId": "MIA",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tahsg2wgxokgeysyglrt",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.9,
+          "cumulativeSnapShare": 0.8995406600884654,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BredMa00",
@@ -1582,8 +4255,25 @@
       "round": 5,
       "overallPick": 159,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fl3inwpzgb7fgzpaezw1",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jjmbquak368qrecg57wa",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.2625,
+          "cumulativeSnapShare": 0.2559055118110236,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SchrBi01",
@@ -1593,7 +4283,25 @@
       "overallPick": 160,
       "teamId": "TB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ngrfyxypmz5p2ta1r3js",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 5,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JohnEm01",
@@ -1603,7 +4311,24 @@
       "overallPick": 161,
       "teamId": "KC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/avdz4njz1slqn7ktqcuq",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.27,
+          "cumulativeSnapShare": 0.26436781609195403,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RiveCh00",
@@ -1613,7 +4338,24 @@
       "overallPick": 162,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uayykenigfog0qv48yd2",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.41,
+          "cumulativeSnapShare": 0.3269230769230769,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DemmCh00",
@@ -1622,8 +4364,27 @@
       "round": 5,
       "overallPick": 163,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xqpfpwzaotawvch1v4ok",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ov8f4aaeq9viorckcdgo",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.01,
+          "cumulativeSnapShare": 0.009478672985781991,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KoziTa00",
@@ -1633,7 +4394,24 @@
       "overallPick": 164,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yx0na9fufgv3snuyecbd",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.10500000000000001,
+          "cumulativeSnapShare": 0.05439330543933055,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SingNi01",
@@ -1643,7 +4421,24 @@
       "overallPick": 165,
       "teamId": "TEN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ztwqbc0s69cbz5ow0r0q",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.07666666666666666,
+          "cumulativeSnapShare": 0.06167400881057269,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ElliKe03",
@@ -1652,8 +4447,26 @@
       "round": 5,
       "overallPick": 166,
       "teamId": "CHI",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/szvuxrjdio44gh3y6h5q",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rixskzbdoni2xjd5ve5h",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KilgJa00",
@@ -1662,8 +4475,17 @@
       "round": 5,
       "overallPick": 167,
       "teamId": "BUF",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/viakfc7gsrfvu7mxhox6",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dbevrngonf5ctlfxlwqn",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LawxKe00",
@@ -1673,7 +4495,25 @@
       "overallPick": 168,
       "teamId": "DET",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/progttkuaumows8eeqsq",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "NowaRi00",
@@ -1683,7 +4523,24 @@
       "overallPick": 169,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nhyd8plaetjoosbq1btb",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.055,
+          "cumulativeSnapShare": 0.055,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RoyeJo01",
@@ -1692,7 +4549,26 @@
       "round": 5,
       "overallPick": 170,
       "teamId": "CLE",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oltvrfi0lu0qccvvdhrh",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PrunKa00",
@@ -1701,8 +4577,26 @@
       "round": 5,
       "overallPick": 171,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ys7zvtbqlaobsxgtigxu",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gjkxq03gsu0dt4mi2qrk",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.016666666666666666,
+          "cumulativeSnapShare": 0.012442698100851343,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "StylLo00",
@@ -1712,7 +4606,26 @@
       "overallPick": 172,
       "teamId": "NO",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zlsfss0kuhsnrzxlbmpw",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CuevJo00",
@@ -1722,7 +4635,24 @@
       "overallPick": 173,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/maktufaiogxfm5ewjsi9",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.1775,
+          "cumulativeSnapShare": 0.17716535433070865,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RandAd00",
@@ -1732,7 +4662,25 @@
       "overallPick": 174,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cdr4vibcb4jxp8nswxl9",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MassHe00",
@@ -1741,7 +4689,25 @@
       "round": 5,
       "overallPick": 175,
       "teamId": "LV",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ba2rfnspviherhdlsxml",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.7224999999999999,
+          "cumulativeSnapShare": 0.7224999999999999,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "AlleCy00",
@@ -1751,17 +4717,51 @@
       "overallPick": 176,
       "teamId": "KC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qput6hanukjbatuao8ca",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.037500000000000006,
+          "cumulativeSnapShare": 0.037500000000000006,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ColeKe03",
-      "playerName": "Kevin Coleman Jr.",
+      "playerName": "Kevin Coleman",
       "position": "WR",
       "round": 5,
       "overallPick": 177,
       "teamId": "MIA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nqqd4zjnxephjb4qziww",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.47000000000000003,
+          "cumulativeSnapShare": 0.47000000000000003,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PaytCo00",
@@ -1771,7 +4771,16 @@
       "overallPick": 178,
       "teamId": "PHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qt8hajjwkvpynr8nwepz",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CruzEn00",
@@ -1781,7 +4790,16 @@
       "overallPick": 179,
       "teamId": "SF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ti1hdlmlireeudbqmhaq",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TraoSe00",
@@ -1790,8 +4808,26 @@
       "round": 5,
       "overallPick": 180,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kzpmm2zoctywb276zqt4",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/eo8oedeeiudadrnqrkxo",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 4
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DuraZa00",
@@ -1800,8 +4836,26 @@
       "round": 5,
       "overallPick": 181,
       "teamId": "BUF",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nsnvwr7nu8pvfgneooy6",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lb08jqs70kknkscvpv0r",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "GreeTa00",
@@ -1810,8 +4864,17 @@
       "round": 6,
       "overallPick": 182,
       "teamId": "CLE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ybylky9uitivzresfzt3",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/o3qq6x6ehbmc8jlpzubg",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SharKa00",
@@ -1821,7 +4884,25 @@
       "overallPick": 183,
       "teamId": "ARI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pn4rwj6bnv1z3xykee5f",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MarsJa02",
@@ -1830,8 +4911,17 @@
       "round": 6,
       "overallPick": 184,
       "teamId": "TEN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ycbn8enhdwq312wu40jn",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/egm8azjr9hmjfeahkbis",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SharBa00",
@@ -1841,7 +4931,24 @@
       "overallPick": 185,
       "teamId": "TB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xqj8rk6okp7eobbv5hps",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 5,
+          "teamGames": 5,
+          "snapShare": 0.05600000000000001,
+          "cumulativeSnapShare": 0.05521472392638037,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JamiBo00",
@@ -1851,7 +4958,16 @@
       "overallPick": 186,
       "teamId": "NYG",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cscc37cjkwit6pkivj0r",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "AlleKa01",
@@ -1861,7 +4977,26 @@
       "overallPick": 187,
       "teamId": "WAS",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vbhwkqty94alwjyz8cin",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.0925,
+          "cumulativeSnapShare": 0.09124087591240876,
+          "retained": true,
+          "injuryReportWeeks": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "MIA"
+        }
+      ]
     },
     {
       "playerId": "CoopAn01",
@@ -1870,8 +5005,26 @@
       "round": 6,
       "overallPick": 188,
       "teamId": "NYJ",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ncjopahmd0bod5hqbt7k",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mrncqr5qh0aycjwwq0pu",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ParkBr02",
@@ -1881,7 +5034,25 @@
       "overallPick": 189,
       "teamId": "CIN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ps2vih23mba17gjublbo",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BrowBa02",
@@ -1890,8 +5061,27 @@
       "round": 6,
       "overallPick": 190,
       "teamId": "NO",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zakfmezzed4qotdrmbpc",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/npjiglbaqpngbxyraftk",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.049999999999999996,
+          "cumulativeSnapShare": 0.049999999999999996,
+          "retained": true,
+          "injuryReportWeeks": 3,
+          "excusedGames": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CameJo01",
@@ -1901,7 +5091,24 @@
       "overallPick": 191,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jwb3wyhoqqq52mfiyxxc",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.3075,
+          "cumulativeSnapShare": 0.3075,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DaviJC01",
@@ -1911,7 +5118,16 @@
       "overallPick": 192,
       "teamId": "NYG",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/t69il88b4wzuu69bxr2t",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KellJa00",
@@ -1921,7 +5137,24 @@
       "overallPick": 193,
       "teamId": "NYG",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mi3bzmy1yrml24fmqfbx",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CoogPa01",
@@ -1930,8 +5163,25 @@
       "round": 6,
       "overallPick": 194,
       "teamId": "TEN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tomgqsqha9cv0duwsrov",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l8svjmxpjb3icjghqgnq",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BensMa00",
@@ -1941,7 +5191,25 @@
       "overallPick": 195,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tndlq4zmq6r9nsvmzih6",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.09250000000000001,
+          "cumulativeSnapShare": 0.0912280701754386,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CrowDa00",
@@ -1950,8 +5218,27 @@
       "round": 6,
       "overallPick": 196,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zkfttf9fzpkybtm6ozk3",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nmojbke8luvzmpmzg8yy",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 2,
+          "excusedGames": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DaniCJ00",
@@ -1961,7 +5248,16 @@
       "overallPick": 197,
       "teamId": "LAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jqx2xj6xmri9hrjm8azc",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ClaiDe00",
@@ -1970,8 +5266,25 @@
       "round": 6,
       "overallPick": 198,
       "teamId": "MIN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vmozbbdzgcaqq1yrixeb",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gfjjkifm7ul9incsl4ag",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.06999999999999999,
+          "cumulativeSnapShare": 0.05511811023622047,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HendEm00",
@@ -1981,7 +5294,16 @@
       "overallPick": 199,
       "teamId": "SEA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/eje0zmvfl2fetzvpsl6c",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CampDJ01",
@@ -1990,8 +5312,17 @@
       "round": 6,
       "overallPick": 200,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lwtw3jr4gihs3x6ezole",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zmcyy3xuoqvvsq6stwrg",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JackDo04",
@@ -2001,7 +5332,16 @@
       "overallPick": 201,
       "teamId": "GB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xlb4gkfxenpvqhs3j4y4",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "TaylLo00",
@@ -2011,7 +5351,24 @@
       "overallPick": 202,
       "teamId": "LAC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qn3dbs3bez8c60bgsamt",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.195,
+          "cumulativeSnapShare": 0.10646387832699619,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WillCJ00",
@@ -2021,7 +5378,24 @@
       "overallPick": 203,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/svmb2citno2f6zqc9qbm",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.18,
+          "cumulativeSnapShare": 0.04184100418410042,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BondLe00",
@@ -2030,8 +5404,25 @@
       "round": 6,
       "overallPick": 204,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qm5q5iilnctaitwwscst",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fcayjidpdvf6q2ac0zih",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.165,
+          "cumulativeSnapShare": 0.08208955223880597,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "GillSk00",
@@ -2041,7 +5432,24 @@
       "overallPick": 205,
       "teamId": "DET",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/noftllzrysprcx9tktdb",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.4425,
+          "cumulativeSnapShare": 0.4425,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HarkAl00",
@@ -2051,7 +5459,16 @@
       "overallPick": 206,
       "teamId": "LAC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ficvjzrrdu13rfzrteyt",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MorrMi02",
@@ -2061,7 +5478,24 @@
       "overallPick": 207,
       "teamId": "PHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qk8qyqk1doklwy7xdgfh",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.01,
+          "cumulativeSnapShare": 0.004132231404958678,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ThomAn03",
@@ -2070,7 +5504,25 @@
       "round": 6,
       "overallPick": 208,
       "teamId": "ATL",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "GulbMa00",
@@ -2080,7 +5532,24 @@
       "overallPick": 209,
       "teamId": "WAS",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/g7geoaea7asrtvfvni9r",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0.37333333333333335,
+          "cumulativeSnapShare": 0.26277372262773724,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RubiGa00",
@@ -2090,7 +5559,16 @@
       "overallPick": 210,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pvqedjkhi9vdrjbrrmcr",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "EcklRy00",
@@ -2100,7 +5578,24 @@
       "overallPick": 211,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tnfndcjg7g14q1mscr5e",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.33499999999999996,
+          "cumulativeSnapShare": 0.05929617143012958,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ObiaNa00",
@@ -2109,8 +5604,25 @@
       "round": 6,
       "overallPick": 212,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mjc4ip1xcg0rse1lrn1n",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oqvnka59m941jey0m102",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.0125,
+          "cumulativeSnapShare": 0.012442698100851343,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "vandJo00",
@@ -2120,7 +5632,24 @@
       "overallPick": 213,
       "teamId": "CHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q74hrt6lpzvxpuqrvzov",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.22749999999999998,
+          "cumulativeSnapShare": 0.22749999999999998,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "CurrCa00",
@@ -2129,18 +5658,52 @@
       "round": 6,
       "overallPick": 214,
       "teamId": "IND",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fccbavqtdowwm9ixvg1w",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/svivgctsfcw8guax6rmo",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.1325,
+          "cumulativeSnapShare": 0.12781954887218044,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PerkHa01",
-      "playerName": "Harold Perkins Jr.",
+      "playerName": "Harold Perkins",
       "position": "LB",
       "round": 6,
       "overallPick": 215,
       "teamId": "ATL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sdvimzmhvfuaj6m4wpsu",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.52,
+          "cumulativeSnapShare": 0.52,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SmacTr00",
@@ -2150,7 +5713,24 @@
       "overallPick": 216,
       "teamId": "GB",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zierx6p09ilfe0o0ckj7",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.315,
+          "cumulativeSnapShare": 0.05235716580096614,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WillJa16",
@@ -2160,7 +5740,24 @@
       "overallPick": 217,
       "teamId": "ARI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y6ju7uixfyiuetnzraux",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.0675,
+          "cumulativeSnapShare": 0.0675,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SmitAn05",
@@ -2170,7 +5767,16 @@
       "overallPick": 218,
       "teamId": "DAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xawxtpjdptmacbcqtlua",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HallTJ00",
@@ -2180,17 +5786,45 @@
       "overallPick": 219,
       "teamId": "NO",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/u02f7hqvc5rubwbl9itk",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PridTo00",
-      "playerName": "Toriano Pride Jr.",
+      "playerName": "Toriano Pride",
       "position": "CB",
       "round": 7,
       "overallPick": 220,
       "teamId": "BUF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/a8l2hp04k2ek5hx3j50b",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CLE"
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "CLE"
+        }
+      ]
     },
     {
       "playerId": "EndrJa00",
@@ -2200,7 +5834,24 @@
       "overallPick": 221,
       "teamId": "CIN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wxtev9zj048yzxk8ebfu",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.01,
+          "cumulativeSnapShare": 0.0038910505836575876,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WestTy00",
@@ -2209,7 +5860,16 @@
       "round": 7,
       "overallPick": 222,
       "teamId": "DET",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KaliAt00",
@@ -2219,7 +5879,24 @@
       "overallPick": 223,
       "teamId": "WAS",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ahtbv63jyg8ampmyrxn9",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.84,
+          "cumulativeSnapShare": 0.19708029197080293,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "SpeaRo01",
@@ -2229,7 +5906,24 @@
       "overallPick": 224,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/e0h7triczbebvcoqdgnx",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.15,
+          "cumulativeSnapShare": 0.15,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KanaJa00",
@@ -2238,8 +5932,26 @@
       "round": 7,
       "overallPick": 225,
       "teamId": "TEN",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nbrbfq68ghrvt2dsieej",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sdo6eabqhlbc9s8r7ify",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RobiLa04",
@@ -2249,7 +5961,16 @@
       "overallPick": 226,
       "teamId": "CIN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zhqov0z3vzufg9rkcaxd",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KuwaJa00",
@@ -2259,7 +5980,24 @@
       "overallPick": 227,
       "teamId": "CAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ssizhdf9pbw2zxp3egcj",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.065,
+          "cumulativeSnapShare": 0.0632456283706488,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "PaynVJ00",
@@ -2268,8 +6006,26 @@
       "round": 7,
       "overallPick": 228,
       "teamId": "NYJ",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mr1fz0yd8pvfjzis5ell",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/um4cxsgcqa43arhcihg2",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ClevBr00",
@@ -2279,7 +6035,16 @@
       "overallPick": 229,
       "teamId": "LV",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fbhacwssycfl9yo2dwjc",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HeidEl00",
@@ -2289,7 +6054,24 @@
       "overallPick": 230,
       "teamId": "PIT",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jhiyjb8jmjyzehmrrjoy",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.02,
+          "cumulativeSnapShare": 0.01107011070110701,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "OniaEt00",
@@ -2298,8 +6080,17 @@
       "round": 7,
       "overallPick": 231,
       "teamId": "ATL",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/spvsdjmjvcvuerqw3y5d",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pameapuvfv7iufrdzau8",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "KeenTi00",
@@ -2309,7 +6100,17 @@
       "overallPick": 232,
       "teamId": "LAR",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qasbqd0pea2nnfgtg9fj",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "LV"
+        }
+      ]
     },
     {
       "playerId": "DurfZa00",
@@ -2319,7 +6120,25 @@
       "overallPick": 233,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gcjqllkpo5cx41ocdvbt",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MortBe00",
@@ -2328,8 +6147,17 @@
       "round": 7,
       "overallPick": 234,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/st5s1urflg14hwvx8uzl",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l1v5gn8liujl05ji6trm",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "GerhGa01",
@@ -2339,7 +6167,17 @@
       "overallPick": 235,
       "teamId": "MIN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/racsjeolwog7ueun0pab",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "HOU"
+        }
+      ]
     },
     {
       "playerId": "FullAn00",
@@ -2349,7 +6187,16 @@
       "overallPick": 236,
       "teamId": "SEA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lprcggybtxynzqqodh2h",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "McGoSe01",
@@ -2358,8 +6205,25 @@
       "round": 7,
       "overallPick": 237,
       "teamId": "IND",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qkwvvygwu9pan88sivzb",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/f4h7kmayu7kqncha3f6v",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.15249999999999997,
+          "cumulativeSnapShare": 0.15249999999999997,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "LlewMa00",
@@ -2368,8 +6232,25 @@
       "round": 7,
       "overallPick": 238,
       "teamId": "MIA",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kelqyicfaaxoabstgwrr",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y2nse9dofpqbcubmlios",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 1,
+          "teamGames": 4,
+          "snapShare": 0.04,
+          "cumulativeSnapShare": 0.007995916978564138,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DomaTo00",
@@ -2379,7 +6260,24 @@
       "overallPick": 239,
       "teamId": "BUF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kqtedpbw8nmmvnp5vomj",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.2675,
+          "cumulativeSnapShare": 0.044288628985954696,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HughPa00",
@@ -2389,7 +6287,25 @@
       "overallPick": 240,
       "teamId": "JAX",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sgynne35cxl9y5fyzurs",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "reserveWeeks": 5
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "ReedAr01",
@@ -2399,7 +6315,25 @@
       "overallPick": 241,
       "teamId": "BUF",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/s2uqywfqwqqe9ubdml5w",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 0,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true,
+          "injuryReportWeeks": 3
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "EastDe00",
@@ -2409,7 +6343,16 @@
       "overallPick": 242,
       "teamId": "SEA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/smzollvmlmiaoi9mhh6v",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "FishAi00",
@@ -2418,8 +6361,25 @@
       "round": 7,
       "overallPick": 243,
       "teamId": "HOU",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lrev1iowpsduiovqk1bd",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tfdzgpnkae3p9u9isjvx",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 3,
+          "teamGames": 4,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "WisnCo00",
@@ -2429,7 +6389,16 @@
       "overallPick": 244,
       "teamId": "PHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fsbuuec4tzp33ufdsgdi",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MillJa03",
@@ -2438,7 +6407,17 @@
       "round": 7,
       "overallPick": 245,
       "teamId": "NE",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "ATL"
+        }
+      ]
     },
     {
       "playerId": "ScotMi00",
@@ -2448,7 +6427,16 @@
       "overallPick": 246,
       "teamId": "DEN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pncxuddkqd2csgmxzkfm",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "HutcQu00",
@@ -2457,8 +6445,28 @@
       "round": 7,
       "overallPick": 247,
       "teamId": "NE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/whetlplnqownwubrmaxe",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sfd4d2jbn6tfpocmmw24",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 2,
+          "teamGames": 4,
+          "snapShare": 0.115,
+          "cumulativeSnapShare": 0.115,
+          "retained": true,
+          "injuryReportWeeks": 1,
+          "reserveWeeks": 3,
+          "excusedGames": 2
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "RyanCa00",
@@ -2467,8 +6475,26 @@
       "round": 7,
       "overallPick": 248,
       "teamId": "CLE",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qiqiqjw4vyhv2xpxt2np",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xqchpo5g0sxoslbqfzsf",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.01,
+          "cumulativeSnapShare": 0.00823045267489712,
+          "retained": true,
+          "injuryReportWeeks": 1
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "NussGa00",
@@ -2478,7 +6504,16 @@
       "overallPick": 249,
       "teamId": "KC",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uyidfkzfhuqaks3pmdeo",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BennRa00",
@@ -2488,7 +6523,16 @@
       "overallPick": 250,
       "teamId": "BAL",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ewfiiqrz7qysxydw5zwn",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BernUa00",
@@ -2498,7 +6542,16 @@
       "overallPick": 251,
       "teamId": "PHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xrr9qhsppukv53ilfpkp",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "JameKe01",
@@ -2508,7 +6561,16 @@
       "overallPick": 252,
       "teamId": "PHI",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dhu2y8agagcv0nixplkj",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BeerEv00",
@@ -2517,7 +6579,18 @@
       "round": 7,
       "overallPick": 253,
       "teamId": "BAL",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gwesa6kw92moff0mxp3i",
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": false,
+          "currentTeam": "SEA"
+        }
+      ]
     },
     {
       "playerId": "BurkDe02",
@@ -2526,8 +6599,25 @@
       "round": 7,
       "overallPick": 254,
       "teamId": "IND",
-      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mbejyq733jilg3bkpzur",
-      "seasons": []
+      "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/j4rcng9wtk5wmew7gpmv",
+      "seasons": [
+        {
+          "year": 2026,
+          "gamesPlayed": 4,
+          "teamGames": 4,
+          "snapShare": 0.10500000000000001,
+          "cumulativeSnapShare": 0.10500000000000001,
+          "retained": true
+        },
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "DansMi00",
@@ -2537,7 +6627,16 @@
       "overallPick": 255,
       "teamId": "SEA",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oxlhvcgepqjwzulh7yvz",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "BentDa00",
@@ -2547,7 +6646,16 @@
       "overallPick": 256,
       "teamId": "DEN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vaiszquqlgric9cfbwjf",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     },
     {
       "playerId": "MurdRe00",
@@ -2557,8 +6665,16 @@
       "overallPick": 257,
       "teamId": "DEN",
       "headshotUrl": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nmlusx7gpecv6trobnjh",
-      "seasons": []
+      "seasons": [
+        {
+          "year": 2027,
+          "gamesPlayed": 0,
+          "teamGames": 0,
+          "snapShare": 0,
+          "cumulativeSnapShare": 0,
+          "retained": true
+        }
+      ]
     }
-  ],
-  "seasonsThrough": 2025
+  ]
 }

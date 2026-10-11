@@ -8,6 +8,7 @@ import {
   MIN_WAIT_SEASONS,
 } from './careerShapeHighlights';
 import { makePick, makeSeason, makeTeam } from '../test/factories';
+import { normalizeSnapShareForPosition } from './positionBaseline';
 import type { DraftClass, DraftPick } from '../types';
 
 const teams = [makeTeam({ id: 'A' })];
@@ -252,7 +253,13 @@ describe('late bloomers ignore a quarterback learning to play', () => {
       teams,
     );
 
-    expect(lateBloomers[0].headline).toBe('+86');
+    // The rise is in normalized shares, so the QB baseline — regenerated on
+    // every data refresh — decides the last digit. Derived here for that
+    // reason; what the test pins is that the unforgiven wait still blooms.
+    const rise =
+      normalizeSnapShareForPosition(0.9, 'QB') -
+      normalizeSnapShareForPosition(0.05, 'QB');
+    expect(lateBloomers[0].headline).toBe(`+${Math.round(rise * 100)}`);
   });
 });
 

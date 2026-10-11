@@ -94,8 +94,20 @@ describe('RosterRankingsView', () => {
       <RosterRankingsView draftClasses={stale} freeAgentClasses={[]} />,
     );
 
-    expect(screen.getByText(/has not been published yet/i)).toBeInTheDocument();
+    const message = screen.getByText(/has not been published yet/i);
+    expect(message).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    // Standing where the table would, so it keeps the page's side gutter —
+    // left bare it printed flush against the viewport edge. The gutter is a
+    // stylesheet fact with its own breakpoints, so the wrapper is what the
+    // test can check.
+    expect(message.closest('.rankings-table-wrap')).not.toBeNull();
+
+    // Every hero figure keeps its caption, even with no roster to name: the
+    // three sit on one baseline, and dropping a caption drops that block out
+    // of line with the other two.
+    const hero = screen.getByRole('region', { name: 'Current rosters' });
+    expect(within(hero).getAllByText('roster score')).toHaveLength(2);
   });
 });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { accumulateReserveWeeks } from './reserveWeeks';
+import { accumulateReserveTeams, accumulateReserveWeeks } from './reserveWeeks';
 
 const row = (o: Partial<Record<string, string>>) => ({
   gsis_id: '00-0034790',
@@ -7,6 +7,7 @@ const row = (o: Partial<Record<string, string>>) => ({
   status_description_abbr: 'R01',
   game_type: 'REG',
   week: '1',
+  team: 'ARI',
   ...o,
 });
 
@@ -65,6 +66,43 @@ describe('accumulateReserveWeeks', () => {
       row({ gsis_id: '00-0000001', week: '' }),
       row({ gsis_id: '00-0000002', week: '0' }),
     ]);
+    expect(got.size).toBe(0);
+  });
+});
+
+describe('accumulateReserveTeams', () => {
+  it('names the team a player sat out for', () => {
+    const got = accumulateReserveTeams([
+      row({ week: '1' }),
+      row({ week: '2' }),
+    ]);
+    expect(got.get('00-0034790')).toBe('ARI');
+  });
+
+  it('picks the team he spent the most reserve weeks with', () => {
+    // Waived off IR and claimed, which happens: the season belongs to
+    // whichever roster carried him longest, the same rule snaps use.
+    const got = accumulateReserveTeams([
+      row({ week: '1', team: 'ARI' }),
+      row({ week: '2', team: 'NO' }),
+      row({ week: '3', team: 'NO' }),
+    ]);
+    expect(got.get('00-0034790')).toBe('NO');
+  });
+
+  it('reads the same rows as the week count, and no others', () => {
+    const got = accumulateReserveTeams([
+      row({ status: 'ACT' }),
+      row({ status_description_abbr: 'R62' }),
+      row({ game_type: 'PRE' }),
+      row({ gsis_id: '' }),
+      row({ week: '0' }),
+    ]);
+    expect(got.size).toBe(0);
+  });
+
+  it('skips rows with no team', () => {
+    const got = accumulateReserveTeams([row({ team: '' })]);
     expect(got.size).toBe(0);
   });
 });

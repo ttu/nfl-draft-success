@@ -15,6 +15,7 @@ export interface ReserveRosterRow {
   status_description_abbr?: string;
   game_type?: string;
   week?: string;
+  team?: string;
 }
 
 /**
@@ -84,6 +85,71 @@ export function accumulateReserveWeeks(
 ): Map<string, Set<number>> {
   const weeks = new Map<string, Set<number>>();
 
+  forEachReserveWeek(rows, (gsisId, week) => {
+    let set = weeks.get(gsisId);
+    if (!set) {
+      set = new Set();
+      weeks.set(gsisId, set);
+    }
+    set.add(week);
+  });
+
+  return weeks;
+}
+
+/**
+ * The team each player spent his reserve weeks with, per `gsis_id`.
+ *
+ * Retention's third witness. A player who misses a whole season on injured
+ * reserve takes no snaps and leaves the weekly injury report the day he is
+ * placed, so both feeds that normally name his team go silent — and a rookie
+ * or a final-year veteran has no adjacent season to be bracketed by either.
+ * Read without this, such a season is indistinguishable from a departure:
+ * Jordyn Tyson, New Orleans' 2026 first-rounder, sat out his rookie year on
+ * reserve and scored as though the Saints had let him go.
+ *
+ * The roster feed names his team in every one of those weeks, which is the
+ * whole reason to consult it.
+ */
+export function accumulateReserveTeams(
+  rows: ReserveRosterRow[],
+): Map<string, string> {
+  const weeksByTeam = new Map<string, Map<string, number>>();
+
+  forEachReserveWeek(rows, (gsisId, _week, team) => {
+    if (!team) return;
+    let byTeam = weeksByTeam.get(gsisId);
+    if (!byTeam) {
+      byTeam = new Map();
+      weeksByTeam.set(gsisId, byTeam);
+    }
+    byTeam.set(team, (byTeam.get(team) ?? 0) + 1);
+  });
+
+  const teams = new Map<string, string>();
+  for (const [gsisId, byTeam] of weeksByTeam) {
+    let best = '';
+    let most = 0;
+    for (const [team, count] of byTeam) {
+      if (count > most) {
+        most = count;
+        best = team;
+      }
+    }
+    teams.set(gsisId, best);
+  }
+  return teams;
+}
+
+/**
+ * The row filter both accumulators share, so "what counts as a reserve week"
+ * keeps one definition — the team lookup must not be able to drift from the
+ * week count it explains.
+ */
+function forEachReserveWeek(
+  rows: ReserveRosterRow[],
+  visit: (gsisId: string, week: number, team: string) => void,
+): void {
   for (const row of rows) {
     const gsisId = (row.gsis_id ?? '').trim();
     if (!gsisId) continue;
@@ -97,13 +163,6 @@ export function accumulateReserveWeeks(
     const week = parseInt(row.week ?? '', 10);
     if (!Number.isFinite(week) || week <= 0) continue;
 
-    let set = weeks.get(gsisId);
-    if (!set) {
-      set = new Set();
-      weeks.set(gsisId, set);
-    }
-    set.add(week);
+    visit(gsisId, week, (row.team ?? '').trim());
   }
-
-  return weeks;
 }

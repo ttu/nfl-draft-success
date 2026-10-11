@@ -38,9 +38,14 @@ export function RosterRankingsView({
       {hasRosterSnapshot(draftClasses) ? (
         <RosterRankingsTable rankings={rankings} />
       ) : (
-        <p className="roster-view__empty mono">
-          This season&rsquo;s roster snapshot has not been published yet.
-        </p>
+        /* Wrapped in the table's own container so the message keeps the page's
+           side gutter at every breakpoint, instead of printing flush against
+           the viewport edge where the table would have started. */
+        <div className="rankings-table-wrap">
+          <p className="roster-view__empty mono">
+            This season&rsquo;s roster snapshot has not been published yet.
+          </p>
+        </div>
       )}
 
       <div className="rankings-foot">
@@ -86,7 +91,12 @@ function RosterRankingsHero({ rankings }: { rankings: RosterRanking[] }) {
         <StatBlock
           label="Best roster"
           value={best?.teamId ?? '—'}
-          sub={best ? `${best.score!.toFixed(1)} · roster score` : ''}
+          // Caption stays when there is no roster to name: the three hero
+          // figures share a baseline, and a block without one rides up out of
+          // line with the other two.
+          sub={
+            best ? `${best.score!.toFixed(1)} · roster score` : 'roster score'
+          }
           href={best ? `/roster/${best.teamId}` : undefined}
           accent
         />

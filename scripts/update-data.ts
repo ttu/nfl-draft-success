@@ -39,7 +39,11 @@ import type { RestGameSlice } from '../src/types';
 import { normalizeDraftPosition } from '../src/lib/normalizeDraftPosition';
 import { seasonEndingAbsenceGames } from '../src/lib/seasonEndingAbsence';
 import { resolveLatestPlayedSeason } from '../src/lib/latestPlayedSeason';
-import { accumulateReserveWeeks } from '../src/lib/reserveWeeks';
+import {
+  accumulateReserveTeams,
+  accumulateReserveWeeks,
+} from '../src/lib/reserveWeeks';
+import { firstNamedTeam, resolveRetained } from '../src/lib/retention';
 import { excusedAbsenceGames } from '../src/lib/absenceWeeks';
 import {
   FA_FIRST_CLASS_YEAR,
@@ -599,6 +603,8 @@ async function loadSnapData(
 
 interface InjurySeasonData {
   injuryReportWeeks: number;
+  /** Team that carried him through those reserve weeks; '' when none did. */
+  reserveTeam: string;
   /**
    * The weeks behind `injuryReportWeeks`. The count is a displayed stat; the
    * set is what the excusal intersects with the weeks actually missed.
@@ -676,7 +682,8 @@ async function loadInjuryData(
 }
 
 /**
- * Load reserve weeks: gsis_id -> season -> the weeks spent on a reserve list.
+ * Load reserve weeks and the team they were served with:
+ * gsis_id -> season -> the weeks spent on a reserve list, and who carried him.
  *
  * The heaviest fetch in this script — roughly 13MB per season — because the
  * weekly roster release carries every player on every roster for every week.
@@ -688,9 +695,11 @@ async function loadInjuryData(
  */
 async function loadReserveData(seasons: number[]): Promise<{
   byPlayer: Map<string, Map<number, Set<number>>>;
+  teamsByPlayer: Map<string, Map<number, string>>;
   loadedSeasons: Set<number>;
 }> {
   const byPlayer = new Map<string, Map<number, Set<number>>>();
+  const teamsByPlayer = new Map<string, Map<number, string>>();
   const loadedSeasons = new Set<number>();
 
   for (const season of seasons) {
@@ -704,7 +713,8 @@ async function loadReserveData(seasons: number[]): Promise<{
     if (csv === undefined) continue;
     loadedSeasons.add(season);
 
-    for (const [gsisId, weeks] of accumulateReserveWeeks(parseCsv(csv))) {
+    const rows = parseCsv(csv);
+    for (const [gsisId, weeks] of accumulateReserveWeeks(rows)) {
       let pm = byPlayer.get(gsisId);
       if (!pm) {
         pm = new Map();
@@ -712,9 +722,17 @@ async function loadReserveData(seasons: number[]): Promise<{
       }
       pm.set(season, weeks);
     }
+    for (const [gsisId, team] of accumulateReserveTeams(rows)) {
+      let pm = teamsByPlayer.get(gsisId);
+      if (!pm) {
+        pm = new Map();
+        teamsByPlayer.set(gsisId, pm);
+      }
+      pm.set(season, team);
+    }
   }
 
-  return { byPlayer, loadedSeasons };
+  return { byPlayer, teamsByPlayer, loadedSeasons };
 }
 
 /** Parse an nflverse integer column, treating blank and non-numeric as absent. */
@@ -766,37 +784,37 @@ async function loadNflversePlayers(): Promise<{
 }
 
 /**
- * Where every drafted player sits on a roster for the upcoming season, keyed
- * both ways because neither id is complete on its own.
+ * Where every drafted player sits on a roster today, keyed both ways because
+ * neither id is complete on its own.
  *
  * `gsis_id` is the reliable key here — the roster release carries one for
  * essentially every row, while `pfr_id` is missing from roughly 40% of them.
  * Matching on `pfr_id` alone reads established players as unrostered, which
  * downstream would score as departure.
  */
-interface OffseasonRosterIndex {
-  season: number;
+interface RosterSnapshotIndex {
+  /** Season whose roster release this was read from. */
+  sourceSeason: number;
   teamByGsisId: Map<string, string>;
   teamByPfrId: Map<string, string>;
 }
 
 /**
- * Fetch the roster for the season after the newest played one, so a pick traded
- * or released over the offseason reads as departed before Week 1.
+ * Fetch one season's roster release.
  *
- * Returns `undefined` when the release does not exist yet: rosters publish part
- * way through the offseason, and until then picks simply carry no snapshot and
- * fall back to season data.
+ * Returns `undefined` when that release does not exist: the fetch is tolerant
+ * because {@link loadRosterSnapshot} tries more than one season and expects
+ * the first to be missing for most of the year.
  */
-async function loadOffseasonRoster(
+async function loadRosterRelease(
   season: number,
-): Promise<OffseasonRosterIndex | undefined> {
+): Promise<RosterSnapshotIndex | undefined> {
   const url = `${BASE}/rosters/roster_${season}.csv`;
   let rows: CsvRow[];
   try {
     rows = parseCsv(await fetchCsv(url));
   } catch (err) {
-    console.log(`  No ${season} roster published yet (${String(err)})`);
+    console.log(`  No ${season} roster published (${String(err)})`);
     return undefined;
   }
 
@@ -831,7 +849,41 @@ async function loadOffseasonRoster(
     `  ${rows.length} ${season} roster rows, ${skipped} retired or released ` +
       `(${teamByGsisId.size} by gsis, ${teamByPfrId.size} by pfr)`,
   );
-  return { season, teamByGsisId, teamByPfrId };
+  return { sourceSeason: season, teamByGsisId, teamByPfrId };
+}
+
+/**
+ * The newest roster release there is, which is what "who is on this team now"
+ * has to be read from.
+ *
+ * Tries each candidate newest first. Both are needed because the two releases
+ * take turns being the current one across the calendar:
+ *
+ * - **Offseason.** `roster_{maxSeason + 1}.csv` is the forward-looking one. It
+ *   publishes some time after the season it forecasts wraps, and until it does
+ *   there is no snapshot at all.
+ * - **In season.** That file does not exist yet — next season is two drafts
+ *   away — but `roster_{maxSeason}.csv` is live and updated weekly, carrying a
+ *   row for every player under contract right now. Reading only the first
+ *   candidate is what used to empty the roster pages the moment Week 1
+ *   kicked off, for the whole season.
+ *
+ * Which file it came from changes nothing downstream: the snapshot row is
+ * stamped `maxSeason + 1` either way, because what it records is where a
+ * player stands *after* every played season — see
+ * {@link buildRosterSnapshotSeason}.
+ */
+async function loadRosterSnapshot(
+  candidates: number[],
+): Promise<RosterSnapshotIndex | undefined> {
+  for (const season of candidates) {
+    const index = await loadRosterRelease(season);
+    if (index) {
+      console.log(`  Roster snapshot from the ${season} release`);
+      return index;
+    }
+  }
+  return undefined;
 }
 
 /** One season of a drafted player's career, as written to draft-<year>.json. */
@@ -892,47 +944,6 @@ interface FreeAgent {
 interface SeasonLookups {
   franchiseGameCountsBySeason: Map<number, Map<string, number>>;
   maxFranchiseGamesBySeason: Map<number, number>;
-}
-
-/**
- * Whether a player was still with their drafting team in season `s`.
- *
- * Snap data is the primary signal, injury reports the fallback. When a player
- * is absent from both (injured all year, practice squad), we infer retention
- * from the adjacent seasons: bracketed by the drafting team means they never
- * left.
- */
-function resolveRetained(params: {
-  primaryTeam: string;
-  injuryTeam: string;
-  teamId: string;
-  season: number;
-  playerSnaps?: Map<number, SeasonSnapData>;
-  playerInjuries?: Map<number, InjurySeasonData>;
-}): boolean {
-  const {
-    primaryTeam,
-    injuryTeam,
-    teamId,
-    season,
-    playerSnaps,
-    playerInjuries,
-  } = params;
-
-  if (primaryTeam !== '') return normalizeTeam(primaryTeam) === teamId;
-  if (injuryTeam !== '') return normalizeTeam(injuryTeam) === teamId;
-
-  const nextTeam =
-    playerSnaps?.get(season + 1)?.primaryTeam ??
-    playerInjuries?.get(season + 1)?.primaryTeam ??
-    '';
-  const prevTeam =
-    playerSnaps?.get(season - 1)?.primaryTeam ??
-    playerInjuries?.get(season - 1)?.primaryTeam ??
-    '';
-  return (
-    normalizeTeam(nextTeam) === teamId || normalizeTeam(prevTeam) === teamId
-  );
 }
 
 /**
@@ -1013,15 +1024,25 @@ function resolveInjurySignals(params: {
   loadMeta?: SeasonLoadMeta;
   injData?: InjurySeasonData;
   playerReserve?: Map<number, Set<number>>;
+  playerReserveTeams?: Map<number, string>;
   loadedReserveSeasons: ReadonlySet<number>;
 }): SeasonInjurySignals {
-  const { season, loadMeta, injData, playerReserve, loadedReserveSeasons } =
-    params;
+  const {
+    season,
+    loadMeta,
+    injData,
+    playerReserve,
+    playerReserveTeams,
+    loadedReserveSeasons,
+  } = params;
   const useReserve = usesReserveSignal(season, loadedReserveSeasons);
   const reserveWeeks = useReserve ? playerReserve?.get(season) : undefined;
 
   return {
     injuryReportWeeks: injData?.injuryReportWeeks ?? 0,
+    // Gated with the week count: a season the feed never spoke for has no
+    // reserve team to offer either.
+    reserveTeam: (useReserve ? playerReserveTeams?.get(season) : '') ?? '',
     reserveWeeks: reserveWeeks?.size ?? 0,
     absenceGames: useReserve ? 0 : (loadMeta?.seasonEndingAbsenceGames ?? 0),
     excusedGames: excusedGamesForSeason({
@@ -1039,6 +1060,7 @@ function buildPickSeason(params: {
   playerSnaps?: Map<number, SeasonSnapData>;
   playerInjuries?: Map<number, InjurySeasonData>;
   playerReserve?: Map<number, Set<number>>;
+  playerReserveTeams?: Map<number, string>;
   loadedReserveSeasons: ReadonlySet<number>;
   lookups: SeasonLookups;
 }): PickSeason {
@@ -1048,6 +1070,7 @@ function buildPickSeason(params: {
     playerSnaps,
     playerInjuries,
     playerReserve,
+    playerReserveTeams,
     loadedReserveSeasons,
     lookups,
   } = params;
@@ -1067,14 +1090,20 @@ function buildPickSeason(params: {
     normalizeTeam,
   });
   const snapShare = data?.snapShare ?? 0;
-  const { injuryReportWeeks, reserveWeeks, absenceGames, excusedGames } =
-    resolveInjurySignals({
-      season,
-      loadMeta: data?.loadMeta,
-      injData,
-      playerReserve,
-      loadedReserveSeasons,
-    });
+  const {
+    injuryReportWeeks,
+    reserveWeeks,
+    reserveTeam,
+    absenceGames,
+    excusedGames,
+  } = resolveInjurySignals({
+    season,
+    loadMeta: data?.loadMeta,
+    injData,
+    playerReserve,
+    playerReserveTeams,
+    loadedReserveSeasons,
+  });
 
   const restGame = data?.restGame;
   let cumulativeSnapShare = data?.cumulativeSnapShare ?? snapShare;
@@ -1107,14 +1136,16 @@ function buildPickSeason(params: {
   const retained = resolveRetained({
     primaryTeam,
     injuryTeam,
+    reserveTeam,
     teamId,
     season,
     playerSnaps,
     playerInjuries,
   });
 
-  // Departed players are shown with the team they actually played for.
-  const departedTeam = primaryTeam !== '' ? primaryTeam : injuryTeam;
+  // Departed players are shown with the team they actually played for — or,
+  // for a season lost to injury elsewhere, the one that carried him.
+  const departedTeam = firstNamedTeam(primaryTeam, injuryTeam, reserveTeam);
   const currentTeamId =
     !retained && departedTeam !== '' ? normalizeTeam(departedTeam) : undefined;
 
@@ -1141,14 +1172,16 @@ interface PickSources {
   snapData: Map<string, Map<number, SeasonSnapData>>;
   injuryData: Map<string, Map<number, InjurySeasonData>>;
   reserveData: Map<string, Map<number, Set<number>>>;
+  /** The team each reserve stint was served with; see {@link accumulateReserveTeams}. */
+  reserveTeams: Map<string, Map<number, string>>;
   /** Seasons whose weekly-roster CSV actually loaded; see {@link loadReserveData}. */
   loadedReserveSeasons: ReadonlySet<number>;
   headshots: Map<string, string>;
   lookups: SeasonLookups;
   /** Newest season with played games, derived from the snap-count releases. */
   maxSeason: number;
-  /** Absent when no roster has been published for the upcoming season. */
-  roster?: OffseasonRosterIndex;
+  /** Absent only when no roster release has been published at all. */
+  roster?: RosterSnapshotIndex;
 }
 
 /**
@@ -1179,6 +1212,9 @@ function buildCareerSeasons(params: {
   const playerSnaps = sources.snapData.get(pfrId);
   const playerInjuries = gsisId ? sources.injuryData.get(gsisId) : undefined;
   const playerReserve = gsisId ? sources.reserveData.get(gsisId) : undefined;
+  const playerReserveTeams = gsisId
+    ? sources.reserveTeams.get(gsisId)
+    : undefined;
 
   const seasons: PickSeason[] = [];
   for (let s = startSeason; s <= sources.maxSeason; s++) {
@@ -1189,6 +1225,7 @@ function buildCareerSeasons(params: {
         playerSnaps,
         playerInjuries,
         playerReserve,
+        playerReserveTeams,
         loadedReserveSeasons: sources.loadedReserveSeasons,
         lookups: sources.lookups,
       }),
@@ -1199,7 +1236,7 @@ function buildCareerSeasons(params: {
   // drafting team by definition, and the roster release does not list it yet
   // anyway — a row would read those picks as unrostered, meaning departed.
   if (sources.roster && startSeason <= sources.maxSeason) {
-    const offseason = buildOffseasonSeason({
+    const snapshot = buildRosterSnapshotSeason({
       roster: sources.roster,
       gsisId,
       pfrId,
@@ -1207,7 +1244,7 @@ function buildCareerSeasons(params: {
       seasons,
       maxSeason: sources.maxSeason,
     });
-    if (offseason) seasons.push(offseason);
+    if (snapshot) seasons.push(snapshot);
   }
 
   // Years after a career ends are a pure function of franchise and season, so
@@ -1292,8 +1329,14 @@ function buildFreeAgent(
 }
 
 /**
- * A row for the upcoming season recording where a pick stands before a snap of
- * it has been played, or `undefined` when there is nothing worth saying.
+ * A row recording where a pick stands on a roster today, or `undefined` when
+ * there is nothing worth saying.
+ *
+ * Stamped `maxSeason + 1` whichever release it was read from, because what it
+ * records is not a season but a position *after* every season that has been
+ * played — the one slot no played row can occupy. In the offseason that year
+ * is also literally the season being forecast; in season it is simply the slot
+ * reserved for "now", one past the season in progress.
  *
  * The row is deliberately a normal season with `teamGames: 0`, the marker for
  * "not played yet" (see `src/lib/seasonPlayed.ts`). That keeps a player's
@@ -1305,8 +1348,8 @@ function buildFreeAgent(
  * A pick who left years ago and is still out of the league gets nothing, since
  * his played seasons already say so and a fresh row would only add noise.
  */
-function buildOffseasonSeason(params: {
-  roster: OffseasonRosterIndex;
+function buildRosterSnapshotSeason(params: {
+  roster: RosterSnapshotIndex;
   gsisId: string;
   pfrId: string;
   teamId: string;
@@ -1325,7 +1368,7 @@ function buildOffseasonSeason(params: {
 
   const retained = rosterTeam === teamId;
   return {
-    year: roster.season,
+    year: maxSeason + 1,
     gamesPlayed: 0,
     teamGames: 0,
     snapShare: 0,
@@ -1411,11 +1454,6 @@ async function main() {
     ceiling: new Date().getUTCFullYear(),
     hasPlayedData: seasonHasSnapCounts,
   });
-  // Roster state is only ever read for a season with no games yet, so it must
-  // stay one clear of maxSeason: scoring divides by seasons that have been
-  // *played*, and letting this leak into the window would deflate every
-  // current pick's score.
-  const rosterSeason = maxSeason + 1;
   console.log(`  Newest played season: ${maxSeason}`);
 
   console.log('Fetching draft_picks...');
@@ -1460,16 +1498,23 @@ async function main() {
   console.log(
     `Fetching weekly rosters (${FIRST_RESERVE_SEASON}–${maxSeason})...`,
   );
-  const { byPlayer: reserveData, loadedSeasons: loadedReserveSeasons } =
-    await loadReserveData(reserveSeasons);
+  const {
+    byPlayer: reserveData,
+    teamsByPlayer: reserveTeams,
+    loadedSeasons: loadedReserveSeasons,
+  } = await loadReserveData(reserveSeasons);
 
-  console.log(`Fetching ${rosterSeason} rosters (offseason departures)...`);
-  const roster = await loadOffseasonRoster(rosterSeason);
+  // Newest first: next season's release in the offseason, this season's live
+  // one the rest of the year. The snapshot row it feeds is stamped
+  // `maxSeason + 1` either way — see buildRosterSnapshotSeason.
+  console.log('Fetching rosters (who is on a roster now)...');
+  const roster = await loadRosterSnapshot([maxSeason + 1, maxSeason]);
 
   const sources: PickSources = {
     snapData,
     injuryData,
     reserveData,
+    reserveTeams,
     loadedReserveSeasons,
     headshots,
     lookups,

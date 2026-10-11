@@ -4,19 +4,32 @@ import { ScoreBreakdown } from './ScoreBreakdown';
 import { makeFreeAgent, makePick, makeSeason } from '../../../test/factories';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
+import { LATEST_SEASON } from '../../../lib/rookieWindow';
 import type { DraftPick } from '../../../types';
 
-/** Anthony Richardson, QB, IND 2023: three seasons, all injury-shortened. */
+/**
+ * Richardson's shape: three injury-shortened seasons, still on the roster.
+ *
+ * Anchored to {@link LATEST_SEASON} rather than his real 2023–2025, so the
+ * window stays clamped to three elapsed seasons once the data rolls to a new
+ * season — with fixed years the newest row falls behind the league and the
+ * pick reads as departed, charging the full five.
+ */
+const QB_SEASON_YEARS = [
+  LATEST_SEASON - 2,
+  LATEST_SEASON - 1,
+  LATEST_SEASON,
+] as const;
 const injuredQb: DraftPick = makePick({
   playerName: 'Anthony Richardson',
   position: 'QB',
   round: 1,
   overallPick: 4,
   teamId: 'IND',
-  draftYear: 2023,
+  draftYear: QB_SEASON_YEARS[0],
   seasons: [
     makeSeason({
-      year: 2023,
+      year: QB_SEASON_YEARS[0],
       gamesPlayed: 4,
       snapShare: 0.6525,
       cumulativeSnapShare: 0.4842,
@@ -25,7 +38,7 @@ const injuredQb: DraftPick = makePick({
       excusedGames: 12,
     }),
     makeSeason({
-      year: 2024,
+      year: QB_SEASON_YEARS[1],
       gamesPlayed: 11,
       snapShare: 0.9255,
       cumulativeSnapShare: 0.8815,
@@ -33,7 +46,7 @@ const injuredQb: DraftPick = makePick({
       excusedGames: 2,
     }),
     makeSeason({
-      year: 2025,
+      year: QB_SEASON_YEARS[2],
       gamesPlayed: 2,
       snapShare: 0.115,
       cumulativeSnapShare: 0.0444,
@@ -79,7 +92,7 @@ describe('ScoreBreakdown', () => {
     renderBreakdown();
     fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
 
-    for (const year of [2023, 2024, 2025]) {
+    for (const year of QB_SEASON_YEARS) {
       expect(
         screen.getByTestId(`score-breakdown-season-${year}`),
       ).toBeInTheDocument();
@@ -93,7 +106,7 @@ describe('ScoreBreakdown', () => {
     renderBreakdown();
     fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
 
-    for (const year of [2023, 2024, 2025]) {
+    for (const year of QB_SEASON_YEARS) {
       const row = screen.getByTestId(`score-breakdown-season-${year}`);
       const [snap, availability] = Array.from(
         row.querySelectorAll('.score-breakdown__term-points'),
@@ -110,7 +123,7 @@ describe('ScoreBreakdown', () => {
     renderBreakdown();
     fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
 
-    const seasonScores = [2023, 2024, 2025].map((year) =>
+    const seasonScores = QB_SEASON_YEARS.map((year) =>
       Number(
         screen
           .getByTestId(`score-breakdown-season-${year}`)
@@ -126,8 +139,15 @@ describe('ScoreBreakdown', () => {
       seasonScores.reduce((a, b) => a + b, 0),
       5,
     );
-    // 129.5 ÷ 3 = 43.17, which rounds to the 43 the hero shows.
-    expect(total / 3).toBeCloseTo(43.17, 2);
+    // The quotient is what the sheet prints as the result, so read it back
+    // rather than restating it: the season scores move with the position
+    // baseline on every data refresh.
+    const result = Number(
+      document
+        .querySelector('.score-breakdown__sum-result')!
+        .textContent!.replace(/[^\d.]/g, ''),
+    );
+    expect(total / 3).toBeCloseTo(result, 1);
   });
 
   it('calls a tenure past the rookie deal what it is, not a longer window', () => {
@@ -169,7 +189,7 @@ describe('ScoreBreakdown', () => {
     renderBreakdown();
     fireEvent.click(screen.getByTestId('score-breakdown-toggle'));
 
-    // Drafted 2023, three seasons elapsed, first-round window of five.
+    // Three seasons elapsed since the draft, first-round window of five.
     expect(
       screen.getByText(/3 seasons elapsed, of a 5-season rookie window/),
     ).toBeInTheDocument();

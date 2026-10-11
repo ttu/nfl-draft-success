@@ -1,6 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { InfoView } from './InfoView';
+import { getPositionTierThresholds } from '../../lib/positionBaseline';
+
+const asPct = (v: number) => `${Math.round(v * 100)}%`;
 
 // Characterization tests: these pin the sheet's observable behaviour so the
 // section components can be restructured without silently changing it.
@@ -39,12 +42,14 @@ describe('InfoView', () => {
 
     // A running back's full-time bar is far below the generic 65%, so every
     // tier shifts down with it.
+    // Derived from the baseline data rather than written out: the RB baseline
+    // is regenerated on every data refresh and drifts across rounding
+    // boundaries, which pinned percentages would read as a regression.
+    const rb = getPositionTierThresholds('RB');
     expect(picker).toHaveValue('RB');
     expect(screen.queryByText('≥ 65%')).not.toBeInTheDocument();
-    expect(screen.getAllByText('≥ 43%')).toHaveLength(2);
-    // 43%/23%, not 44%/24%: the RB full-time baseline regenerated at 0.667
-    // (was 0.670), which drops these tiers across a rounding boundary.
-    expect(screen.getByText('≥ 23%')).toBeInTheDocument();
+    expect(screen.getAllByText(`≥ ${asPct(rb.core)}`)).toHaveLength(2);
+    expect(screen.getByText(`≥ ${asPct(rb.significant)}`)).toBeInTheDocument();
   });
 
   it('closes via the close button', () => {

@@ -34,7 +34,11 @@ export interface RosterGroup {
  * The season `update-data.ts` writes the roster snapshot row for — one past
  * the newest *played* season, not the newest *draft class*.
  *
- * Mirrors `rosterSeason = maxSeason + 1` in `scripts/update-data.ts`. The two
+ * Mirrors the `maxSeason + 1` stamp in `buildRosterSnapshotSeason`
+ * (`scripts/update-data.ts`), which that script applies whichever roster
+ * release it read — next season's in the offseason, this season's live one
+ * during it. The year is the slot reserved for "after everything played",
+ * never a claim that the season it names has begun. The two
  * happen to coincide with `DRAFT_YEAR_BOUNDS.max` (the newest draft class)
  * today, but they are different facts and will drift apart the moment a new
  * season's snap counts publish, months before the following April's draft.
@@ -45,12 +49,12 @@ export interface RosterGroup {
 export const ROSTER_SEASON = LATEST_SEASON + 1;
 
 /**
- * Team the pick is on for the season ahead, or `undefined` when he is on no
- * roster at all.
+ * Team the pick is on today, or `undefined` when he is on no roster at all.
  *
  * Reads the row for {@link ROSTER_SEASON} and nothing else, and only when it
  * is still an unplayed snapshot row (`teamGames === 0` — see
- * `Season.teamGames`). `update-data.ts` writes that row for every player who
+ * `Season.teamGames`), which is what separates the snapshot from a season
+ * that has since been played. `update-data.ts` writes that row for every player who
  * is on a roster, so its absence is the statement that he is not — a player
  * whose newest row is last season played football but has since gone
  * unsigned, and taking "latest row" instead would keep him on his old team
@@ -78,11 +82,13 @@ export function getCurrentTeamForPick(pick: Acquisition): string | undefined {
  * Whether the data includes the {@link ROSTER_SEASON} snapshot row at all,
  * for anyone.
  *
- * `update-data.ts` writes that row from nflverse's offseason roster release,
- * which does not exist until some time after the season it forecasts wraps.
- * A refresh run in that gap produces data with no `ROSTER_SEASON` row for
- * any pick — a different situation from a team that simply has no tracked
- * draftees, and callers should say so rather than claiming an empty roster.
+ * `update-data.ts` writes that row from the newest nflverse roster release it
+ * can find, falling back to the in-progress season's when next season's has
+ * not published. Only a refresh that finds neither — nflverse down, or a
+ * season so new that no roster file exists — produces data with no
+ * `ROSTER_SEASON` row for any pick. That is a different situation from a team
+ * with no tracked draftees, and callers should say so rather than claiming an
+ * empty roster.
  */
 export function hasRosterSnapshot(draftClasses: DraftClass[]): boolean {
   return draftClasses.some((dc) =>

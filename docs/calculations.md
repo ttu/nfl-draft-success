@@ -136,11 +136,14 @@ Note the **availability** term of the season score (`gamesPlayed / teamGames`, 3
 | OAK    | LV         |
 | LVR    | LV         |
 
-**Logic (retention):**
+**Logic (retention)** — `resolveRetained` in `src/lib/retention.ts`. Each feed is consulted in order of how directly it observed him; the first one to name a team decides:
 
 1. If snap data exists: `retained = (normalize(primaryTeam) === teamId)`
 2. If no snap data but injury report exists: use injury report team as primary
-3. If neither: infer from previous/next season primary team (player on roster but inactive)
+3. If neither, but he spent weeks on a reserve list: use the team those weeks were served with (`accumulateReserveTeams`, from the weekly roster feed; §1.3's era gate applies)
+4. If no feed names a team: infer from previous/next season primary team (player on roster but inactive)
+
+Step 3 is why the inference in step 4 is not the fallback it looks like. A season lost to injured reserve produces no snaps _and_ no injury-report rows — placement on IR removes a player from the report — so the two feeds above go quiet for exactly the players whose absence is least voluntary. The inference below needs an adjacent season to exist, which a rookie hurt in camp and a player in his newest tracked season both lack: without the reserve team they read as departures. Jordyn Tyson, New Orleans' 2026 first-rounder, sat out his rookie year on reserve and scored as though the Saints had released him.
 
 ### 1.6 Rest Games (per season, per franchise)
 
