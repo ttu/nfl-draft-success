@@ -1,7 +1,13 @@
 import teamGamesData from '../data/team-games.json';
-import type { TeamGamesData } from '../types';
-import { LATEST_SEASON } from './rookieWindow';
-import type { TeamGamesBySeason } from './trailingSeasons';
+import seasonWindow from '../data/season-window.json';
+import type { Acquisition, TeamGamesData } from '../types';
+import { isPlayedSeason } from './seasonPlayed';
+
+/**
+ * The shape of the game-count table this module reads. Declared structurally
+ * rather than imported from `./trailingSeasons`, which reads this module back.
+ */
+type GamesBySeason = TeamGamesData['gamesBySeason'];
 
 const { gamesBySeason } = teamGamesData as TeamGamesData;
 
@@ -28,7 +34,7 @@ const COMPLETE_SEASON_GAMES = 16;
  */
 export function isSeasonComplete(
   year: number,
-  games: TeamGamesBySeason = gamesBySeason,
+  games: GamesBySeason = gamesBySeason,
 ): boolean {
   const season = games[String(year)];
   return season !== undefined && season.max >= COMPLETE_SEASON_GAMES;
@@ -45,5 +51,41 @@ export function isSeasonComplete(
  * slot as a season of its own has to know the difference.
  */
 export function isLatestSeasonInProgress(): boolean {
-  return !isSeasonComplete(LATEST_SEASON);
+  return !isSeasonComplete(seasonWindow.latestSeason);
+}
+
+/**
+ * Newest season that has been played out — `LATEST_SEASON` in the offseason,
+ * the year before it once the next one kicks off.
+ *
+ * The horizon for anything that asks how much football a player has had the
+ * chance to play. `LATEST_SEASON` itself is the newest season with *any* data,
+ * which from September onward is a season four weeks old.
+ *
+ * Reads `season-window.json` rather than `./rookieWindow`'s `LATEST_SEASON`,
+ * which is the same number from the same file: that module reads this one, and
+ * importing it back would close the circle.
+ */
+export const LATEST_COMPLETED_SEASON: number = isSeasonComplete(
+  seasonWindow.latestSeason,
+)
+  ? seasonWindow.latestSeason
+  : seasonWindow.latestSeason - 1;
+
+/**
+ * Whether the player has at least one season that has been played out.
+ *
+ * The gate for any list that ranks careers against each other. A pick four
+ * weeks into his first season has a score, a role and an over-slot number, all
+ * arithmetically correct and none of them an outcome yet — and ranked beside a
+ * decade of finished careers they read as one. The unplayed roster-snapshot
+ * row does not count, for the same reason it never counts as a season.
+ */
+export function hasCompletedSeason(
+  pick: Acquisition,
+  games: GamesBySeason = gamesBySeason,
+): boolean {
+  return pick.seasons.some(
+    (s) => isPlayedSeason(s) && isSeasonComplete(s.year, games),
+  );
 }

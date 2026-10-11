@@ -1,5 +1,6 @@
 import type { FreeAgent, FreeAgentClass, Team } from '../types';
 import { getPlayerDraftScore, pickHasSeasonSnapData } from './getPlayerRole';
+import { hasCompletedSeason } from './seasonInProgress';
 import type { GetPlayerRoleOptions } from './getPlayerRole';
 import { expectedScoreForFreeAgent } from './overSlot';
 import { HIGHLIGHT_LIST_MAX } from './getLeagueHighlights';
@@ -50,6 +51,9 @@ export function getFreeAgentHighlights(
   for (const cls of freeAgentClasses) {
     for (const player of cls.freeAgents) {
       if (!pickHasSeasonSnapData(player)) continue;
+      // Same gate as the drafted lists: a debut four weeks old is not a
+      // career to rank against finished ones. See `./seasonInProgress`.
+      if (!hasCompletedSeason(player)) continue;
       const score = getPlayerDraftScore(player, options);
       candidates.push({
         player,

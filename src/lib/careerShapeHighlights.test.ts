@@ -10,6 +10,7 @@ import {
 import { makePick, makeSeason, makeTeam } from '../test/factories';
 import { normalizeSnapShareForPosition } from './positionBaseline';
 import type { DraftClass, DraftPick } from '../types';
+import { LATEST_SEASON } from './rookieWindow';
 
 const teams = [makeTeam({ id: 'A' })];
 
@@ -281,6 +282,38 @@ describe('iron men', () => {
     expect(ironMen[0].value).toBe(4);
     expect(ironMen[0].headline).toBe('4');
     expect(ironMen[0].detail).toBe("full seasons · '21–'24");
+  });
+
+  it('does not credit a streak with the season being played', () => {
+    // Four of four games is 100% available, so an unfinished season otherwise
+    // extends every active streak by one and the list claims full seasons
+    // through a year that has six months to run. See `./seasonInProgress`.
+    const durable = makePick({
+      overallPick: 22,
+      teamId: 'A',
+      draftYear: LATEST_SEASON - 3,
+      seasons: [
+        ...[LATEST_SEASON - 3, LATEST_SEASON - 2, LATEST_SEASON - 1].map((y) =>
+          fullSeason(y),
+        ),
+        makeSeason({
+          year: LATEST_SEASON,
+          gamesPlayed: 4,
+          teamGames: 4,
+          snapShare: 0.9,
+        }),
+      ],
+    });
+
+    const { ironMen } = getCareerShapeHighlights(
+      [{ year: LATEST_SEASON - 3, picks: [durable] }],
+      teams,
+    );
+
+    expect(ironMen[0].value).toBe(3);
+    expect(ironMen[0].detail).toBe(
+      `full seasons · '${String(LATEST_SEASON - 3).slice(2)}–'${String(LATEST_SEASON - 1).slice(2)}`,
+    );
   });
 
   it('requires MIN_IRON_MAN_STREAK seasons', () => {

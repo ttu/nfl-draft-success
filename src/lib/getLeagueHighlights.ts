@@ -1,5 +1,6 @@
 import type { DraftClass, DraftPick, Team } from '../types';
 import { isBustExcluded } from './bustExclusions';
+import { hasCompletedSeason } from './seasonInProgress';
 import {
   getCareerShapeHighlights,
   type CareerShapeHighlights,
@@ -60,7 +61,8 @@ export interface LeagueHighlights
  * Scan every scored pick across the loaded draft classes for three
  * human-interest highlights: the biggest steals, the biggest busts, and the
  * team that produced the most core starters. Only picks with season data
- * ({@link pickHasSeasonSnapData}) are eligible.
+ * ({@link pickHasSeasonSnapData}) in a season that has been played out
+ * ({@link hasCompletedSeason}) are eligible.
  *
  * Steals and busts are ranked by *over slot* rather than raw score, so no round
  * filter is needed: the slot expectation already caps how far an early pick can
@@ -103,6 +105,12 @@ export function getLeagueHighlights(
   for (const draft of draftClasses) {
     for (const pick of draft.picks) {
       if (!pickHasSeasonSnapData(pick)) continue;
+      // A class whose only season is the one being played has produced a
+      // score, a role and an over-slot number, all arithmetically right and
+      // none of them an outcome. Ranked against finished careers they read as
+      // one — four games in, the first overall pick sits at the top of the
+      // busts list. See `./seasonInProgress`.
+      if (!hasCompletedSeason(pick)) continue;
 
       // Over slot is the score minus the slot expectation, so derive it from
       // the score already in hand rather than scoring the pick a second time.

@@ -6,6 +6,7 @@ import {
   type RawFreeAgentClass,
 } from '../lib/freeAgentClass';
 import { isPlayedSeason } from '../lib/seasonPlayed';
+import { isSeasonComplete } from '../lib/seasonInProgress';
 
 /**
  * Guards the rows the shipped JSON deliberately leaves out.
@@ -23,20 +24,31 @@ import { isPlayedSeason } from '../lib/seasonPlayed';
  * the real shipped data rather than a fixture: every acquisition's played
  * seasons must run unbroken from his class year to the season the file says it
  * was written out to.
+ *
+ * The horizon stops at the newest season that has been *played out*. A season
+ * still in progress is deliberately not rebuilt — "out of the league" is not
+ * yet true of anyone — so a player who has taken a snap in it carries a row
+ * and one who has not carries none, and neither shape is a missing row.
  */
 function assertRunsToHorizon(
   who: string,
   player: Acquisition,
   seasonsThrough: number,
 ) {
-  const years = player.seasons.filter(isPlayedSeason).map((s) => s.year);
+  const horizon = isSeasonComplete(seasonsThrough)
+    ? seasonsThrough
+    : seasonsThrough - 1;
+  const years = player.seasons
+    .filter(isPlayedSeason)
+    .map((s) => s.year)
+    .filter((year) => year <= horizon);
   expect(
     { who, years },
-    `${who}: expected played seasons ${player.draftYear}–${seasonsThrough}`,
+    `${who}: expected played seasons ${player.draftYear}–${horizon}`,
   ).toEqual({
     who,
     years: Array.from(
-      { length: seasonsThrough - player.draftYear + 1 },
+      { length: Math.max(0, horizon - player.draftYear + 1) },
       (_, i) => player.draftYear + i,
     ),
   });

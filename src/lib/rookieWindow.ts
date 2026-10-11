@@ -7,6 +7,7 @@ import {
   withoutApprenticeSeasons,
 } from './apprenticeship';
 import { isPlayedSeason } from './seasonPlayed';
+import { LATEST_COMPLETED_SEASON } from './seasonInProgress';
 
 /**
  * Newest NFL season present in the dataset, written by `update-data.ts`.
@@ -51,7 +52,11 @@ function hasDeparted(pick: Acquisition): boolean {
  * For a pick **still on the roster**, `min(elapsed, window)` keeps recent
  * classes honest — one drafted last year is measured against one season, not
  * five, because the rest have not happened. Without it every class inside the
- * window would read as a catastrophe.
+ * window would read as a catastrophe. `elapsed` counts to the newest season
+ * that has been *played out*, for the same reason: the season in progress has
+ * not happened either, and charging a zero for it would read as a bust four
+ * weeks into a year. A pick who *has* played it keeps it, because
+ * `max(retained, …)` below floors the count at the seasons he was there for.
  *
  * For a pick that has **departed**, the rest of the window is already known to
  * be zero, so it is charged immediately. This does two things. It removes a
@@ -85,7 +90,8 @@ export function scoredSeasonCount(
   // Can reach zero if the bench years exhausted the deal; the `retained` floor
   // below is what keeps the divisor usable.
   const window = Math.max(0, acquisitionWindow(pick) - apprenticeSeasons);
-  const elapsed = LATEST_SEASON - (pick.draftYear + apprenticeSeasons) + 1;
+  const elapsed =
+    LATEST_COMPLETED_SEASON - (pick.draftYear + apprenticeSeasons) + 1;
   const tracked = hasDeparted(pick) ? window : Math.min(elapsed, window);
   return Math.max(retainedSeasonCount, tracked);
 }

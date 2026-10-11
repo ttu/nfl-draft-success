@@ -223,6 +223,23 @@ describe('hydrateReconstructibleSeasons', () => {
     ).toEqual([played(2016), gone(2017, 16), gone(2018, 16)]);
   });
 
+  it('does not refill a season that is still being played', () => {
+    // Four weeks in, "0 games, out of the league" is not a fact about the year
+    // — it is a guess at how the year will end, and for the 217 players on a
+    // roster right now it is the wrong guess. See `./seasonInProgress`.
+    const inProgress: TeamGamesBySeason = {
+      ...teamGames,
+      2019: { max: 5, byTeam: { CLE: 4 } },
+    };
+    expect(
+      hydrateReconstructibleSeasons([played(2016)], {
+        ...opts,
+        throughSeason: 2019,
+        teamGames: inProgress,
+      }),
+    ).toEqual([played(2016), gone(2017, 16), gone(2018, 16)]);
+  });
+
   it('does not mutate its input', () => {
     const seasons = [played(2016)];
     const before = structuredClone(seasons);

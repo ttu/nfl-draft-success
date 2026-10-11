@@ -4,6 +4,7 @@ import { HIGHLIGHT_LIST_MAX } from './getLeagueHighlights';
 import { stampFreeAgentYear } from './freeAgentClass';
 import { makeFreeAgent, makeSeason, makeTeam } from '../test/factories';
 import type { FreeAgent, FreeAgentClass } from '../types';
+import { LATEST_SEASON } from './rookieWindow';
 
 const TEAMS = [makeTeam({ id: 'BUF' }), makeTeam({ id: 'KC' })];
 
@@ -25,6 +26,33 @@ const classOf = (year: number, ...members: FreeAgent[]): FreeAgentClass =>
   stampFreeAgentYear({ year, freeAgents: members });
 
 describe('getFreeAgentHighlights', () => {
+  it('leaves out a debut that is still being played', () => {
+    // A 100 earned over four games is not a career-best undrafted season; it
+    // is a season nobody has finished. See `./seasonInProgress`.
+    const result = getFreeAgentHighlights(
+      [
+        classOf(
+          LATEST_SEASON,
+          makeFreeAgent({
+            playerId: 'Rookie',
+            playerName: 'Rookie',
+            teamId: 'BUF',
+            seasons: [
+              makeSeason({
+                year: LATEST_SEASON,
+                gamesPlayed: 4,
+                teamGames: 4,
+                snapShare: 1,
+              }),
+            ],
+          }),
+        ),
+      ],
+      TEAMS,
+    );
+    expect(result.bestUndrafted).toEqual([]);
+  });
+
   it('ranks the best undrafted players by score, best first', () => {
     const result = getFreeAgentHighlights(
       [

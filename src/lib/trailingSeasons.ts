@@ -1,5 +1,6 @@
 import type { Season, TeamGamesData } from '../types';
 import { isPlayedSeason } from './seasonPlayed';
+import { isSeasonComplete } from './seasonInProgress';
 import teamGamesData from '../data/team-games.json';
 
 /**
@@ -111,6 +112,13 @@ export interface HydrateOptions {
  * fabricated `teamGames` would surface as a quietly wrong availability share
  * ("0 of 17 games" is rendered in `ScoreBreakdown`); a missing row surfaces as
  * a career that visibly stops short, which is the failure you can see.
+ *
+ * A season still being played is skipped for a stronger reason: the row says
+ * the player spent that year out of the league, and four weeks in nobody has
+ * spent the year doing anything yet. Hundreds of players are on a roster and
+ * simply have not taken a snap, and for them the row is not merely premature
+ * but false — it renders as "FA · 0 games · Non-Contributor" against a hero
+ * line naming the team they are on. See `./seasonInProgress`.
  */
 export function hydrateReconstructibleSeasons(
   seasons: Season[],
@@ -127,6 +135,7 @@ export function hydrateReconstructibleSeasons(
   for (let year = resumeFrom; year <= throughSeason; year++) {
     const counts = teamGames[year];
     if (!counts) continue;
+    if (!isSeasonComplete(year, teamGames)) continue;
     const games = counts.byTeam[teamId] ?? counts.max;
     if (games <= 0) continue;
     refilled.push({

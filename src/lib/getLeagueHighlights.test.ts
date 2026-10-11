@@ -4,6 +4,7 @@ import { expectedScoreForPick } from './draftSlotBaseline';
 import { BUST_EXCLUSIONS } from './bustExclusions';
 import type { DraftClass, DraftPick, Team } from '../types';
 import { makePick, makeSeason, makeTeam } from '../test/factories';
+import { LATEST_SEASON } from './rookieWindow';
 
 const teams: Team[] = [makeTeam({ id: 'A' }), makeTeam({ id: 'B' })];
 
@@ -54,6 +55,40 @@ describe('getLeagueHighlights', () => {
     expect(h.snakebit).toEqual([]);
     expect(h.gotAway).toEqual([]);
     expect(h.keptTheBand).toEqual([]);
+  });
+
+  it('leaves out a class whose only season is still being played', () => {
+    // Four weeks into his first season a number-one pick who has not taken a
+    // snap scores 0, which is 89 points under his slot — the worst number on
+    // the board, and not a draft outcome. Nothing about him has finished
+    // happening. See `./seasonInProgress`.
+    const classes: DraftClass[] = [
+      {
+        year: LATEST_SEASON,
+        picks: [
+          makePick({
+            playerId: 'A-rookie',
+            playerName: 'Just Drafted',
+            teamId: 'A',
+            round: 1,
+            overallPick: 1,
+            draftYear: LATEST_SEASON,
+            seasons: [
+              makeSeason({
+                year: LATEST_SEASON,
+                gamesPlayed: 0,
+                teamGames: 4,
+                snapShare: 0,
+              }),
+            ],
+          }),
+        ],
+      },
+    ];
+
+    const h = getLeagueHighlights(classes, teams, opts);
+    expect(h.busts).toEqual([]);
+    expect(h.steals).toEqual([]);
   });
 
   it('carries the career-shape and retention bands', () => {

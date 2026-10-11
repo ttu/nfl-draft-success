@@ -10,6 +10,7 @@ import { normalizeSnapShareForPosition } from './positionBaseline';
 import { isAtLeastRole } from './roleDisplay';
 import { MIN_SEASON_ENDING_ABSENCE_GAMES } from './seasonEndingAbsence';
 import { playedSeasons } from './seasonPlayed';
+import { isSeasonComplete } from './seasonInProgress';
 import { seasonTag } from './seasonTag';
 import { snapShareForRoleTier } from './snapShareForTier';
 
@@ -95,9 +96,19 @@ export const FULL_AVAILABILITY_GAMES_SHARE = 0.94;
 /** How many players each list holds. Matches the highlight lists' expanded size. */
 export const CAREER_SHAPE_LIST_MAX = 20;
 
-/** Played seasons in ascending year order. */
+/**
+ * Played seasons in ascending year order, excluding one still being played.
+ *
+ * Every list here reads a season as a finished shape: a full year's
+ * availability, a peak to have climbed to, a run that held. The season in
+ * progress supports none of those claims — four of four games is 100%
+ * available, so it silently extends every active iron-man streak — and no
+ * list is better for guessing how it ends. See `./seasonInProgress`.
+ */
 function careerSeasons(pick: DraftPick): Season[] {
-  return [...playedSeasons(pick)].sort((a, b) => a.year - b.year);
+  return [...playedSeasons(pick)]
+    .filter((s) => isSeasonComplete(s.year))
+    .sort((a, b) => a.year - b.year);
 }
 
 /**

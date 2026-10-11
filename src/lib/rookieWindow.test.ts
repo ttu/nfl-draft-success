@@ -60,6 +60,29 @@ describe('scoredSeasonCount', () => {
     expect(scoredSeasonCount(pick(1, LATEST_SEASON - 1), 2)).toBe(2);
   });
 
+  it('does not charge a pick for the season being played', () => {
+    // Junior Colson's shape: two played seasons, still on the roster, and the
+    // newest season four weeks old with no snaps yet. Dividing by three would
+    // charge his team a zero for football nobody has played. See
+    // `./seasonInProgress`.
+    const stillHere = makePick({
+      round: 3,
+      overallPick: 69,
+      draftYear: LATEST_SEASON - 2,
+      seasons: [
+        makeSeason({ year: LATEST_SEASON - 2 }),
+        makeSeason({ year: LATEST_SEASON - 1 }),
+        makeSeason({
+          year: LATEST_SEASON + 1,
+          gamesPlayed: 0,
+          teamGames: 0,
+          snapShare: 0,
+        }),
+      ],
+    });
+    expect(scoredSeasonCount(stillHere, 2)).toBe(2);
+  });
+
   it('never lets seasons beyond the window inflate a long tenure', () => {
     // Seven retained years divided by five would exceed the pick's own mean.
     expect(scoredSeasonCount(pick(1, LATEST_SEASON - 8), 7)).toBe(7);
@@ -268,8 +291,11 @@ describe('scoredWindowYears', () => {
   });
 
   it('stops at elapsed seasons for a pick still on the roster', () => {
+    // Elapsed means played out: the newest season is four weeks old, so it is
+    // not a year his team has had him for. He keeps a row for it either way —
+    // the window list only decides where a *gap* row goes.
     const here = pick(1, LATEST_SEASON - 1);
-    expect(scoredWindowYears(here)).toEqual([LATEST_SEASON - 1, LATEST_SEASON]);
+    expect(scoredWindowYears(here)).toEqual([LATEST_SEASON - 1]);
   });
 
   it('covers every season of a tenure that outlasted the window', () => {
