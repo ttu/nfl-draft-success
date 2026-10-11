@@ -30,6 +30,7 @@ import {
 import { getSeasonScore } from '../../../lib/getSeasonScore';
 import { scoredWindowYears } from '../../../lib/rookieWindow';
 import { isPlayedSeason, isUnplayedSeason } from '../../../lib/seasonPlayed';
+import { isLatestSeasonInProgress } from '../../../lib/seasonInProgress';
 import { isInjuredOutSeason } from '../../../lib/injuredSeason';
 import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
 import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
@@ -88,7 +89,14 @@ function PlayerDetailViewImpl({
   // Every count, chart and score below is about football played. The upcoming
   // season is held apart so it cannot be tallied as a season anyone played.
   const sortedSeasons = allSeasons.filter(isPlayedSeason);
-  const upcomingSeason = allSeasons.find(isUnplayedSeason);
+  // Only in the offseason. The roster snapshot is stamped a year past the
+  // newest played season whatever the date (see `buildRosterSnapshotSeason`),
+  // so once that season kicks off the row names a year the calendar has not
+  // reached — and says nothing the in-progress row above it does not already,
+  // both being read from the same live roster release.
+  const upcomingSeason = isLatestSeasonInProgress()
+    ? undefined
+    : allSeasons.find(isUnplayedSeason);
 
   // Rookie-window years with no season row at all. Only in drafting-team mode:
   // that is the only mode whose denominator is the window, so in career mode a

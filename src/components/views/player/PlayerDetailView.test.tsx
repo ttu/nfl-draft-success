@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { PlayerDetailView } from './PlayerDetailView';
@@ -13,6 +13,16 @@ import {
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { LATEST_SEASON } from '../../../lib/rookieWindow';
+import { isLatestSeasonInProgress } from '../../../lib/seasonInProgress';
+import type * as SeasonInProgress from '../../../lib/seasonInProgress';
+
+// Whether the newest season has kicked off decides what the roster-snapshot
+// row means, and the real answer changes with the calendar. Every test states
+// which situation it is describing.
+vi.mock('../../../lib/seasonInProgress', async (importOriginal) => ({
+  ...(await importOriginal<typeof SeasonInProgress>()),
+  isLatestSeasonInProgress: vi.fn(() => false),
+}));
 
 // Will Reichard, K, MIN 2024: high Avg snap (~40%) but low Load (~10%) because
 // specialist load is measured against the team's full scrimmage + ST capacity.
@@ -557,6 +567,11 @@ describe('PlayerDetailView rookie window', () => {
   });
 
   describe('the upcoming season', () => {
+    beforeEach(() => {
+      // The offseason: the snapshot row really is a season nobody has played.
+      vi.mocked(isLatestSeasonInProgress).mockReturnValue(false);
+    });
+
     /** Standing for a season not yet played: no games, so `teamGames` is 0. */
     const upcoming = (retained: boolean, currentTeam?: string) =>
       makeSeason({
@@ -627,6 +642,19 @@ describe('PlayerDetailView rookie window', () => {
       renderPick(kept);
       const row = screen.getByTestId(`season-upcoming-${LATEST_SEASON + 1}`);
       expect(within(row).getByText('KC')).toBeInTheDocument();
+    });
+
+    it('is not drawn at all once the newest season has kicked off', () => {
+      // Mid-season the snapshot is stamped a year past the one being played,
+      // so rendering it puts a season on the table that the calendar has not
+      // reached. It says nothing new either: the in-progress row carries the
+      // same team and the same retention.
+      vi.mocked(isLatestSeasonInProgress).mockReturnValue(true);
+      renderPick(traded());
+      expect(
+        screen.queryByTestId(`season-upcoming-${LATEST_SEASON + 1}`),
+      ).toBeNull();
+      expect(screen.queryByText('Not played yet')).toBeNull();
     });
   });
 });
