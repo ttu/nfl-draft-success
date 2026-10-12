@@ -13,5 +13,10 @@ pnpm run test
 # Build check
 pnpm run build
 
+# The build regenerates tracked artifacts, and it runs after lint-staged has
+# already staged everything — so anything it rewrites would otherwise be left
+# out of this commit without a word.
+pnpm run check:generated
+
 # E2E tests against the build above (vite preview serves dist/)
 pnpm run test:e2e:preview

@@ -37,6 +37,11 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      # The hook runs this too; here it catches artifacts that reached main
+      # without it — a --no-verify, a web edit, a rebase that dropped them.
+      - name: Generated artifacts are up to date
+        run: pnpm run check:generated
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 

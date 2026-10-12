@@ -24,6 +24,7 @@
     "generate-team-success": "tsx scripts/generate-team-success.ts",
     "generate-sitemap": "tsx scripts/seo/generate-sitemap.ts",
     "prerender-routes": "tsx scripts/seo/prerender-routes.ts",
+    "check:generated": "sh scripts/check-generated.sh",
     "generate-og-image": "tsx scripts/generate-og-image.ts",
     "validate": "pnpm run format:check && pnpm run type-check && pnpm run lint && pnpm run lint:duplication && pnpm run test && pnpm run build",
     "preview": "vite preview",

@@ -40,6 +40,7 @@ See [architecture.md](architecture.md) for full dev dependency list. Key additio
 | `pnpm validate`         | Format + lint + test + build                                                         |
 | `pnpm update-data`      | Update JSON from nflverse                                                            |
 | `pnpm prerender-routes` | Emit a page per indexable route into `dist/` (runs as the last step of `pnpm build`) |
+| `pnpm check:generated`  | Fail if `pnpm build` rewrote a committed artifact that is not staged                 |
 
 ## Static Routes & SEO
 
@@ -61,9 +62,30 @@ sitemap, the pre-rendered pages and the runtime head all follow.
 
 Run `pnpm update-data` to fetch nflverse data and regenerate `public/data/draft-{year}.json`. See [data model](datamodel.md) and plan for schema.
 
+## Generated Artifacts
+
+`pnpm build` rewrites five files that are committed to the repo:
+
+- `public/data/default-rankings.json`
+- `public/data/lagged-draft-rankings.json`
+- `public/data/team-success.json`
+- `public/sitemap.xml`
+- `public/og-image.png`
+
+They are derived from `src/` and `public/data/`, so any change to scoring or to
+the data moves them, and they belong in the commit that moved them. Nothing in
+the hook staged them: the build runs _after_ lint-staged, so a regenerated
+artifact used to be left dirty in the working tree while the commit went
+through without it.
+
+`pnpm check:generated` (`scripts/check-generated.sh`) now runs straight after
+the build and fails the commit, naming the files and the `git add` to run.
+Stage them and commit again — the rerun's build produces the same bytes, so the
+check passes. CI runs it too, for anything that reached `main` without the hook.
+
 ## Git Hooks
 
-- **Pre-commit:** lint-staged, type-check, test, build
+- **Pre-commit:** lint-staged, type-check, test, build, generated-artifact check, E2E
 - **Pre-push:** Rebase-on-main check
 
 Run `pnpm install` to install Husky hooks.
