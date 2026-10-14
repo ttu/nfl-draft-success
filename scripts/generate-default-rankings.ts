@@ -12,6 +12,7 @@ import { getRollingDraftScore } from '../src/lib/getRollingDraftScore';
 import { TEAMS } from '../src/data/teams';
 import type { DraftClass } from '../src/types';
 import { stampDraftYear } from '../src/lib/draftClass';
+import { roundForArtifact } from './artifactNumber';
 
 const DEFAULT_FROM = 2021;
 const DEFAULT_TO = 2025;
@@ -35,8 +36,10 @@ function main() {
     return {
       teamId: t.id,
       teamName: t.name,
-      score: rolling.score,
-      overSlot: rolling.skillScore,
+      // Rounded so the committed file is the same on every machine; see
+      // `./artifactNumber`.
+      score: roundForArtifact(rolling.score),
+      overSlot: roundForArtifact(rolling.skillScore),
       totalPicks: rolling.totalPicks,
       coreStarterRate: rolling.coreStarterRate,
       retentionRate: rolling.retentionRate,

@@ -64,11 +64,10 @@ Run `pnpm update-data` to fetch nflverse data and regenerate `public/data/draft-
 
 ## Generated Artifacts
 
-`pnpm build` rewrites five files that are committed to the repo:
+`pnpm build` rewrites four files that are committed to the repo:
 
 - `public/data/default-rankings.json`
 - `public/data/lagged-draft-rankings.json`
-- `public/data/team-success.json`
 - `public/sitemap.xml`
 - `public/og-image.png`
 
@@ -79,9 +78,28 @@ artifact used to be left dirty in the working tree while the commit went
 through without it.
 
 `pnpm check:generated` (`scripts/check-generated.sh`) now runs straight after
-the build and fails the commit, naming the files and the `git add` to run.
-Stage them and commit again — the rerun's build produces the same bytes, so the
-check passes. CI runs it too, for anything that reached `main` without the hook.
+the build and fails the commit, naming the files, showing what moved and giving
+the `git add` to run. Stage them and commit again — the rerun's build produces
+the same bytes, so the check passes. CI runs it too, for anything that reached
+`main` without the hook.
+
+### What the check can and cannot cover
+
+The two rankings files hold numbers rounded to six decimals
+(`scripts/artifactNumber.ts`). Full `double` precision is **not** reproducible
+across machines: the draft-slot curve runs through `Math.exp` and `Math.log`,
+whose precision ECMAScript leaves to the implementation, and V8 answers them
+from platform libm — macOS arm64 and Linux x86_64 disagree in the last digit
+(`14.511033713143355` against `...357`). Six decimals clears that ~1e-15 drift
+by nine orders of magnitude and is still far more than the UI shows (`+14.5`).
+Only the artifact is rounded; the runtime computes these live at full
+precision for any other year range.
+
+`og-image.png` is **not** checked. The build rasterises it from `og-image.svg`
+through sharp, so its bytes follow the host's libvips and fonts — 46111 bytes
+on macOS, 46868 on Linux from the same SVG. Holding it to byte equality would
+only teach everyone to ignore the check. `team-success.json` is not checked
+either: `pnpm update-data` writes it, `pnpm build` never does.
 
 ## Git Hooks
 

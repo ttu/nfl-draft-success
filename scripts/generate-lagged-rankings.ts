@@ -15,6 +15,7 @@ import { TEAMS } from '../src/data/teams';
 import { LAGGED_WINDOWS } from '../src/lib/laggedWindow';
 import type { DraftClass } from '../src/types';
 import { stampDraftYear } from '../src/lib/draftClass';
+import { roundForArtifact } from './artifactNumber';
 
 function main() {
   const dataDir = path.join(process.cwd(), 'public', 'data');
@@ -39,8 +40,10 @@ function main() {
     return {
       teamId: t.id,
       teamName: t.name,
-      score: rolling.score,
-      overSlot: rolling.skillScore,
+      // Rounded so the committed file is the same on every machine; see
+      // `./artifactNumber`.
+      score: roundForArtifact(rolling.score),
+      overSlot: roundForArtifact(rolling.skillScore),
     };
   }).sort((a, b) => b.overSlot - a.overSlot);
 
