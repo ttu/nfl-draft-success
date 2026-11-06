@@ -145,7 +145,8 @@ describe('ScoreBreakdown', () => {
     const result = Number(
       document
         .querySelector('.score-breakdown__sum-result')!
-        .textContent!.replace(/[^\d.]/g, ''),
+        // First number only: a "→ 43 shown" suffix follows when rounding moves it.
+        .textContent!.match(/\d+(\.\d+)?/)![0],
     );
     expect(total / 3).toBeCloseTo(result, 1);
   });
