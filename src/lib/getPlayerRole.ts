@@ -4,7 +4,7 @@ import { classifyRole } from './classifyRole';
 import { getSeasonScore } from './getSeasonScore';
 import { ROLE_SCORE_WEIGHTS } from './roleWeights';
 import { snapShareForRoleTier } from './snapShareForTier';
-import { scoredSeasonCount } from './rookieWindow';
+import { bestScoredRun, scoredSeasonCount } from './rookieWindow';
 import { playedSeasons } from './seasonPlayed';
 
 const ROLE_ORDER: Role[] = [
@@ -40,7 +40,12 @@ export function getFilteredSeasons(
   draftingTeamOnly: boolean | undefined,
 ) {
   const played = withoutApprenticeSeasons(pick, playedSeasons(pick));
-  return draftingTeamOnly === true ? played.filter((s) => s.retained) : played;
+  return draftingTeamOnly === true
+    ? bestScoredRun(
+        pick,
+        played.filter((s) => s.retained),
+      )
+    : played;
 }
 
 export interface GetPlayerRoleOptions {

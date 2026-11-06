@@ -119,6 +119,24 @@ function PlayerDetailViewImpl({
       .filter((s) => s.year < firstScoredYear(pick))
       .map((s) => s.year),
   );
+  // Seasons with the drafting team that the score leaves out because his
+  // rookie window alone scored higher (see `bestScoredRun`).
+  const pastWindowYears = new Set(
+    sortedSeasons
+      .filter(
+        (s) =>
+          draftingTeamOnly &&
+          s.retained &&
+          !countedYears.has(s.year) &&
+          !apprenticeYears.has(s.year),
+      )
+      .map((s) => s.year),
+  );
+  const uncountedReasonFor = (year: number): UncountedReason => {
+    if (apprenticeYears.has(year)) return 'apprentice';
+    if (pastWindowYears.has(year)) return 'pastWindow';
+    return 'elsewhere';
+  };
   // Checked against every row, not just played ones: the upcoming season
   // already has a row of its own, and a gap row for the same year would both
   // duplicate it and contradict it.
@@ -283,6 +301,7 @@ function PlayerDetailViewImpl({
               countedSeasons={countedSeasons}
               playedSeasons={sortedSeasons.length}
               apprenticeSeasons={apprenticeYears.size}
+              pastWindowSeasons={pastWindowYears.size}
               windowYears={windowYears.length}
               contractYears={acquisitionWindow(pick)}
               isPick={isDraftPick(pick)}
@@ -337,11 +356,7 @@ function PlayerDetailViewImpl({
                       position={pick.position}
                       color={color}
                       counts={countedYears.has(season.year)}
-                      uncountedReason={
-                        apprenticeYears.has(season.year)
-                          ? 'apprentice'
-                          : 'elsewhere'
-                      }
+                      uncountedReason={uncountedReasonFor(season.year)}
                       isPick={isDraftPick(pick)}
                     />
                   ) : (
@@ -626,6 +641,7 @@ function CareerCountNote({
   countedSeasons,
   playedSeasons,
   apprenticeSeasons,
+  pastWindowSeasons,
   windowYears,
   contractYears,
   isPick,
@@ -633,6 +649,8 @@ function CareerCountNote({
   countedSeasons: number;
   playedSeasons: number;
   apprenticeSeasons: number;
+  /** Drafting-team seasons left out because the window alone scored higher. */
+  pastWindowSeasons: number;
   windowYears: number;
   /** What the round's rookie deal actually entitled the team to: 5, or 4. */
   contractYears: number;
@@ -657,7 +675,8 @@ function CareerCountNote({
         apprenticeSeasons,
         isPick,
       )}
-      {countedSeasons < playedSeasons - apprenticeSeasons && (
+      {countedSeasons <
+        playedSeasons - apprenticeSeasons - pastWindowSeasons && (
         // The ✕ in the Score column carries the same meaning, but it only
         // explains itself through a title tooltip — which needs a second of
         // motionless hover on a 7px target, and so is not where a key belongs.
@@ -670,9 +689,22 @@ function CareerCountNote({
           played elsewhere, not counted
         </>
       )}
+      {pastWindowSeasons > 0 && (
+        <>
+          {' · '}
+          <span className="season-uncounted-key" aria-hidden="true">
+            ✕
+          </span>{' '}
+          past the {isPick ? 'rookie' : 'undrafted'} window, not counted — the
+          window alone scores higher
+        </>
+      )}
     </span>
   );
 }
+
+/** Why a season is left out of the score, which decides what its ✕ says. */
+type UncountedReason = 'elsewhere' | 'apprentice' | 'pastWindow';
 
 /**
  * What the ✕ on an uncounted season says it means.
@@ -681,10 +713,11 @@ function CareerCountNote({
  * undrafted quarterbacks, so "the rookie window" cannot be said unbranched:
  * an undrafted player has no rookie deal to open.
  */
-function uncountedNote(
-  reason: 'elsewhere' | 'apprentice',
-  isPick: boolean,
-): string {
+function uncountedNote(reason: UncountedReason, isPick: boolean): string {
+  if (reason === 'pastWindow')
+    return isPick
+      ? 'this season came after his rookie window, which scores higher on its own'
+      : 'this season came after his undrafted window, which scores higher on its own';
   if (reason !== 'apprentice') return 'this season was played for another team';
   return isPick
     ? 'this season was spent learning behind a veteran, before the rookie window opens'
@@ -712,7 +745,7 @@ function SeasonRow({
    */
   counts?: boolean;
   /** Why it does not count, which decides what the ✕ says. */
-  uncountedReason?: 'elsewhere' | 'apprentice';
+  uncountedReason?: UncountedReason;
   /** Whether this is a draft pick, which decides whether a rookie deal exists. */
   isPick?: boolean;
 }) {

@@ -368,6 +368,7 @@ score(pick) = sum( getSeasonScore(season) ) / denominator
 
 - **`getSeasonScore`** (§7 preamble) is `clamp(0.7 · positionAdjustedLoad + 0.3 · availability) × 100`.
 - **denominator** is the rookie-contract window (`scoredSeasonCount`, §7.3a) in drafting-team mode, and seasons played in career mode.
+- **Long tenures (drafting-team mode):** a pick who stayed past his rookie window is scored on the **better** of two runs (`bestScoredRun`, `rookieWindow.ts`): every season with the drafting team (divided by that tenure), or only the seasons inside the window (divided by the window). A late peak can still lift the score; a late decline on the same roster cannot drag it below what the rookie deal delivered. The role badge, the window years, and the career table follow the chosen run, and seasons it leaves out are marked "past the rookie window" rather than "played elsewhere".
 
 ### 7.2 Auxiliary Metrics
 

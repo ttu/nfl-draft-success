@@ -246,6 +246,34 @@ describe('getPlayerDraftScore', () => {
       );
     });
 
+    it('scores a long tenure on its rookie window when that run alone is higher', () => {
+      // Five perfect years, then two on the bench with the same team. The
+      // decline came after the rookie deal the draft is judged on, so it must
+      // not pull the score below what that deal delivered: 500 / 5, not 500 / 7.
+      const draftYear = LATEST_SEASON - 6;
+      const pick = agedPick(1, 7, [
+        ...Array.from({ length: 5 }, (_, i) => perfect(draftYear + i)),
+        makeSeason({ year: draftYear + 5, gamesPlayed: 0, snapShare: 0 }),
+        makeSeason({ year: draftYear + 6, gamesPlayed: 0, snapShare: 0 }),
+      ]);
+      expect(getPlayerDraftScore(pick, opts)).toBeCloseTo(100);
+      expect(getPlayerRole(pick, opts)).toBe('core_starter');
+    });
+
+    it('keeps the whole tenure when the seasons past the window lift it', () => {
+      // Five idle years, then two perfect ones: the full stay (200 / 7) beats
+      // the window alone (0 / 5).
+      const draftYear = LATEST_SEASON - 6;
+      const pick = agedPick(1, 7, [
+        ...Array.from({ length: 5 }, (_, i) =>
+          makeSeason({ year: draftYear + i, gamesPlayed: 0, snapShare: 0 }),
+        ),
+        perfect(draftYear + 5),
+        perfect(draftYear + 6),
+      ]);
+      expect(getPlayerDraftScore(pick, opts)).toBeCloseTo(200 / 7);
+    });
+
     it('scores a pick with no retained seasons as 0', () => {
       const pick = agedPick(1, 5, [
         makeSeason({ year: 2021, retained: false }),

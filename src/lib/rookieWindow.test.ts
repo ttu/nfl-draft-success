@@ -307,6 +307,18 @@ describe('scoredWindowYears', () => {
     expect(scoredWindowYears(longServer).at(-1)).toBe(2024);
   });
 
+  it('stops at the window when the window alone is what the score counts', () => {
+    // Same seven-season tenure, but the last two were spent idle: the score
+    // keeps only the five rookie-deal years, so the divisor shown must too.
+    const seasons = Array.from({ length: 7 }, (_, i) =>
+      i < 5
+        ? makeSeason({ year: 2018 + i, gamesPlayed: 17, snapShare: 1 })
+        : makeSeason({ year: 2018 + i, gamesPlayed: 0, snapShare: 0 }),
+    );
+    const decliner = makePick({ round: 1, draftYear: 2018, seasons });
+    expect(scoredWindowYears(decliner)).toEqual([2018, 2019, 2020, 2021, 2022]);
+  });
+
   it('starts at the season a quarterback finished his apprenticeship', () => {
     const love = makePick({
       position: 'QB',

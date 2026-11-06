@@ -1,11 +1,12 @@
 import seasonWindow from '../data/season-window.json';
-import type { Acquisition, DraftPick } from '../types';
+import type { Acquisition, DraftPick, Season } from '../types';
 import { acquisitionWindow } from './acquisition';
 import {
   apprenticeSeasonCount,
   firstScoredYear,
   withoutApprenticeSeasons,
 } from './apprenticeship';
+import { getSeasonScore } from './getSeasonScore';
 import { isPlayedSeason } from './seasonPlayed';
 import { LATEST_COMPLETED_SEASON } from './seasonInProgress';
 
@@ -69,7 +70,7 @@ function hasDeparted(pick: Acquisition): boolean {
  * `max(retained, …)` keeps long tenures from inflating: seven retained seasons
  * over a five-year window would score above the pick's own seasonal mean, which
  * would make outlasting the rookie deal worth more than playing well. Seasons
- * past the window neither help nor hurt.
+ * past the window can only help — see {@link bestScoredRun}.
  *
  * It also floors the result at `retained`, so a caller with at least one season
  * to divide can never divide by zero — including a class drafted after the
@@ -97,6 +98,33 @@ export function scoredSeasonCount(
 }
 
 /**
+ * The drafting-team seasons a pick is scored on: his whole tenure, or only the
+ * seasons inside his rookie window when that run alone scores higher.
+ *
+ * The draft is judged on what the rookie deal delivered. A pick who starred for
+ * five years and then declined on the same roster would otherwise score below
+ * one who starred for five and left, because the later seasons pull the mean
+ * down — staying would be punished. Taking the better of the two keeps a late
+ * peak worth counting without letting a late decline undo the draft.
+ *
+ * `retained` must already be the scored drafting-team seasons — played, no
+ * apprenticeship — as `getFilteredSeasons` and {@link scoredWindowYears} pass.
+ */
+export function bestScoredRun(pick: Acquisition, retained: Season[]): Season[] {
+  const windowEnd =
+    firstScoredYear(pick) +
+    Math.max(0, acquisitionWindow(pick) - apprenticeSeasonCount(pick));
+  const inWindow = retained.filter((s) => s.year < windowEnd);
+  // Nothing past the window, or a window the bench years used up: one run only.
+  if (inWindow.length === retained.length || inWindow.length === 0)
+    return retained;
+  const score = (run: Season[]) =>
+    run.reduce((sum, s) => sum + getSeasonScore(s, pick.position), 0) /
+    scoredSeasonCount(pick, run.length);
+  return score(inWindow) > score(retained) ? inWindow : retained;
+}
+
+/**
  * The calendar years a pick's drafting-team score is divided across, oldest
  * first: {@link firstScoredYear} through the end of {@link scoredSeasonCount}.
  *
@@ -111,8 +139,8 @@ export function scoredWindowYears(pick: Acquisition): number[] {
   const from = firstScoredYear(pick);
   const retained = withoutApprenticeSeasons(pick, pick.seasons).filter(
     (s) => s.retained && isPlayedSeason(s),
-  ).length;
-  if (retained === 0) return [];
-  const count = scoredSeasonCount(pick, retained);
+  );
+  if (retained.length === 0) return [];
+  const count = scoredSeasonCount(pick, bestScoredRun(pick, retained).length);
   return Array.from({ length: count }, (_, i) => from + i);
 }

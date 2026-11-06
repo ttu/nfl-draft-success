@@ -100,7 +100,7 @@ Include with partial data. Metrics computed from available games. `teamGames` = 
 
 ## Rolling draft score
 
-- Score per player = sum of that player’s per-season scores (`0.7·load + 0.3·availability`, ×100) ÷ the **rookie-contract window**, on a 0–100 scale
+- Score per player = sum of that player’s per-season scores (`0.7·load + 0.3·availability`, ×100) ÷ the **rookie-contract window**, on a 0–100 scale; a pick who outlasted the window is scored on whichever is higher — his whole drafting-team tenure, or the window alone
 - Team Score = (sum of player scores) / (**scored** picks — those with at least one played season)
 - Over slot = pick score − what its draft slot alone predicted, averaged per team; reported alongside the score, not folded into it
 - Display: Rolling draft score (with selected season span), Over slot, Core Starter %, Retention %

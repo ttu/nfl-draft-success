@@ -720,6 +720,58 @@ describe('PlayerDetailView rookie window', () => {
   });
 });
 
+describe('a long tenure scored on its rookie window', () => {
+  // Five starting years, then two idle ones with the same team: the window
+  // alone scores higher, so the two late seasons are left out of the draft
+  // score — for a reason that is not "played elsewhere".
+  const draftYear = LATEST_SEASON - 6;
+  const decliner: DraftPick = makePick({
+    playerId: 'decliner',
+    position: 'QB',
+    round: 1,
+    overallPick: 10,
+    draftYear,
+    seasons: Array.from({ length: 7 }, (_, i) =>
+      i < 5
+        ? makeSeason({ year: draftYear + i, gamesPlayed: 17, snapShare: 1 })
+        : makeSeason({ year: draftYear + i, gamesPlayed: 0, snapShare: 0 }),
+    ),
+  });
+
+  function renderDecliner() {
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={decliner}
+          draftYear={draftYear}
+          draftClasses={[
+            makeDraftClass({ year: draftYear, picks: [decliner] }),
+          ]}
+          draftingTeamOnly
+        />
+      </MemoryRouter>,
+    );
+  }
+
+  it('divides by the window and says why the late seasons are not counted', () => {
+    renderDecliner();
+    const note = screen.getByTestId('rookie-window-note');
+    expect(note.textContent).toContain('5 of 7 seasons counted');
+    expect(note.textContent).toContain('a 5-season rookie window');
+    expect(note.textContent).toContain('past the rookie window, not counted');
+    expect(note.textContent).not.toContain('played elsewhere');
+    expect(screen.getByTestId('player-overall-score')).toHaveTextContent('100');
+  });
+
+  it('marks a late season as past the window, not as played for another team', () => {
+    renderDecliner();
+    const mark = within(
+      screen.getByTestId(`season-uncounted-${draftYear + 6}`),
+    ).getByLabelText(/^Not counted/);
+    expect(mark.getAttribute('aria-label')).toMatch(/after his rookie window/);
+  });
+});
+
 describe('a quarterback who sat behind a veteran', () => {
   /** The Jordan Love shape: three bench years, then QB1 for the same team. */
   const love: DraftPick = makePick({
@@ -735,7 +787,9 @@ describe('a quarterback who sat behind a veteran', () => {
       makeNonContributorSeason({ year: LATEST_SEASON - 3 }),
       makeSeason({ year: LATEST_SEASON - 2, gamesPlayed: 17, snapShare: 0.99 }),
       makeSeason({ year: LATEST_SEASON - 1, gamesPlayed: 16, snapShare: 0.97 }),
-      makeSeason({ year: LATEST_SEASON, gamesPlayed: 16, snapShare: 0.95 }),
+      // His best year, so the whole tenure outscores the 2-season window and
+      // the divisor stays at the 3 seasons he started.
+      makeSeason({ year: LATEST_SEASON, gamesPlayed: 17, snapShare: 1 }),
     ],
   });
 
