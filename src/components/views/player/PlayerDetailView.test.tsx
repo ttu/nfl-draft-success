@@ -11,6 +11,7 @@ import {
   makeSeason,
 } from '../../../test/factories';
 import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
+import { getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { LATEST_SEASON } from '../../../lib/rookieWindow';
 import { isLatestSeasonInProgress } from '../../../lib/seasonInProgress';
@@ -258,10 +259,50 @@ describe('PlayerDetailView draft score', () => {
     );
   }
 
-  it('shows the overall draft score in the hero', () => {
+  it('shows the career score in the hero', () => {
     renderScorer();
-    const score = screen.getByTestId('player-overall-score');
+    const score = screen.getByTestId('player-career-score');
     expect(score).toHaveTextContent('83');
+  });
+
+  it('shows the draft score and the full career score side by side, whatever the toggle', () => {
+    // Traded after his rookie year: the drafting team got one 100 season out
+    // of a window it is charged in full, while his career averages both.
+    const traded = makePick({
+      ...scorer,
+      seasons: [
+        makeSeason({
+          year: 2024,
+          gamesPlayed: 17,
+          snapShare: 1,
+        }),
+        makeSeason({
+          year: 2025,
+          gamesPlayed: 17,
+          snapShare: 0.5,
+          retained: false,
+        }),
+      ],
+    });
+    for (const draftingTeamOnly of [true, false]) {
+      const { unmount } = render(
+        <MemoryRouter>
+          <PlayerDetailView
+            pick={traded}
+            draftYear={2024}
+            draftClasses={[makeDraftClass({ year: 2024, picks: [traded] })]}
+            draftingTeamOnly={draftingTeamOnly}
+          />
+        </MemoryRouter>,
+      );
+      expect(screen.getByTestId('player-overall-score')).toHaveTextContent(
+        String(
+          Math.round(getPlayerDraftScore(traded, { draftingTeamOnly: true })),
+        ),
+      );
+      expect(screen.getByTestId('player-career-score')).toHaveTextContent('83');
+      unmount();
+    }
   });
 
   it('shows each season score in the career table', () => {

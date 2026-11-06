@@ -73,9 +73,12 @@ function PlayerDetailViewImpl({
   const color = teamColor(pick.teamId);
   const fg = teamFg(color);
   const role = getPlayerRole(pick, { draftingTeamOnly });
-  const overallScore = Math.round(
-    getPlayerDraftScore(pick, { draftingTeamOnly }),
+  // Both are shown regardless of the toggle: lists rank by the draft score,
+  // the roster view by the career score, and either can send a reader here.
+  const draftScore = Math.round(
+    getPlayerDraftScore(pick, { draftingTeamOnly: true }),
   );
+  const careerScore = Math.round(getPlayerDraftScore(pick));
   const overSlot = getAcquisitionOverSlot(pick, { draftingTeamOnly });
   const currentTeam = getCurrentTeamIndicator(pick);
   const positionExempt = isBaselineExemptPosition(pick.position);
@@ -186,7 +189,8 @@ function PlayerDetailViewImpl({
             currentTeam={currentTeam}
           />
           <PlayerHeroVerdict
-            overallScore={overallScore}
+            draftScore={draftScore}
+            careerScore={careerScore}
             overSlot={overSlot}
             pick={pick}
             role={role}
@@ -498,13 +502,15 @@ function overSlotVerdict(overSlot: number, isPick: boolean): string {
 }
 
 function PlayerHeroVerdict({
-  overallScore,
+  draftScore,
+  careerScore,
   overSlot,
   pick,
   role,
   roleCls,
 }: {
-  overallScore: number;
+  draftScore: number;
+  careerScore: number;
   overSlot: number;
   pick: Acquisition;
   role: Role;
@@ -513,14 +519,27 @@ function PlayerHeroVerdict({
   const isPick = isDraftPick(pick);
   return (
     <div className="player-hero__role-col">
-      <div className="player-hero__score">
-        <span className="player-hero__score-label kicker">Score</span>
-        <span
-          className="player-hero__score-value tnum"
-          data-testid="player-overall-score"
-        >
-          {overallScore}
-        </span>
+      <div className="player-hero__scores">
+        <div className="player-hero__score">
+          <span className="player-hero__score-label kicker">
+            {isPick ? 'Draft score' : 'Team score'}
+          </span>
+          <span
+            className="player-hero__score-value tnum"
+            data-testid="player-overall-score"
+          >
+            {draftScore}
+          </span>
+        </div>
+        <div className="player-hero__score">
+          <span className="player-hero__score-label kicker">Career score</span>
+          <span
+            className="player-hero__score-value tnum"
+            data-testid="player-career-score"
+          >
+            {careerScore}
+          </span>
+        </div>
       </div>
       <div
         className={`player-hero__role-badge player-hero__role-badge--${roleCls}`}

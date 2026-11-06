@@ -2529,6 +2529,10 @@ button {
   justify-content: center;
   gap: 16px;
 }
+.player-hero__scores {
+  display: flex;
+  gap: 24px;
+}
 .player-hero__score {
   display: flex;
   flex-direction: column;
