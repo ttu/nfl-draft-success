@@ -92,6 +92,29 @@ describe('/roster/:teamId', () => {
     ).toBe(true);
   });
 
+  it.each(['/roster/BUF', '/rosters'])(
+    'shows the load error instead of spinning forever on %s',
+    async (path) => {
+      loadDataForYears.mockImplementation(async (years: number[]) => {
+        if (years.includes(DRAFT_YEAR_BOUNDS.min)) {
+          throw new Error('Roster data failed');
+        }
+        return CLASSES.filter((dc) => years.includes(dc.year));
+      });
+      try {
+        renderAt(path);
+        expect(await screen.findByRole('alert')).toHaveTextContent(
+          'Roster data failed',
+        );
+        expect(screen.queryByText(/Loading roster/)).toBeNull();
+      } finally {
+        loadDataForYears.mockImplementation(async (years: number[]) =>
+          CLASSES.filter((dc) => years.includes(dc.year)),
+        );
+      }
+    },
+  );
+
   it('redirects an unknown team to the rankings', async () => {
     renderAt('/roster/ZZZ');
     await screen.findByRole('button', { name: 'Rankings' });

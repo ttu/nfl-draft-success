@@ -643,8 +643,10 @@ function usePlayerLookup(
 function useRosterClasses(needsRosterClasses: boolean): {
   draftClasses: DraftClass[] | null;
   freeAgentClasses: FreeAgentClass[];
+  error: string | null;
 } {
   const [rosterClasses, setRosterClasses] = useState<DraftClass[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [rosterFreeAgents, setRosterFreeAgents] = useState<FreeAgentClass[]>(
     [],
   );
@@ -659,7 +661,11 @@ function useRosterClasses(needsRosterClasses: boolean): {
       .then((all) => {
         if (!cancelled) setRosterClasses(all);
       })
-      .catch(() => {});
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : String(err));
+        }
+      });
     loadFreeAgentsForYears(years)
       .then((all) => {
         if (!cancelled) setRosterFreeAgents(all);
@@ -673,6 +679,7 @@ function useRosterClasses(needsRosterClasses: boolean): {
   return {
     draftClasses: needsRosterClasses ? rosterClasses : null,
     freeAgentClasses: needsRosterClasses ? rosterFreeAgents : [],
+    error: needsRosterClasses ? error : null,
   };
 }
 
@@ -729,6 +736,7 @@ function AppContent() {
   const {
     draftClasses: rosterClasses,
     freeAgentClasses: rosterFreeAgentClasses,
+    error: rosterError,
   } = useRosterClasses(isRosterView || isRosterRankingsView);
 
   const { startYear, endYear } = useResolvedYearRange(
@@ -1084,6 +1092,7 @@ function AppContent() {
           playerSettled,
           rosterClasses,
           rosterFreeAgentClasses,
+          rosterError,
           freeAgentClasses,
           freeAgentClassesResolved,
         })}
@@ -1099,9 +1108,9 @@ function AppContent() {
           />
         </Suspense>
       )}
-      {error && (
+      {(error ?? rosterError) && (
         <div role="alert" className="app-error">
-          {error}
+          {error ?? rosterError}
         </div>
       )}
       <Footer />
@@ -1328,6 +1337,8 @@ interface RenderMainArgs {
   playerSettled: boolean;
   rosterClasses: DraftClass[] | null;
   rosterFreeAgentClasses: FreeAgentClass[];
+  /** Set when the roster's full-range load failed; the alert below says why. */
+  rosterError: string | null;
   // Read by TeamDetailContent's undrafted free-agent section and by
   // YearDraftView's undrafted block. Fetched only for the views that read it.
   freeAgentClasses: FreeAgentClass[];
@@ -1409,6 +1420,7 @@ function renderTeamRankings(a: RenderMainArgs) {
 
 function renderRosterView(a: RenderMainArgs) {
   if (!a.selectedTeam || !a.rosterClasses) {
+    if (a.rosterError) return null;
     return <LoadingSpinner message="Loading roster…" />;
   }
   return (
@@ -1424,6 +1436,7 @@ function renderRosterView(a: RenderMainArgs) {
 
 function renderRosterRankings(a: RenderMainArgs) {
   if (!a.rosterClasses) {
+    if (a.rosterError) return null;
     return <LoadingSpinner message="Loading rosters…" />;
   }
   return (
