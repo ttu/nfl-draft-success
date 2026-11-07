@@ -146,7 +146,6 @@ interface SeasonLoadMeta {
   cumNum: number;
   fullSeasonTeamDen: number;
   cumDenGamesPlayed: number;
-  useFullSeason: boolean;
   gameCount: number;
   /** Team games missed after the player disappeared for the rest of the season */
   seasonEndingAbsenceGames: number;
@@ -526,7 +525,6 @@ function finalizePlayerSeason(
             cumNum: acc.cumNum,
             fullSeasonTeamDen,
             cumDenGamesPlayed: cumDen,
-            useFullSeason: true,
             gameCount,
             seasonEndingAbsenceGames: absenceGames,
             missedWeeks,
@@ -604,8 +602,6 @@ async function loadSnapData(
 
 interface InjurySeasonData {
   injuryReportWeeks: number;
-  /** Team that carried him through those reserve weeks; '' when none did. */
-  reserveTeam: string;
   /**
    * The weeks behind `injuryReportWeeks`. The count is a displayed stat; the
    * set is what the excusal intersects with the weeks actually missed.
@@ -1131,7 +1127,7 @@ function buildPickSeason(params: {
   const restGame = data?.restGame;
   let cumulativeSnapShare = data?.cumulativeSnapShare ?? snapShare;
   let loadDenominator = data?.loadDenominator ?? 0;
-  if (data?.loadMeta?.useFullSeason) {
+  if (data?.loadMeta) {
     const load = resolveCumulativeLoadWithInjury({
       cumNum: data.loadMeta.cumNum,
       cumDenGamesPlayed: data.loadMeta.cumDenGamesPlayed,

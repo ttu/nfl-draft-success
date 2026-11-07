@@ -3,7 +3,6 @@ import type { DraftPick, Season } from '../types';
 import { makePick, makeSeason } from '../test/factories';
 import {
   LATEST_SEASON,
-  rookieWindow,
   scoredSeasonCount,
   scoredWindowYears,
 } from './rookieWindow';
@@ -29,18 +28,6 @@ const departedPick = (
     draftYear,
     seasons: [makeSeason({ year: lastSeasonWithTeam })],
   });
-
-describe('rookieWindow', () => {
-  it('gives round 1 five years — the rookie deal plus the fifth-year option', () => {
-    expect(rookieWindow(1)).toBe(5);
-  });
-
-  it('gives rounds 2–7 four years, the length of their rookie deal', () => {
-    for (const round of [2, 3, 4, 5, 6, 7]) {
-      expect(rookieWindow(round)).toBe(4);
-    }
-  });
-});
 
 describe('scoredSeasonCount', () => {
   it('measures a matured round-1 pick against the full five-year window', () => {

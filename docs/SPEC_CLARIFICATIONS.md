@@ -46,7 +46,7 @@ Together, **Depth** (10–20%) and **Contributor** (up to the SC threshold) cove
 
 A quarterback's **apprentice seasons** are the unbroken run from his draft year in which he was `retained` and classified `non_contributor` or `depth` — **counted only if** a later retained season reaches `core_starter` or `starter_when_healthy`. Otherwise the count is zero and nothing changes. See `src/lib/apprenticeship.ts`.
 
-Apprentice seasons are dropped from the seasons a pick is judged on (`getFilteredSeasons`), in **both** the drafting-team and career views, so they affect score, role badge, filters, draft-class bucket counts, and Core Starter % alike. The rookie window's start moves to the first non-apprentice season and its **length shortens by the same amount** (`rookieWindow(round) − n`), because the window models contractual entitlement and sitting does not extend it.
+Apprentice seasons are dropped from the seasons a pick is judged on (`getFilteredSeasons`), in **both** the drafting-team and career views, so they affect score, role badge, filters, draft-class bucket counts, and Core Starter % alike. The rookie window's start moves to the first non-apprentice season and its **length shortens by the same amount** (`acquisitionWindow(pick) − n`), because the window models contractual entitlement and sitting does not extend it.
 
 **Why outcome-gated:** Jordan Love's first three seasons and Kyle Trask's first three are identical in the data — retained quarterbacks taking no meaningful snaps. Only what came after separates them, so sitting is scored as an investment, judged by whether it paid. Love moves 52 → 95; Trask stays at 3.
 

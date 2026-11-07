@@ -1,11 +1,5 @@
-import type { Acquisition, Season } from '../types';
+import type { Acquisition } from '../types';
 import { isUnplayedSeason } from './seasonPlayed';
-
-/** Most recent season row by calendar year (draft year through present). */
-export function getLatestSeasonForPick(pick: Acquisition): Season | undefined {
-  if (pick.seasons.length === 0) return undefined;
-  return [...pick.seasons].sort((a, b) => b.year - a.year)[0];
-}
 
 /**
  * True when the player is on his drafting team's roster **now**.

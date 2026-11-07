@@ -4,7 +4,8 @@ import {
   expectedScoreForFreeAgent,
   getAcquisitionOverSlot,
 } from './overSlot';
-import { getPlayerDraftSkill } from './draftSlotBaseline';
+import { expectedScoreForPick } from './draftSlotBaseline';
+import { getPlayerDraftScore } from './getPlayerRole';
 import { makePick, makeSeason } from '../test/factories';
 import faBaseline from '../data/fa-baseline.json';
 import type { FreeAgent } from '../types';
@@ -46,13 +47,15 @@ describe('expectedScoreForAcquisition', () => {
 });
 
 describe('getAcquisitionOverSlot', () => {
-  it('matches the existing pick path exactly', () => {
+  it("is a pick's score minus its slot expectation", () => {
     const pick = makePick({
       round: 3,
       overallPick: 80,
       seasons: [makeSeason({ year: 2021 })],
     });
-    expect(getAcquisitionOverSlot(pick)).toBe(getPlayerDraftSkill(pick));
+    expect(getAcquisitionOverSlot(pick)).toBe(
+      getPlayerDraftScore(pick) - expectedScoreForPick(80),
+    );
   });
 
   it('credits a productive free agent well above his cohort', () => {

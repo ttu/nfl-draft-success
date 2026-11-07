@@ -25,11 +25,6 @@
  */
 
 import baselineData from '../data/draft-slot-baseline.json';
-import type { DraftPick } from '../types';
-import {
-  getPlayerDraftScore,
-  type GetPlayerRoleOptions,
-} from './getPlayerRole';
 
 /** One point on the expectation curve: the score expected at this draft slot. */
 export interface DraftSlotKnot {
@@ -192,20 +187,4 @@ const SHIPPED_CURVE: DraftSlotCurve = { knots: baselineData.knots };
 /** Expected draft score for the slot a pick was taken at, on the shipped curve. */
 export function expectedScoreForPick(overallPick: number): number {
   return expectedScore(SHIPPED_CURVE, overallPick);
-}
-
-/**
- * A pick's draft score *above what its draft slot predicted* ("over slot"):
- * positive means the pick outplayed its draft position (a steal), negative means
- * it fell short (a reach). This isolates drafting skill from draft capital — the
- * raw score alone rewards merely holding early picks. Uses the same season basis
- * as {@link getPlayerDraftScore}, so it subtracts cleanly from the shown score.
- */
-export function getPlayerDraftSkill(
-  pick: DraftPick,
-  options?: GetPlayerRoleOptions,
-): number {
-  return (
-    getPlayerDraftScore(pick, options) - expectedScoreForPick(pick.overallPick)
-  );
 }

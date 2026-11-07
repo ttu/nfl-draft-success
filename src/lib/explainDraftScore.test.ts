@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { explainDraftScore } from './explainDraftScore';
 import { getSeasonScore } from './getSeasonScore';
 import { getPlayerDraftScore } from './getPlayerRole';
-import { getPlayerDraftSkill } from './draftSlotBaseline';
+import { getAcquisitionOverSlot } from './overSlot';
 import { LATEST_SEASON } from './rookieWindow';
 import { getPositionBaseline } from './positionBaseline';
 import type { DraftPick, Season } from '../types';
@@ -121,7 +121,7 @@ describe('explainDraftScore', () => {
 
       expect(e.score - e.expectedAtSlot).toBeCloseTo(e.overSlot, 6);
       expect(e.overSlot).toBeCloseTo(
-        getPlayerDraftSkill(p, { draftingTeamOnly: true }),
+        getAcquisitionOverSlot(p, { draftingTeamOnly: true }),
         6,
       );
     });

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ScoreBreakdown } from './ScoreBreakdown';
 import { makeFreeAgent, makePick, makeSeason } from '../../../test/factories';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
-import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
+import { getAcquisitionOverSlot } from '../../../lib/overSlot';
 import { LATEST_SEASON } from '../../../lib/rookieWindow';
 import type { DraftPick } from '../../../types';
 
@@ -251,7 +251,7 @@ describe('ScoreBreakdown', () => {
     expect(formatOverSlot(signed)).toBe(
       formatOverSlot(
         Math.round(
-          getPlayerDraftSkill(injuredQb, { draftingTeamOnly: true }) * 10,
+          getAcquisitionOverSlot(injuredQb, { draftingTeamOnly: true }) * 10,
         ) / 10,
       ),
     );

@@ -32,8 +32,8 @@ import { scoredWindowYears } from '../../../lib/rookieWindow';
 import { isPlayedSeason, isUnplayedSeason } from '../../../lib/seasonPlayed';
 import { isLatestSeasonInProgress } from '../../../lib/seasonInProgress';
 import { isInjuredOutSeason } from '../../../lib/injuredSeason';
-import { classifyRole, CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
-import { snapShareForRoleTier } from '../../../lib/snapShareForTier';
+import { CORE_TIER_THRESHOLD } from '../../../lib/classifyRole';
+import { seasonRole } from '../../../lib/seasonRole';
 import { activateOnKey } from '../../../lib/activateOnKey';
 import {
   getPositionBaseline,
@@ -751,11 +751,7 @@ function SeasonRow({
   isPick?: boolean;
 }) {
   const team = s.retained ? pickTeamId : (s.currentTeam ?? 'FA');
-  const seasonRole = classifyRole(
-    snapShareForRoleTier(s, position),
-    s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0,
-    position,
-  );
+  const role = seasonRole(s, position);
   const snapPct = s.snapShare * 100;
   const loadPct = (s.cumulativeSnapShare ?? s.snapShare) * 100;
 
@@ -778,7 +774,7 @@ function SeasonRow({
         <SnapBar value={loadPct} muted />
       </td>
       <td className="player-career__role-cell">
-        <RoleChip role={seasonRole} />
+        <RoleChip role={role} />
         {uncountedReason === 'apprentice' && !counts && (
           // The chip stays factually true — he really was a non-contributor on
           // the field — but Role is the column readers scan, and leaving that

@@ -1,5 +1,5 @@
 import seasonWindow from '../data/season-window.json';
-import type { Acquisition, DraftPick, Season } from '../types';
+import type { Acquisition, Season } from '../types';
 import { acquisitionWindow } from './acquisition';
 import {
   apprenticeSeasonCount,
@@ -20,11 +20,6 @@ import { LATEST_COMPLETED_SEASON } from './seasonInProgress';
  * look fully-windowed.
  */
 export const LATEST_SEASON: number = seasonWindow.latestSeason;
-
-/** @see acquisitionWindow — the round-only entry point for existing callers. */
-export function rookieWindow(round: number): number {
-  return acquisitionWindow({ round } as DraftPick);
-}
 
 /**
  * True when the drafting team no longer has the pick, judged by the absence of

@@ -3,10 +3,10 @@ import {
   fitDraftSlotCurve,
   expectedScore,
   expectedScoreForPick,
-  getPlayerDraftSkill,
   type DraftSlotPoint,
 } from './draftSlotBaseline';
 import { getPlayerDraftScore } from './getPlayerRole';
+import { getAcquisitionOverSlot } from './overSlot';
 import type { DraftPick, Season } from '../types';
 import { makePick, makeSeason } from '../test/factories';
 
@@ -160,25 +160,25 @@ describe('expectedScoreForPick (shipped curve)', () => {
   });
 });
 
-describe('getPlayerDraftSkill', () => {
+describe('getAcquisitionOverSlot for a pick', () => {
   it('is strongly positive for a late pick who plays like a starter (a steal)', () => {
     const steal = pick(220, [season({ snapShare: 0.9 })]);
-    expect(getPlayerDraftSkill(steal)).toBeGreaterThan(20);
+    expect(getAcquisitionOverSlot(steal)).toBeGreaterThan(20);
   });
 
   it('is strongly negative for an early pick who barely plays (a reach)', () => {
     const reach = pick(3, [season({ snapShare: 0.1 })]);
-    expect(getPlayerDraftSkill(reach)).toBeLessThan(-20);
+    expect(getAcquisitionOverSlot(reach)).toBeLessThan(-20);
   });
 
   it('is positive for a top-5 pick who plays like a full-time starter', () => {
     const hit = pick(3, [season({ snapShare: 0.95 })]);
-    expect(getPlayerDraftSkill(hit)).toBeGreaterThan(0);
+    expect(getAcquisitionOverSlot(hit)).toBeGreaterThan(0);
   });
 
   it('equals the pick score minus the slot expectation', () => {
     const p = pick(64, [season({ snapShare: 0.6 })]);
-    const skill = getPlayerDraftSkill(p);
+    const skill = getAcquisitionOverSlot(p);
     expect(skill).toBeCloseTo(
       getPlayerDraftScore(p) - expectedScoreForPick(64),
       6,

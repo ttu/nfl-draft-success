@@ -231,12 +231,6 @@ season.
 
 ## Code health
 
-- **`getPlayerDraftSkill` is redundant** with `getAcquisitionOverSlot`, which covers picks
-  too. Two independently-callable functions kept in sync by a single equivalence test.
-  Have one delegate to the other once call sites migrate.
-- **`rookieWindow` is dead in production.** No non-test caller remains; it survives for
-  `rookieWindow.test.ts` via a `{ round } as DraftPick` cast. Delete it and move the
-  round-window assertions onto `acquisitionWindow`.
 - **`getTeamFreeAgents` linear-scans per call**, where `getTeamPicks` is `WeakMap`-indexed
   per class. Only matters if a league-wide free-agent view ever calls it per team.
 - **`scoredCount` vs `totalFreeAgents` is a distinction that cannot occur** — the cohort

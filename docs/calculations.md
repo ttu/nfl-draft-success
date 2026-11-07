@@ -398,7 +398,7 @@ The second pick shows why the denominator is the window rather than seasons play
 
 **Function:** `apprenticeSeasonCount` in `src/lib/apprenticeship.ts`; applied at `getFilteredSeasons` (`getPlayerRole.ts`) and `scoredSeasonCount` (`rookieWindow.ts`).
 
-A quarterback's **apprentice seasons** are the unbroken run from his draft year in which he was `retained` and classified `non_contributor` or `depth` — counted **only if** a later retained season reaches `core_starter` or `starter_when_healthy`. They leave the seasons the pick is judged on, in both the drafting-team and career views, and the rookie window's start moves to the first non-apprentice season while its length shortens by the same count (`rookieWindow(round) − n`).
+A quarterback's **apprentice seasons** are the unbroken run from his draft year in which he was `retained` and classified `non_contributor` or `depth` — counted **only if** a later retained season reaches `core_starter` or `starter_when_healthy`. They leave the seasons the pick is judged on, in both the drafting-team and career views, and the rookie window's start moves to the first non-apprentice season while its length shortens by the same count (`acquisitionWindow(pick) − n`).
 
 |                                     | before | after |
 | ----------------------------------- | ------ | ----- |
@@ -419,7 +419,7 @@ Detection is not merely unimplemented, it is unavailable: McCarthy's 2024 row ca
 
 ### 7.4 Over slot (draft value above draft-slot expectation)
 
-**Functions:** `getPlayerDraftSkill` / `expectedScoreForPick` in `src/lib/draftSlotBaseline.ts`; team aggregate is `skillScore` on `getRollingDraftScore`.
+**Functions:** `getAcquisitionOverSlot` in `src/lib/overSlot.ts`, `expectedScoreForPick` in `src/lib/draftSlotBaseline.ts`; team aggregate is `skillScore` on `getRollingDraftScore`.
 
 The raw score rewards picks for playing, but playing time is largely handed out by **draft capital** (early picks are expected to play). "Over slot" removes the capital by scoring each pick against what its draft position alone predicted:
 

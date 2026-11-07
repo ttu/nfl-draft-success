@@ -1,6 +1,7 @@
 import type { DraftClass, DraftPick, Season, Team } from '../types';
 import type { RankedPlayer } from './careerShapeHighlights';
-import { activeCareerSeasons, seasonRole } from './careerShapeHighlights';
+import { activeCareerSeasons } from './careerShapeHighlights';
+import { seasonRole } from './seasonRole';
 import { getSeasonScore } from './getSeasonScore';
 import { isAtLeastRole } from './roleDisplay';
 

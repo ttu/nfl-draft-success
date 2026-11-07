@@ -1,8 +1,7 @@
-import type { DraftClass, DraftPick, Role, Season, Team } from '../types';
+import type { DraftClass, DraftPick, Season, Team } from '../types';
 import { seasonExcusedGames } from './absenceWeeks';
 import { withoutApprenticeSeasons } from './apprenticeship';
 import {
-  classifyRole,
   CORE_TIER_THRESHOLD,
   SIGNIFICANT_TIER_THRESHOLD,
 } from './classifyRole';
@@ -12,6 +11,7 @@ import { isAtLeastRole } from './roleDisplay';
 import { MIN_SEASON_ENDING_ABSENCE_GAMES } from './seasonEndingAbsence';
 import { playedSeasons } from './seasonPlayed';
 import { isSeasonComplete } from './seasonInProgress';
+import { seasonRole } from './seasonRole';
 import { seasonTag } from './seasonTag';
 import { snapShareForRoleTier } from './snapShareForTier';
 
@@ -143,15 +143,6 @@ function rookieSeason(pick: DraftPick): Season | undefined {
 /** Whole-percent rendering of a 0–1 share. */
 function pct(share: number): string {
   return `${Math.round(share * 100)}%`;
-}
-
-/** The role a single season classifies as, on its own. */
-export function seasonRole(season: Season, position: string): Role {
-  return classifyRole(
-    snapShareForRoleTier(season, position),
-    season.teamGames > 0 ? season.gamesPlayed / season.teamGames : 0,
-    position,
-  );
 }
 
 /**

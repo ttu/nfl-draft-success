@@ -43,8 +43,3 @@ export function rawSnapShareForRoleTier(s: Season, position?: string): number {
   }
   return s.snapShare > 0 && load > s.snapShare ? s.snapShare : load;
 }
-
-/** Stored season load (vs full team capacity) for tables; specialists’ role tiers use `snapShareForRoleTier` instead. */
-export function seasonLoadDisplayShare(s: Season): number {
-  return s.cumulativeSnapShare ?? s.snapShare;
-}

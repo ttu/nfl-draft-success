@@ -1,11 +1,10 @@
 import type { Acquisition, Role } from '../types';
 import { withoutApprenticeSeasons } from './apprenticeship';
-import { classifyRole } from './classifyRole';
 import { getSeasonScore } from './getSeasonScore';
 import { ROLE_SCORE_WEIGHTS } from './roleWeights';
-import { snapShareForRoleTier } from './snapShareForTier';
 import { bestScoredRun, scoredSeasonCount } from './rookieWindow';
 import { playedSeasons } from './seasonPlayed';
+import { seasonRole } from './seasonRole';
 
 const ROLE_ORDER: Role[] = [
   'non_contributor',
@@ -108,12 +107,7 @@ function getPlayerPeakRole(
 
   let best: Role = 'non_contributor';
   for (const s of seasons) {
-    const gamesPlayedShare = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
-    const role = classifyRole(
-      snapShareForRoleTier(s, pick.position),
-      gamesPlayedShare,
-      pick.position,
-    );
+    const role = seasonRole(s, pick.position);
     if (ordinal(role) > ordinal(best)) best = role;
   }
   return best;
@@ -179,12 +173,7 @@ export function getPlayerAverageScoreWeight(
 
   let sum = 0;
   for (const s of seasons) {
-    const gamesPlayedShare = s.teamGames > 0 ? s.gamesPlayed / s.teamGames : 0;
-    const role = classifyRole(
-      snapShareForRoleTier(s, pick.position),
-      gamesPlayedShare,
-      pick.position,
-    );
+    const role = seasonRole(s, pick.position);
     sum += ROLE_SCORE_WEIGHTS[role];
   }
 

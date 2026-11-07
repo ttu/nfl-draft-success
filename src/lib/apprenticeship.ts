@@ -1,7 +1,6 @@
 import type { Acquisition, Role, Season } from '../types';
-import { classifyRole } from './classifyRole';
 import { playedSeasons } from './seasonPlayed';
-import { snapShareForRoleTier } from './snapShareForTier';
+import { seasonRole } from './seasonRole';
 
 /**
  * Positions where sitting early in a career is a development path rather than a
@@ -23,16 +22,6 @@ const BENCH_ROLES: readonly Role[] = ['non_contributor', 'depth'];
 
 /** Holding the job: the payoff that makes those bench seasons an investment. */
 const STARTER_ROLES: readonly Role[] = ['core_starter', 'starter_when_healthy'];
-
-function seasonRole(season: Season, position: string): Role {
-  const gamesPlayedShare =
-    season.teamGames > 0 ? season.gamesPlayed / season.teamGames : 0;
-  return classifyRole(
-    snapShareForRoleTier(season, position),
-    gamesPlayedShare,
-    position,
-  );
-}
 
 /**
  * Seasons a quarterback spent learning on the drafting team's bench before he

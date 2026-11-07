@@ -10,7 +10,7 @@ import {
   makePick,
   makeSeason,
 } from '../../../test/factories';
-import { getPlayerDraftSkill } from '../../../lib/draftSlotBaseline';
+import { getAcquisitionOverSlot } from '../../../lib/overSlot';
 import { getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { formatOverSlot } from '../../../lib/formatOverSlot';
 import { LATEST_SEASON } from '../../../lib/rookieWindow';
@@ -320,7 +320,9 @@ describe('PlayerDetailView draft score', () => {
     renderScorer();
     const overSlot = screen.getByTestId('player-over-slot');
     expect(overSlot.textContent).toBe(
-      formatOverSlot(getPlayerDraftSkill(scorer, { draftingTeamOnly: false })),
+      formatOverSlot(
+        getAcquisitionOverSlot(scorer, { draftingTeamOnly: false }),
+      ),
     );
     // Rendered with a real minus sign (U+2212), not a hyphen.
     expect(overSlot.textContent!.startsWith('−')).toBe(true);
