@@ -176,8 +176,11 @@ button {
   color: var(--ink-3);
   margin-top: 4px;
 }
+/* The tabs never shrink below their content: the strip scrolls with a hidden
+   scrollbar, so any squeeze would silently push the last tabs out of reach.
+   The search box gives up width instead (see .mast__search). */
 .mast__nav {
-  flex: 1;
+  flex: 1 0 auto;
   display: flex;
   align-items: stretch;
   overflow-x: auto;
@@ -214,11 +217,14 @@ button {
   position: relative;
   display: flex;
   align-items: center;
+  flex: 0 1 198px;
+  min-width: 150px;
   padding: 0 14px;
   border-left: 1px solid var(--rule);
 }
 .mast__search-input {
-  width: 170px;
+  width: 100%;
+  min-width: 0;
   padding: 6px 10px;
   border: 1px solid var(--rule);
   border-radius: 2px;
@@ -585,6 +591,11 @@ button {
   text-decoration: none;
   border-radius: 2px;
   cursor: pointer;
+}
+.team-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 .fab-link:hover {
   background: var(--ink);
@@ -1520,6 +1531,14 @@ button {
   align-items: center;
   gap: 8px;
 }
+/* Same lift as .roster-group__title: Giants or Titans navy drew a near-
+   invisible line on the dark ground. */
+[data-dark='true'] .trend-cell path {
+  stroke: color-mix(in oklch, var(--team) 55%, var(--ink));
+}
+[data-dark='true'] .trend-cell circle {
+  fill: color-mix(in oklch, var(--team) 55%, var(--ink));
+}
 .trend-cell__range {
   font-size: 10px;
   letter-spacing: 0.02em;
@@ -2161,8 +2180,6 @@ button {
 }
 .player-avatar__initials {
   position: absolute;
-  right: 3px;
-  bottom: 3px;
   padding: 2px 4px;
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
@@ -3247,6 +3264,11 @@ button {
   font-size: 9px;
   letter-spacing: 0.08em;
 }
+.validation__tick-label {
+  fill: var(--ink-4);
+  font-family: var(--f-mono);
+  font-size: 8px;
+}
 .validation__panel {
   display: flex;
   flex-direction: column;
@@ -3496,11 +3518,7 @@ button {
     letter-spacing: 0.14em;
   }
   .mast__nav button {
-    padding: 0 14px;
     font-size: 11px;
-  }
-  .mast__meta {
-    padding: 0 16px;
   }
   .mast__ctrl-btn {
     padding: 0 10px;
@@ -4621,9 +4639,29 @@ button {
    its edge with the scrollbar hidden — "Position" cut mid-word, Rosters and
    Roster unreachable. Drop the synced-data block first, exactly as the mobile
    masthead does; the same two lines are in the Info view. */
-@media (max-width: 1240px) {
+@media (max-width: 1680px) {
   .mast__meta {
     display: none;
+  }
+}
+
+/* With a team open the strip carries seven tabs (~640px at full padding) and
+   the masthead search sits beside it; compact padding keeps all seven on
+   screen from here down. */
+@media (min-width: 901px) and (max-width: 1440px) {
+  .mast__nav button {
+    padding: 0 14px;
+  }
+}
+
+/* Below ~1100px the Info/Light labels go, as on mobile — the glyphs carry the
+   meaning and the aria-labels name them — and the tabs tighten once more. */
+@media (min-width: 901px) and (max-width: 1100px) {
+  .mast__ctrl-label {
+    display: none;
+  }
+  .mast__nav button {
+    padding: 0 10px;
   }
 }
 

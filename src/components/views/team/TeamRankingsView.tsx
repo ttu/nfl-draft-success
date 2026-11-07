@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { TEAMS } from '../../../data/teams';
 import {
@@ -700,7 +700,10 @@ function RankRow({
       </td>
       <td className="hide-mobile">
         {trend ? (
-          <div className="trend-cell">
+          <div
+            className="trend-cell"
+            style={{ '--team': color } as CSSProperties}
+          >
             <Sparkline values={trend} width={92} height={22} stroke={color} />
             <span className="trend-cell__range mono tnum">
               {Math.round(trend[0])}→{Math.round(trend[trend.length - 1])}

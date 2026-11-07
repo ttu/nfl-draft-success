@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { TEAM_COLORS, getTeamLogoUrl } from '../../data/teamColors';
 import { TEAMS } from '../../data/teams';
 import type { Role } from '../../types';
@@ -155,12 +155,16 @@ export function TeamLogo({
   useRealLogo = true,
   style,
 }: TeamLogoProps) {
+  // Tracks the URL that failed (not a boolean) so a new teamId retries its own logo.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const team = TEAMS.find((t) => t.id === teamId);
   if (!team) return null;
   const color = teamColor(teamId);
   const fg = teamFg(color);
   const initial = team.name.charAt(0);
-  const logoUrl = useRealLogo ? getTeamLogoUrl(teamId) : null;
+  const requestedUrl = useRealLogo ? getTeamLogoUrl(teamId) : null;
+  const logoUrl =
+    requestedUrl && requestedUrl !== failedUrl ? requestedUrl : null;
   const ringShadow = ring
     ? `0 0 0 ${Math.max(1, size / 22)}px ${color}, 0 0 0 ${Math.max(1, size / 22) + 1}px var(--paper-3)`
     : 'none';
@@ -197,9 +201,7 @@ export function TeamLogo({
             decoding="async"
             referrerPolicy="no-referrer"
             style={{ padding: Math.max(1, size * 0.06) }}
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = 'none';
-            }}
+            onError={() => setFailedUrl(logoUrl)}
           />
         ) : (
           <span
@@ -234,6 +236,10 @@ export function PlayerAvatar({
   square,
   style,
 }: PlayerAvatarProps) {
+  // A failed headshot would otherwise show the browser's broken-image alt text
+  // clipped inside the circle. Keyed on the URL so a new src gets its own try.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const headshot = src && src !== failedSrc ? src : undefined;
   const color = teamId ? teamColor(teamId) : '#56524a';
   const initials = name
     .split(/\s+/)
@@ -256,16 +262,17 @@ export function PlayerAvatar({
         } as CSSProperties
       }
     >
-      {src ? (
+      {headshot ? (
         // Deferred: list views mount hundreds of these, nearly all off-screen.
         // Sized: the raw URLs are full studio originals, and decoding those to
         // fill a 44 px circle dominates every viewport resize.
         <img
           className="player-avatar__img"
-          src={sizedHeadshotUrl(src, size)}
+          src={sizedHeadshotUrl(headshot, size)}
           alt={name}
           loading="lazy"
           decoding="async"
+          onError={() => setFailedSrc(headshot)}
         />
       ) : (
         <>
@@ -297,9 +304,16 @@ export function PlayerAvatar({
             className="player-avatar__initials"
             style={{
               fontSize: Math.max(8, size * 0.22),
-              right: size > 28 ? 3 : 1,
-              bottom: size > 28 ? 3 : 1,
               padding: size > 28 ? '2px 4px' : '1px 3px',
+              // The corner tag suits a square; a circle clips its corners, so
+              // round avatars centre it along the bottom edge instead.
+              ...(square
+                ? { right: size > 28 ? 3 : 1, bottom: size > 28 ? 3 : 1 }
+                : {
+                    left: '50%',
+                    bottom: '12%',
+                    transform: 'translateX(-50%)',
+                  }),
             }}
           >
             {initials}

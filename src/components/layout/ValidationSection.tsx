@@ -202,8 +202,8 @@ function CorrelationScatter({ rows }: { rows: CorrelationRow[] }) {
     ((v - yDomain[0]) / (yDomain[1] - yDomain[0])) * (H - pad.t - pad.b);
 
   const trend = leastSquares(overSlots, wins);
-  const gridX = ticks(xDomain, 4);
-  const gridY = ticks(yDomain, 4);
+  const gridX = niceTicks(xDomain, 4);
+  const gridY = niceTicks(yDomain, 4);
 
   return (
     <svg
@@ -274,6 +274,29 @@ function CorrelationScatter({ rows }: { rows: CorrelationRow[] }) {
           />
         ))}
 
+      {gridX.map((t) => (
+        <text
+          key={`tx-${t}`}
+          className="validation__tick-label"
+          x={x(t)}
+          y={H - pad.b + 12}
+          textAnchor="middle"
+        >
+          {formatSigned(t)}
+        </text>
+      ))}
+      {gridY.map((t) => (
+        <text
+          key={`ty-${t}`}
+          className="validation__tick-label"
+          x={pad.l - 5}
+          y={y(t) + 3}
+          textAnchor="end"
+        >
+          {Math.round(t * 100)}%
+        </text>
+      ))}
+
       <text className="validation__axis-label" x={pad.l} y={H - 8}>
         OVER SLOT →
       </text>
@@ -323,11 +346,28 @@ function paddedExtent(
   return [outLo, outHi];
 }
 
-function ticks([lo, hi]: [number, number], count: number): number[] {
-  return Array.from(
-    { length: count + 1 },
-    (_, i) => lo + ((hi - lo) * i) / count,
-  );
+/**
+ * Round tick values inside the domain, about `count` intervals apart. The step
+ * is 1, 2 or 5 × a power of ten, so the axis labels read as plain numbers
+ * rather than the padded extent's arbitrary fractions.
+ */
+function niceTicks([lo, hi]: [number, number], count: number): number[] {
+  const raw = (hi - lo) / count;
+  if (!Number.isFinite(raw) || raw <= 0) return [];
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const step = ([1, 2, 5, 10].find((m) => m * mag >= raw) ?? 10) * mag;
+  const out: number[] = [];
+  for (let i = Math.ceil(lo / step); i * step <= hi; i++) {
+    // Rebuild from the integer index so float drift never prints 0.30000000004.
+    out.push(Number((i * step).toPrecision(12)));
+  }
+  return out;
+}
+
+/** Over-slot axis value with an explicit sign and a true minus sign. */
+function formatSigned(v: number): string {
+  if (v === 0) return '0';
+  return v > 0 ? `+${v}` : `−${Math.abs(v)}`;
 }
 
 /** Ordinary least-squares fit y = a + b·x; null when x has no variance. */

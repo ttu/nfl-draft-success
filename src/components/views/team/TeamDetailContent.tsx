@@ -302,23 +302,24 @@ const TeamHero = memo(function TeamHero({
 
           <ScoreByYearChart points={scoreByYear} stroke={color} />
 
-          <button type="button" className="fab-link" onClick={onShowRankings}>
-            ← Back to rankings
-          </button>
-          <Link className="fab-link" to={rosterHref}>
-            Current roster →
-          </Link>
-          {depthChartUrl && (
-            <a
-              className="fab-link"
-              href={depthChartUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ marginLeft: 10 }}
-            >
-              Open depth chart ↗
-            </a>
-          )}
+          <div className="team-hero__actions">
+            <button type="button" className="fab-link" onClick={onShowRankings}>
+              ← Back to rankings
+            </button>
+            <Link className="fab-link" to={rosterHref}>
+              Current roster →
+            </Link>
+            {depthChartUrl && (
+              <a
+                className="fab-link"
+                href={depthChartUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open depth chart ↗
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </section>

@@ -577,7 +577,8 @@ function PlayerHeroVerdict({
         </span>
         <span className="player-hero__overslot-note">
           {overSlotVerdict(overSlot, isPick)}
-          {isDraftPick(pick) && ` (pick ${pick.overallPick})`}
+          {/* Non-breaking: a narrow column otherwise strands the number. */}
+          {isDraftPick(pick) && ` (pick\u00a0${pick.overallPick})`}
         </span>
       </div>
     </div>
@@ -1107,6 +1108,7 @@ function ClassmateRow({
                 fontStyle: 'italic',
                 fontWeight: 400,
                 fontSize: 11,
+                whiteSpace: 'nowrap',
               }}
             >
               this player

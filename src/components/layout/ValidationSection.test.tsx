@@ -87,6 +87,22 @@ describe('ValidationSection', () => {
     expect(screen.getByText(/negative relationship/i)).toBeInTheDocument();
   });
 
+  it('labels both scatter axes with round tick values', () => {
+    const { container } = render(
+      <ValidationSection
+        correlation={buildCorrelation(scores, successes)}
+        windows={WINDOWS}
+      />,
+    );
+    const ticks = [
+      ...container.querySelectorAll('.validation__tick-label'),
+    ].map((el) => el.textContent);
+    // Over slot spans −12…+12; win rate spans 30%…75%.
+    expect(ticks).toEqual(
+      expect.arrayContaining(['−10', '0', '+10', '40%', '60%']),
+    );
+  });
+
   it('labels each dot category in the legend', () => {
     render(
       <ValidationSection

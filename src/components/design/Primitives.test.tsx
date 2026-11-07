@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { PlayerAvatar, TeamLogo } from './Primitives';
 
 /**
@@ -24,6 +24,27 @@ describe('remote image loading', () => {
     const img = container.querySelector('img');
     expect(img).toHaveAttribute('loading', 'lazy');
     expect(img).toHaveAttribute('decoding', 'async');
+  });
+
+  it('falls back to the coloured initial disc when the team logo fails to load', () => {
+    const { container } = render(<TeamLogo teamId="KC" />);
+
+    fireEvent.error(container.querySelector('img')!);
+
+    expect(container.querySelector('img')).toBeNull();
+    expect(screen.getByText('K')).toBeInTheDocument();
+    expect(container.querySelector('.team-logo__disc--real')).toBeNull();
+  });
+
+  it('falls back to the initials disc when the headshot fails to load', () => {
+    render(
+      <PlayerAvatar name="Trey Smith" teamId="KC" src="https://x/h.png" />,
+    );
+
+    fireEvent.error(screen.getByAltText('Trey Smith'));
+
+    expect(screen.queryByAltText('Trey Smith')).toBeNull();
+    expect(screen.getByText('TS')).toBeInTheDocument();
   });
 
   it('renders the initials fallback, not an image, when no headshot exists', () => {
