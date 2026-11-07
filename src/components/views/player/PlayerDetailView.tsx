@@ -400,7 +400,8 @@ function PlayerDetailViewImpl({
           <div className="hero-chart__head">
             <div className="kicker">
               {pick.position} · {draftYear}{' '}
-              {isDraftPick(pick) ? 'class' : 'draft class'} · ranked by load
+              {isDraftPick(pick) ? 'class' : 'draft class'} · ranked by draft
+              score
             </div>
             <span
               className="mono"
@@ -1063,7 +1064,7 @@ function ClassmateRow({
   isSelf: boolean;
   onSelect: () => void;
 }) {
-  const { pick, load, role } = member;
+  const { pick, score, role } = member;
   return (
     <div
       className={`classmate-row${isSelf ? ' classmate-row--self' : ''}`}
@@ -1124,7 +1125,7 @@ function ClassmateRow({
         <div style={{ flex: 1, height: 4, background: 'var(--rule-2)' }}>
           <div
             style={{
-              width: `${Math.min(100, load * 100)}%`,
+              width: `${Math.min(100, score)}%`,
               height: '100%',
               background: isSelf ? 'var(--ox)' : 'var(--ink-2)',
             }}
@@ -1134,7 +1135,7 @@ function ClassmateRow({
           className="mono tnum"
           style={{ fontSize: 11, minWidth: 32, textAlign: 'right' }}
         >
-          {(load * 100).toFixed(0)}
+          {Math.round(score)}
         </span>
       </div>
       <RoleChip role={role} />

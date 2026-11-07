@@ -1,54 +1,29 @@
 import type { Acquisition, DraftClass, DraftPick, Role } from '../types';
-import { getPlayerRole, type GetPlayerRoleOptions } from './getPlayerRole';
-import { playedSeasons } from './seasonPlayed';
+import {
+  getPlayerDraftScore,
+  getPlayerRole,
+  type GetPlayerRoleOptions,
+} from './getPlayerRole';
 
-/** A same-position classmate ranked against the target pick by career load. */
+/** A same-position classmate ranked against the target pick by draft score. */
 export interface CohortMember {
   pick: DraftPick;
-  /** Mean season load (cumulative snap share) across all seasons, 0–1. */
-  load: number;
+  /** Draft score (drafting-team lens), the same number the player page headlines. */
+  score: number;
   role: Role;
 }
 
 export interface PositionCohort {
-  /** Same-position classmates, sorted by load descending, capped at the limit. */
+  /** Same-position classmates, sorted by draft score descending, capped at the limit. */
   members: CohortMember[];
   /** 1-based rank of the target pick within `members`; 0 when it is not shown. */
   rank: number;
 }
 
 /**
- * Mean season load for a pick — the average of each season's cumulative snap
- * share (falling back to that season's snap share when cumulative is absent).
- *
- * Follows the same lens as the role chip shown beside it. This used to be
- * career-wide regardless, which put a career number next to a drafting-team
- * verdict: Wyatt Teller read `82 · DEPTH`, the 82 earned over six Pro Bowl
- * seasons in Cleveland and the Depth earned in Buffalo, who drafted him and
- * moved him after a year for nothing much. Both true, and contradictory in one
- * row. The app credits a pick to the team that drafted it, so the load does too.
- */
-export function avgLoad(
-  pick: DraftPick,
-  options?: GetPlayerRoleOptions,
-): number {
-  const played = playedSeasons(pick);
-  const seasons =
-    options?.draftingTeamOnly === true
-      ? played.filter((s) => s.retained)
-      : played;
-  if (seasons.length === 0) return 0;
-  const total = seasons.reduce(
-    (a, s) => a + (s.cumulativeSnapShare ?? s.snapShare ?? 0),
-    0,
-  );
-  return total / seasons.length;
-}
-
-/**
- * Builds the "this position's class, ranked by load" cohort for a player detail
- * view: every same-position pick from the target's draft year, ranked by load
- * on the caller's lens and capped at `limit`, plus the target's 1-based rank within that list
+ * Builds the "this position's class, ranked by draft score" cohort for a player detail
+ * view: every same-position pick from the target's draft year, ranked by draft
+ * score and capped at `limit`, plus the target's 1-based rank within that list
  * (0 when the target sits outside the capped list).
  *
  * `pick` is typed `Acquisition` rather than `DraftPick` so an undrafted free
@@ -72,10 +47,12 @@ export function getPositionCohort(
   const members = classmates
     .map((p) => ({
       pick: p,
-      load: avgLoad(p, options),
+      // Always the drafting-team score: it is the number the player hero shows
+      // as "Draft score", so a row never disagrees with the page it links to.
+      score: getPlayerDraftScore(p, { draftingTeamOnly: true }),
       role: getPlayerRole(p, options),
     }))
-    .sort((a, b) => b.load - a.load)
+    .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 
   const rank = members.findIndex((m) => m.pick.playerId === pick.playerId) + 1;

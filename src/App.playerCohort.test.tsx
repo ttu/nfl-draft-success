@@ -100,8 +100,10 @@ describe('Player detail: out-of-range player cohort', () => {
     // Hero renders once the all-years fallback resolves the pick.
     expect(await screen.findByText('Josh Allen')).toBeInTheDocument();
 
-    // The "ranked by load" cohort must be populated from the 2018 class.
-    const cohortHead = await screen.findByText(/2018 class · ranked by load/i);
+    // The "ranked by draft score" cohort must be populated from the 2018 class.
+    const cohortHead = await screen.findByText(
+      /2018 class · ranked by draft score/i,
+    );
     const cohort = cohortHead.closest('section') as HTMLElement;
     expect(cohort).not.toBeNull();
     expect(within(cohort).getByText('Sam Darnold')).toBeInTheDocument();

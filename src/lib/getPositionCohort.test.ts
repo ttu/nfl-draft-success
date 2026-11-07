@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getPositionCohort, avgLoad } from './getPositionCohort';
+import { getPositionCohort } from './getPositionCohort';
 import type { DraftClass, DraftPick } from '../types';
 import { makeDraftClass, makePick, makeSeason } from '../test/factories';
 
@@ -23,82 +23,32 @@ const classes = (year: number, picks: DraftPick[]): DraftClass[] => [
   makeDraftClass({ year, picks }),
 ];
 
-/**
- * The number and the chip beside it have to answer the same question.
- *
- * Wyatt Teller rendered as `82 · DEPTH`: 82 was his load across a career that
- * turned into Pro Bowls in Cleveland, while Depth was Buffalo's verdict, who
- * drafted him and traded him after a year for nothing much. Both are true, and
- * together in one row they read as a contradiction. The app credits a pick to
- * the team that drafted it, so the load follows that lens too.
- */
-describe('avgLoad respects the drafting-team lens', () => {
-  const traded = makePick({
-    playerId: 'teller',
-    position: 'G',
-    round: 5,
-    seasons: [
-      makeSeason({ year: 2021, snapShare: 0.2, cumulativeSnapShare: 0.2 }),
-      makeSeason({
-        year: 2022,
-        snapShare: 1,
-        cumulativeSnapShare: 1,
-        retained: false,
-      }),
-      makeSeason({
-        year: 2023,
-        snapShare: 1,
-        cumulativeSnapShare: 1,
-        retained: false,
-      }),
-    ],
-  });
-
-  it('counts only drafting-team seasons when that is the lens', () => {
-    expect(avgLoad(traded, { draftingTeamOnly: true })).toBeCloseTo(0.2);
-  });
-
-  it('spans the whole career in career mode', () => {
-    expect(avgLoad(traded, { draftingTeamOnly: false })).toBeCloseTo(
-      (0.2 + 1 + 1) / 3,
+describe('score is the drafting-team draft score', () => {
+  it('ignores seasons played after leaving the drafting team', () => {
+    const mk = (id: string, retained: boolean) =>
+      makePick({
+        playerId: id,
+        position: 'G',
+        round: 5,
+        seasons: [
+          makeSeason({ year: 2021, snapShare: 0.2, cumulativeSnapShare: 0.2 }),
+          makeSeason({
+            year: 2022,
+            snapShare: 1,
+            cumulativeSnapShare: 1,
+            retained,
+          }),
+        ],
+      });
+    const stayed = mk('stayed', true);
+    const left = mk('left', false);
+    const { members } = getPositionCohort(
+      classes(2021, [left, stayed]),
+      2021,
+      left,
     );
-  });
-
-  it('defaults to the career reading when no lens is given', () => {
-    expect(avgLoad(traded)).toBeCloseTo((0.2 + 1 + 1) / 3);
-  });
-
-  it('is 0 when the pick never played for the team that drafted him', () => {
-    const gone = makePick({
-      playerId: 'gone',
-      position: 'G',
-      seasons: [
-        makeSeason({ year: 2021, cumulativeSnapShare: 0.9, retained: false }),
-      ],
-    });
-    expect(avgLoad(gone, { draftingTeamOnly: true })).toBe(0);
-  });
-});
-
-describe('avgLoad', () => {
-  it('averages cumulativeSnapShare across seasons', () => {
-    expect(avgLoad(pick('a', 'WR', [0.4, 0.8]))).toBeCloseTo(0.6);
-  });
-
-  it('returns 0 for a pick with no seasons', () => {
-    expect(avgLoad(pick('a', 'WR', []))).toBe(0);
-  });
-
-  it('falls back to snapShare when cumulativeSnapShare is absent', () => {
-    const p = makePick({
-      playerId: 'a',
-      playerName: 'A',
-      position: 'WR',
-      round: 2,
-      overallPick: 40,
-      seasons: [makeSeason({ year: 2021, snapShare: 0.5 })],
-    });
-    expect(avgLoad(p)).toBeCloseTo(0.5);
+    expect(members.map((m) => m.pick.playerId)).toEqual(['stayed', 'left']);
+    expect(members[0].score).toBeGreaterThan(members[1].score);
   });
 });
 
@@ -108,7 +58,7 @@ describe('getPositionCohort', () => {
   const lower = pick('lower', 'WR', [0.2]);
   const otherPos = pick('rb', 'RB', [0.99]);
 
-  it('includes only same-position picks from the target draft year, sorted by load desc', () => {
+  it('includes only same-position picks from the target draft year, sorted by draft score desc', () => {
     const cohort = getPositionCohort(
       classes(2021, [lower, target, higher, otherPos]),
       2021,
@@ -130,7 +80,7 @@ describe('getPositionCohort', () => {
     expect(cohort.rank).toBe(2);
   });
 
-  it('limits the cohort to the top N by load', () => {
+  it('limits the cohort to the top N by draft score', () => {
     const many = Array.from({ length: 12 }, (_, i) =>
       pick(`p${i}`, 'WR', [i / 12]),
     );
@@ -142,7 +92,7 @@ describe('getPositionCohort', () => {
     const many = Array.from({ length: 12 }, (_, i) =>
       pick(`p${i}`, 'WR', [(12 - i) / 12]),
     );
-    // p11 has the lowest load, so it is outside the top 8.
+    // p11 has the lowest score, so it is outside the top 8.
     const cohort = getPositionCohort(
       classes(2021, many),
       2021,
