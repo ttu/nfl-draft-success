@@ -436,7 +436,7 @@ describe('snakebit', () => {
           gamesPlayed: 8,
           teamGames: 17,
           snapShare: 0.9,
-          injuryReportWeeks: 5,
+          excusedGames: 5,
         }),
         makeSeason({
           year: 2022,
@@ -450,12 +450,12 @@ describe('snakebit', () => {
 
     const { snakebit } = getCareerShapeHighlights(classOf(hurt), teams);
 
-    expect(snakebit[0].value).toBe(20);
-    expect(snakebit[0].headline).toBe('20');
+    expect(snakebit[0].value).toBe(16);
+    expect(snakebit[0].headline).toBe('16');
     expect(snakebit[0].detail).toBe('90% when active');
   });
 
-  it('treats reserve weeks as evidence of injury toward the missed-games total', () => {
+  it('counts only the documented excused games toward the total', () => {
     const hurt = makePick({
       overallPick: 33,
       teamId: 'A',
@@ -472,7 +472,7 @@ describe('snakebit', () => {
           gamesPlayed: 8,
           teamGames: 17,
           snapShare: 0.9,
-          reserveWeeks: 11,
+          excusedGames: 9,
         }),
       ],
     });
@@ -734,7 +734,7 @@ describe('snakebit counts injury, not benching', () => {
     expect(snakebit).toEqual([]);
   });
 
-  it('counts games missed in a season spent on the injury report', () => {
+  it('counts only the injury-report games he missed, not the whole gap', () => {
     const hurt = makePick({
       overallPick: 71,
       teamId: 'A',
@@ -752,13 +752,14 @@ describe('snakebit counts injury, not benching', () => {
           teamGames: 17,
           snapShare: 0.9,
           injuryReportWeeks: 6,
+          excusedGames: 6,
         }),
       ],
     });
 
     const { snakebit } = getCareerShapeHighlights(classOf(hurt), teams);
 
-    expect(snakebit[0].value).toBe(15);
+    expect(snakebit[0].value).toBe(6);
   });
 });
 

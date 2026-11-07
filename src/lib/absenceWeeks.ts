@@ -3,6 +3,8 @@
  * counts. Used by scripts/update-data.ts; see docs/calculations.md.
  */
 
+import type { Season } from '../types';
+
 /** Inputs to {@link excusedAbsenceGames}. */
 export interface ExcusedAbsenceOptions {
   /** Team weeks the player did not appear in — already rest-adjusted by the caller. */
@@ -56,4 +58,23 @@ export function excusedAbsenceGames(options: ExcusedAbsenceOptions): number {
     if (documented.has(week)) excused.add(week);
   }
   return excused.size;
+}
+
+/**
+ * Games the Load denominator forgives for one stored season: the documented
+ * intersection or the pre-2016 heuristic, whichever is larger, capped at the
+ * games he missed. Shared by the score explanation and the snakebit list so
+ * both count the same absences.
+ */
+export function seasonExcusedGames(
+  s: Pick<
+    Season,
+    'excusedGames' | 'seasonEndingAbsenceGames' | 'teamGames' | 'gamesPlayed'
+  >,
+): number {
+  const missedGames = Math.max(0, s.teamGames - s.gamesPlayed);
+  return Math.min(
+    Math.max(s.excusedGames ?? 0, s.seasonEndingAbsenceGames ?? 0),
+    missedGames,
+  );
 }

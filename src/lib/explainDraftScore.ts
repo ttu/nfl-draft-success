@@ -1,5 +1,6 @@
 import type { Acquisition, Season } from '../types';
 import { isDraftPick, acquisitionWindow } from './acquisition';
+import { seasonExcusedGames } from './absenceWeeks';
 import { apprenticeSeasonCount } from './apprenticeship';
 import {
   getSeasonScore,
@@ -183,15 +184,7 @@ function explainInjury(
   if (s.gamesPlayed === 0 || rawSnapShareForRoleTier(s, position) === 0)
     return undefined;
 
-  // The same expression the denominator applies: the documented intersection
-  // and the pre-2016 heuristic are both counts of games missed, so the larger
-  // wins, and the cap only ever binds on the heuristic — the intersection is a
-  // subset of the missed weeks by construction.
-  const missedGames = Math.max(0, s.teamGames - s.gamesPlayed);
-  const excusedGames = Math.min(
-    Math.max(documentedExcusedGames, seasonEndingAbsenceGames),
-    missedGames,
-  );
+  const excusedGames = seasonExcusedGames(s);
   if (excusedGames === 0) return undefined;
 
   return {

@@ -1,4 +1,5 @@
 import type { DraftClass, DraftPick, Role, Season, Team } from '../types';
+import { seasonExcusedGames } from './absenceWeeks';
 import { withoutApprenticeSeasons } from './apprenticeship';
 import {
   classifyRole,
@@ -371,27 +372,9 @@ function ironManRow(
 }
 
 /**
- * Whether a season carries any evidence that absence was injury rather than
- * choice: time on the official injury report, a year that ended early, or —
- * for 2016+, where that heuristic goes dark — a stint on reserve.
- *
- * Without this the list ranks benchings. A quarterback who lost his job is
- * absent for every game after it, which looks identical to a torn ACL in
- * `gamesPlayed` alone — and putting him on a list meant to say "he was good, he
- * was hurt" says the opposite of what it means to. Reserve status is the
- * cleanest evidence yet that a season was not one: a released player carries a
- * different status and scores zero reserve weeks.
- */
-function wasHurt(season: Season): boolean {
-  return (
-    (season.injuryReportWeeks ?? 0) > 0 ||
-    (season.seasonEndingAbsenceGames ?? 0) > 0 ||
-    (season.reserveWeeks ?? 0) > 0
-  );
-}
-
-/**
- * Games lost to injury by a player who started whenever he was fit to.
+ * Games lost to injury by a player who started whenever he was fit to — the
+ * games the Load denominator forgives, not every game he missed (a benching
+ * carries no injury evidence and counts for nothing).
  *
  * The share mean is per-game, not cumulative load: the claim is "he started the
  * games he dressed for", and cumulative load already divides by a season he did
@@ -406,7 +389,7 @@ function snakebitRow(
 ): RankedPlayer | null {
   const active = seasons.filter((s) => s.gamesPlayed > 0);
   const missedGames = seasons.reduce(
-    (sum, s) => sum + (wasHurt(s) ? s.teamGames - s.gamesPlayed : 0),
+    (sum, s) => sum + seasonExcusedGames(s),
     0,
   );
   const careerGames = seasons.reduce((sum, s) => sum + s.gamesPlayed, 0);
