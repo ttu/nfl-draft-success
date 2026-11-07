@@ -2,6 +2,7 @@ import { useEffect, useRef, type CSSProperties } from 'react';
 import { useNavigate, useSearchParams, useMatch } from 'react-router-dom';
 import { DRAFT_YEAR_BOUNDS } from '../../lib/draftYearBounds';
 import { formatYearRange } from '../../lib/laggedWindow';
+import { PlayerSearch } from './PlayerSearch';
 
 export type MastheadTab =
   'rankings' | 'team' | 'year' | 'pos' | 'highlights' | 'roster' | 'rosters';
@@ -153,6 +154,7 @@ export function Masthead({
           </button>
         ))}
       </nav>
+      <PlayerSearch />
       <div className="mast__meta">
         <div>
           <span className="mast__dot" /> Data synced{' '}
