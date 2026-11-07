@@ -43,6 +43,35 @@ describe('getDraftClassMetrics', () => {
     expect(getDraftClassMetrics(draft, 'KC').draftScore).toBeCloseTo(expected);
   });
 
+  it('treats a pick with only a roster-snapshot row as awaiting data, not a zero', () => {
+    const starter = makePick({
+      playerName: 'Starter',
+      position: 'QB',
+      overallPick: 5,
+      seasons: [makeSeason()],
+    });
+    const draft = makeDraftClass({
+      picks: [
+        starter,
+        makePick({
+          playerId: 'rook',
+          playerName: 'Not yet played',
+          position: 'RB',
+          round: 3,
+          overallPick: 90,
+          seasons: [makeRosterSnapshotSeason()],
+        }),
+      ],
+    });
+
+    const metrics = getDraftClassMetrics(draft, 'KC');
+
+    expect(metrics.awaitingDataCount).toBe(1);
+    expect(metrics.nonContributorCount).toBe(0);
+    expect(metrics.retentionCount).toBe(0);
+    expect(metrics.draftScore).toBeCloseTo(getPlayerDraftScore(starter));
+  });
+
   it('returns total picks, core starter count, contributor count, retention count, rates', () => {
     const draft = makeDraftClass({
       picks: [

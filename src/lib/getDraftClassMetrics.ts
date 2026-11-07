@@ -1,11 +1,15 @@
 import type { DraftClass } from '../types';
 import { isDraftPickRetainedLatest } from './draftPickLatestSeason';
-import { getPlayerDraftScore, getPlayerRole } from './getPlayerRole';
+import {
+  getPlayerDraftScore,
+  getPlayerRole,
+  pickHasSeasonSnapData,
+} from './getPlayerRole';
 import { getPicksByTeam } from './picksByTeam';
 
 export interface DraftClassMetrics {
   totalPicks: number;
-  /** Picks with no `seasons` rows yet (e.g. current-year draft before NFL data exists). */
+  /** Picks with no played season yet (none, or only a roster-snapshot row). */
   awaitingDataCount: number;
   coreStarterCount: number;
   starterWhenHealthyCount: number;
@@ -51,7 +55,7 @@ export function getDraftClassMetrics(
 
   const draftingTeamOnly = options?.draftingTeamOnly === true;
   for (const pick of picks) {
-    if (pick.seasons.length === 0) {
+    if (!pickHasSeasonSnapData(pick)) {
       awaitingDataCount += 1;
       continue;
     }
