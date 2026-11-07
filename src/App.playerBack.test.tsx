@@ -73,17 +73,25 @@ function renderAt(entries: string[]) {
 
 const nav = () => screen.getByTestId('nav').textContent ?? '';
 
+/**
+ * Opens the player from the BUF roster and waits for the default-range backfill
+ * (a REPLACE) to land. Pressing Back before it does lets that late replace
+ * overwrite the restored list entry, which made these tests flaky on slow CI.
+ */
+async function openPlayerFromRoster() {
+  renderAt(['/BUF?from=2021&to=2025']);
+  fireEvent.click(await screen.findByText('Josh Allen'));
+  await screen.findByRole('button', { name: /←/ });
+  await waitFor(() => expect(nav()).toBe('REPLACE /player/josh-allen'));
+}
+
 beforeEach(() => {
   localStorage.clear();
 });
 
 describe('Player detail back crumb', () => {
   it('pops back to the origin list when the player was opened from it', async () => {
-    renderAt(['/BUF?from=2021&to=2025']);
-
-    const row = await screen.findByText('Josh Allen');
-    fireEvent.click(row);
-    await screen.findByRole('button', { name: /←/ });
+    await openPlayerFromRoster();
 
     fireEvent.click(screen.getByRole('button', { name: /←/ }));
 
@@ -93,10 +101,7 @@ describe('Player detail back crumb', () => {
   });
 
   it('leaves one Back press between the player and the list it was opened from', async () => {
-    renderAt(['/BUF?from=2021&to=2025']);
-
-    fireEvent.click(await screen.findByText('Josh Allen'));
-    await screen.findByRole('button', { name: /←/ });
+    await openPlayerFromRoster();
 
     // The player view backfills the default year range onto its own URL. That
     // correction must not become a history entry of its own.
