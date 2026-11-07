@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 /**
- * Pre-compute default rankings (2021-2025) so the landing page
+ * Pre-compute default rankings (2021 to the last completed class) so the landing page
  * can render instantly without downloading ~1MB of draft data.
  *
  * Run: npx tsx scripts/generate-default-rankings.ts
@@ -13,9 +13,11 @@ import { TEAMS } from '../src/data/teams';
 import type { DraftClass } from '../src/types';
 import { stampDraftYear } from '../src/lib/draftClass';
 import { roundForArtifact } from './artifactNumber';
+import seasonWindow from '../src/data/season-window.json';
 
 const DEFAULT_FROM = 2021;
-const DEFAULT_TO = 2025;
+// Mirrors App.tsx: the newest class has not played a full season yet.
+const DEFAULT_TO = seasonWindow.latestDraftYear - 1;
 
 function main() {
   const dataDir = path.join(process.cwd(), 'public', 'data');

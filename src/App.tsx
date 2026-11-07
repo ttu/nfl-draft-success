@@ -1383,9 +1383,13 @@ function renderPlayerView(a: RenderMainArgs) {
  * rankings land.
  */
 function renderTeamRankings(a: RenderMainArgs) {
-  const rankings = a.loading
-    ? a.defaultRankings?.rankings
-    : a.teamRank?.rankings;
+  const precomputed = a.defaultRankings;
+  const precomputedMatches =
+    precomputed?.from === a.startYear && precomputed?.to === a.endYear;
+  const loadingRankings = precomputedMatches
+    ? precomputed?.rankings
+    : undefined;
+  const rankings = a.loading ? loadingRankings : a.teamRank?.rankings;
   if (!rankings) return <RankingsBoot yearCount={a.yearCount} />;
 
   return (
