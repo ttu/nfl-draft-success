@@ -254,6 +254,28 @@ describe('explainDraftScore', () => {
       ]);
     });
 
+    it('renders a window year holding only an unplayed snapshot row as a gap', () => {
+      const [first, , third] = RICHARDSON_YEARS;
+      const p = pick({
+        round: 3,
+        overallPick: 80,
+        draftYear: first,
+        seasons: [
+          season({ year: first }),
+          // teamGames 0: a snapshot row, not a played season.
+          season({ year: first + 1, gamesPlayed: 0, teamGames: 0 }),
+          season({ year: third }),
+        ],
+      });
+      const e = explainDraftScore(p, true)!;
+
+      expect(e.rows.map((r) => [r.kind, r.year])).toEqual([
+        ['season', first],
+        ['gap', first + 1],
+        ['season', third],
+      ]);
+    });
+
     it('adds no gap rows in career mode, where the window is not the denominator', () => {
       const p = pick({
         round: 3,

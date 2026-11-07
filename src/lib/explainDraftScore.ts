@@ -290,7 +290,7 @@ export function explainDraftScore(
   // drafting-team mode, the only mode whose denominator is the window — in
   // career mode a gap row would claim a penalty the score never applied.
   const gapRows: ScoreExplanationRow[] = windowYears
-    .filter((y) => !pick.seasons.some((s) => s.year === y))
+    .filter((y) => !played.some((s) => s.year === y))
     .map((year) => ({ kind: 'gap' as const, year }));
 
   const rows = [...seasonRows, ...gapRows].sort((a, b) => a.year - b.year);
