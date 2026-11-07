@@ -1132,3 +1132,32 @@ describe('the hero meta line', () => {
     expect(meta?.textContent).toMatch(/· *drafted by KC/);
   });
 });
+
+describe('PlayerDetailView career team links', () => {
+  it('links each season team to its team view, keeping the year window', () => {
+    const departed = makePick({
+      teamId: 'MIN',
+      seasons: [
+        makeSeason({ year: 2024 }),
+        makeSeason({ year: 2025, retained: false, currentTeam: 'CAR' }),
+      ],
+    });
+    render(
+      <MemoryRouter initialEntries={['/player/x?from=2021&to=2025']}>
+        <PlayerDetailView
+          pick={departed}
+          draftYear={2024}
+          draftClasses={[makeDraftClass({ year: 2024, picks: [departed] })]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+    const table = screen.getByRole('table', { name: 'Career by season' });
+    expect(
+      within(table).getByRole('link', { name: /MIN/ }).getAttribute('href'),
+    ).toBe('/MIN?from=2021&to=2025');
+    expect(
+      within(table).getByRole('link', { name: /CAR/ }).getAttribute('href'),
+    ).toBe('/CAR?from=2021&to=2025');
+  });
+});

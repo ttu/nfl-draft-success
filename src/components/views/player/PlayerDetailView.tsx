@@ -1,5 +1,5 @@
 import { memo, useMemo, type CSSProperties } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   TeamLogo,
   PlayerAvatar,
@@ -768,16 +768,7 @@ function SeasonRow({
         <SeasonEndingInjuryMarker season={s} />
         <RestedFinaleMarker season={s} />
       </td>
-      <td>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {team !== 'FA' ? (
-            <TeamLogo teamId={team} size={22} ring={false} />
-          ) : null}
-          <span className="mono" style={{ fontSize: 12, fontWeight: 700 }}>
-            {team}
-          </span>
-        </div>
-      </td>
+      <TeamCell team={team} />
       <td className="right mono tnum">{s.gamesPlayed}</td>
       <td className="right">
         <SnapBar value={snapPct} color={color} />
@@ -823,6 +814,33 @@ function SeasonRow({
   );
 }
 
+/** Career-table team cell; a real team links to its team view on the active year window. */
+function TeamCell({ team }: { team: string }) {
+  const [searchParams] = useSearchParams();
+  const label = (
+    <span className="mono" style={{ fontSize: 12, fontWeight: 700 }}>
+      {team}
+    </span>
+  );
+  if (team === 'FA') return <td>{label}</td>;
+  const from = searchParams.get('from');
+  const to = searchParams.get('to');
+  // No window on the URL: the team view backfills its default range.
+  const query = from && to ? `?from=${from}&to=${to}` : '';
+  return (
+    <td>
+      <Link
+        to={`/${encodeURIComponent(team)}${query}`}
+        className="player-career__team-link"
+        style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+      >
+        <TeamLogo teamId={team} size={22} ring={false} />
+        {label}
+      </Link>
+    </td>
+  );
+}
+
 /**
  * A rookie-window year the drafting team got nothing from.
  *
@@ -859,16 +877,7 @@ function UpcomingSeasonRow({
       <td>
         <span className="player-career__year">{s.year}</span>
       </td>
-      <td>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {team !== 'FA' ? (
-            <TeamLogo teamId={team} size={22} ring={false} />
-          ) : null}
-          <span className="mono" style={{ fontSize: 12, fontWeight: 700 }}>
-            {team}
-          </span>
-        </div>
-      </td>
+      <TeamCell team={team} />
       {/* Split like WindowGapRow so the Load column stays hideable on mobile. */}
       <td className="mono" colSpan={2}>
         Not played yet
