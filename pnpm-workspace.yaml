@@ -1,0 +1,7 @@
+# Install native binaries (esbuild, rollup, ...) for macOS and the Linux Docker sandbox,
+# which share this node_modules. Name both OSes: inside the sandbox `current` is linux,
+# so `[current, linux]` would drop the macOS binaries the host needs.
+supportedArchitectures:
+  os: [darwin, linux]
+  cpu: [current]
+  libc: [current, glibc]

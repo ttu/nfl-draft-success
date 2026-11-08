@@ -1,0 +1,19 @@
+# Docker Sandboxes environment for this repo. See .sbx/README.md.
+schemaVersion: '1'
+name: nfl-draft-success
+agent: claude
+# Repo mounted read-write at its host path: sandbox edits (incl. node_modules) change the host checkout.
+# Known security risk, accepted: the agent can change code the host later runs
+# (.husky hooks, .git/hooks, package.json scripts, node_modules used by pnpm dev/test/commit hooks).
+# Review those before running them on the host. Clone mode avoids this.
+# For an isolated copy instead, use:
+# workspace:
+#   path: .
+#   clone: true
+workspace: .
+kits:
+  # Node, pnpm, Chromium, network allow list, pnpm install, Playwright MCP for /visual-verify.
+  - ./.sbx/nfl-draft-success
+ports:
+  - sandbox: 3273 # pnpm dev
+  - sandbox: 4173 # pnpm preview

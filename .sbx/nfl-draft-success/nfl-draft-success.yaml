@@ -1,0 +1,149 @@
+# syntax=docker/sandbox-kit:3
+schemaVersion: '3'
+displayName: NFL Draft Success dev
+description: >-
+  Egress the site and its tooling need, pnpm dependencies, and a sandbox-local
+  Playwright MCP server so /visual-verify can screenshot the dev server.
+kind: mixin
+
+capabilities:
+  - type: com.docker.sandbox/network-policy@1
+    config:
+      runtime:
+        allow:
+          # Images the running site loads (keep in sync with src/data, src/components).
+          - static.www.nfl.com # player headshots, NFL logo
+          - content.sportslogos.net # team logos
+          # pnpm install, npx @playwright/mcp
+          - registry.npmjs.org
+          # git push/fetch (SSH, see ssh-agent below) and pnpm update-data (nflverse
+          # release assets). Unbounded on purpose: the agent pushes, and a push is a
+          # write anyway. It can push wherever the forwarded SSH key can, and since
+          # HTTPS is open too (allow rules ignore ports, so SSH-only is not possible),
+          # wherever any GitHub token it gets hold of can.
+          - github.com
+          - objects.githubusercontent.com
+          - release-assets.githubusercontent.com
+          # pnpm test:e2e:prod / smoke:prod
+          - www.nfldraftsuccess.com
+      install:
+        allow:
+          - api.github.com # GitHub SSH host keys for known_hosts
+          - nodejs.org
+          - registry.npmjs.org
+          # playwright install --with-deps: browser CDNs + the base image's apt sources
+          - cdn.playwright.dev
+          - playwright.download.prss.microsoft.com
+          - storage.googleapis.com
+          - deb.debian.org
+          - dhi.io
+
+  # Pushes to the SSH origin (git@github.com:...) through the host's ssh-agent.
+  # The private key never enters the sandbox; the agent may only log in to GitHub
+  # as git, not sign commits or reach other SSH hosts.
+  - type: com.docker.sandbox/ssh-agent@1
+    config:
+      phase: runtime
+      unrestricted: false
+      authenticate: [git@github.com]
+
+  # Commits in the sandbox use the host's git user.name / user.email.
+  - type: com.docker.sandbox/git-identity@1
+
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        # docker.io/sbx/claude (hardened Debian 13) ships no Node. Node, pnpm and
+        # Chromium are one hook on purpose: sbx orders kits by provides/requires,
+        # not list order, so a separate playwright kit could run before Node exists.
+        # shortcut: install hook instead of a .dockerfile overlay, because local
+        # kit builds need an OCI-capable host buildx builder (the default docker driver fails).
+        - command: |
+            set -eu
+            v=22.23.4
+            case "$(dpkg --print-architecture)" in amd64) a=x64 ;; arm64) a=arm64 ;; *) exit 1 ;; esac
+            f="node-v$v-linux-$a.tar.gz"
+            cd /tmp
+            curl -fsSLO "https://nodejs.org/dist/v$v/$f"
+            curl -fsSL "https://nodejs.org/dist/v$v/SHASUMS256.txt" | grep " $f\$" | sha256sum -c -
+            tar -xzf "$f" -C /usr/local --strip-components=1 --no-same-owner \
+              --exclude CHANGELOG.md --exclude LICENSE --exclude README.md
+            rm "$f"
+            # Agent-owned global prefix, already on the base PATH.
+            mkdir -p /usr/local/share/npm-global
+            # Temp cache: root's HOME is /home/agent, and a root-owned ~/.npm breaks npx for the agent.
+            npm install -g --cache /tmp/npm-root-cache --prefix /usr/local/share/npm-global pnpm@10.33.0
+            rm -rf /tmp/npm-root-cache
+            # Two Chromium builds: pnpm test:e2e uses @playwright/test from pnpm-lock.yaml,
+            # the MCP server bundles its own (alpha) Playwright. Keep both versions in
+            # sync with the startup hook below. SKIP_BROWSER_GC stops one install
+            # deleting the other's browser.
+            export PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright PLAYWRIGHT_SKIP_BROWSER_GC=1
+            npx -y --cache /tmp/npm-root-cache playwright@1.61.1 install --with-deps chromium
+            npx -y --cache /tmp/npm-root-cache -p @playwright/mcp@0.0.84 playwright install --with-deps chromium
+            rm -rf /tmp/npm-root-cache /var/lib/apt/lists/*
+            pw_env="export PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH PLAYWRIGHT_SKIP_BROWSER_GC=1"
+            # Login shells read profile.d. The agent's own commands, and the git
+            # hooks they start (the pre-commit hook runs pnpm test:e2e:preview),
+            # are non-login shells that only source /etc/sandbox-persistent.sh
+            # (BASH_ENV / CLAUDE_ENV_FILE); without it Playwright looks in
+            # ~/.cache/ms-playwright and every E2E test fails to launch.
+            printf '%s\n' "$pw_env" > /etc/profile.d/playwright.sh
+            touch /etc/sandbox-persistent.sh
+            grep -qxF "$pw_env" /etc/sandbox-persistent.sh || printf '%s\n' "$pw_env" >> /etc/sandbox-persistent.sh
+            chown -R 1000:1000 /usr/local/share/npm-global /opt/ms-playwright
+            node -v && pnpm -v
+          user: '0'
+          env: [HTTP_PROXY, HTTPS_PROXY]
+          description: Install Node 22, pnpm and Chromium
+        # GitHub's published SSH host keys, so the first push has no host-key prompt.
+        - command: |
+            set -eu
+            mkdir -p /home/agent/.ssh
+            curl -fsSL https://api.github.com/meta \
+              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>JSON.parse(s).ssh_keys.forEach(k=>console.log("github.com "+k)))' \
+              > /home/agent/.ssh/known_hosts
+            chmod 700 /home/agent/.ssh && chmod 644 /home/agent/.ssh/known_hosts
+            chown -R 1000:1000 /home/agent/.ssh
+          user: '0'
+          env: [HTTP_PROXY, HTTPS_PROXY]
+          description: Trust GitHub SSH host keys
+      startup:
+        # Every boot; a no-op when already installed.
+        # node_modules is shared with the host: pnpm-workspace.yaml installs the
+        # linux native binaries too, and CI=true lets pnpm relink without a prompt.
+        - command: |
+            set -eu
+            cd "$WORKSPACE_DIR"
+            # The repo is a different disk from $HOME, so pnpm keeps its store in
+            # .pnpm-store/ here (gitignored); it survives sandbox rebuilds.
+            CI=true pnpm install --frozen-lockfile
+          env: [WORKSPACE_DIR, HTTP_PROXY, HTTPS_PROXY]
+          description: Install project dependencies
+        # Runs inside the sandbox, so it reaches the sandbox's localhost:3273.
+        # Server name "playwright" matches mcp__playwright__* in .claude/commands/visual-verify.md.
+        # Pinned: the install hook downloads this version's Chromium. Re-added every
+        # boot so a version bump here takes effect.
+        - command: |
+            claude mcp remove --scope user playwright >/dev/null 2>&1 || true
+            claude mcp add --scope user playwright \
+              -e PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright \
+              -- npx -y @playwright/mcp@0.0.84 --headless --isolated --browser chromium \
+                 --caps vision --viewport-size 1280x900
+          env: [HTTP_PROXY, HTTPS_PROXY]
+          description: Register the Playwright MCP server for Claude
+
+  - type: com.docker.sandbox/agent-context@1
+    config:
+      content: |
+        ## NFL Draft Success sandbox
+
+        - Dependencies are installed at boot. Run `pnpm dev` (port 3273) or
+          `pnpm build && pnpm preview` (port 4173).
+        - `/visual-verify` uses the `playwright` MCP server registered at boot.
+        - E2E: `pnpm test:e2e` uses the Chromium in /opt/ms-playwright.
+        - Allowed outbound hosts: the image CDNs (static.www.nfl.com,
+          content.sportslogos.net), npm, GitHub release assets, and
+          www.nfldraftsuccess.com. If an image or fetch fails with a proxy or 403 error,
+          a host is missing from .sbx/nfl-draft-success/nfl-draft-success.yaml.
+          Report it; do not work around it.
