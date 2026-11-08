@@ -55,6 +55,7 @@ describe('getLeagueHighlights', () => {
     expect(h.snakebit).toEqual([]);
     expect(h.gotAway).toEqual([]);
     expect(h.keptTheBand).toEqual([]);
+    expect(h.mostPicks).toEqual([]);
   });
 
   it('leaves out a class whose only season is still being played', () => {
@@ -404,5 +405,55 @@ describe('getLeagueHighlights', () => {
     expect(h.steals).toEqual([]);
     expect(h.busts).toEqual([]);
     expect(h.mostCoreStarters).toBeNull();
+  });
+
+  describe('mostPicks', () => {
+    const manyTeams: Team[] = ['A', 'B', 'C'].map((id) => makeTeam({ id }));
+
+    it('ranks teams by how many players they drafted, ties by team id', () => {
+      const classes: DraftClass[] = [
+        {
+          year: 2021,
+          picks: [
+            awaitingPick('B', 1),
+            awaitingPick('B', 2),
+            awaitingPick('A', 3),
+            awaitingPick('A', 4),
+            awaitingPick('C', 5),
+            awaitingPick('B', 6),
+          ],
+        },
+        { year: 2022, picks: [awaitingPick('C', 7)] },
+      ];
+
+      const { mostPicks } = getLeagueHighlights(classes, manyTeams, opts);
+
+      expect(mostPicks.map((r) => [r.teamId, r.count])).toEqual([
+        ['B', 3],
+        ['A', 2],
+        ['C', 2],
+      ]);
+      expect(mostPicks[0].team?.id).toBe('B');
+    });
+
+    it('counts picks with no season data yet', () => {
+      const { mostPicks } = getLeagueHighlights(
+        [{ year: 2021, picks: [awaitingPick('A', 1)] }],
+        manyTeams,
+        opts,
+      );
+      expect(mostPicks).toHaveLength(1);
+    });
+
+    it('caps the list at five teams', () => {
+      const ids = ['A', 'B', 'C', 'D', 'E', 'F'];
+      const picks = ids.map((id, i) => awaitingPick(id, i + 1));
+      const { mostPicks } = getLeagueHighlights(
+        [{ year: 2021, picks }],
+        manyTeams,
+        opts,
+      );
+      expect(mostPicks).toHaveLength(5);
+    });
   });
 });

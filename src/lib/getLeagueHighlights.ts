@@ -36,6 +36,17 @@ export interface TeamHighlight {
   count: number;
 }
 
+/** A team's draft volume across the loaded window. */
+export interface TeamPickCountHighlight {
+  teamId: string;
+  team: Team | undefined;
+  /** Players the team drafted in the window. */
+  count: number;
+}
+
+/** Rows in the most-picks ranking. */
+const MOST_PICKS_LIST_MAX = 5;
+
 /** How many players each ranked list (steals, busts) shows before expanding. */
 export const HIGHLIGHT_LIST_SIZE = 3;
 
@@ -55,6 +66,8 @@ export interface LeagueHighlights
   busts: PlayerHighlight[];
   /** Team that produced the most core starters. */
   mostCoreStarters: TeamHighlight | null;
+  /** Teams that made the most draft picks, most first. */
+  mostPicks: TeamPickCountHighlight[];
 }
 
 /**
@@ -101,9 +114,13 @@ export function getLeagueHighlights(
   // Per-team core-starter tallies for the volume leader (with rate tie-break).
   const coreCount = new Map<string, number>();
   const scoredCount = new Map<string, number>();
+  const pickCount = new Map<string, number>();
 
   for (const draft of draftClasses) {
     for (const pick of draft.picks) {
+      // Volume counts every selection, including classes with no season data
+      // yet: how many players a team drafted is true before any snap is played.
+      pickCount.set(pick.teamId, (pickCount.get(pick.teamId) ?? 0) + 1);
       if (!pickHasSeasonSnapData(pick)) continue;
       // A class whose only season is the one being played has produced a
       // score, a role and an over-slot number, all arithmetically right and
@@ -137,6 +154,7 @@ export function getLeagueHighlights(
       .sort(compareBust)
       .slice(0, HIGHLIGHT_LIST_MAX),
     mostCoreStarters: pickCoreLeader(coreCount, scoredCount, teamById),
+    mostPicks: rankMostPicks(pickCount, teamById),
     ...getCareerShapeHighlights(draftClasses, teams),
     // No options: this band's subject is the seasons `draftingTeamOnly` removes.
     ...getRetentionHighlights(draftClasses, teams),
@@ -189,4 +207,15 @@ function pickCoreLeader(
     team: teamById.get(leader.teamId),
     count: leader.count,
   };
+}
+
+/** Teams by picks made, most first; ties fall to team id so the order is stable. */
+function rankMostPicks(
+  pickCount: Map<string, number>,
+  teamById: Map<string, Team>,
+): TeamPickCountHighlight[] {
+  return [...pickCount]
+    .sort(([idA, a], [idB, b]) => b - a || idA.localeCompare(idB))
+    .slice(0, MOST_PICKS_LIST_MAX)
+    .map(([teamId, count]) => ({ teamId, team: teamById.get(teamId), count }));
 }

@@ -13,6 +13,7 @@ import {
   type LeagueHighlights,
   type PlayerHighlight,
   type TeamHighlight,
+  type TeamPickCountHighlight,
 } from '../../../lib/getLeagueHighlights';
 import { seasonTag } from '../../../lib/seasonTag';
 import type {
@@ -233,6 +234,15 @@ function HighlightsViewImpl({
           accent="non"
           items={busts.map(fromPlayerHighlight)}
           emptyLabel={NO_PICKS_LABEL}
+        />
+      </HighlightBand>
+
+      <HighlightBand title="Volume">
+        <TeamPickCountList
+          kicker="Most picks"
+          note="players drafted in the window"
+          rows={highlights.mostPicks}
+          onTeamSelect={onTeamSelect}
         />
       </HighlightBand>
 
@@ -652,6 +662,65 @@ function TeamRateRow({
         </div>
       </button>
     </li>
+  );
+}
+
+/** Teams ranked by how many players they drafted, in the {@link TeamRateList} card language. */
+function TeamPickCountList({
+  kicker,
+  note,
+  rows,
+  onTeamSelect,
+}: {
+  kicker: string;
+  note: string;
+  rows: TeamPickCountHighlight[];
+  onTeamSelect: (teamId: string) => void;
+}) {
+  return (
+    <article
+      className="highlight-list highlight-list--core"
+      aria-label={kicker}
+    >
+      <div className="highlight-list__head">
+        <div className="kicker">{kicker}</div>
+        <div className="highlight-list__note mono">{note}</div>
+      </div>
+      {rows.length === 0 ? (
+        <div className="highlight-list__empty">
+          No draft picks in this window yet.
+        </div>
+      ) : (
+        <ol className="highlight-list__rows">
+          {rows.map(({ teamId, team, count }, i) => (
+            <li key={teamId}>
+              <button
+                type="button"
+                className="highlight-row"
+                aria-label={`View ${team?.name ?? teamId}`}
+                onClick={() => onTeamSelect(teamId)}
+              >
+                <span className="highlight-row__rank highlight-row__rank--core">
+                  {i + 1}
+                </span>
+                <TeamLogo teamId={teamId} size={44} ring={false} />
+                <div className="highlight-row__id">
+                  <div className="highlight-row__name">
+                    {team?.name ?? teamId}
+                  </div>
+                </div>
+                <div
+                  className="highlight-row__score tnum highlight-row__score--high"
+                  title="Players this team drafted in the window"
+                >
+                  {count}
+                </div>
+              </button>
+            </li>
+          ))}
+        </ol>
+      )}
+    </article>
   );
 }
 

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { HighlightsView } from './HighlightsView';
@@ -70,6 +70,7 @@ const defaultHighlights: LeagueHighlights = {
   ironMen: [ranked('d-iron', 'Ike Iron', '4', "full seasons · '21–'24")],
   snakebit: [ranked('d-snake', 'Stan Snake', '21', '84% when active')],
   gotAway: [ranked('d-away', 'Gary Gone', '+31', '40 → 71 with CHI')],
+  mostPicks: [{ teamId: 'DET', team: lions, count: 41 }],
   keptTheBand: [
     {
       teamId: 'DET',
@@ -297,6 +298,7 @@ describe('HighlightsView', () => {
     const headings = screen.getAllByRole('heading', { level: 2 });
     expect(headings.map((h) => h.textContent)).toEqual([
       'Value',
+      'Volume',
       'Career shape',
       'Retention',
     ]);
@@ -318,6 +320,27 @@ describe('HighlightsView', () => {
     expect(screen.getByText(/full seasons · '21–'24/)).toBeInTheDocument();
     expect(screen.getByText(/84% when active/)).toBeInTheDocument();
     expect(screen.getByText(/40 → 71 with CHI/)).toBeInTheDocument();
+  });
+
+  it('lists the teams with the most picks and opens a team on click', () => {
+    const onTeamSelect = vi.fn();
+    render(
+      <MemoryRouter>
+        <HighlightsView
+          highlights={defaultHighlights}
+          freeAgentHighlights={null}
+          startYear={2021}
+          endYear={2025}
+          onTeamSelect={onTeamSelect}
+        />
+      </MemoryRouter>,
+    );
+
+    const card = within(screen.getByRole('article', { name: 'Most picks' }));
+    expect(card.getByText('Detroit Lions')).toBeInTheDocument();
+    expect(card.getByText('41')).toBeInTheDocument();
+    fireEvent.click(card.getByRole('button', { name: 'View Detroit Lions' }));
+    expect(onTeamSelect).toHaveBeenCalledWith('DET');
   });
 
   it('ranks the teams that kept their keepers', () => {
