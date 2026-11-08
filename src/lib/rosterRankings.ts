@@ -12,9 +12,9 @@ import { playedSeasons } from './seasonPlayed';
 export interface RosterRanking {
   teamId: string;
   teamName: string;
-  /** Mean career score of his rostered draftees, or undefined when none scored. */
+  /** Mean career score of its rostered players, or undefined when none scored. */
   score: number | undefined;
-  /** Tracked draftees on the roster, scored or not. */
+  /** Tracked players on the roster, drafted or undrafted, scored or not. */
   players: number;
   /** 1-based position in the board. */
   rank: number;

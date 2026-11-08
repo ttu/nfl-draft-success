@@ -1136,7 +1136,7 @@ function ClassmateRow({
           {Math.round(score)}
         </span>
       </div>
-      <RoleChip role={role} />
+      <RoleChip role={role} compact />
     </div>
   );
 }

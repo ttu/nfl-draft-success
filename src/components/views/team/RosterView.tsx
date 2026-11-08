@@ -101,7 +101,7 @@ export function RosterView({
       {groups.length === 0 ? (
         <p className="roster-view__empty mono">
           {snapshotPublished
-            ? 'No tracked draftees on this roster.'
+            ? 'No tracked players on this roster.'
             : "This season's roster snapshot has not been published yet."}
         </p>
       ) : (

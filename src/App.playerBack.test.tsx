@@ -74,15 +74,16 @@ function renderAt(entries: string[]) {
 const nav = () => screen.getByTestId('nav').textContent ?? '';
 
 /**
- * Opens the player from the BUF roster and waits for the default-range backfill
- * (a REPLACE) to land. Pressing Back before it does lets that late replace
- * overwrite the restored list entry, which made these tests flaky on slow CI.
+ * Opens the player from the BUF roster. The player link carries the roster's
+ * year range, so the player view has nothing to backfill: the entry stays the
+ * PUSH that opened it. (It once backfilled the default range with a late
+ * REPLACE, which could overwrite the restored list entry on Back.)
  */
 async function openPlayerFromRoster() {
   renderAt(['/BUF?from=2021&to=2025']);
   fireEvent.click(await screen.findByText('Josh Allen'));
   await screen.findByRole('button', { name: /←/ });
-  await waitFor(() => expect(nav()).toBe('REPLACE /player/josh-allen'));
+  await waitFor(() => expect(nav()).toBe('PUSH /player/josh-allen'));
 }
 
 beforeEach(() => {
@@ -103,8 +104,8 @@ describe('Player detail back crumb', () => {
   it('leaves one Back press between the player and the list it was opened from', async () => {
     await openPlayerFromRoster();
 
-    // The player view backfills the default year range onto its own URL. That
-    // correction must not become a history entry of its own.
+    // Nothing between the player and the list: no range correction of the
+    // player URL may become a history entry of its own.
     fireEvent.click(screen.getByRole('button', { name: 'browser back' }));
     await waitFor(() => expect(nav()).toBe('POP /BUF'));
   });
@@ -116,5 +117,25 @@ describe('Player detail back crumb', () => {
     fireEvent.click(await screen.findByRole('button', { name: /←/ }));
 
     await waitFor(() => expect(nav()).toBe('PUSH /BUF'));
+  });
+
+  it('keeps the list’s year range on the player URL instead of resetting it', async () => {
+    function SearchProbe() {
+      return <output data-testid="search">{useLocation().search}</output>;
+    }
+    render(
+      <MemoryRouter initialEntries={['/BUF?from=2021&to=2024']}>
+        <SearchProbe />
+        <App />
+      </MemoryRouter>,
+    );
+    fireEvent.click(await screen.findByText('Josh Allen'));
+    await screen.findByRole('button', { name: /←/ });
+
+    const params = new URLSearchParams(
+      screen.getByTestId('search').textContent ?? '',
+    );
+    expect(params.get('from')).toBe('2021');
+    expect(params.get('to')).toBe('2024');
   });
 });

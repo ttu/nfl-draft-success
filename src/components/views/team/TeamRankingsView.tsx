@@ -399,7 +399,7 @@ function PodiumColumn({
           style={{ background: color, color: teamFg(color) }}
           aria-hidden="true"
         >
-          {entry.teamId.slice(0, 2)}
+          {entry.teamId}
         </span>
         <span className="podium__name">
           {teamNickname(team?.name ?? entry.teamName)}
@@ -446,18 +446,23 @@ function PodiumStrip({ context }: { context?: LeagueContext }) {
   );
 }
 
+/**
+ * Column visibility by width: `hide-md` (≤1280) drops Picks, `hide-mobile`
+ * (≤900) drops the sparkline, `hide-phone` (≤560) drops the remaining
+ * figures. Each hidden column's <col> goes with its cells (see App.css).
+ */
 function RankingsTableColgroup() {
   return (
     <colgroup>
       <col style={{ width: 56 }} />
       <col style={{ width: 38 }} />
       <col />
-      <col style={{ width: 90 }} />
-      <col className="col-hide-mobile" style={{ width: 82 }} />
+      <col className="col-score" style={{ width: 90 }} />
+      <col className="col-hide-phone" style={{ width: 82 }} />
       <col className="col-hide-md" style={{ width: 70 }} />
       <col className="col-hide-mobile" style={{ width: 190 }} />
-      <col className="col-hide-mobile" style={{ width: 80 }} />
-      <col className="col-hide-mobile" style={{ width: 80 }} />
+      <col className="col-hide-phone" style={{ width: 80 }} />
+      <col className="col-hide-phone" style={{ width: 80 }} />
     </colgroup>
   );
 }
@@ -476,13 +481,13 @@ function RankingsTableHead({
         <th>YoY</th>
         <th>Team</th>
         <th className="right">Score</th>
-        <th className="right hide-mobile">Over slot</th>
+        <th className="right hide-phone">Over slot</th>
         <th className="right hide-md">Picks</th>
         <th className="hide-mobile">
           Score · {seasonTag(startYear)} → {seasonTag(endYear)}
         </th>
-        <th className="right hide-mobile">Core %</th>
-        <th className="right hide-mobile">Retained</th>
+        <th className="right hide-phone">Core %</th>
+        <th className="right hide-phone">Retained</th>
       </tr>
     </thead>
   );
@@ -670,7 +675,7 @@ function RankRow({
       <td className="right">
         <span className="score-big">{r.score.toFixed(1)}</span>
       </td>
-      <td className="right hide-mobile">
+      <td className="right hide-phone">
         {r.overSlot != null ? (
           <span
             className="mono tnum"
@@ -713,12 +718,12 @@ function RankRow({
           <span style={{ color: 'var(--ink-4)' }}>—</span>
         )}
       </td>
-      <td className="right hide-mobile">
+      <td className="right hide-phone">
         <span className="mono tnum" style={{ fontWeight: 600 }}>
           {r.coreRate != null ? `${(r.coreRate * 100).toFixed(0)}%` : '—'}
         </span>
       </td>
-      <td className="right hide-mobile">
+      <td className="right hide-phone">
         <span className="mono tnum" style={{ color: 'var(--ink-2)' }}>
           {r.retentionRate != null
             ? `${(r.retentionRate * 100).toFixed(0)}%`

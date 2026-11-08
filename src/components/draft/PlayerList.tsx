@@ -133,6 +133,16 @@ export function PlayerList({
                 >
                   {pick.playerName}
                 </Link>
+                {/* A single team's list doesn't need the team on every row;
+                    a league-wide one can't be read without it. */}
+                {brandByDraftingTeam && (
+                  <span
+                    className="player-row__team mono"
+                    data-testid="player-row-team"
+                  >
+                    {pick.teamId}
+                  </span>
+                )}
                 {departed && currentTeam && (
                   <span
                     className="mono"

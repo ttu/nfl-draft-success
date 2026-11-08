@@ -20,9 +20,31 @@ describe('buildPlayerHref', () => {
     expect(buildPlayerHref('a b')).toBe('/player/a%20b');
   });
 
-  it('appends the origin as an encoded ref param', () => {
+  it('appends the origin as an encoded ref param, carrying its year range', () => {
     expect(buildPlayerHref('p1', '/TB?from=2021&to=2026')).toBe(
-      '/player/p1?ref=%2FTB%3Ffrom%3D2021%26to%3D2026',
+      '/player/p1?ref=%2FTB%3Ffrom%3D2021%26to%3D2026&from=2021&to=2026',
+    );
+  });
+
+  it('carries the origin range so the player page does not reset it to the default', () => {
+    // Without from/to of its own the player URL got the default range
+    // backfilled, and every masthead tab then dropped the reader's range.
+    const href = buildPlayerHref('p1', '/position/QB?from=2023&to=2025');
+    const params = new URLSearchParams(href.split('?')[1]);
+    expect(params.get('from')).toBe('2023');
+    expect(params.get('to')).toBe('2025');
+    expect(params.get('ref')).toBe('/position/QB?from=2023&to=2025');
+  });
+
+  it('carries only the range, not the origin’s other params', () => {
+    const href = buildPlayerHref('p1', '/?from=2023&to=2025&foo=bar');
+    const params = new URLSearchParams(href.split('?')[1]);
+    expect([...params.keys()]).toEqual(['ref', 'from', 'to']);
+  });
+
+  it('adds no range when the origin has none', () => {
+    expect(buildPlayerHref('p1', '/highlights')).toBe(
+      '/player/p1?ref=%2Fhighlights',
     );
   });
 

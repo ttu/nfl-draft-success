@@ -7,6 +7,13 @@ import { useCallback, useSyncExternalStore } from 'react';
  */
 export const MOBILE_QUERY = '(max-width: 900px)';
 
+/**
+ * Phone width, inside the mobile range: where a tablet still has room for a
+ * full label or column and a phone does not. Kept in step with the
+ * `max-width: 560px` blocks in App.css.
+ */
+export const PHONE_QUERY = '(max-width: 560px)';
+
 /** True while the viewport matches `query`. Re-renders when that flips. */
 export function useMediaQuery(query: string): boolean {
   const subscribe = useCallback(

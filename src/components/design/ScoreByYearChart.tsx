@@ -1,4 +1,6 @@
 import type { YearScore } from '../../lib/getScoreByYear';
+import { fitViewWidth } from '../../lib/fitViewWidth';
+import { useElementWidth } from '../../lib/useElementWidth';
 
 export interface ScoreByYearChartProps {
   /** Per-class scores in ascending year order. */
@@ -7,8 +9,9 @@ export interface ScoreByYearChartProps {
   stroke?: string;
 }
 
-// Internal SVG coordinate system; the chart scales to its container width.
-const W = 800;
+// Internal SVG coordinate system. Its width follows the container (see
+// fitViewWidth) so the labels keep their size; 800 is the desktop design.
+const VIEW_WIDTH = { min: 400, max: 800 };
 const H = 240;
 const PAD_X = 48;
 const TOP_Y = 46; // top of the line plot (room above for value labels)
@@ -27,9 +30,10 @@ export function ScoreByYearChart({
   const plotted = points.filter((p) => p.hasData);
   const lo = plotted.length ? Math.min(...plotted.map((p) => p.score)) : 0;
   const hi = plotted.length ? Math.max(...plotted.map((p) => p.score)) : 0;
+  const [ref, width] = useElementWidth<HTMLDivElement>();
 
   return (
-    <div className="hero-chart">
+    <div className="hero-chart" ref={ref}>
       <div className="hero-chart__head">
         <span className="kicker">Score, year by year</span>
         {plotted.length >= 2 && (
@@ -43,7 +47,13 @@ export function ScoreByYearChart({
       </div>
 
       {plotted.length >= 2 ? (
-        <Plot points={plotted} lo={lo} hi={hi} stroke={stroke} />
+        <Plot
+          points={plotted}
+          lo={lo}
+          hi={hi}
+          stroke={stroke}
+          w={fitViewWidth(width, VIEW_WIDTH)}
+        />
       ) : (
         <div
           className="mono"
@@ -61,15 +71,18 @@ function Plot({
   lo,
   hi,
   stroke,
+  w,
 }: {
   points: YearScore[];
   lo: number;
   hi: number;
   stroke: string;
+  /** Width of the coordinate system; see {@link fitViewWidth}. */
+  w: number;
 }) {
   const n = points.length;
   const span = hi - lo;
-  const x = (i: number) => PAD_X + (i * (W - 2 * PAD_X)) / (n - 1);
+  const x = (i: number) => PAD_X + (i * (w - 2 * PAD_X)) / (n - 1);
   const y = (score: number) =>
     span < 1e-6
       ? (TOP_Y + BASE_Y) / 2
@@ -89,7 +102,7 @@ function Plot({
 
   return (
     <svg
-      viewBox={`0 0 ${W} ${H}`}
+      viewBox={`0 0 ${w} ${H}`}
       width="100%"
       preserveAspectRatio="xMidYMid meet"
       role="img"

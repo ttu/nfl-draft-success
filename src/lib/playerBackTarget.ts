@@ -8,15 +8,29 @@ export interface PlayerBackTarget {
   to: string;
 }
 
+/** Year-range params a player link carries over from the page it was opened on. */
+const RANGE_PARAMS = ['from', 'to'] as const;
+
 /**
  * Builds the player detail href, recording where the user came from in a `ref`
  * query param so the detail view's back crumb can return there. Pass the
  * origin as `pathname + search` (e.g. `/TB?from=2021&to=2026`).
+ *
+ * The origin's year range is copied onto the player URL too. The range lives
+ * only in the URL, so a player page without one gets the default backfilled,
+ * and every masthead tab opened from there would quietly reset the reader's
+ * chosen range.
  */
 export function buildPlayerHref(playerId: string, ref?: string | null): string {
   const base = `/player/${encodeURIComponent(playerId)}`;
   if (!ref) return base;
-  return `${base}?ref=${encodeURIComponent(ref)}`;
+  const params = new URLSearchParams({ ref });
+  const originParams = new URLSearchParams(ref.split('?')[1] ?? '');
+  for (const key of RANGE_PARAMS) {
+    const value = originParams.get(key);
+    if (value !== null) params.set(key, value);
+  }
+  return `${base}?${params.toString()}`;
 }
 
 /** Primary-nav tab that owns the player detail view, based on its origin. */

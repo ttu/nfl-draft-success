@@ -28,10 +28,20 @@ export function InfoView({
   windows,
 }: InfoViewProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  // The parent passes a fresh onClose each render; read it through a ref so the
+  // mount-only effect below never re-runs and forgets who opened the sheet.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
+    const opener =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     const onEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
     };
     document.addEventListener('keydown', onEscape);
     document.body.style.overflow = 'hidden';
@@ -39,8 +49,11 @@ export function InfoView({
     return () => {
       document.removeEventListener('keydown', onEscape);
       document.body.style.overflow = '';
+      // Hand focus back to whatever opened the sheet, so a keyboard user
+      // carries on where they were instead of starting over from the top.
+      if (opener?.isConnected) opener.focus();
     };
-  }, [onClose]);
+  }, []);
 
   return (
     <>

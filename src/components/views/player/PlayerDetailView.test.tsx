@@ -962,6 +962,46 @@ describe('PlayerDetailView for an undrafted free agent', () => {
     expect(screen.queryByText(/signed by/i)).not.toBeInTheDocument();
   });
 
+  it('gives classmates the compact role label, naming the full role on hover', () => {
+    // The cohort rail is too narrow for "Core Starter" with its dot; the full
+    // label squeezed the dot to a sliver.
+    const starter = makePick({
+      playerId: 'te-1',
+      playerName: 'Starting End',
+      position: 'TE',
+      draftYear: 2020,
+      round: 1,
+      overallPick: 20,
+      seasons: [makeSeason({ year: 2020, snapShare: 0.95 })],
+    });
+    const classmate = makePick({
+      ...starter,
+      playerId: 'te-2',
+      playerName: 'Other End',
+      overallPick: 21,
+    });
+    render(
+      <MemoryRouter>
+        <PlayerDetailView
+          pick={starter}
+          draftYear={2020}
+          draftClasses={[
+            makeDraftClass({ year: 2020, picks: [starter, classmate] }),
+          ]}
+          draftingTeamOnly={false}
+        />
+      </MemoryRouter>,
+    );
+
+    const panel = screen.getByTestId('position-cohort');
+    const chips = panel.querySelectorAll('.role-chip');
+    expect(chips).toHaveLength(2);
+    for (const chip of chips) {
+      expect(chip).toHaveTextContent(/^Core$/);
+      expect(chip).toHaveAttribute('title', 'Core Starter');
+    }
+  });
+
   it('does not rank him inside a cohort listing only drafted classmates', () => {
     const classmate = makePick({
       playerId: 'wr-1',

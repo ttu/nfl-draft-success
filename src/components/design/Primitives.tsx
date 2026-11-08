@@ -135,8 +135,25 @@ export function shortRoleLabel(role: RoleLike): string {
   return SHORT_ROLE_LABEL[cls] ?? cls;
 }
 
-export function RoleChip({ role }: { role: RoleLike }) {
+/**
+ * Role badge. `compact` shows the short label for dense rows and keeps the
+ * full one as a tooltip, so nothing is lost where the column is narrow.
+ */
+export function RoleChip({
+  role,
+  compact = false,
+}: {
+  role: RoleLike;
+  compact?: boolean;
+}) {
   const cls = roleDesignClass(role);
+  if (compact) {
+    return (
+      <span className={`role-chip ${cls}`} title={ROLE_LABEL[cls]}>
+        {shortRoleLabel(role)}
+      </span>
+    );
+  }
   return <span className={`role-chip ${cls}`}>{ROLE_LABEL[cls]}</span>;
 }
 

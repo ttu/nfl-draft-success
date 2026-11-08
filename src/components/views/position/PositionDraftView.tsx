@@ -18,6 +18,7 @@ import { getPlayerRole, getPlayerDraftScore } from '../../../lib/getPlayerRole';
 import { TEAMS } from '../../../data/teams';
 import { buildPlayerHref } from '../../../lib/playerBackTarget';
 import { cx } from '../../../lib/cx';
+import { PHONE_QUERY, useMediaQuery } from '../../../lib/useMediaQuery';
 import type { DraftClass, DraftPick } from '../../../types';
 
 export interface PositionDraftViewProps {
@@ -48,6 +49,9 @@ function PositionDraftViewImpl({
 }: PositionDraftViewProps) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  // A phone drops Class and Round and still lacks room for the full role
+  // label beside the name, so the chip goes compact there. Tablets keep both.
+  const compactRole = useMediaQuery(PHONE_QUERY);
 
   const rows = useMemo<PickRow[]>(() => {
     const flat = filterPicksByPosition(draftClasses, position);
@@ -170,15 +174,20 @@ function PositionDraftViewImpl({
                 <th>Rank</th>
                 <th>Pick</th>
                 <th>Player · Team</th>
-                <th className="hide-mobile">Class</th>
-                <th className="right hide-mobile">Round</th>
+                <th className="hide-phone">Class</th>
+                <th className="right hide-phone">Round</th>
                 <th className="right">Score</th>
                 <th>Role</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r, i) => (
-                <PosRow key={r.pick.playerId} r={r} i={i + 1} />
+                <PosRow
+                  key={r.pick.playerId}
+                  r={r}
+                  i={i + 1}
+                  compactRole={compactRole}
+                />
               ))}
             </tbody>
           </table>
@@ -242,7 +251,15 @@ function TeamLine({ teamId, clubName }: { teamId: string; clubName?: string }) {
   );
 }
 
-function PosRow({ r, i }: { r: PickRow; i: number }) {
+function PosRow({
+  r,
+  i,
+  compactRole,
+}: {
+  r: PickRow;
+  i: number;
+  compactRole: boolean;
+}) {
   const navigate = useNavigate();
   const location = useLocation();
   const team = TEAMS.find((t) => t.id === r.pick.teamId);
@@ -315,8 +332,8 @@ function PosRow({ r, i }: { r: PickRow; i: number }) {
           </div>
         </div>
       </td>
-      <td className="mono tnum hide-mobile">{r.draftYear}</td>
-      <td className="right mono tnum hide-mobile">R{r.pick.round}</td>
+      <td className="mono tnum hide-phone">{r.draftYear}</td>
+      <td className="right mono tnum hide-phone">R{r.pick.round}</td>
       <td className="right">
         <div className="score-bar">
           <div className="score-bar__track">
@@ -329,7 +346,7 @@ function PosRow({ r, i }: { r: PickRow; i: number }) {
         </div>
       </td>
       <td>
-        <RoleChip role={r.role} />
+        <RoleChip role={r.role} compact={compactRole} />
       </td>
     </tr>
   );

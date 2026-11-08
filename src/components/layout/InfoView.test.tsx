@@ -66,6 +66,37 @@ describe('InfoView', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('moves focus into the sheet and returns it to the opener on close', () => {
+    const opener = document.createElement('button');
+    document.body.appendChild(opener);
+    opener.focus();
+
+    const { rerender, unmount } = render(<InfoView onClose={vi.fn()} />);
+    expect(
+      screen.getByRole('button', { name: /close methodology/i }),
+    ).toHaveFocus();
+
+    // The parent hands a fresh onClose on every render; that must not make
+    // the sheet forget who opened it.
+    rerender(<InfoView onClose={vi.fn()} />);
+    unmount();
+
+    expect(opener).toHaveFocus();
+    opener.remove();
+  });
+
+  it('closes on Escape with the latest onClose after a re-render', () => {
+    const first = vi.fn();
+    const latest = vi.fn();
+    const { rerender } = render(<InfoView onClose={first} />);
+    rerender(<InfoView onClose={latest} />);
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(latest).toHaveBeenCalledTimes(1);
+    expect(first).not.toHaveBeenCalled();
+  });
+
   it('locks background scroll while open and restores it on unmount', () => {
     const { unmount } = render(<InfoView onClose={vi.fn()} />);
     expect(document.body.style.overflow).toBe('hidden');

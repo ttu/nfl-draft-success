@@ -3,7 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { PositionDraftView } from './PositionDraftView';
 import type { DraftClass } from '../../../types';
-import { makeDraftClass, makePick } from '../../../test/factories';
+import { makeDraftClass, makePick, makeSeason } from '../../../test/factories';
+import { MOBILE_WIDTH, setViewportWidth } from '../../../test/viewport';
 
 const classes: DraftClass[] = [
   makeDraftClass({
@@ -98,5 +99,54 @@ describe('PositionDraftView', () => {
     // identifies the team, and the pair took two lines of a narrow column.
     expect(line?.textContent).toMatch(/Bengals/);
     expect(line?.parentElement?.textContent).toMatch(/^CIN/);
+  });
+
+  describe('role chip', () => {
+    const starters: DraftClass[] = [
+      makeDraftClass({
+        year: 2021,
+        picks: [
+          makePick({
+            playerId: 's',
+            playerName: 'Starter',
+            position: 'TE',
+            seasons: [2021, 2022, 2023, 2024].map((year) =>
+              makeSeason({ year, snapShare: 0.95 }),
+            ),
+          }),
+        ],
+      }),
+    ];
+    const renderBoard = () =>
+      render(
+        <MemoryRouter>
+          <PositionDraftView
+            position="TE"
+            yearFrom={2021}
+            yearTo={2021}
+            draftClasses={starters}
+            draftingTeamOnly
+          />
+        </MemoryRouter>,
+      );
+    const chip = () => document.querySelector('.pos-table .role-chip');
+
+    it('names the full role on desktop', () => {
+      renderBoard();
+      expect(chip()).toHaveTextContent(/^Core Starter$/);
+    });
+
+    it('keeps the full label on a tablet, which has the room', () => {
+      setViewportWidth(768);
+      renderBoard();
+      expect(chip()).toHaveTextContent(/^Core Starter$/);
+    });
+
+    it('uses the compact label on a phone, so the name keeps its room', () => {
+      setViewportWidth(MOBILE_WIDTH);
+      renderBoard();
+      expect(chip()).toHaveTextContent(/^Core$/);
+      expect(chip()).toHaveAttribute('title', 'Core Starter');
+    });
   });
 });

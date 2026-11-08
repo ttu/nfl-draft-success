@@ -146,7 +146,7 @@ describe('RosterView', () => {
     renderView(
       <RosterView teamId="NYJ" draftClasses={classes} freeAgentClasses={[]} />,
     );
-    expect(screen.getByText(/No tracked draftees/)).toBeInTheDocument();
+    expect(screen.getByText(/No tracked players/)).toBeInTheDocument();
   });
 
   it('says the roster snapshot has not been published yet when no pick has one', () => {
@@ -171,7 +171,7 @@ describe('RosterView', () => {
         freeAgentClasses={[]}
       />,
     );
-    expect(screen.queryByText(/No tracked draftees/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/No tracked players/)).not.toBeInTheDocument();
     expect(
       screen.getByText(/roster snapshot.*has not been published/i),
     ).toBeInTheDocument();

@@ -90,6 +90,16 @@ describe('TeamRankingsView on mobile', () => {
     expect(container.querySelectorAll('.podium__col--lead')).toHaveLength(1);
   });
 
+  it('marks each podium medal with the full team code, never a clipped one', () => {
+    // Two letters made "DET" read as the position DE and could not tell
+    // NYG from NYJ or LAC from LAR.
+    const { container } = renderMobile();
+    const medals = [...container.querySelectorAll('.podium__medal')].map(
+      (m) => m.textContent,
+    );
+    expect(medals).toEqual(['DET', 'KC', 'PHI']);
+  });
+
   it('links each podium team to its page, carrying the year window', () => {
     renderMobile();
     expect(screen.getByRole('link', { name: /Lions/ })).toHaveAttribute(

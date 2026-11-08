@@ -187,6 +187,32 @@ describe('PlayerList', () => {
     expect(screen.getAllByRole('row')).toHaveLength(2);
   });
 
+  it('names each row’s team when the list spans the league', () => {
+    const leagueWide = [
+      {
+        pick: makePick({
+          playerId: 'buf-1',
+          playerName: 'Buf Player',
+          teamId: 'BUF',
+        }),
+        draftYear: 2020,
+      },
+      {
+        pick: makePick({ playerId: 'kc-2', playerName: 'KC Player' }),
+        draftYear: 2020,
+      },
+    ];
+    render(<PlayerList picks={leagueWide} teamId="KC" brandByDraftingTeam />);
+    expect(
+      screen.getAllByTestId('player-row-team').map((tag) => tag.textContent),
+    ).toEqual(['BUF', 'KC']);
+  });
+
+  it('leaves the team off a single team’s list, where it would only repeat', () => {
+    render(<PlayerList picks={mockPicks} teamId="KC" />);
+    expect(screen.queryByTestId('player-row-team')).not.toBeInTheDocument();
+  });
+
   it('tags a free agent UDFA rather than showing a round', () => {
     const freeAgentPicks = [
       {

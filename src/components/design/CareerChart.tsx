@@ -4,6 +4,12 @@ import {
   getPositionTierThresholds,
   isBaselineExemptPosition,
 } from '../../lib/positionBaseline';
+import { fitViewWidth } from '../../lib/fitViewWidth';
+import { useElementWidth } from '../../lib/useElementWidth';
+
+// Coordinate width follows the container so axis text keeps its size; 560 is
+// the desktop design, 300 keeps a phone's five-season axis from crowding.
+const VIEW_WIDTH = { min: 300, max: 560 };
 
 /**
  * Season-by-season load (cumulative snap share) area chart with the raw snap
@@ -27,12 +33,13 @@ export function CareerChart({
   position: string;
 }) {
   const chartId = useId();
+  const [ref, measured] = useElementWidth<HTMLDivElement>();
   const titleId = `${chartId}-title`;
   const descId = `${chartId}-desc`;
   const showCoreLine = !isBaselineExemptPosition(position);
   const coreFrac = getPositionTierThresholds(position).core;
   const corePct = Math.round(coreFrac * 100);
-  const w = 560;
+  const w = fitViewWidth(measured, VIEW_WIDTH);
   const h = 200;
   const padL = 36;
   const padR = 16;
@@ -79,7 +86,7 @@ export function CareerChart({
     '. The same figures follow in a table.';
 
   return (
-    <>
+    <div ref={ref}>
       <svg
         viewBox={`0 0 ${w} ${h}`}
         width="100%"
@@ -198,6 +205,6 @@ export function CareerChart({
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   );
 }

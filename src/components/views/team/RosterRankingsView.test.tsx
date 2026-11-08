@@ -122,7 +122,18 @@ describe('RosterRankingsView hero', () => {
     // KC's lone starter scores 100, BUF's lone depth player rather less; the
     // league average is the mean of the two teams that have a score at all.
     expect(within(hero).getByText('League average')).toBeInTheDocument();
-    expect(within(hero).getByText('Tracked draftees')).toBeInTheDocument();
+    expect(within(hero).getByText('Tracked players')).toBeInTheDocument();
     expect(within(hero).getByText('2')).toBeInTheDocument();
+  });
+
+  it('does not claim undrafted players are missing, since the board counts them', () => {
+    renderView(
+      <RosterRankingsView draftClasses={classes} freeAgentClasses={[]} />,
+    );
+
+    expect(screen.queryByText(/undrafted players and/)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/Veterans who came in before 2013 are not tracked/),
+    ).toBeInTheDocument();
   });
 });

@@ -259,8 +259,13 @@ button {
   cursor: pointer;
 }
 .mast__search-results button:hover,
-.mast__search-results button:focus-visible {
+.mast__search-results button:focus-visible,
+.mast__search-results .is-active button {
   background: var(--paper-2);
+}
+/* Keyboard highlight: a bar as well as the fill, so it reads without colour. */
+.mast__search-results .is-active button {
+  box-shadow: inset 3px 0 0 var(--ox);
 }
 .mast__search-meta,
 .mast__search-empty {
@@ -495,6 +500,9 @@ button {
 }
 .role-chip::before {
   content: '';
+  /* A flex item: without this a chip squeezed by its column crushes the dot
+     to a sliver before the text gives way. */
+  flex-shrink: 0;
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -847,14 +855,15 @@ button {
   place-items: center;
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: 16px;
+  /* Sized for a three-letter team code (NYG, LAC) inside the disc. */
+  font-size: 14px;
   letter-spacing: -0.02em;
   box-shadow: inset 0 0 0 1px rgb(0 0 0 / 12%);
 }
 .podium__col--lead .podium__medal {
   width: 58px;
   height: 58px;
-  font-size: 21px;
+  font-size: 18px;
 }
 .podium__name {
   font-family: var(--f-display);
@@ -1332,16 +1341,18 @@ button {
     grid-template-columns: 1fr;
     gap: 20px;
   }
+  /* 16px: the gutter the page hero above uses at this width, and the
+     other pages' sections. */
   .highlights-spotlights {
     grid-template-columns: 1fr;
-    padding: 24px 24px 0;
+    padding: 24px 16px 0;
   }
   .highlights-lists {
     grid-template-columns: 1fr;
-    padding: 24px 24px 0;
+    padding: 24px 16px 0;
   }
   .highlights-band__title {
-    padding: 24px 24px 0;
+    padding: 24px 16px 0;
   }
   .highlight-leader {
     max-width: none;
@@ -1507,6 +1518,13 @@ button {
 .player-row__link:focus-visible {
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+.player-row__team {
+  margin-left: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
 }
 .team-row__id {
   font-family: var(--f-mono);
@@ -2272,14 +2290,17 @@ button {
   outline: 2px solid var(--ox);
   outline-offset: -2px;
 }
-/* Keep the pick number / score clear of the centre divider while the outer
-   edges stay flush with the section header and right margin. Odd children are
-   the left column, even children the right column. */
+/* Keep the pick number / score clear of the centre divider. The striped row
+   background is what lines up with the section header and right margin, so
+   the content gets a small inset on the outer edge too rather than touching
+   the stripe's edge. Odd children are the left column, even the right. */
 .pick-ledger-row:nth-child(odd) {
+  padding-left: 12px;
   padding-right: 24px;
 }
 .pick-ledger-row:nth-child(even) {
   padding-left: 24px;
+  padding-right: 12px;
 }
 .pick-ledger-row__pick-label {
   font-family: var(--f-mono);
@@ -2386,6 +2407,9 @@ button {
   font-family: var(--f-serif);
   font-size: 160px;
   line-height: 0.78;
+  /* The tight line-height lets descending strokes (the Q's tail) spill below
+     the box and into the caption; in em so it scales with each breakpoint. */
+  padding-bottom: 0.12em;
   font-weight: 700;
   letter-spacing: -0.05em;
   color: var(--ink);
@@ -3145,6 +3169,10 @@ button {
   outline: 2px solid var(--ox);
   outline-offset: -2px;
 }
+.classmate-row .role-chip {
+  /* Natural width, right-aligned, instead of stretching to the column. */
+  justify-self: end;
+}
 .classmate-row--self {
   background: color-mix(in oklch, var(--ox) 8%, transparent);
 }
@@ -3556,9 +3584,11 @@ button {
   .rankings-table td.hide-md {
     display: none;
   }
-  /* Collapse the hidden columns' reserved width so remaining columns fill. */
+  /* Drop the hidden column's <col> too. Hiding only the cells shifts every
+     later cell one column left, so they would pick up the wrong widths and
+     the last column would be left empty. */
   .rankings-table col.col-hide-md {
-    width: 0 !important;
+    display: none;
   }
   .rankings-foot {
     padding: 16px 24px 24px;
@@ -3660,7 +3690,9 @@ button {
     grid-template-columns: 64px 180px 1fr auto;
   }
   .player-hero__name-col {
-    padding: 28px 40px;
+    /* The headshot hangs 36px (plus its 3px ring) out of the band into this
+       column, so the left side keeps the room the desktop padding gives it. */
+    padding: 28px 40px 28px 60px;
   }
   .player-hero__name {
     font-size: 36px;
@@ -3944,7 +3976,12 @@ button {
     display: none;
   }
   .rankings-table col.col-hide-mobile {
-    width: 0 !important;
+    display: none;
+  }
+  /* The score is four characters; the desktop width it keeps for its header
+     only squeezed team names onto two and three lines here. */
+  .rankings-table col.col-score {
+    width: 56px !important;
   }
   /* Narrow widths cannot fit the board’s natural column widths, and an auto
      layout answers that by overflowing the wrap — which puts the Players
@@ -4042,11 +4079,11 @@ button {
   .pick-ledger-row:hover {
     background: var(--paper-2);
   }
-  /* No centre divider in a single column, so drop the inner-edge padding. */
+  /* No centre divider in a single column: an even inset inside the stripe. */
   .pick-ledger-row:nth-child(odd),
   .pick-ledger-row:nth-child(even) {
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 12px;
+    padding-right: 12px;
   }
   /* Wrap the position selector onto multiple rows so it fits the viewport
      instead of scrolling horizontally. */
@@ -4080,7 +4117,7 @@ button {
      still fit, let the list scroll inside its own container rather than
      cutting off the Role column. */
   .pos-table {
-    padding: 12px 4px 24px;
+    padding: 12px 16px 24px;
     overflow-x: auto;
   }
   .pos-table td,
@@ -4091,9 +4128,7 @@ button {
   .pos-player__name {
     font-size: 14px !important;
   }
-  .pos-table .hide-mobile {
-    display: none;
-  }
+
   /* Fit the player list to the viewport: relax the wide Score/Role columns,
      drop the score bar for the number alone, and hide the decorative accent
      bar so the name column keeps enough room. */
@@ -4153,6 +4188,12 @@ button {
   .player-hero__name-col {
     padding: 18px;
   }
+  /* Line the "Draft 2022" eyebrow up with the name below it; it kept the
+     tablet's 24px and sat 6px in from everything else on the page. */
+  .player-hero__eyebrow {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
   .player-hero__name {
     font-size: 28px;
   }
@@ -4162,8 +4203,10 @@ button {
   .player-glossary {
     padding: 12px 16px;
   }
+  /* The 16px gutter every other mobile section uses; the career table still
+     fits it at 375px. The narrowest phones get 8px back below. */
   .player-career {
-    padding: 18px 8px;
+    padding: 18px 16px;
   }
   .player-career td,
   .player-career th {
@@ -4559,6 +4602,64 @@ button {
   }
 }
 
+/* On a phone the desktop row (18px row padding, 26px score) left the name
+   and meta a ~120px column at 375px, so the meta line broke into three.
+   Tighten the row so the text gets the width. */
+@media (max-width: 560px) {
+  .highlight-row {
+    gap: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .highlight-row__score {
+    font-size: 22px;
+  }
+}
+
+/* On a phone the ledger's name had ~87px and wrapped even two-word names.
+   The team logo repeats the team code already on the meta line, so it goes
+   first; the gap and the score column (three digits at most) give back the
+   rest. Tablets have the width and keep the logo. */
+@media (max-width: 560px) {
+  .pick-ledger-row {
+    grid-template-columns: 46px 1fr 48px;
+    gap: 10px;
+  }
+  .pick-ledger-row__body .team-logo {
+    display: none;
+  }
+}
+
+/* A phone drops the position board's Class and Round; tablets keep them.
+   The <col>s go with their cells: with only the cells hidden, every later
+   cell shifted one column left (Score into Class's width, Role into Round's)
+   and the board ran short of the table's right edge. */
+@media (max-width: 560px) {
+  .pos-table .hide-phone,
+  .pos-col--class,
+  .pos-col--round {
+    display: none;
+  }
+}
+
+/* Tablets keep Over slot, Core % and Retained (only the sparkline goes at
+   ≤900); a phone has room for rank, team and score alone. */
+@media (max-width: 560px) {
+  .rankings-table th.hide-phone,
+  .rankings-table td.hide-phone,
+  .rankings-table col.col-hide-phone {
+    display: none;
+  }
+}
+
+/* At 320px the career table needs the room; keep its tighter 8px gutter. */
+@media (max-width: 360px) {
+  .player-career {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
 /* At 320px the widest single word in a player's name no longer fits the row's
    name column, so the wrap above still left "Jonathon Coo…". Trading a few
    points off the score — still the row's largest type — buys the name the
@@ -4694,8 +4795,11 @@ button {
    word per line with the load bar running through the team code. Compact the
    columns from the width where the rail gets tight, not only on a phone. */
 @media (max-width: 1100px) {
+  /* A fixed role column, as wide as the widest compact chip ("Significant"):
+     each row is its own grid, so an auto column sized per row and pushed the
+     score of a wide-chip row out of line with the rows around it. */
   .classmate-row {
-    grid-template-columns: 20px 22px 1fr 36px auto;
+    grid-template-columns: 20px 22px 1fr 36px 100px;
     gap: 6px;
   }
   /* The load bar is a second reading of the number beside it, so it is the

@@ -18,7 +18,7 @@ interface RosterRankingsViewProps {
 
 /**
  * All 32 rosters as they stand today, ranked by the average career score of
- * the tracked draftees on them.
+ * the tracked players on them, drafted or undrafted.
  *
  * Deliberately not a slice of the year selector: unlike the draft rankings,
  * this asks who is on the team now, so it reads every shipped class.
@@ -50,10 +50,10 @@ export function RosterRankingsView({
 
       <div className="rankings-foot">
         <div className="rankings-foot__text">
-          Only players drafted {DRAFT_YEAR_BOUNDS.min}–{DRAFT_YEAR_BOUNDS.max}{' '}
-          are tracked, so undrafted players and older veterans are missing —
-          this is not the full 53. Players yet to take a snap are counted but
-          not scored.
+          Veterans who came in before {DRAFT_YEAR_BOUNDS.min} are not tracked,
+          and neither are undrafted players yet to take a snap, so this is not
+          the full roster. Draft picks yet to take a snap are counted but not
+          scored.
         </div>
       </div>
     </section>
@@ -106,7 +106,7 @@ function RosterRankingsHero({ rankings }: { rankings: RosterRanking[] }) {
           sub="roster score"
         />
         <StatBlock
-          label="Tracked draftees"
+          label="Tracked players"
           value={String(players)}
           sub="players on all 32 rosters"
         />
