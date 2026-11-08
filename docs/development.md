@@ -22,6 +22,8 @@ See [architecture.md](architecture.md) for full dev dependency list. Key additio
 - Vitest, @testing-library/react, jsdom
 - tsx (for update-data script)
 
+To run in a container instead, see [devcontainer.md](devcontainer.md) (VS Code) or [`.sbx/README.md`](../.sbx/README.md) (Docker Sandbox).
+
 ## Scripts
 
 | Command                 | Description                                                                          |

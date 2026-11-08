@@ -54,6 +54,7 @@ Guide for AI-assisted development on NFL Draft Retention & Role Tracker. All rel
 | [docs/plans/](docs/plans/)                                 | Implementation plans              |
 | [docs/TODO.md](docs/TODO.md)                               | Deferred work, with the reasoning |
 | [.sbx/README.md](.sbx/README.md)                           | Docker Sandbox setup, host access |
+| [docs/devcontainer.md](docs/devcontainer.md)               | Dev container, guardrail, risks   |
 
 ---
 

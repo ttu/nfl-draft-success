@@ -1,0 +1,83 @@
+{
+  "name": "NFL Draft Success",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/nfl-draft-success",
+  "features": {
+    // Adds sudo + shell niceties to the base image's existing `ubuntu` user.
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "username": "ubuntu",
+      "installZsh": false,
+      "upgradePackages": false
+    },
+    // Same Node as the sbx kit; pnpm matches package.json `packageManager`.
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22.23.4",
+      "pnpmVersion": "10.33.0"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "mounts": [
+    // Claude config and credentials survive rebuilds.
+    "source=claude-code-config-${devcontainerId},target=/home/ubuntu/.claude,type=volume"
+  ],
+  "forwardPorts": [3273, 4173, 9323],
+  "portsAttributes": {
+    "3273": { "label": "Vite dev", "onAutoForward": "notify" },
+    "4173": { "label": "Vite preview", "onAutoForward": "silent" },
+    "9323": { "label": "Playwright report", "onAutoForward": "silent" }
+  },
+  // Runs on the host first: records the git paths this worktree needs mounted
+  // and creates the shared browser volume.
+  "initializeCommand": "bash .devcontainer/initialize.sh",
+  "updateContentCommand": "sudo chown ubuntu:ubuntu /workspaces/nfl-draft-success/node_modules /home/ubuntu/.pnpm-store && pnpm install --frozen-lockfile",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  // No postStartCommand: post-create.sh drops sudo, so the Claude Code CLI is
+  // updated by rebuilding the container.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-playwright.playwright",
+        "vitest.explorer"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        // JS Debug auto-attach injects NODE_OPTIONS=--require .../bootloader.js
+        // into terminals; the path goes stale on rebuilds and husky's hooks then
+        // crash with "Cannot find module .../bootloader.js".
+        "debug.javascript.autoAttachFilter": "disabled"
+      }
+    }
+  },
+  "containerEnv": {
+    "DISABLE_AUTOUPDATER": "1",
+    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
+    // Fine-grained PAT scoped to this repository only (see README). It
+    // authenticates both `gh` and git: post-create.sh rewrites SSH remotes to
+    // HTTPS and makes `gh` git's credential helper, so the container never uses
+    // your SSH key. Named per repo on the host so it cannot collide with
+    // another devcontainer's token.
+    "GH_TOKEN": "${localEnv:GH_NFLDS_TOKEN}",
+    // Tells the git guardrail it is in the container: confine to the pinned
+    // branch, and refuse git entirely if the pin is missing.
+    "NFLDS_DEVCONTAINER": "1",
+    // .husky is mounted read-only (its hooks run on the host), so `pnpm
+    // install` must not try to regenerate them.
+    "HUSKY": "0",
+    // Keeps pnpm's store on its volume, off the workspace bind mount.
+    "npm_config_store_dir": "/home/ubuntu/.pnpm-store",
+    // Tests and the MCP server each need their own Chromium in /ms-playwright.
+    "PLAYWRIGHT_SKIP_BROWSER_GC": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    // No auto-gc: the repo's other worktrees are not mounted, so they look
+    // prunable and gc would delete their admin dirs on the host too.
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "gc.auto",
+    "GIT_CONFIG_VALUE_0": "0"
+  },
+  "remoteUser": "ubuntu"
+}

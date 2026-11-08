@@ -1,0 +1,56 @@
+services:
+  app:
+    # Pinned to match @playwright/test in package.json, so the browsers in the
+    # image are the ones the tests expect. Bump both together.
+    image: mcr.microsoft.com/playwright:v1.61.1-noble
+    volumes:
+      - ..:/workspaces/nfl-draft-success:cached
+      # node_modules on a native volume, not the macOS bind mount: install
+      # churn triggers ESTALE / ENOTEMPTY on VirtioFS.
+      - node-modules:/workspaces/nfl-draft-success/node_modules
+      - playwright-browsers:/ms-playwright
+      # pnpm's content store. Left alone, pnpm puts it at the root of the
+      # project's filesystem — the bind mount — and 900MB lands in the host
+      # checkout. See npm_config_store_dir in devcontainer.json.
+      - pnpm-store:/home/ubuntu/.pnpm-store
+      # Each at its original host path too, so absolute paths git records
+      # resolve inside the container.
+      - ${LOCAL_WORKSPACE_FOLDER:?run .devcontainer/initialize.sh}:${LOCAL_WORKSPACE_FOLDER}
+      # The shared .git at its host path, so a worktree's absolute `gitdir:`
+      # resolves (for the main checkout it is already inside the workspace).
+      # ACCEPTED RISK: mounted read-write as a whole, so the container can
+      # change .git's config and hooks, which decide what host git runs next.
+      # A read-only split (separate main/worktree compose files) was dropped
+      # as not worth the complexity. See docs/devcontainer.md.
+      - ${GIT_COMMON_DIR:?run .devcontainer/initialize.sh}:${GIT_COMMON_DIR}
+      # .husky read-only: core.hooksPath points into it, and its hooks run on
+      # the host's next commit.
+      - ../.husky:/workspaces/nfl-draft-success/.husky:ro
+      - ${LOCAL_WORKSPACE_FOLDER}/.husky:${LOCAL_WORKSPACE_FOLDER}/.husky:ro
+      # The guardrail and its settings: Claude's Edit and Write tools are not
+      # gated by a Bash hook, so the files themselves must be unwritable here.
+      # And .devcontainer: initialize.sh runs on the host every time the
+      # container is opened.
+      - ../.claude:/workspaces/nfl-draft-success/.claude:ro
+      - ${LOCAL_WORKSPACE_FOLDER}/.claude:${LOCAL_WORKSPACE_FOLDER}/.claude:ro
+      - ../.devcontainer:/workspaces/nfl-draft-success/.devcontainer:ro
+      - ${LOCAL_WORKSPACE_FOLDER}/.devcontainer:${LOCAL_WORKSPACE_FOLDER}/.devcontainer:ro
+    # Host commit identity, captured by initialize.sh into .env.
+    environment:
+      - HOST_GIT_USER_NAME=${HOST_GIT_USER_NAME:-}
+      - HOST_GIT_USER_EMAIL=${HOST_GIT_USER_EMAIL:-}
+      # The workspace's host path, which git must also be told to trust.
+      - LOCAL_WORKSPACE_FOLDER=${LOCAL_WORKSPACE_FOLDER:-}
+    command: sleep infinity
+    # Chromium hard-crashes on Docker's default 64MB /dev/shm.
+    shm_size: '1gb'
+
+volumes:
+  # Per-worktree: branches diverge in dependencies.
+  node-modules:
+  # Per-container cache; survives rebuilds.
+  pnpm-store:
+  # Shared across every container for this repo. Created by initialize.sh.
+  playwright-browsers:
+    external: true
+    name: nflds-playwright-browsers

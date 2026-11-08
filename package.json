@@ -33,7 +33,8 @@
     "test:e2e:prod": "E2E_BASE_URL=https://www.nfldraftsuccess.com pnpm exec playwright test",
     "test:e2e:smoke": "pnpm exec playwright test --grep @smoke",
     "test:e2e:smoke:prod": "E2E_BASE_URL=https://www.nfldraftsuccess.com pnpm exec playwright test --grep @smoke",
-    "test:e2e:ui": "pnpm exec playwright test --ui"
+    "test:e2e:ui": "pnpm exec playwright test --ui",
+    "test:guardrail": "docker run --rm -v \"$PWD:/w:ro\" mcr.microsoft.com/playwright:v1.61.1-noble bash /w/.devcontainer/test-guardrail.sh"
   },
   "dependencies": {
     "react": "^19.2.0",
