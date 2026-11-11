@@ -22,7 +22,7 @@ See [architecture.md](architecture.md) for full dev dependency list. Key additio
 - Vitest, @testing-library/react, jsdom
 - tsx (for update-data script)
 
-To run in a container instead, see [devcontainer.md](devcontainer.md) (VS Code) or [`.sbx/README.md`](../.sbx/README.md) (Docker Sandbox).
+To run in a container instead, see [devcontainer.md](devcontainer.md) (VS Code) or [`.sbx/README.md`](../.sbx/README.md) (Docker Sandbox). For an [isolagent](https://github.com/kipinasoftware/isolagent) microVM, run `isolagent run -p 3273 -p 4173`; its flavor is in `.isolagent/claude-node/`, settings in `.isolagent.toml`.
 
 ## Scripts
 

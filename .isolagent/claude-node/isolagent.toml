@@ -1,0 +1,15 @@
+# claude-node flavor settings. The allow list is the egress policy; edits apply with no restart.
+
+allow = [
+    # Claude Code: API, login, updates
+    ".anthropic.com",
+    ".claude.ai",
+    ".claude.com",
+
+    # GitHub: git, gh, raw files, release downloads
+    ".github.com",
+    ".githubusercontent.com",
+
+    # npm registry: pnpm install, npx
+    "registry.npmjs.org",
+]

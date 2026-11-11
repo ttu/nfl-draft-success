@@ -1,0 +1,21 @@
+# isolagent project settings, on top of the project's own flavor below.
+# Mirrors .sbx/nfl-draft-success/nfl-draft-success.yaml; keep the two in sync.
+# Run: isolagent run -p 3273 -p 4173   (pnpm dev / pnpm preview; --flavor would override the flavor)
+
+flavor = ".isolagent/claude-node"   # Dockerfile, entrypoint.sh, isolagent.toml (base egress)
+
+allow = [
+    "www.nfldraftsuccess.com",   # pnpm test:e2e:prod / smoke:prod
+    "static.www.nfl.com",        # player headshots, NFL logo
+    "content.sportslogos.net",   # team logos
+]
+
+setup = [
+    # CI=true lets pnpm purge the host-made node_modules without a prompt.
+    "CI=true pnpm install --frozen-lockfile",
+    # /visual-verify needs a server named "playwright" (mcp__playwright__*); .claude/settings.json
+    # mcpServers is not loaded by Claude Code. Same pinned version as the sbx kit; the flavor's
+    # PLAYWRIGHT_MCP_EXECUTABLE_PATH points it at the image's Chromium.
+    "claude mcp remove --scope user playwright >/dev/null 2>&1 || true",
+    "claude mcp add --scope user playwright -- npx -y @playwright/mcp@0.0.84 --headless --isolated --browser chromium --caps vision --viewport-size 1280x900",
+]
